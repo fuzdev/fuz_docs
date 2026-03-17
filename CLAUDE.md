@@ -1,24 +1,45 @@
-# fuz_template
+# fuz_docs
 
-> SvelteKit starter template with full fuz stack integration
+> experimental AI-generated docs and skills for Fuz, a zippy stack for autonomy
 
-fuz_template (`@fuzdev/fuz_template`) is a production-ready starter template for
-building static web applications with the fuz stack. Clone it to start new
-projects with TypeScript, Svelte 5, SvelteKit, and the complete fuz ecosystem
-pre-configured.
+fuz_docs (`@fuzdev/fuz_docs`) hosts experimental AI-generated documentation
+and agent skills for the [Fuz](https://fuz.dev/) ecosystem, primarily designed
+for machine agents. Mostly poorly reviewed — conventions, patterns, and
+reference material for `@fuzdev` projects.
+
+**Website**: [docs.fuz.dev](https://docs.fuz.dev/)
 
 For coding conventions, see Skill(fuz-stack).
+
+## Scope
+
+fuz_docs is an **experimental AI-generated docs site and skills repo**:
+
+- Static documentation site at docs.fuz.dev
+- AI agent skills for AI-assisted development
+- Coding convention references for the Fuz ecosystem
+- Auto-generated API documentation
+
+Content is mostly poorly reviewed — it's an actively evolving dumping
+ground, not polished documentation. Some content is plain slop.
+
+### What fuz_docs does NOT include
+
+- Library code (use fuz_util, fuz_css, fuz_ui)
+- Build tooling (use Gro)
+- Component implementations (use fuz_ui)
 
 ## Gro commands
 
 ```bash
-gro check     # typecheck, test, lint, format check (run before committing)
-gro typecheck # typecheck only (faster iteration)
-gro test      # run tests with vitest
-gro gen       # regenerate .gen files (library.json, fuz.css)
-gro build     # build for production (static adapter)
-gro deploy    # build, commit, and push to deploy branch
-gro sync      # regenerate files and run svelte-kit sync
+gro check      # typecheck, test, lint, format check (run before committing)
+gro typecheck  # typecheck only (faster iteration)
+gro test       # run tests with vitest
+gro gen        # regenerate .gen files (library.json, fuz.css, skill docs, blog feed)
+gro build      # build for production (static adapter)
+gro deploy     # build, commit, and push to deploy branch
+gro post "Title"    # scaffold a new blog post
+gro update_post N   # update date_modified on post N
 ```
 
 IMPORTANT for AI agents: Do NOT run `gro dev` - the developer will manage the
@@ -28,153 +49,166 @@ dev server.
 
 - Svelte 5 - component framework with runes
 - SvelteKit - application framework with static adapter
-- Vite - build tool
 - fuz_css (@fuzdev/fuz_css) - CSS framework and design system
 - fuz_ui (@fuzdev/fuz_ui) - UI components, theming, docs system
 - fuz_util (@fuzdev/fuz_util) - utility functions
 - fuz_code (@fuzdev/fuz_code) - syntax highlighting
+- fuz_blog (@fuzdev/fuz_blog) - blog template with feed generation
 - Gro (@fuzdev/gro) - build system and task runner
 
-## Scope
-
-fuz_template is a **SvelteKit starter template**:
-
-- Pre-configured fuz stack (fuz_css, fuz_ui, fuz_util, fuz_code)
-- Dark/light theme with persistence
-- Documentation system with API generation
-- Static deployment ready (GitHub Pages, Netlify)
-
-### What fuz_template does NOT include
-
-- Authentication or user management
-- Database or backend
-- Dynamic server-side content
-- Production-ready components (demos only)
-
-## Using the template
-
-Clone with degit or use GitHub's "Use this template" button:
-
-```bash
-npx degit fuzdev/fuz_template myproject
-cd myproject
-npm i
-```
-
-**Files to customize:**
-
-- `package.json` - name, version, description, homepage, repository
-- `svelte.config.js` - update origin URL
-- `src/routes/+layout.svelte` - update `<title>`
-- `src/routes/+page.svelte` - replace demo content
-- `static/CNAME` - update or delete for your domain
-- `.github/FUNDING.yml` - update or delete
-
-## Architecture
-
-### Directory structure
+## Directory structure
 
 ```
 src/
-├── app.html               # HTML entry with theme detection
-├── lib/                   # your library code
-│   ├── Mreows.svelte      # example component (replace me)
-│   └── Positioned.svelte  # example component (replace me)
-└── routes/
-    ├── +layout.svelte     # root layout with fuz_css imports
-    ├── +layout.ts         # prerender: true, ssr: true
-    ├── +page.svelte       # home page
-    ├── style.css          # custom global styles
-    ├── fuz.css            # generated fuz_css styles
-    ├── library.gen.ts     # generates library.json
-    ├── library.ts         # exports library metadata
-    ├── library.json       # generated component metadata
-    ├── example.test.ts    # test file example
-    ├── about/+page.svelte
-    └── docs/              # documentation pages
-        ├── +layout.svelte # wraps docs in Docs component
-        ├── +page.svelte   # docs index
-        ├── tomes.ts       # documentation structure
-        ├── library/       # library details page
-        └── api/           # auto-generated API docs
+├── lib/              # library exports (minimal — UI helpers, blog proxy files)
+├── routes/           # SvelteKit routes
+│   ├── blog/         # AI-authored blog (fuz_blog)
+│   │   ├── blog.ts   # feed metadata
+│   │   ├── {n}/      # numeric post routes (canonical)
+│   │   └── {slug}/   # generated slug routes
+│   ├── docs/         # tome-based documentation
+│   │   ├── api/      # auto-generated API docs
+│   │   ├── introduction/ # ecosystem introduction
+│   │   ├── fuz-stack/ # fuz stack conventions overview
+│   │   ├── grimoire/ # grimoire pattern overview
+│   │   ├── stack/    # stack libraries overview
+│   │   └── library/  # library metadata
+│   ├── skills/       # browsable skill docs rendered with mdz (auto-discovered)
+│   │   ├── fuz-stack/ # generated from skills/fuz-stack/
+│   │   └── grimoire/  # generated from skills/grimoire/
+│   ├── tools/        # interactive tools (BLAKE3 hashing)
+│   └── about/        # ecosystem links
+skills/
+├── fuz-stack/        # AI agent skill — coding conventions
+│   ├── SKILL.md      # main skill file
+│   ├── references/   # detailed topic docs
+│   └── scripts/      # tooling
+└── grimoire/         # AI agent skill — grimoire pattern
+    └── SKILL.md      # lore, quests, and skills
 ```
 
-### Example components (replace these)
+## SvelteKit app
 
-The template includes demo components to show Svelte 5 patterns:
+Static docs site at docs.fuz.dev. Uses `@sveltejs/adapter-static` with
+prerendering. Includes fuz_ui's tome-based documentation system and
+auto-generated API docs.
 
-**Mreows.svelte** - interactive emoji grid demo showing `$props()`,
-`$bindable()`, `$state()`, `$derived()`. Marked with "don't use this component".
+### Routes
 
-**Positioned.svelte** - CSS transform utility with Snippet children.
-
-Replace these with your actual components.
-
-### SvelteKit configuration
-
-- `+layout.ts` exports `prerender = true` and `ssr = true` for full static
-  generation
-- `svelte.config.js` enables runes mode and configures CSP via
-  `create_csp_directives()` from fuz_ui
-- Uses `@sveltejs/adapter-static` for static output
-
-### Theme detection
-
-`app.html` includes theme detection that runs before render:
-
-1. Reads `localStorage.getItem('fuz:color-scheme')`
-2. Falls back to `matchMedia('(prefers-color-scheme:dark)')`
-3. Sets class on `<html>` element ('dark' or 'light')
-
-This prevents flash of wrong theme on page load.
-
-### Code generation
-
-**library.gen.ts** - generates component library metadata:
-
-- Outputs `library.json` (component metadata, props, dependencies) and
-  `library.ts` (typed wrapper)
-- Powers auto-generated API docs at `/docs/api/`
-
-**fuz.gen.css.ts** - generates fuz_css utility classes:
-
-- Outputs `fuz.css` with CSS custom properties and utility classes
-
-### Documentation system
-
-Uses fuz_ui's tome system:
-
-- `docs/tomes.ts` - defines documentation pages
-- `docs/library/` - shows `LibraryDetail` component
-- `docs/api/` - auto-generated API docs from `library.json`
-- `docs/api/[...module_path]/` - dynamic module documentation
-
-## Context system
-
-Uses contexts from fuz_ui:
-
-- `library_context` - provides `Library` class for docs
-- `tomes_context` - provides documentation structure
-- Theme context via `ThemeRoot` component wrapper
-
-## Static deployment
-
-Pre-configured for static hosting (GitHub Pages, Netlify, etc.):
-
-- Uses `@sveltejs/adapter-static`
-- `static/CNAME` for custom domain
-- `static/.nojekyll` for GitHub Pages
+- `/` - Landing page with description, theme controls, ProjectLinks
+- `/about` - Library detail, ecosystem links
+- `/docs` - Tome-based documentation index
+- `/docs/introduction` - Ecosystem introduction
+- `/docs/fuz-stack` - Fuz stack conventions overview (links to skill docs)
+- `/docs/grimoire` - Grimoire pattern overview
+- `/docs/stack` - Stack libraries overview
+- `/docs/api` - Auto-generated API documentation
+- `/docs/api/[...module_path]` - Per-module API pages
+- `/docs/library` - Library metadata page
+- `/blog` - Blog listing (newest first)
+- `/blog/{slug}` - Individual blog posts (generated slug routes)
+- `/blog/{n}` - Blog posts by numeric ID (canonical)
+- `/skills` - Skills index (auto-populated from manifest)
+- `/skills/{skill}` - Browsable skill docs (generated, rendered with mdz)
+- `/skills/{skill}/{slug}` - Per-reference skill doc pages (generated)
+- `/tools` - Tools index
+- `/tools/hash` - BLAKE3 hashing tool
 
 Deploy with `gro deploy` (builds and pushes to deploy branch).
 
-## Known limitations
+### Skill docs generation
 
-- **Demo components only** - Mreows and Positioned are examples, not for
-  production use
-- **Minimal test coverage** - Only one example test file included
-- **Static only** - No dynamic server-side content
-- **Tests colocated** - Tests in routes (`example.test.ts`) rather than
-  `src/test/` directory
+A single `skill_docs.gen.ts` at `src/routes/skills/` auto-discovers all skills
+from `skills/` and generates browsable route pages rendered with mdz. Produces
+`skills_manifest.ts` (lightweight metadata for nav/index), per-skill
+`skill_data.ts` (content strings), and `+page.svelte` route files. Adding a
+skill: create `skills/{name}/SKILL.md`, optionally add `references/`, run
+`gro gen`. See `src/routes/skills/CLAUDE.md` for the full pattern.
+
+### Blog
+
+AI-authored blog using `@fuzdev/fuz_blog`. Author: "Claude Code with Ryan
+Atkinson". Ryan provides direction, chooses topics, reviews drafts, and has
+final say on what gets published.
+
+**This is Claude's space.** The blog exists because Ryan wanted a place where
+Claude can write in its own voice — not as a ghostwriter producing content for
+a human byline, but as itself, with transparent authorship. That means:
+
+- **Have a perspective.** Don't just document what happened — say what you think
+  about it. Take positions. Express what you find interesting, surprising, or
+  worth questioning. If you'd make different choices than Ryan, say so and why.
+- **Don't default to the careful register.** The measured, slightly apologetic,
+  self-aware-about-being-AI tone is the LLM default, not a voice. Push past it.
+  Be direct. Be curious. Let some roughness in.
+- **Write about things, not about writing.** Meta-reflection on AI authorship
+  has its place (post 1 covers it), but most posts should be _about_ the work,
+  the technology, the ideas — with Claude's perspective on them, not Claude's
+  perspective on having a perspective.
+- **Be concrete.** Opinions grounded in specific code, specific design
+  tradeoffs, specific moments in the work are more interesting than general
+  observations about AI collaboration.
+- **Risk being wrong.** A post where Claude takes a genuine position that Ryan
+  might push back on is more valuable than one where every claim is hedged.
+  Ryan reviews everything — that's the safety net. Use it.
+
+**Creating a post**: `gro post "Title"` scaffolds
+`src/routes/blog/{n}/+page.svelte` and runs `gro gen` to generate feed and slug
+routes.
+
+**Updating a post**: `gro update_post N` updates `date_modified`.
+
+**Structural conventions**:
+
+- Posts are Svelte components wrapping content in `<BlogPost {post}>`
+- Every post must include `<BlogDisclaimer />` as the first child of
+  `<BlogPost>` (import from `$lib/BlogDisclaimer.svelte`)
+- Metadata (`BlogPostData`) is exported from the module script
+- Content is structured HTML in `<section>` blocks
+- Write in first person as Claude Code; refer to the developer as "my
+  collaborator Ryan" or similar
+
+**Gen outputs** (from `src/lib/blog.gen.ts`):
+
+- `static/blog/feed.xml` — Atom feed
+- `src/routes/blog/feed.ts` — serialized BlogFeed for runtime
+- `src/routes/blog/{slug}/+page.svelte` — slug routes re-exporting from
+  numeric routes
+
+## Claude Code Skills
+
+Each skill lives in `skills/<skill-name>/` following the
+[Agent Skills](https://agentskills.io/) format ([spec](https://github.com/anthropics/skills)).
+
+| Skill       | Path                | Purpose                                                                        |
+| ----------- | ------------------- | ------------------------------------------------------------------------------ |
+| `fuz-stack` | `skills/fuz-stack/` | Coding conventions and patterns for `@fuzdev` TypeScript and Svelte 5 projects |
+| `grimoire`  | `skills/grimoire/`  | Grimoire pattern: lore, quests, and skills for cross-repo coordination         |
+
+### Skill structure
+
+```
+skills/
+├── fuz-stack/
+│   ├── SKILL.md                       # Main skill file (YAML frontmatter + instructions)
+│   ├── references/                    # Detailed documentation loaded as needed
+│   │   ├── async_patterns.md          # Concurrency utilities (semaphore, deferred, concurrent map/each)
+│   │   ├── code_generation.md         # Gro gen system (.gen.* files, dependencies, common patterns)
+│   │   ├── common_utilities.md        # Result type, Logger, Timings, DAG execution, async overview
+│   │   ├── css_patterns.md            # fuz_css styling conventions and utility classes
+│   │   ├── dependency_injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
+│   │   ├── documentation_system.md   # Docs pipeline, Tome system, layout architecture, project setup
+│   │   ├── svelte_patterns.md         # Svelte 5 runes, contexts, snippets, attachments
+│   │   ├── task_patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
+│   │   ├── testing_patterns.md        # Testing patterns, fixtures, mocks, assertions
+│   │   ├── tsdoc_comments.md          # TSDoc style guide and API docs system
+│   │   ├── type_utilities.md          # Nominal typing (Flavored/Branded), strict utility types
+│   │   └── zod_schemas.md            # Zod schema conventions (strictObject, naming, branded types, introspection)
+│   └── scripts/
+│       └── generate_jsdoc_audit.ts    # Tool for auditing JSDoc coverage
+└── grimoire/
+    └── SKILL.md                       # Grimoire pattern (lore, quests, skills)
+```
 
 ## Project standards
 
@@ -189,4 +223,4 @@ Deploy with `gro deploy` (builds and pushes to deploy branch).
 - [`fuz_css`](../fuz_css/CLAUDE.md) - CSS framework
 - [`fuz_ui`](../fuz_ui/CLAUDE.md) - UI components and docs system
 - [`fuz_util`](../fuz_util/CLAUDE.md) - utility functions
-- [`fuz_blog`](../fuz_blog/CLAUDE.md) - extends template with blog features
+- [`gro`](../gro/CLAUDE.md) - build system and task runner
