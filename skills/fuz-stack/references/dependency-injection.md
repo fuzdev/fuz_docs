@@ -83,17 +83,6 @@ god type. Small standalone interfaces have no such coupling:
 Some older code still uses `*Operations` naming (e.g. fuz_gitops).
 New code uses `*Deps`; existing code migrates opportunistically.
 
-## Contents
-
-- [Three Naming Conventions](#three-naming-conventions)
-- [Grouped Deps Pattern](#grouped-deps-pattern)
-- [AppDeps Pattern](#appdeps-pattern)
-- [Design Principles](#design-principles)
-- [File Naming Convention](#file-naming-convention)
-- [Consumption Patterns](#consumption-patterns)
-- [Mock Factories](#mock-factories)
-- [Quick Reference](#quick-reference)
-
 ## Three Naming Conventions
 
 The ecosystem uses three suffixes for single-object parameters. Each carries

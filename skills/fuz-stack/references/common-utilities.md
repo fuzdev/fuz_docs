@@ -118,8 +118,8 @@ operation took.
 ## DAG Execution
 
 `@fuzdev/fuz_util` provides `run_dag()` for executing dependency graphs
-concurrently with configurable concurrency, failure handling, and skip
-semantics.
+concurrently. Nodes declare dependencies; `run_dag` schedules them respecting
+the dependency order with configurable concurrency.
 
 ```typescript
 import {run_dag} from '@fuzdev/fuz_util/dag.js';
@@ -130,9 +130,7 @@ const result = await run_dag(nodes, {
 });
 ```
 
-Used internally by Gro for task dependency resolution. See
-`./async-patterns.md` for the concurrency primitives that `run_dag`
-builds on.
+Used internally by Gro for task dependency resolution.
 
 See also `./async-patterns.md` for concurrency primitives and
 `./type-utilities.md` for nominal typing and strict utility types.

@@ -1,9 +1,7 @@
 # Documentation System
 
 How documentation works across `@fuzdev` projects — the pipeline, Tome system,
-layout architecture, and project setup. This reference is AI-generated and
-mostly poorly reviewed — not all patterns are endorsed, and details may be
-out of date or incorrect.
+layout architecture, and project setup.
 
 For TSDoc/JSDoc authoring conventions, see `./tsdoc-comments.md`.
 

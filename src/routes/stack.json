@@ -6,7 +6,7 @@
 		"svelte": "5.54.0",
 		"sveltekit": "2.55.0",
 		"typescript": "5.9.3",
-		"gro": "0.197.0",
+		"gro": "0.197.1",
 		"prettier": "3.7.4",
 		"vitest": "4.0.15"
 	},
