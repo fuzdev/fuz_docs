@@ -17,24 +17,25 @@ learn more at [agentskills.io](https://agentskills.io/).
 
 ### fuz-stack
 
-The [fuz-stack](./skills/fuz-stack/) skill has
+The [fuz-stack skill](./skills/fuz-stack/SKILL.md) has
 coding conventions and patterns for `@fuzdev` TypeScript, Svelte 5, and Rust
 projects. Covers naming, file organization, testing, CSS patterns, TSDoc, code
 generation, and more.
 
 ### grimoire
 
-The [grimoire](./skills/grimoire/) skill describes
+The [grimoire skill](./skills/grimoire/SKILL.md) describes
 a pattern for a personal meta-repo of mostly markdown that coordinates work
 across multiple sibling repositories. Covers lore (per-repo planning
-projections), quests (cross-repo goals), and skills (agent knowledge files).
+projections), quests (cross-repo goals),
+and skills (same concept as [agentskills.io](https://agentskills.io/)).
 
 ### Installation
 
 **Claude.ai:**
 
 1. Download or clone this repo
-2. Go to Settings > Capabilities > Skills
+2. Go to [claude.ai/customize/skills](https://claude.ai/customize/skills)
 3. Upload the `skills/fuz-stack/` or `skills/grimoire/` folder
 
 **Claude Code:**
