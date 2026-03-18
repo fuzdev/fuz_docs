@@ -126,8 +126,6 @@ Documents function parameters.
 
 **Format:** `@param name - description`
 
-**Format:** `@param name - description`
-
 **Rules:**
 
 - use a hyphen separator between name and description (per TSDoc spec)

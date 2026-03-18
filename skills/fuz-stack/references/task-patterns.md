@@ -27,7 +27,7 @@ interface Task<TArgs = Args, TArgsSchema extends z.ZodType = z.ZodType, TReturn 
 - `run` — the task's entry point, receives `TaskContext`
 - `summary` — short description shown in `gro` task listing
 - `Args` — optional Zod schema for CLI argument parsing and validation.
-  See `references/zod_schemas.md` for full Zod conventions.
+  See `./zod-schemas.md` for full Zod conventions.
 
 ### Basic task example
 

@@ -142,7 +142,7 @@ export type ShellCommand = z.infer<typeof ShellCommand>;
 
 Use branded types for values that should not be accidentally swapped — IDs,
 paths, commands, timestamps. For TypeScript-only nominal typing without runtime
-validation, see `Flavored` and `Branded` in `references/type_utilities.md`.
+validation, see `Flavored` and `Branded` in `./type-utilities.md`.
 
 ## Defaults with Factories
 

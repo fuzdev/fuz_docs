@@ -192,18 +192,18 @@ skills/
 ├── fuz-stack/
 │   ├── SKILL.md                       # Main skill file (YAML frontmatter + instructions)
 │   ├── references/                    # Detailed documentation loaded as needed
-│   │   ├── async_patterns.md          # Concurrency utilities (semaphore, deferred, concurrent map/each)
-│   │   ├── code_generation.md         # Gro gen system (.gen.* files, dependencies, common patterns)
-│   │   ├── common_utilities.md        # Result type, Logger, Timings, DAG execution, async overview
-│   │   ├── css_patterns.md            # fuz_css styling conventions and utility classes
-│   │   ├── dependency_injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
-│   │   ├── documentation_system.md   # Docs pipeline, Tome system, layout architecture, project setup
-│   │   ├── svelte_patterns.md         # Svelte 5 runes, contexts, snippets, attachments
-│   │   ├── task_patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
-│   │   ├── testing_patterns.md        # Testing patterns, fixtures, mocks, assertions
-│   │   ├── tsdoc_comments.md          # TSDoc style guide and API docs system
-│   │   ├── type_utilities.md          # Nominal typing (Flavored/Branded), strict utility types
-│   │   └── zod_schemas.md            # Zod schema conventions (strictObject, naming, branded types, introspection)
+│   │   ├── async-patterns.md          # Concurrency utilities (semaphore, deferred, concurrent map/each)
+│   │   ├── code-generation.md         # Gro gen system (.gen.* files, dependencies, common patterns)
+│   │   ├── common-utilities.md        # Result type, Logger, Timings, DAG execution, async overview
+│   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
+│   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
+│   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
+│   │   ├── svelte-patterns.md         # Svelte 5 runes, contexts, snippets, attachments
+│   │   ├── task-patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
+│   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions
+│   │   ├── tsdoc-comments.md          # TSDoc style guide and API docs system
+│   │   ├── type-utilities.md          # Nominal typing (Flavored/Branded), strict utility types
+│   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
 │   └── scripts/
 │       └── generate_jsdoc_audit.ts    # Tool for auditing JSDoc coverage
 └── grimoire/

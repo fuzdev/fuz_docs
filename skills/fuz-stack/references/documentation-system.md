@@ -5,7 +5,7 @@ layout architecture, and project setup. This reference is AI-generated and
 mostly poorly reviewed — not all patterns are endorsed, and details may be
 out of date or incorrect.
 
-For TSDoc/JSDoc authoring conventions, see `tsdoc_comments.md`.
+For TSDoc/JSDoc authoring conventions, see `./tsdoc-comments.md`.
 
 ## Pipeline Overview
 
@@ -257,7 +257,7 @@ The docs layout sets and consumes these contexts:
 - **`vite_plugin_library_well_known`** — publishes library metadata at
   `.well-known/library.json` (RFC 8615) for external tool discovery. See the
   `vite_plugin_library_well_known` tome in fuz_ui docs.
-- **`tsdoc_comments.md`** — TSDoc/JSDoc authoring conventions, tag reference,
+- **`./tsdoc-comments.md`** — TSDoc/JSDoc authoring conventions, tag reference,
   mdz auto-linking, and documentation auditing.
 
 ## Cross-Project Pattern

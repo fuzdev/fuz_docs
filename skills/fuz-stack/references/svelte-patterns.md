@@ -130,7 +130,7 @@ let filtered = $derived.by(() => {
 ## Schema-Driven Reactive Classes
 
 Zod schemas paired with Svelte 5 runes classes — the schema defines the JSON
-shape, the class adds reactivity and behavior. See `references/zod_schemas.md`
+shape, the class adds reactivity and behavior. See `./zod-schemas.md`
 for schema conventions.
 
 ```typescript
@@ -177,7 +177,7 @@ export class Message {
 
 **Key patterns:**
 
-- Zod schema defines the JSON shape (see `references/zod_schemas.md`)
+- Zod schema defines the JSON shape (see `./zod-schemas.md`)
 - Class properties use `$state()` for reactivity
 - Constructor hydrates from JSON
 - `to_json()` method for serialization
@@ -217,16 +217,19 @@ export function create_context<T>(fallback: () => T): {
 export const frontend_context = create_context<Frontend>();
 export const section_depth_context = create_context(() => 0);
 
-// Provider component sets the context
+<!-- Provider component sets the context -->
 <script>
+  import type {Snippet} from 'svelte';
   import { frontend_context } from './contexts.js';
+
+  const {children}: {children: Snippet} = $props();
   const frontend = new Frontend();
   frontend_context.set(frontend);
 </script>
 
-<slot />
+{@render children()}
 
-// Consumer components get the context
+<!-- Consumer components get the context -->
 <script>
   import { frontend_context } from './contexts.js';
   const frontend = frontend_context.get();
@@ -295,7 +298,7 @@ Usage:
 
 ```svelte
 <!-- List.svelte -->
-<script lang="ts">
+<script lang="ts" generics="T">
 	import type {Snippet} from 'svelte';
 
 	const {

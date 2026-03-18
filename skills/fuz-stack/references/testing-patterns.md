@@ -572,5 +572,4 @@ the table pattern should stay as standalone tests.
 | `spy.mock.calls[0] as any`       | Mock call assertions need `as any` for vitest tuple types |
 | `create_mock_*()`                 | Factory functions for mocks                      |
 | `SKIP_*` env vars                 | Skip slow test categories                        |
-| `AnalysisContext`                 | Collect diagnostics without halting              |
 | Never edit `expected.json`        | Always regenerate via task                       |

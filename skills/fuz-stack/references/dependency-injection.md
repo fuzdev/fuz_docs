@@ -435,7 +435,7 @@ export const create_account_route_specs = (
 
 ## Mock Factories
 
-See `testing_patterns.md` for the in-memory filesystem pattern and general mock
+See `./testing-patterns.md` for the in-memory filesystem pattern and general mock
 structure. Here are patterns specific to deps mocking.
 
 ### Tracking mocks

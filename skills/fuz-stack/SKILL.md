@@ -290,12 +290,12 @@ pattern in filenames. Naming: `foo.gen.ts` → `foo.ts`, `foo.gen.css.ts` →
 Common gen patterns: `package.gen.ts` (metadata), `*.gen.css.ts` (CSS from
 style variables), `library.gen.ts` (library index for exports).
 
-See `references/code_generation.md` for the full API, dependencies, and
+See `./references/code-generation.md` for the full API, dependencies, and
 examples.
 
 ## TSDoc/JSDoc Conventions
 
-See `references/tsdoc_comments.md` for the full tag guide, documentation
+See `./references/tsdoc-comments.md` for the full tag guide, documentation
 patterns, and auditing.
 
 **Key rules:**
@@ -314,7 +314,7 @@ patterns, and auditing.
 
 ## Svelte 5 Patterns
 
-See `references/svelte_patterns.md` for `$state.raw()`, `$derived.by()`,
+See `./references/svelte-patterns.md` for `$state.raw()`, `$derived.by()`,
 snippets, effects, and attachments.
 
 ### Runes API
@@ -335,8 +335,8 @@ Projects use **tomes** (not "stories") with auto-generated API docs.
 **Pipeline**: svelte-docinfo → `library_gen.ts` → `library.json` → Tome pages +
 API routes.
 
-See `references/documentation_system.md` for setup and the full pipeline. TSDoc
-authoring conventions: `references/tsdoc_comments.md`.
+See `./references/documentation-system.md` for setup and the full pipeline. TSDoc
+authoring conventions: `./references/tsdoc-comments.md`.
 
 ## mdz - Minimal Markdown Dialect
 
@@ -367,14 +367,14 @@ Split large test suites using dot-separated aspects:
 `{module}.{aspect}.test.ts` (e.g., `csp.core.test.ts`,
 `csp.security.test.ts`). Database test files use `.db.test.ts` suffix
 to opt into shared PGlite WASM via vitest `projects` (see
-`references/testing_patterns.md`).
+`./references/testing-patterns.md`).
 
 For parsers and transformers, use fixture-based testing: input files in
 `src/test/fixtures/<feature>/<case>/`, regenerate `expected.json` via
 `gro src/test/fixtures/<feature>/update`. **Never manually edit
 `expected.json`** — always regenerate via task.
 
-See `references/testing_patterns.md` for file organization, mock factories,
+See `./references/testing-patterns.md` for file organization, mock factories,
 in-memory filesystem, fixture workflow, and assertion helpers.
 
 ## TODOs
@@ -388,12 +388,12 @@ a session.**
 
 ## Custom Tasks
 
-See `references/task_patterns.md` for the Task interface, Zod-based Args,
+See `./references/task-patterns.md` for the Task interface, Zod-based Args,
 TaskContext, error handling, and override patterns.
 
 ## fuz_css
 
-See `references/css_patterns.md` for setup, variables, composites, modifiers,
+See `./references/css-patterns.md` for setup, variables, composites, modifiers,
 and extraction.
 
 ### 3-Layer Architecture
@@ -437,7 +437,7 @@ import small interfaces directly (not `Pick<Composite>`).
 - **Design principles** — single `options` object params, `Result` returns
   (never throw), `null` for not-found, plain object mocks (no mocking libs).
 
-See `references/dependency_injection.md` for the full pattern guide, file naming
+See `./references/dependency-injection.md` for the full pattern guide, file naming
 conventions, consumption patterns, and mock factories.
 
 ## Common Utilities
@@ -456,9 +456,9 @@ conventions, consumption patterns, and mock factories.
 - **Type utilities** — `Flavored`/`Branded` nominal typing, `OmitStrict`,
   `PickUnion`, selective partials
 
-See `references/common_utilities.md` for Result patterns, Logger configuration,
-and Timings usage. See `references/async_patterns.md` for concurrency
-primitives. See `references/type_utilities.md` for the full type API.
+See `./references/common-utilities.md` for Result patterns, Logger configuration,
+and Timings usage. See `./references/async-patterns.md` for concurrency
+primitives. See `./references/type-utilities.md` for the full type API.
 
 ## Zod Schemas
 
@@ -476,7 +476,7 @@ changes cascade through the stack; treat them as critical review points.
 - **`safeParse` at boundaries** — graceful errors for external input.
   `parse` for internal assertions.
 
-See `references/zod_schemas.md` for branded types, transform pipelines,
+See `./references/zod-schemas.md` for branded types, transform pipelines,
 discriminated unions, route specs, and introspection.
 
 ## Quick Reference
@@ -489,7 +489,7 @@ discriminated unions, route specs, and introspection.
 - Use domain-prefix naming when bare names would be ambiguous (`git_push`,
   `time_format`); action-first when self-descriptive (`truncate`, `strip_start`)
 - Document with TSDoc using proper conventions (see
-  `references/tsdoc_comments.md` for details)
+  `./references/tsdoc-comments.md` for details)
 - Leave copious `// TODO:` comments in code for known future work
 - Track long work in `TODO_*.md` files
 - Use token classes for design system values, literal classes for arbitrary CSS
