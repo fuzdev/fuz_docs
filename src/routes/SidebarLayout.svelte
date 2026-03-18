@@ -45,9 +45,10 @@
 										<a
 											class="menuitem"
 											style:padding-left="calc(2 * var(--space_lg))"
-											href={resolve(('/skills/' + skill.name + '/' + ref.slug) as any)}
+											href={resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)}
 											class:selected={pathname ===
-												resolve(('/skills/' + skill.name + '/' + ref.slug) as any)}>{ref.title}</a
+												resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)}
+											>{ref.title}</a
 										>
 									</li>
 								{/each}

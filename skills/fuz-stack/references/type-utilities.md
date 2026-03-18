@@ -58,7 +58,7 @@ type system to enforce that values have gone through validation.
 | Flavored | Not required   | Loose   | IDs, paths, ergonomic APIs             |
 | Branded  | Required       | Strict  | Validated data, security-sensitive     |
 
-See `./zod-schemas.md` for Zod `.brand()` schemas (runtime validation
+See ./zod-schemas.md for Zod `.brand()` schemas (runtime validation
 + branding), branded types with defaults, and transform pipelines.
 
 ## Strict Utility Types

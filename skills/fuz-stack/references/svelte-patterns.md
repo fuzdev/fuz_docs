@@ -130,7 +130,7 @@ let filtered = $derived.by(() => {
 ## Schema-Driven Reactive Classes
 
 Zod schemas paired with Svelte 5 runes classes — the schema defines the JSON
-shape, the class adds reactivity and behavior. See `./zod-schemas.md`
+shape, the class adds reactivity and behavior. See ./zod-schemas.md
 for schema conventions.
 
 ```typescript
@@ -177,7 +177,7 @@ export class Message {
 
 **Key patterns:**
 
-- Zod schema defines the JSON shape (see `./zod-schemas.md`)
+- Zod schema defines the JSON shape (see ./zod-schemas.md)
 - Class properties use `$state()` for reactivity
 - Constructor hydrates from JSON
 - `to_json()` method for serialization

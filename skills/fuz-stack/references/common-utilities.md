@@ -132,5 +132,5 @@ const result = await run_dag(nodes, {
 
 Used internally by Gro for task dependency resolution.
 
-See also `./async-patterns.md` for concurrency primitives and
-`./type-utilities.md` for nominal typing and strict utility types.
+See also ./async-patterns.md for concurrency primitives and
+./type-utilities.md for nominal typing and strict utility types.

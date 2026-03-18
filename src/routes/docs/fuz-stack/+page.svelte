@@ -163,9 +163,10 @@ export interface FsDeps {
 			<tbody>
 				{#each fuz_stack.references as ref (ref.slug)}
 					<tr
-						><td><a href={resolve(('/skills/fuz-stack/' + ref.slug) as any)}>{ref.title}</a></td><td
-							>{reference_descriptions[ref.slug] ?? ''}</td
-						></tr
+						><td
+							><a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a
+							></td
+						><td>{reference_descriptions[ref.slug] ?? ''}</td></tr
 					>
 				{/each}
 			</tbody>
