@@ -49,6 +49,41 @@ implementation itself.
 Separating them keeps CLAUDE.md focused on understanding while TODO.md stays
 action-oriented. TODO.md should reference any related quests.
 
+**TODO.md content**: TODO docs are forward-looking — a mix of task tracking and
+design exploration in any state of progress or speculativeness. Some are tight
+checklists, some are extended design explorations, some are vision docs. The
+`TODO_` prefix signals "active thinking about the future" rather than strictly
+"things to do."
+
+**TODO.md structure** — common sections, all optional:
+
+- `## Active` / `## Planned` / `## Queued` — work items, usually checkboxes
+- `## Deferred` — parked ideas, may link to split files
+- `## Shipped` — completed milestones (brief, dated)
+- `## Active Docs` — table of contents linking split `TODO_*.md` files (appears
+  when splits exist)
+
+Item formatting:
+
+- `- [ ] **Bold title** — description` for scannable task items
+- `- [x] **Title** — (2026-03-11) what was done` for completed items with dates
+- Quest links inline: `- [ ] Item ([quest](../../quests/quest-name.md))`
+- Sub-bullets for decision branches or design considerations under an item
+
+**TODO.md and quests** — ownership boundary: Quests own cross-repo coordination;
+lore TODOs own repo-local understanding. The two reference each other but don't
+duplicate content.
+
+- Lore TODO items that relate to a quest include a link:
+  `- [ ] DA-0: blake3 hashing ([quest](../../quests/da/da-0_blake3-foundation.md))`
+- Quests may reference lore docs for design context:
+  `Design in [fuz_app security](../lore/fuz_app/security.md)`
+- When a quest completes and is deleted, any remaining repo-local items naturally
+  stay in the lore TODO — they were never duplicated into the quest.
+- If work starts as a TODO item and later needs cross-repo coordination, it
+  graduates to a quest. The TODO item then becomes a link to the quest rather
+  than a standalone task.
+
 **DECISIONS.md**: A dedicated file for decisions with reasoning — the _why_,
 not a changelog. Created lazily — for simple cases, an inline `## Decisions`
 section in CLAUDE.md is sufficient. When decisions accumulate beyond a few
@@ -120,6 +155,33 @@ a sentence of context, and a lore docs table.
 A lore entry can start as a single `TODO.md` and grow — adding `CLAUDE.md` when
 context or decisions accumulate, then `TODO_*.md` files when the scratchpad
 expands into distinct topics.
+
+**Splitting into TODO_\*.md files**: Split when a topic outgrows its section in
+the main TODO.md — typically when a design exploration, feature direction, or
+work area needs its own narrative. Split files are named by topic:
+`TODO_AUTH.md`, `TODO_PERF.md`, `TODO_RELEASE.md`, `TODO_UNIFIED_CSS_GENERATION.md`.
+
+When to split:
+
+- **Domain complexity** — separate concerns deserve separate docs (auth vs API
+  vs consumer ergonomics)
+- **Design depth** — a feature direction grows into an extended exploration with
+  rationale, decision tables, code examples
+- **Work type** — investigations, performance baselines, and release checklists
+  serve different readers
+
+What happens to the main TODO.md:
+
+- For small projects: no splits needed, TODO.md is the whole picture
+- As splits appear: TODO.md keeps general/active items and adds an `## Active
+  Docs` section linking split files with one-line descriptions
+- For heavily-split projects: TODO.md may become primarily a routing index —
+  shipped milestones, a few active items, and the Active Docs table of contents
+
+Split files are self-contained. Each has its own narrative structure appropriate
+to its content — a release checklist looks different from a design exploration.
+All split files should be listed in the lore CLAUDE.md's Lore Docs table with
+a brief purpose description.
 
 **Naming**: `lore/{subject}/` — usually matching a repo directory name, but lore
 can also project non-repo subjects: organizations (`lore/fuzdev/`), skills
