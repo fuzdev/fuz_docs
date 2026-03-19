@@ -265,12 +265,13 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 252,
-			"exported_module_count": 247,
-			"export_count": 815,
+			"module_count": 270,
+			"exported_module_count": 265,
+			"export_count": 871,
 			"peer_dependencies": [],
-			"runtime_dependencies": ["@fuzdev/gro"],
+			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
+				"@fuzdev/fuz_app",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -362,6 +363,6 @@
 		"@fuzdev/fuz_gitops": ["@fuzdev/fuz_css", "@fuzdev/fuz_ui", "@fuzdev/fuz_util", "@fuzdev/gro"],
 		"@fuzdev/fuz_docs": [],
 		"@fuzdev/fuz.dev": [],
-		"@fuzdev/zzz": ["@fuzdev/gro"]
+		"@fuzdev/zzz": ["@fuzdev/blake3_wasm", "@fuzdev/gro"]
 	}
 }
