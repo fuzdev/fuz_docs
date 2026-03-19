@@ -6,7 +6,7 @@
  * Output: jsdoc_audit.md
  *
  * For full JSDoc/TSDoc conventions, see:
- * - ../references/tsdoc_comments.md - comprehensive style guide and implementation details
+ * - ../references/tsdoc-comments.md - comprehensive style guide and implementation details
  * - ../SKILL.md - documentation workflow and when to run audits
  */
 

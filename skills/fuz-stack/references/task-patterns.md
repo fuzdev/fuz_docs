@@ -1,39 +1,35 @@
 # Task Patterns
 
-Guide to Gro's task system for project automation in `@fuzdev/gro`.
-
-Tasks are the primary automation unit in Gro. Each task is a TypeScript module
-with a `.task.ts` suffix that exports a `task` object with a `run` function.
-
-## Contents
-
-- [Task Interface](#task-interface)
-- [TaskContext](#taskcontext)
-- [Error Handling](#error-handling)
-- [Task Discovery](#task-discovery)
-- [Task Override Pattern](#task-override-pattern)
-- [Quick Reference](#quick-reference)
+Gro's task system for project automation in `@fuzdev/gro`. Tasks are TypeScript
+modules with a `.task.ts` suffix that export a `task` object with a `run`
+function.
 
 ## Task Interface
 
 ```typescript
-interface Task<TArgs = Args, TArgsSchema extends z.ZodType = z.ZodType, TReturn = unknown> {
+interface Task<
+  TArgs = Args,
+  TArgsSchema extends z.ZodType<Args, Args> = z.ZodType<Args, Args>,
+  TReturn = unknown,
+> {
   run: (ctx: TaskContext<TArgs>) => TReturn | Promise<TReturn>;
   summary?: string;
   Args?: TArgsSchema;
 }
 ```
 
-- `run` — the task's entry point, receives `TaskContext`
-- `summary` — short description shown in `gro` task listing
-- `Args` — optional Zod schema for CLI argument parsing and validation.
-  See ./zod-schemas.md for full Zod conventions.
+- `run` — entry point, receives `TaskContext`
+- `summary` — shown in `gro` task listing and `--help`
+- `Args` — optional Zod schema for CLI argument parsing and validation
+  (see ./zod-schemas.md)
+
+Only `TArgs` is used in practice — tasks are either `Task` or `Task<Args>`.
 
 ### Basic task example
 
 ```typescript
 // src/lib/greet.task.ts
-import type {Task} from '@fuzdev/gro/task.js';
+import type {Task} from '@fuzdev/gro';
 
 export const task: Task = {
   summary: 'greet the user',
@@ -47,16 +43,19 @@ Run with `gro greet` or `gro src/lib/greet`.
 
 ### Task with args
 
-```typescript
-import {z} from 'zod';
-import type {Task} from '@fuzdev/gro/task.js';
+Both the Zod schema (value) and inferred type share the name `Args`:
 
-const Args = z.strictObject({
+```typescript
+// src/lib/greet.task.ts
+import type {Task} from '@fuzdev/gro';
+import {z} from 'zod';
+
+export const Args = z.strictObject({
   name: z.string().meta({description: 'who to greet'}).default('world'),
 });
-type Args = z.infer<typeof Args>;
+export type Args = z.infer<typeof Args>;
 
-export const task: Task<Args, typeof Args> = {
+export const task: Task<Args> = {
   summary: 'greet someone by name',
   Args,
   run: async ({args, log}) => {
@@ -65,64 +64,122 @@ export const task: Task<Args, typeof Args> = {
 };
 ```
 
-Run with `gro greet --name Claude`.
+Run with `gro greet --name Claude`. `gro greet --help` shows auto-generated
+help from the Zod schema.
 
 ## TaskContext
 
-Every task receives a `TaskContext`. The most commonly used fields:
+```typescript
+interface TaskContext<TArgs = object> {
+  args: TArgs;
+  config: GroConfig;
+  svelte_config: ParsedSvelteConfig;
+  filer: Filer;
+  log: Logger;
+  timings: Timings;
+  invoke_task: InvokeTask;
+}
+```
 
-| Field           | Purpose                                                   |
-| --------------- | --------------------------------------------------------- |
-| `args`          | Parsed CLI arguments (validated by Zod schema if provided)|
-| `log`           | Logger instance scoped to the task                        |
-| `invoke_task`   | Call other tasks programmatically                         |
+| Field           | Type                | Purpose                                         |
+| --------------- | ------------------- | ----------------------------------------------- |
+| `args`          | `TArgs`             | Parsed CLI arguments (validated by Zod if set)   |
+| `config`        | `GroConfig`         | Gro configuration (plugins, task_root_dirs, etc) |
+| `svelte_config` | `ParsedSvelteConfig`| Parsed SvelteKit config (aliases, paths)         |
+| `filer`         | `Filer`             | Filesystem tracker (watches files in dev mode)   |
+| `log`           | `Logger`            | Logger instance scoped to the task               |
+| `timings`       | `Timings`           | Performance measurement (start/stop timers)      |
+| `invoke_task`   | `InvokeTask`        | Call other tasks programmatically                |
 
 ### invoke_task
 
-Call other tasks from within a task:
+```typescript
+type InvokeTask = (task_name: string, args?: Args, config?: GroConfig) => Promise<void>;
+```
+
+Omitting `config` passes the current config. Respects the override system —
+`invoke_task('test')` runs the user's override if one exists.
 
 ```typescript
 export const task: Task = {
   run: async ({invoke_task}) => {
     await invoke_task('typecheck');
-    await invoke_task('test', {watch: false});
+    await invoke_task('test');
+    await invoke_task('gen', {check: true});
+    await invoke_task('format', {check: true});
+    await invoke_task('lint');
   },
 };
 ```
 
-Used by composite tasks like `check` which invokes `typecheck`, `test`,
-`gen --check`, `format --check`, and `lint` in sequence.
+This is the pattern used by `check.task.ts`.
+
+## Args Pattern
+
+### Conventions
+
+- Export both Zod schema and inferred type as `Args` at module level
+- Use `z.strictObject()` (not `z.object()`)
+- `.meta({description: '...'})` for CLI help text
+- `.default(...)` for defaults — required fields without defaults must be
+  passed via CLI
+- `/** @nodocs */` to exclude from docs generation
+
+### Positional arguments
+
+`_` key for positional arguments (array of strings):
+
+```typescript
+export const Args = z.strictObject({
+  _: z.array(z.string()).meta({description: 'file patterns to filter'}).default(['.test.']),
+  dir: z.string().meta({description: 'working directory'}).default('src/'),
+});
+export type Args = z.infer<typeof Args>;
+```
+
+Run with: `gro test foo bar --dir src/lib/` (positional `foo`, `bar` go to `_`).
+
+### Boolean dual flags
+
+`--no-*` dual flags for opt-out behavior:
+
+```typescript
+export const Args = z.strictObject({
+  typecheck: z.boolean().meta({description: 'dual of no-typecheck'}).default(true),
+  'no-typecheck': z.boolean().meta({description: 'opt out of typechecking'}).default(false),
+  test: z.boolean().meta({description: 'dual of no-test'}).default(true),
+  'no-test': z.boolean().meta({description: 'opt out of running tests'}).default(false),
+});
+```
+
+`gro check --no-test` disables testing. `--help` hides `no-*` entries,
+showing only the positive flag.
 
 ## Error Handling
 
 ### TaskError
 
-Signals a known failure with a clean error message. Gro logs the message without
-a stack trace:
+Known failure with clean message (no stack trace):
 
 ```typescript
-import {TaskError} from '@fuzdev/gro/task.js';
+import {TaskError} from '@fuzdev/gro';
 
 throw new TaskError('Missing required config file: gro.config.ts');
 ```
 
-Use when the error message is sufficient for the user to understand and fix the
-problem.
+Use when the message is sufficient for the user to fix the problem.
 
 ### SilentError
 
-Signals that the task should exit with a non-zero code, but the throwing code
-has already handled error logging:
+Exit with non-zero code when the throwing code already handled logging.
+Primarily internal to `invoke_task.ts`:
 
 ```typescript
-import {SilentError} from '@fuzdev/gro/task.js';
+import {SilentError} from '@fuzdev/gro';
 
 log.error('Detailed error information...');
 throw new SilentError();
 ```
-
-Use when you've already printed comprehensive error output and don't want Gro to
-add more noise.
 
 ### When to use which
 
@@ -134,13 +191,16 @@ add more noise.
 
 ## Task Discovery
 
-Task files use `.task.ts` (or `.task.js`) suffix:
+Task files use `.task.ts` (or `.task.js`) suffix. Gro searches `task_root_dirs`
+in order (default: `src/lib/` then `./` then `gro/dist/`):
 
 ```
-src/lib/greet.task.ts      → gro greet
-src/lib/deploy.task.ts     → gro deploy
-src/lib/db/migrate.task.ts → gro db/migrate
+src/lib/greet.task.ts      -> gro greet
+src/lib/deploy.task.ts     -> gro deploy
+src/lib/db/migrate.task.ts -> gro db/migrate
 ```
+
+`gro` with no task name or `gro some/dir` lists all tasks without executing.
 
 ## Task Override Pattern
 
@@ -149,14 +209,54 @@ Local tasks override Gro builtins with the same name:
 - `src/lib/test.task.ts` overrides Gro's builtin `test` task
 - Run the builtin explicitly: `gro gro/test`
 
-This allows projects to customize behavior while keeping the familiar `gro test`
-command.
+Common override pattern wraps the builtin:
+
+```typescript
+import type {Task} from '@fuzdev/gro';
+
+export const task: Task = {
+  summary: 'run tests with custom setup',
+  run: async ({invoke_task, args}) => {
+    // custom setup
+    await invoke_task('gro/test', args); // call the builtin
+    // custom teardown
+  },
+};
+```
+
+## Task Composition
+
+Compose via `invoke_task` (recommended) or direct import.
+
+**`invoke_task`:** Respects overrides, provides logging context, auto-forwards
+CLI args from `--` sections:
+
+```typescript
+await invoke_task('build', {sync: false, gen: false});
+```
+
+**Direct import:** Tighter coupling but faster:
+
+```typescript
+import {task as test_task} from './test.task.js';
+await test_task.run(ctx);
+```
+
+### Args forwarding
+
+CLI args forwarded to composed tasks via `--` separators:
+
+```bash
+gro check -- gro test --coverage
+```
+
+Forwards `--coverage` to the `test` task when `check` invokes it. Multiple
+`--` sections can target different commands.
 
 ## Quick Reference
 
-| Export        | Type      | Purpose                                |
-| ------------- | --------- | -------------------------------------- |
-| `Task`        | Interface | Task definition (run, summary, Args)   |
-| `TaskContext`  | Interface | Context passed to task.run            |
-| `TaskError`   | Class     | Known failure (no stack trace)         |
-| `SilentError` | Class     | Silent exit (error already logged)     |
+| Export        | Type      | Import from     | Purpose                              |
+| ------------- | --------- | --------------- | ------------------------------------ |
+| `Task`        | Interface | `@fuzdev/gro`   | Task definition (run, summary, Args) |
+| `TaskContext`  | Interface | `@fuzdev/gro`  | Context passed to task.run           |
+| `TaskError`   | Class     | `@fuzdev/gro`   | Known failure (no stack trace)       |

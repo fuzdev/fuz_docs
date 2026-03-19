@@ -1,18 +1,13 @@
 # Dependency Injection
 
-Guide to the injectable interface patterns used across the `@fuzdev` ecosystem
-for testability, mockability, and JS runtime agnosticism.
-
-The core idea: define typed interfaces for side effects, provide real
-implementations as defaults, accept them as parameters, and test with plain
-object mocks. No `vi.mock`, no mocking libraries — dependencies flow through
-function signatures.
+Typed interfaces for side effects, real implementations as defaults, accepted
+as parameters, tested with plain object mocks. No `vi.mock` — dependencies
+flow through function signatures.
 
 ## Convention
 
-**Small standalone `*Deps` interfaces, composed bottom-up.** This replaces
-`Pick<GodType>` narrowing and provides a single naming vocabulary across all
-repos.
+**Small standalone `*Deps` interfaces, composed bottom-up.** Replaces
+`Pick<GodType>` narrowing.
 
 ### Bottom-up composition
 
@@ -21,72 +16,98 @@ composites assemble them for wiring — the entry point builds the composite and
 threads it down, but leaf functions never take the composite as a param.
 
 ```typescript
-// Small standalone interfaces (shareable across packages)
+// Small standalone interfaces in fuz_app/runtime/deps.ts
 export interface EnvDeps {
-	env_get: (key: string) => string | undefined;
+	env_get: (name: string) => string | undefined;
+	env_set: (name: string, value: string) => void;
 }
 
-export interface FsDeps {
-	read_file: (path: string) => Promise<string>;
-	write_file: (path: string, content: string) => Promise<void>;
+export interface FsReadDeps {
 	stat: (path: string) => Promise<StatResult | null>;
+	read_file: (path: string) => Promise<string>;
 }
 
-// Functions declare deps directly — no Pick<GodType> needed
-export const load_env = (deps: EnvDeps): ServerEnv => {
+export interface FsWriteDeps {
+	mkdir: (path: string, options?: {recursive?: boolean}) => Promise<void>;
+	write_file: (path: string, content: string) => Promise<void>;
+	rename: (old_path: string, new_path: string) => Promise<void>;
+}
+
+export interface CommandDeps {
+	run_command: (cmd: string, args: Array<string>) => Promise<CommandResult>;
+}
+
+// Functions declare exactly what they need via intersection
+export const generate_random_key = async (deps: CommandDeps): Promise<string> => {
 	/* ... */
 };
-export const resolve_template = (deps: EnvDeps & FsDeps): string => {
+export const setup_env_file = async (
+	deps: FsReadDeps & FsWriteDeps & CommandDeps,
+	env_path: string,
+	example_path: string,
+): Promise<void> => {
 	/* ... */
 };
 
-// App-level composite — flat intersection for small surfaces
-export interface AppDeps extends EnvDeps, FsDeps, ProcessDeps {}
-
-// Or grouped for larger surfaces
-export interface GitopsDeps {
-	changeset: ChangesetDeps;
-	git: GitDeps;
-	fs: FsDeps;
-	// ...
+// App-level composite — flat intersection for the wiring layer
+export interface RuntimeDeps
+	extends EnvDeps, FsReadDeps, FsWriteDeps, FsRemoveDeps,
+		CommandDeps, TerminalDeps, ProcessDeps, LogDeps {
+	env_all: () => Record<string, string>;
+	readonly args: ReadonlyArray<string>;
+	cwd: () => string;
+	run_command_inherit: (cmd: string, args: Array<string>) => Promise<number>;
 }
 ```
 
-### Why object literals beat Pick<GodType>
+### Why standalone interfaces beat Pick<GodType>
 
-A `Pick<AppRuntime, 'env_get'>` pattern forces every consumer to import the
-god type. Small standalone interfaces have no such coupling:
+`Pick<AppRuntime, 'env_get'>` forces every consumer to import the god type.
+Small standalone interfaces avoid this:
 
-- **Shareable**: `EnvDeps` can live in fuz_util, imported by any project
-- **Trivial mocks**: `{env_get: () => 'value'}` — no factory needed for simple cases
-- **Composable**: `EnvDeps & FsDeps` for multi-dep functions
+- **Shareable**: `EnvDeps` lives in fuz_app, imported by any project
+- **Trivial mocks**: `{env_get: () => 'value', env_set: () => {}}` — no factory needed
+- **Composable**: `FsReadDeps & CommandDeps` for multi-dep functions
 - **Self-documenting**: the interface IS the dependency contract
-
-### `*Deps` naming everywhere
-
-| What              | Convention                  | Example                        |
-| ----------------- | --------------------------- | ------------------------------ |
-| Small interface   | `{Domain}Deps`              | `EnvDeps`, `FsDeps`, `GitDeps` |
-| Capability bundle | `{Scope}Deps`               | `AppDeps`, `RouteDeps`     |
-| App composite     | `{App}Deps`                 | `GitopsDeps`                   |
-| Default impl      | `default_{domain}_deps`     | `default_fs_deps`              |
-| Mock factory      | `create_mock_{domain}_deps` | `create_mock_git_deps`         |
 
 ### Where shared interfaces live
 
-- **fuz_app**: `AppDeps`, `PasswordHashDeps` (in `auth/deps.ts`);
-  runtime deps — `RuntimeDeps`, `EnvDeps`, `FsReadDeps`, `CommandDeps` (in `runtime/deps.ts`)
-- **Per-project**: Domain-specific deps — `GitDeps`, `GitHubDeps`, `AgentDeps`
+- **fuz_app `auth/deps.ts`**: `AppDeps` (server capabilities), `RouteDeps` (`Omit<AppDeps, 'db'>`)
+- **fuz_app `auth/password.ts`**: `PasswordHashDeps` (hash, verify, verify_dummy)
+- **fuz_app `runtime/deps.ts`**: `EnvDeps`, `FsReadDeps`, `FsWriteDeps`, `FsRemoveDeps`,
+  `CommandDeps`, `LogDeps`, `TerminalDeps`, `ProcessDeps`, `RuntimeDeps` (full bundle)
+- **fuz_app `db/query_deps.ts`**: `QueryDeps` (`{db: Db}` — base for all `query_*` functions)
+- **fuz_css `deps.ts`**: `CacheDeps` (cache file I/O)
+- **fuz_gitops `operations.ts`**: `GitopsOperations`, `GitOperations`, `FsOperations`, etc.
+  (uses `*Operations` naming — see below)
 
-### Migration
+### Two naming conventions coexist
 
-Some older code still uses `*Operations` naming (e.g. fuz_gitops).
-New code uses `*Deps`; existing code migrates opportunistically.
+**`*Deps` naming** (fuz_app, fuz_css — preferred):
+
+| What              | Convention                  | Example                              |
+| ----------------- | --------------------------- | ------------------------------------ |
+| Small interface   | `{Domain}Deps`              | `EnvDeps`, `FsReadDeps`, `CacheDeps` |
+| Capability bundle | `{Scope}Deps`               | `AppDeps`, `RouteDeps`               |
+| Full composite    | `RuntimeDeps`               | extends all small `*Deps` interfaces |
+| Default impl      | `default_{domain}_deps`     | `default_cache_deps`                 |
+| Mock factory      | `create_mock_{domain}_deps` | `create_mock_cache_deps`             |
+| Stub factory      | `stub_{scope}_deps`         | `stub_app_deps`                      |
+
+**`*Operations` naming** (fuz_gitops — established, not migrating):
+
+| What              | Convention                        | Example                          |
+| ----------------- | --------------------------------- | -------------------------------- |
+| Sub-interface     | `{Domain}Operations`              | `GitOperations`, `NpmOperations` |
+| Composite         | `GitopsOperations`                | groups all sub-operations        |
+| Default impl      | `default_{domain}_operations`     | `default_git_operations`         |
+| Combined default  | `default_gitops_operations`       | all sub-defaults                 |
+| Mock factory      | `create_mock_{domain}_ops`        | `create_mock_git_ops`            |
+| Combined mock     | `create_mock_gitops_ops`          | all sub-mocks                    |
 
 ## Three Naming Conventions
 
-The ecosystem uses three suffixes for single-object parameters. Each carries
-distinct signal about what the object is and how it behaves in tests:
+Three suffixes for single-object parameters, each with distinct test behavior:
 
 | Suffix | What it contains | Test behavior | Rule |
 | ----------- | ---------------------------------- | ------------------------------------------ | ---------------------------------------------------- |
@@ -94,21 +115,16 @@ distinct signal about what the object is and how it behaves in tests:
 | `*Options` | Data (config values, limits, flags) | Literal objects, constructed once, reused | Static values — no mock factory needed |
 | `*Context` | Scoped world for a callback/handler | Depends on scope (may contain deps + data) | The world available within a bounded scope |
 
-### Why three, not one
-
 The `*Deps` / `*Options` boundary is validated by testing patterns: deps get
-`create_mock_*_deps()` factories with per-test overrides, while options are
-plain objects spread across test cases. Collapsing them would muddy that signal.
+mock factories with per-test overrides, options are plain objects spread
+across test cases.
 
-`*Context` is for the world available to a callback or handler within a bounded
-scope. Examples:
+`*Context` is the world available to a callback within a bounded scope:
 
 - `RouteContext` — per-request: `{db, pool_db, pending_effects}`
 - `AppServerContext` — per-setup-callback: `{deps, backend, session_options, ...}`
-- `ExecutorContext` (tx) — per-change: `{runtime, execution, run, emit, ...}`
 
-Context objects may contain both deps and data — they represent "everything
-available in this scope," not a single category. The scope is the organizing
+Context objects may contain both deps and data — the scope is the organizing
 principle, not the content type.
 
 ### `*Config` eliminated, `*Input` for mutations
@@ -117,30 +133,30 @@ No separate `*Config` suffix — `?` on fields already communicates required vs
 optional. All parameter bags use `*Options`. `*Input` is reserved for mutation
 payloads (data being written in create/update operations).
 
-## Grouped Deps Pattern
+## Grouped Operations Pattern (fuz_gitops)
 
-Used by **fuz_gitops** and **fuz_css**. A composite interface groups I/O by
-domain, injected via context or optional parameters with defaults.
+A composite interface groups I/O by domain, injected as an optional parameter
+with a production default.
 
 ### Interface definition
 
 ```typescript
-// deps.ts
-export interface GitopsDeps {
-	changeset: ChangesetDeps;
-	git: GitDeps;
-	process: ProcessDeps;
-	npm: NpmDeps;
-	preflight: PreflightDeps;
-	fs: FsDeps;
-	build: BuildDeps;
+// operations.ts
+export interface GitopsOperations {
+	changeset: ChangesetOperations;
+	git: GitOperations;
+	process: ProcessOperations;
+	npm: NpmOperations;
+	preflight: PreflightOperations;
+	fs: FsOperations;
+	build: BuildOperations;
 }
 ```
 
-Each sub-interface groups related deps:
+Each sub-interface groups related operations:
 
 ```typescript
-export interface GitDeps {
+export interface GitOperations {
 	current_branch_name: (options?: {
 		cwd?: string;
 	}) => Promise<Result<{value: string}, {message: string}>>;
@@ -150,55 +166,95 @@ export interface GitDeps {
 		message: string;
 		cwd?: string;
 	}) => Promise<Result<object, {message: string}>>;
-	// ...
+	// ... ~15 more methods
 }
 
-export interface FsDeps {
-	read_text: (options: {path: string}) => Promise<string | null>;
-	write_text_atomic: (options: {
+export interface FsOperations {
+	readFile: (options: {
+		path: string;
+		encoding: BufferEncoding;
+	}) => Promise<Result<{value: string}, {message: string}>>;
+	writeFile: (options: {
 		path: string;
 		content: string;
 	}) => Promise<Result<object, {message: string}>>;
-	// ...
+	mkdir: (options: {path: string; recursive?: boolean}) => Promise<Result<object, {message: string}>>;
+	exists: (options: {path: string}) => boolean;
 }
 ```
 
 ### Default implementations
 
 ```typescript
-// deps_defaults.ts
-export const default_git_deps: GitDeps = {
+// operations_defaults.ts
+export const default_git_operations: GitOperations = {
 	current_branch_name: async (options) => {
-		return wrap_with_value(() => git_current_branch_name(options?.cwd));
+		return wrap_with_value(() => git_current_branch_name_required(options?.cwd));
 	},
 	checkout: async ({branch, cwd}) => {
-		return wrap_void(() => git_checkout({branch, cwd}));
+		return wrap_void(() => git_checkout(branch, cwd ? {cwd} : undefined));
 	},
 	// ...
 };
 
-export const default_gitops_deps: GitopsDeps = {
-	changeset: default_changeset_deps,
-	git: default_git_deps,
-	process: default_process_deps,
-	npm: default_npm_deps,
-	preflight: default_preflight_deps,
-	fs: default_fs_deps,
-	build: default_build_deps,
+export const default_gitops_operations: GitopsOperations = {
+	changeset: default_changeset_operations,
+	git: default_git_operations,
+	process: default_process_operations,
+	npm: default_npm_operations,
+	preflight: default_preflight_operations,
+	fs: default_fs_operations,
+	build: default_build_operations,
 };
 ```
 
-### Scope naming
+## CacheDeps Pattern (fuz_css)
 
-Name interfaces by their scope, not the generic mechanism:
+Focused deps interface for cache file I/O, `*Deps` naming with
+`deps.ts` + `deps_defaults.ts`.
 
-- `GitopsDeps` (fuz_gitops) — multi-repo publishing deps
-- `CacheDeps` (fuz_css) — cache file I/O deps
+```typescript
+// deps.ts
+export interface CacheDeps {
+	read_text: (options: {path: string}) => Promise<string | null>;
+	write_text_atomic: (options: {
+		path: string;
+		content: string;
+	}) => Promise<Result<object, {message: string}>>;
+	unlink: (options: {path: string}) => Promise<Result<object, {message: string}>>;
+}
 
-## AppDeps Pattern
+// deps_defaults.ts
+export const default_cache_deps: CacheDeps = {
+	read_text: async ({path}) => {
+		try { return await readFile(path, 'utf8'); }
+		catch { return null; }
+	},
+	write_text_atomic: async ({path, content}) => {
+		return wrap_void(async () => {
+			await mkdir(dirname(path), {recursive: true});
+			const temp_path = path + '.tmp.' + process.pid + '.' + Date.now();
+			await writeFile(temp_path, content);
+			await rename(temp_path, path);
+		});
+	},
+	unlink: async ({path}) => {
+		return wrap_void(async () => { await unlink(path).catch(() => {}); });
+	},
+};
+```
 
-Defined in **fuz_app** for server code. A stateless capabilities bundle with a
-three-part vocabulary:
+Internal functions take `deps: CacheDeps` as a required first parameter.
+Public APIs default to `default_cache_deps`:
+
+```typescript
+// gen_fuz_css.ts (public API)
+const { deps = default_cache_deps } = options;
+```
+
+## AppDeps Pattern (fuz_app)
+
+Stateless capabilities bundle for server code with three-part vocabulary:
 
 | Category          | Type        | Examples                                        | Rule                             |
 | ----------------- | ----------- | ----------------------------------------------- | -------------------------------- |
@@ -212,18 +268,35 @@ three-part vocabulary:
 ```typescript
 // auth/deps.ts
 export interface AppDeps {
+	stat: (path: string) => Promise<StatResult | null>;
+	read_file: (path: string) => Promise<string>;
+	delete_file: (path: string) => Promise<void>;
 	keyring: Keyring;
 	password: PasswordHashDeps;
 	db: Db;
 	log: Logger;
-	stat: (path: string) => Promise<StatResult | null>;
-	read_file: (path: string) => Promise<string>;
-	delete_file: (path: string) => Promise<void>;
 }
 
 // Route factories use RouteDeps — AppDeps without db
 export type RouteDeps = Omit<AppDeps, 'db'>;
 ```
+
+### QueryDeps for database functions
+
+All `query_*` functions take `deps: QueryDeps` as their first argument:
+
+```typescript
+// db/query_deps.ts
+export interface QueryDeps {
+	db: Db;
+}
+
+// Usage — structural typing means RouteContext satisfies QueryDeps
+export const query_account_by_id = async (deps: QueryDeps, id: string) => { /* ... */ };
+```
+
+Route handlers pass `route` (the `RouteContext`) directly to query functions
+because `RouteContext` structurally satisfies `QueryDeps`.
 
 ### Route factory signatures
 
@@ -255,7 +328,7 @@ export const create_audit_log_route_specs = (
 
 ### Narrowing with `Pick<>`
 
-`Pick<>` on small `*Deps` interfaces is fine — the coupling is minimal:
+`Pick<>` on small `*Deps` interfaces is fine — minimal coupling:
 
 ```typescript
 // Only need hashing for account creation, not verification
@@ -263,12 +336,11 @@ password: Pick<PasswordHashDeps, 'hash_password'>;
 ```
 
 The anti-pattern is `Pick<GodType>` — coupling every consumer to a large
-composite type. Use small standalone `*Deps` interfaces instead.
+composite. Use small standalone `*Deps` interfaces instead.
 
 ### Two-step init flow
 
-Backend initialization is always two explicit steps: create the backend
-(DB + deps), then assemble the HTTP server.
+Create the backend (DB + deps), then assemble the HTTP server:
 
 ```typescript
 // server/app_backend.ts
@@ -278,7 +350,7 @@ export const create_app_backend = async (
 	// creates db, runs auth migrations, bundles into AppDeps
 };
 
-// server/app_backend.ts — AppBackend wraps deps with metadata
+// AppBackend wraps deps with metadata
 export interface AppBackend {
 	deps: AppDeps;
 	db_type: DbType;
@@ -288,63 +360,87 @@ export interface AppBackend {
 }
 ```
 
-## Design Principles
+## RuntimeDeps Pattern (fuz_app)
 
-### Single options object
-
-All operations accept a single `options` object parameter:
+Composable small `*Deps` interfaces for runtime operations, with
+platform-specific factories. Functions accept the narrowest interface they need.
 
 ```typescript
-// Good
+// runtime/deps.ts — 8 small interfaces, 1 composite
+interface EnvDeps { env_get, env_set }
+interface FsReadDeps { stat, read_file }
+interface FsWriteDeps { mkdir, write_file, rename }
+interface FsRemoveDeps { remove }
+interface CommandDeps { run_command }
+interface LogDeps { warn }
+interface TerminalDeps { stdout_write, stdin_read }
+interface ProcessDeps { exit }
+
+interface RuntimeDeps extends all of the above { env_all, args, cwd, run_command_inherit }
+```
+
+Platform factories:
+- `create_deno_runtime(args)` — Deno implementation
+- `create_node_runtime(args)` — Node.js implementation
+- `create_mock_runtime(args)` — test implementation with observable state
+
+## Design Principles
+
+### Single options object (in operations interfaces)
+
+```typescript
+// Good — in operations interfaces
 checkout: (options: {branch: string; cwd?: string}) => Promise<Result<...>>;
 
 // Not this
 checkout: (branch: string, cwd?: string) => Promise<Result<...>>;
 ```
 
+General utility functions may use positional parameters when signatures are
+simple.
+
 ### Result returns, never throw
 
-Fallible operations return `Result`, never throw exceptions:
-
 ```typescript
-export interface GitDeps {
+export interface GitOperations {
 	push: (options: {cwd?: string}) => Promise<Result<object, {message: string}>>;
 }
 ```
 
 ### Null for not-found
 
-Expected "not found" cases return `null`, not errors:
-
 ```typescript
-read_json: <T>(options: {path: string}) => Promise<T | null>;
+read_text: (options: {path: string}) => Promise<string | null>;
 ```
 
-### No mocking libraries
+### No `vi.mock` — plain objects instead
 
-Tests use plain objects implementing interfaces — no `vi.mock`, no Sinon:
+Plain objects implementing interfaces. No `vi.mock()` for module replacement,
+no Sinon. Individual `vi.fn()` for tracking calls is acceptable, but DI
+interfaces are satisfied by plain objects:
 
 ```typescript
-const mock_git: GitDeps = {
+const mock_git: GitOperations = {
 	checkout: async () => ({ok: true}),
-	push: async () => ({ok: false, message: 'network error'}),
-	// ...
+	current_branch_name: async () => ({ok: true, value: 'main'}),
+	// ... all methods implemented as plain async functions
 };
 ```
 
 ### Declare minimum dependencies
 
-Use small `*Deps` interfaces instead of `Pick<GodType>`:
-
 ```typescript
 // Good — small standalone interface:
 import type {EnvDeps} from '@fuzdev/fuz_app/runtime/deps.js';
+
+// Good — intersection of exactly what's needed:
+deps: FsReadDeps & FsWriteDeps & CommandDeps
 
 // Good — Pick<> on a small deps interface:
 password: Pick<PasswordHashDeps, 'hash_password'>;
 
 // Bad — Pick<> on a god type:
-// runtime: Pick<AppRuntime, 'env_get'>
+// runtime: Pick<RuntimeDeps, 'env_get'>
 ```
 
 ### Stateless capabilities
@@ -355,46 +451,52 @@ Deps are stateless functions and instances — never mutable state. Mutable refs
 ### Runtime agnosticism
 
 Never import env at module level in server code that might run outside
-SvelteKit — it breaks Deno compilation and other runtimes. Load env via deps
-parameters, flow through constructors.
+SvelteKit — breaks Deno compilation. Load env via deps parameters, flow
+through constructors.
 
 ## File Naming Convention
 
+**fuz_css** (`*Deps` naming):
 ```
 src/lib/
-├── deps.ts            # Interface definitions
-├── deps_defaults.ts   # Real implementations
-└── ...
+├── deps.ts            # CacheDeps interface
+├── deps_defaults.ts   # default_cache_deps implementation
 src/test/
-├── test_helpers.ts    # Mock factories (or fixtures/mock_deps.ts)
-└── ...
+├── fixtures/mock_deps.ts  # create_mock_cache_deps, create_mock_fs_state
 ```
 
-### Naming
+**fuz_gitops** (`*Operations` naming):
+```
+src/lib/
+├── operations.ts           # GitopsOperations + all sub-interfaces
+├── operations_defaults.ts  # default_gitops_operations + all sub-defaults
+src/test/
+├── test_helpers.ts              # create_mock_gitops_ops + sub-mock factories
+├── fixtures/mock_operations.ts  # fixture-oriented mock factories
+```
 
-| What              | Pattern                     | Example                          |
-| ----------------- | --------------------------- | -------------------------------- |
-| Small interface   | `{Domain}Deps`              | `EnvDeps`, `FsDeps`, `GitDeps`   |
-| Capability bundle | `{Scope}Deps`               | `AppDeps`, `RouteDeps`       |
-| App composite     | `{App}Deps`                 | `GitopsDeps`                     |
-| Default impl      | `default_{domain}_deps`     | `default_git_deps`               |
-| Combined default  | `default_{app}_deps`        | `default_gitops_deps`            |
-| Mock factory      | `create_mock_{domain}_deps` | `create_mock_git_deps`           |
-| Combined mock     | `create_mock_{app}_deps`    | `create_mock_gitops_deps`        |
-| Init factory      | `create_{scope}`            | `create_app_backend`             |
-| Backend wrapper   | `AppBackend`                | `{deps, db_type, db_name, close}`|
+**fuz_app** (`*Deps` across multiple directories):
+```
+src/lib/
+├── auth/deps.ts       # AppDeps, RouteDeps
+├── auth/password.ts   # PasswordHashDeps
+├── runtime/deps.ts    # EnvDeps, FsReadDeps, ..., RuntimeDeps
+├── runtime/mock.ts    # create_mock_runtime (MockRuntime)
+├── db/query_deps.ts   # QueryDeps
+├── testing/stubs.ts   # stub_app_deps, create_stub_app_deps
+```
 
 ## Consumption Patterns
 
-### Optional with default (fuz_gitops, fuz_css)
+### Optional with default (fuz_gitops)
 
 ```typescript
 export const publish_repos = async (
 	repos: Array<LocalRepo>,
 	options: PublishingOptions,
 ): Promise<PublishingResult> => {
-	const {deps = default_gitops_deps} = options;
-	await deps.preflight.run_preflight_checks({repos});
+	const {ops = default_gitops_operations} = options;
+	await ops.preflight.run_preflight_checks({repos, ...});
 };
 ```
 
@@ -406,12 +508,22 @@ export const update_package_json = async (
 	updates: Map<string, string>,
 	options: UpdatePackageJsonOptions = {},
 ): Promise<void> => {
-	const {git_deps = default_git_deps, fs_deps = default_fs_deps} = options;
+	const {git_ops = default_git_operations, fs_ops = default_fs_operations} = options;
 	// only uses git and fs, not the full composite
 };
 ```
 
-### Required first param (fuz_app)
+### Optional with default (fuz_css)
+
+```typescript
+// In CssCacheOptions (part of GenFuzCssOptions):
+deps?: CacheDeps;  // defaults to default_cache_deps
+
+// Destructured in gen_fuz_css:
+const { deps = default_cache_deps } = options;
+```
+
+### Required first param (fuz_app route factories)
 
 ```typescript
 export const create_account_route_specs = (
@@ -422,78 +534,180 @@ export const create_account_route_specs = (
 };
 ```
 
-## Mock Factories
-
-See ./testing-patterns.md for the in-memory filesystem pattern and general mock
-structure. Here are patterns specific to deps mocking.
-
-### Tracking mocks
-
-Mocks that record calls for test assertions:
+### Narrow intersection (fuz_app utility functions)
 
 ```typescript
-export const create_mock_git_deps = (
-	options: MockGitOptions = {},
-): GitDeps & {
-	calls: Array<TrackedGitCall>;
-	get_calls: (method: string) => Array<TrackedGitCall>;
-	clear: () => void;
-} => {
-	const calls: Array<TrackedGitCall> = [];
-	return {
-		calls,
-		get_calls: (method) => calls.filter((c) => c.method === method),
-		clear: () => calls.splice(0, calls.length),
-		push_branch: async (options) => {
-			calls.push({method: 'push_branch', args: options});
-			return options.push_fails ? {ok: false, message: 'push failed'} : {ok: true};
-		},
+// dev/setup.ts — accepts exactly the capabilities needed
+export const setup_bootstrap_token = async (
+	deps: FsReadDeps & FsWriteDeps & CommandDeps & EnvDeps,
+	options: BootstrapTokenOptions,
+): Promise<void> => { /* ... */ };
+```
+
+## Mock and Stub Patterns
+
+See ./testing-patterns.md for in-memory filesystem patterns and general mock
+structure.
+
+### Plain object mocks (fuz_gitops)
+
+```typescript
+// test_helpers.ts
+export const create_mock_git_ops = (
+	overrides: Partial<GitOperations> = {},
+): GitOperations => ({
+	current_branch_name: async () => ({ok: true, value: 'main'}),
+	checkout: async () => ({ok: true}),
+	add_and_commit: async () => ({ok: true}),
+	has_changes: async () => ({ok: true, value: false}),
+	// ... all methods with sensible defaults
+	...overrides,
+});
+```
+
+### Composite mock factory (fuz_gitops)
+
+```typescript
+export const create_mock_gitops_ops = (
+	overrides: Partial<{
+		changeset: Partial<GitopsOperations['changeset']>;
+		git: Partial<GitopsOperations['git']>;
 		// ...
+	}> = {},
+): GitopsOperations => ({
+	changeset: { /* defaults */ ...overrides.changeset },
+	git: create_mock_git_ops(overrides.git),
+	npm: create_mock_npm_ops(overrides.npm),
+	// ...
+});
+```
+
+### In-memory filesystem mock (fuz_gitops)
+
+```typescript
+export const create_mock_fs_ops = (): FsOperations & {
+	get: (path: string) => string | undefined;
+	set: (path: string, content: string) => void;
+} => {
+	const files: Map<string, string> = new Map();
+	return {
+		readFile: async (options) => {
+			const content = files.get(options.path);
+			if (content === undefined) return {ok: false, message: `File not found`};
+			return {ok: true, value: content};
+		},
+		writeFile: async (options) => { files.set(options.path, options.content); return {ok: true}; },
+		// ... plus get/set helpers for test setup
 	};
 };
 ```
 
-### Composite mock factory
-
-Assembles all sub-mocks into the full composite:
+### In-memory filesystem mock (fuz_css)
 
 ```typescript
-export const create_mock_gitops_deps = (options: MockGitopsOptions = {}): GitopsDeps => {
-	const git = create_mock_git_deps(options.git);
-	const fs = create_memory_fs_deps();
-	const changeset = create_mock_changeset_deps(options.changeset);
-	// ...
-	return {changeset, git, process, npm, preflight, fs, build};
+// test/fixtures/mock_deps.ts
+export const create_mock_fs_state = (): MockFsState => ({
+	files: new Map(),
+});
+
+export const create_mock_cache_deps = (state: MockFsState): CacheDeps => ({
+	read_text: async ({path}) => state.files.get(path) ?? null,
+	write_text_atomic: async ({path, content}) => { state.files.set(path, content); return {ok: true}; },
+	unlink: async ({path}) => { state.files.delete(path); return {ok: true}; },
+});
+```
+
+### Tracking mocks (fuz_gitops)
+
+Mocks that record calls for test assertions:
+
+```typescript
+export const create_tracking_process_ops = (): {
+	ops: ProcessOperations;
+	get_spawned_commands: () => Array<TrackedCommand>;
+	get_commands_by_type: (cmd_name: string) => Array<TrackedCommand>;
+} => {
+	const spawned_commands: Array<TrackedCommand> = [];
+	return {
+		ops: {
+			spawn: async (options) => {
+				spawned_commands.push({cmd: options.cmd, args: options.args, cwd: /*...*/});
+				return {ok: true};
+			},
+		},
+		get_spawned_commands: () => spawned_commands,
+		get_commands_by_type: (cmd_name) =>
+			spawned_commands.filter((c) => c.cmd === 'gro' && c.args[0] === cmd_name),
+	};
 };
 ```
 
-### Override mocks
+### Stub and throwing proxy (fuz_app)
+
+Two safety levels for surface testing:
 
 ```typescript
-const deps = create_mock_gitops_deps({
-	changeset: {
-		predict_next_version: async ({repo}) => {
-			if (repo.library.name === 'pkg-a') {
-				return {ok: true, version: '0.1.1', bump_type: 'patch'};
-			}
-			return null;
+// Throwing stub — catches unexpected access with descriptive errors
+export const create_throwing_stub = <T>(label: string): T =>
+	new Proxy({} as any, {
+		get: (_target, prop) => {
+			throw new Error(`Throwing stub '${label}' — unexpected access to '${prop}'`);
 		},
-	},
+	}) as T;
+
+// stub_app_deps — all fields are throwing stubs
+export const stub_app_deps: AppDeps = {
+	stat: create_throwing_stub('stat'),
+	read_file: create_throwing_stub('read_file'),
+	keyring: create_throwing_stub('keyring'),
+	password: create_throwing_stub('password'),
+	db: create_throwing_stub('db'),
+	log: create_throwing_stub('log'),
+	// ...
+};
+
+// create_stub_app_deps — no-op stubs that silently pass
+export const create_stub_app_deps = (): AppDeps => ({
+	stat: async () => null,
+	read_file: async () => '',
+	delete_file: async () => {},
+	keyring: create_noop_stub('keyring'),
+	password: create_noop_stub('password'),
+	db: stub_db,
+	log: new Logger('test', {level: 'off'}),
 });
+```
+
+### MockRuntime (fuz_app)
+
+Full mock of `RuntimeDeps` with observable state for CLI testing:
+
+```typescript
+const runtime = create_mock_runtime(['apply', 'tx.ts']);
+runtime.mock_env.set('HOME', '/home/test');
+runtime.mock_fs.set('/home/test/.app/config.json', '{}');
+
+await some_function(runtime);
+
+assert.strictEqual(runtime.command_calls.length, 1);
+assert.deepStrictEqual(runtime.exit_calls, [0]);
 ```
 
 ## Quick Reference
 
-| Flavor              | When                      | Interface file   | Injection style                         |
-| ------------------- | ------------------------- | ---------------- | --------------------------------------- |
-| **Grouped deps**    | CLI tools, I/O-heavy code | `deps.ts`        | Optional param with default             |
-| **AppDeps**         | Server route factories    | `auth/deps.ts`   | Required first param (`deps, options`)  |
+| Flavor              | Repo        | Interface file        | Injection style                         |
+| ------------------- | ----------- | --------------------- | --------------------------------------- |
+| **Grouped ops**     | fuz_gitops  | `operations.ts`       | Optional param with default (`ops`)     |
+| **CacheDeps**       | fuz_css     | `deps.ts`             | Optional param with default (`deps`)    |
+| **AppDeps**         | fuz_app     | `auth/deps.ts`        | Required first param (`deps, options`)  |
+| **RuntimeDeps**     | fuz_app     | `runtime/deps.ts`     | Required first param (narrow interface) |
+| **QueryDeps**       | fuz_app     | `db/query_deps.ts`    | Required first param (`deps`)           |
 
 | Principle  | Rule                                                                 |
 | ---------- | -------------------------------------------------------------------- |
-| Parameters | Single `options` object                                              |
+| Parameters | Single `options` object in operations interfaces                     |
 | Errors     | Return `Result`, never throw                                         |
 | Not found  | Return `null`                                                        |
-| Testing    | Plain objects, no mocking libraries                                  |
+| Testing    | Plain objects — no `vi.mock()` for module replacement                |
 | State      | Deps are stateless — mutable refs passed separately                  |
-| Naming     | `{Domain}Deps`, `default_{domain}_deps`, `create_mock_{domain}_deps` |
+| Narrowing  | Accept the smallest `*Deps` interface that covers usage              |

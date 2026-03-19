@@ -1,29 +1,26 @@
 # Type Utilities
 
-Guide to TypeScript type helpers in `@fuzdev/fuz_util/types.ts`.
-
-These provide nominal typing, stricter standard utilities, and selective partial
-types used across the Fuz ecosystem.
-
-## Contents
-
-- [Nominal Typing](#nominal-typing)
-- [Strict Utility Types](#strict-utility-types)
-- [Partial Variants](#partial-variants)
-- [Modifier Types](#modifier-types)
-- [Extraction Types](#extraction-types)
-- [Quick Reference](#quick-reference)
+TypeScript type helpers in `@fuzdev/fuz_util/types.js` — nominal typing,
+stricter standard utilities, and selective partial types.
 
 ## Nominal Typing
 
 TypeScript uses structural typing — two types with the same shape are
-interchangeable. Nominal typing adds invisible brands to distinguish types that
-share the same underlying structure.
+interchangeable. Nominal typing adds invisible brands to distinguish them.
 
 ### Flavored (loose)
 
-`Flavored<T, Name>` adds an optional invisible brand. Unflavored base types
-are assignable without casting, but different flavors are incompatible:
+`Flavored<TValue, TName>` adds an optional invisible brand. Unflavored base
+types are assignable without casting, but different flavors are incompatible:
+
+```typescript
+// Implementation:
+declare const FlavoredSymbol: unique symbol;
+interface Flavor<T> {
+  readonly [FlavoredSymbol]?: T;  // optional — base types still assignable
+}
+type Flavored<TValue, TName> = TValue & Flavor<TName>;
+```
 
 ```typescript
 type Email = Flavored<string, 'Email'>;
@@ -33,13 +30,40 @@ const email1: Email = 'foo@bar.com';         // ok — plain string is fine
 const email2: Email = 'foo' as Address;       // error — Address !== Email
 ```
 
-Use Flavored for IDs, paths, and ergonomic APIs where you want to catch
-mismatched types without requiring casts everywhere.
+Primary nominal typing approach. Real uses in fuz_util:
+
+```typescript
+// fuz_util/id.ts
+export type Uuid = Flavored<string, 'Uuid'>;
+
+// fuz_util/git.ts
+export type GitOrigin = Flavored<string, 'GitOrigin'>;
+export type GitBranch = Flavored<string, 'GitBranch'>;
+
+// fuz_util/path.ts
+export type PathId = Flavored<string, 'PathId'>;
+
+// fuz_util/colors.ts
+export type Hue = Flavored<number, 'Hue'>;           // [0, 1]
+export type Saturation = Flavored<number, 'Saturation'>; // [0, 1]
+```
+
+Also: `BlogPostId` (fuz_blog), `InputPath` (gro), `VocabName`/`ReorderableId`
+(zzz), `Url` (fuz_util).
 
 ### Branded (strict)
 
-`Branded<T, Name>` adds a required invisible brand. Plain base types are NOT
-assignable — you must cast explicitly:
+`Branded<TValue, TName>` adds a required brand. Plain base types NOT
+assignable — must cast:
+
+```typescript
+// Implementation:
+declare const BrandedSymbol: unique symbol;
+interface Brand<T> {
+  readonly [BrandedSymbol]: T;  // required — base types NOT assignable
+}
+type Branded<TValue, TName> = TValue & Brand<TName>;
+```
 
 ```typescript
 type PhoneNumber = Branded<string, 'PhoneNumber'>;
@@ -48,8 +72,8 @@ const phone1: PhoneNumber = '555-1234';                // error — must cast
 const phone2: PhoneNumber = '555-1234' as PhoneNumber;  // ok
 ```
 
-Use Branded for validated data or security-sensitive types where you want the
-type system to enforce that values have gone through validation.
+Exported but not used in the ecosystem. In practice: `Flavored` for
+TypeScript-only nominal typing, Zod `.brand()` for runtime-validated types.
 
 ### Choosing between them
 
@@ -58,26 +82,48 @@ type system to enforce that values have gone through validation.
 | Flavored | Not required   | Loose   | IDs, paths, ergonomic APIs             |
 | Branded  | Required       | Strict  | Validated data, security-sensitive     |
 
-See ./zod-schemas.md for Zod `.brand()` schemas (runtime validation
-+ branding), branded types with defaults, and transform pipelines.
+### Zod `.brand()` — runtime-validated nominal types
+
+For types needing runtime validation, Zod `.brand()` (distinct from fuz_util's
+`Branded`):
+
+```typescript
+// zzz/zod_helpers.ts
+export const Uuid = z.uuid().brand('Uuid');
+export type Uuid = z.infer<typeof Uuid>;
+
+export const Datetime = z.iso.datetime().brand('Datetime');
+export type Datetime = z.infer<typeof Datetime>;
+
+// zzz/diskfile_types.ts
+export const DiskfilePath = z
+  .string()
+  .refine((p) => is_path_absolute(p), {message: 'path must be absolute'})
+  .brand('DiskfilePath');
+export type DiskfilePath = z.infer<typeof DiskfilePath>;
+```
+
+fuz_util's `Uuid` uses `Flavored` (no runtime validation); zzz's `Uuid` uses
+Zod `.brand()` (with validation). Separate types.
+
+See ./zod-schemas.md for full Zod schema conventions including branded types.
 
 ## Strict Utility Types
 
 ### OmitStrict
 
-Stricter version of `Omit` — `K` must be an actual key of `T`:
+Stricter `Omit` — `K` must be an actual key of `T`:
 
 ```typescript
 type OmitStrict<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 ```
 
-Standard `Omit` accepts any string for `K`, which means typos compile silently.
-`OmitStrict` catches them at compile time.
+Standard `Omit` accepts any string for `K` (typos compile silently).
+`OmitStrict` catches them. Widely used in fuz_ui, fuz_app, zzz.
 
 ### PickUnion and KeyofUnion
 
-Standard `Pick` and `keyof` don't distribute correctly over union types.
-These variants do:
+Standard `Pick` and `keyof` don't distribute over unions. These do:
 
 ```typescript
 type KeyofUnion<T> = T extends unknown ? keyof T : never;
@@ -98,7 +144,7 @@ type Picked = PickUnion<A | B, 'x'>;  // {x: number} | {x: number}
 
 ### PartialExcept
 
-Makes everything optional EXCEPT the specified keys:
+Everything optional EXCEPT specified keys:
 
 ```typescript
 type PartialExcept<T, K extends keyof T> = {[P in K]: T[P]} & {
@@ -114,7 +160,7 @@ type UserUpdate = PartialExcept<User, 'id'>;
 
 ### PartialOnly
 
-Inverse — makes only the specified keys optional:
+Only specified keys optional:
 
 ```typescript
 type PartialOnly<T, K extends keyof T> = {[P in K]?: T[P]} & {
@@ -124,7 +170,7 @@ type PartialOnly<T, K extends keyof T> = {[P in K]?: T[P]} & {
 
 ### PartialValues
 
-Makes the values of `T` partial (not the keys themselves):
+Values of `T` become partial (not the keys):
 
 ```typescript
 type PartialValues<T> = { [P in keyof T]: Partial<T[P]> };
@@ -134,31 +180,36 @@ type PartialValues<T> = { [P in keyof T]: Partial<T[P]> };
 
 ### Assignable
 
-Removes `readonly` from properties:
+Removes `readonly`:
 
 ```typescript
 type Assignable<T, K extends keyof T = keyof T> = { -readonly [P in K]: T[P] };
 ```
 
-Useful in tests or setup code where you need to write to normally readonly
-properties.
+Used in zzz for self-referential initialization:
+
+```typescript
+// zzz/frontend.svelte.ts
+(this as Assignable<typeof this, 'app'>).app = this;
+```
 
 ## Extraction Types
 
 ### ClassConstructor
-
-Matches constructor functions:
 
 ```typescript
 type ClassConstructor<TInstance, TArgs extends Array<any> = Array<any>> =
   new (...args: TArgs) => TInstance;
 ```
 
-Use in factory patterns or dependency injection.
+Used in zzz Cell registry:
+
+```typescript
+// zzz/cell_registry.svelte.ts
+readonly #constructors: Map<string, ClassConstructor<Cell>> = new Map();
+```
 
 ### ArrayElement
-
-Extracts the element type from an array:
 
 ```typescript
 type ArrayElement<T> = T extends ReadonlyArray<infer U> ? U : never;
@@ -170,8 +221,6 @@ type Item = ArrayElement<Array<{id: string}>>;  // {id: string}
 
 ### Defined and NotNull
 
-Filter out `undefined` or `null`:
-
 ```typescript
 type Defined<T> = T extends undefined ? never : T;
 type NotNull<T> = T extends null ? never : T;
@@ -181,8 +230,8 @@ type NotNull<T> = T extends null ? never : T;
 
 | Type              | Purpose                                         |
 | ----------------- | ----------------------------------------------- |
-| `Flavored<T, N>`  | Loose nominal typing (no cast from base)        |
-| `Branded<T, N>`   | Strict nominal typing (cast required)           |
+| `Flavored<TValue, TName>` | Loose nominal typing (no cast from base) |
+| `Branded<TValue, TName>`  | Strict nominal typing (cast required, unused in ecosystem) |
 | `OmitStrict<T, K>`| Omit with key validation                        |
 | `PickUnion<T, K>` | Pick that distributes over unions               |
 | `KeyofUnion<T>`   | keyof that distributes over unions              |

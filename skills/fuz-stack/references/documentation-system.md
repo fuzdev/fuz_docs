@@ -1,43 +1,64 @@
 # Documentation System
 
-How documentation works across `@fuzdev` projects — the pipeline, Tome system,
-layout architecture, and project setup.
-
-For TSDoc/JSDoc authoring conventions, see ./tsdoc-comments.md.
+Pipeline, Tome system, layout architecture, and project setup for `@fuzdev`
+docs. For TSDoc/JSDoc authoring conventions, see ./tsdoc-comments.md.
 
 ## Pipeline Overview
 
 ```
-svelte-docinfo → library_gen.ts → library.json → Library class → Tome pages + API routes
+source files → library_generate() → library.json + library.ts → Library class → Tome pages + API routes
 ```
 
 | Stage             | What                          | Key details                                                                                            |
 | ----------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Analysis**      | `@fuzdev/svelte-docinfo`      | Extracts metadata from TS/Svelte via TypeScript compiler API. Build-tool agnostic (`SourceFileInfo[]`) |
-| **Generation**    | `library_gen()` in fuz_ui     | Wraps `analyze()` with Gro `Gen` format + `SourceJson` metadata. Run via `gro gen`                     |
-| **Serialization** | `library.json` + `library.ts` | Compact JSON (`jsonReplacerCompact` strips empty arrays). Typed wrapper for import                     |
-| **Runtime**       | `Library` class               | Wraps JSON into `Module` and `Declaration` instances with computed properties and lookup               |
-| **Rendering**     | Tome pages + API routes       | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers                        |
+| **Analysis**      | fuz_ui analysis modules       | `ts_helpers.ts`, `svelte_helpers.ts`, `tsdoc_helpers.ts` extract metadata via TypeScript compiler API. `library_analysis.ts` dispatches to the appropriate analyzer based on file type |
+| **Generation**    | `library_gen()` in fuz_ui     | Wraps `library_generate()` with Gro `Gen` format. `library_pipeline.ts` handles collection, validation, dedup, re-export merging. Run via `gro gen` |
+| **Serialization** | `library.json` + `library.ts` | `library_output.ts` produces JSON and a typed TS wrapper. `LibraryJson` (from `@fuzdev/fuz_util/library_json.js`) combines `PackageJson` + `SourceJson` with computed properties |
+| **Runtime**       | `Library` class               | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps |
+| **Rendering**     | Tome pages + API routes       | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts` |
+
+### Analysis Modules
+
+| Module                | Purpose                                                                |
+| --------------------- | ---------------------------------------------------------------------- |
+| `library_gen.ts`      | Gro-specific entry point — adapts Gro's `Disknode` to `SourceFileInfo` |
+| `library_generate.ts` | Build-tool agnostic entry point — orchestrates the full pipeline       |
+| `library_analysis.ts` | Unified dispatcher — routes to `ts_analyze_module` or `svelte_analyze_module` based on file type |
+| `library_pipeline.ts` | Pipeline helpers — collect source files, find duplicates, merge re-exports, sort modules |
+| `library_output.ts`   | Output generation — produces `library.json` and `library.ts` files     |
+| `ts_helpers.ts`       | TypeScript compiler API utilities — analyzes TS/JS module exports      |
+| `svelte_helpers.ts`   | Svelte component analysis — uses svelte2tsx + TypeScript compiler API  |
+| `tsdoc_helpers.ts`    | JSDoc/TSDoc parsing — extracts `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`, `@since`, `@nodocs`, `@mutates` |
+| `module_helpers.ts`   | Path utilities — file type detection, path extraction, `SourceFileInfo` type |
+| `analysis_context.ts` | Diagnostic collection — structured error/warning accumulation          |
+
+### Two-Phase Analysis
+
+1. **Phase 1**: Analyze each module, collecting declarations and re-export
+   information. Dispatches to `ts_analyze_module` (.ts/.js) or
+   `svelte_analyze_module` (.svelte) via `library_analyze_module`.
+2. **Phase 2**: Merge re-exports via `library_merge_re_exports` to build
+   `also_exported_from` arrays on canonical declarations.
+
+After both phases: sort modules, check for duplicate names in the flat
+namespace, and generate output files.
 
 ## Tome System
 
-A **Tome** is a documentation page. The `Tome` type is a Zod schema defined in
-`@fuzdev/fuz_ui/tome.js`:
+A **Tome** is a documentation page. Zod schema in `@fuzdev/fuz_ui/tome.js`:
 
 ```ts
-{
-  name: string;           // URL slug and display name
-  category: string;       // grouping in sidebar navigation
-  Component: Component;   // the +page.svelte component
-  related_tomes: string[];        // cross-links to other tome pages
-  related_modules: string[];      // links to source modules in API docs
-  related_declarations: string[]; // links to specific exports in API docs
-}
+const Tome = z.object({
+  name: z.string(),            // URL slug and display name
+  category: z.string(),        // grouping in sidebar navigation
+  Component: z.custom<Component<any, any>>(), // the +page.svelte component
+  related_tomes: z.array(z.string()),         // cross-links to other tome pages
+  related_modules: z.array(z.string()),       // links to source modules in API docs
+  related_declarations: z.array(z.string()),  // links to specific exports in API docs
+});
 ```
 
 ### Cross-references
-
-The `related_*` fields create navigation links in the docs sidebar:
 
 | Field                  | Links to                     | Example value                 |
 | ---------------------- | ---------------------------- | ----------------------------- |
@@ -47,19 +68,16 @@ The `related_*` fields create navigation links in the docs sidebar:
 
 ### Categories
 
-Categories group tomes in the sidebar navigation. They are project-specific:
+Categories group tomes in sidebar navigation. Project-specific:
 
 | Project | Categories                       |
 | ------- | -------------------------------- |
 | fuz_ui  | `guide`, `helpers`, `components` |
 | fuz_css | `guide`, `systems`, `styles`     |
 
-Choose categories that make sense for your project's content.
-
 ### Registry
 
-Every project with docs has a central registry at `src/routes/docs/tomes.ts`
-that imports each tome's page component and exports the full array:
+Every project with docs has `src/routes/docs/tomes.ts`:
 
 ```ts
 import type {Tome} from '@fuzdev/fuz_ui/tome.js';
@@ -81,31 +99,39 @@ export const tomes: Array<Tome> = [
 
 ### Helpers
 
-- `get_tome_by_name(name)` — look up a Tome from context (throws if not found)
+From `@fuzdev/fuz_ui/tome.js`:
+
+- `get_tome_by_name(name)` — look up a Tome from `tomes_context` (throws if not found)
 - `to_tome_pathname(tome, docs_path?, hash?)` — generate URL for a tome
-- `docs_slugify(name)` — convert tome name to URL-safe slug
+- `tomes_context` — context holding `() => Map<string, Tome>` (set by `Docs`)
+- `tome_context` — context holding `() => Tome` for the current page (set by `TomeContent`)
+
+From `@fuzdev/fuz_ui/docs_helpers.svelte.js`:
+
+- `docs_slugify(name)` — convert tome name to URL-safe slug (preserves case)
+- `docs_links_context` — context holding `DocsLinks` for section navigation
+- `DOCS_PATH_DEFAULT`, `DOCS_PATH`, `DOCS_API_PATH` — path constants
 
 ## Setting Up Docs in a Project
 
-Six files to create, following the pattern established in fuz_ui and fuz_css.
+Six files, following the pattern in fuz_ui and fuz_css.
 
 ### 1. Library generation
 
-`src/routes/library.gen.ts` — Gro gen task that runs svelte-docinfo:
+`src/routes/library.gen.ts`:
 
 ```ts
 import {library_gen} from '@fuzdev/fuz_ui/library_gen.js';
-import {throwOnDuplicates} from '@fuzdev/svelte-docinfo/analyze.js';
+import {library_throw_on_duplicates} from '@fuzdev/fuz_ui/library_generate.js';
 
-export const gen = library_gen({on_duplicates: throwOnDuplicates});
+export const gen = library_gen({on_duplicates: library_throw_on_duplicates});
 ```
 
 Run `gro gen` to produce `library.json` and `library.ts`.
 
 ### 2. Root layout
 
-In `src/routes/+layout.svelte`, create a `Library` instance and provide it.
-The generated `library.ts` wraps the JSON with a typed export:
+In `src/routes/+layout.svelte`, create a `Library` instance and provide it:
 
 ```svelte
 <script lang="ts">
@@ -118,7 +144,7 @@ The generated `library.ts` wraps the JSON with a typed export:
 
 ### 3. Docs layout
 
-`src/routes/docs/+layout.svelte` — wraps children in the three-column layout:
+`src/routes/docs/+layout.svelte`:
 
 ```svelte
 <script lang="ts">
@@ -136,8 +162,22 @@ The generated `library.ts` wraps the JSON with a typed export:
 </Docs>
 ```
 
-The `breadcrumb_children` snippet is optional — use it to customize the logo
-in the top nav bar.
+Optional `breadcrumb_children` snippet for custom logo in the top nav:
+
+```svelte
+<Docs {tomes} {library}>
+	{#snippet breadcrumb_children(is_primary_nav)}
+		{#if is_primary_nav}
+			<div class="icon row">
+				<Svg data={logo} size="var(--icon_size_sm)" /> <span class="ml_sm">my_project</span>
+			</div>
+		{:else}
+			<Svg data={logo} size="var(--icon_size_sm)" />
+		{/if}
+	{/snippet}
+	{@render children()}
+</Docs>
+```
 
 ### 4. Tomes registry
 
@@ -174,12 +214,9 @@ Each tome is a `+page.svelte` in `src/routes/docs/{name}/`:
 ```
 
 `TomeSectionHeader` auto-detects heading level (h2/h3/h4) based on nesting
-depth. Sections are tracked by IntersectionObserver for the right sidebar
-table of contents.
+depth. Sections tracked by IntersectionObserver for right sidebar TOC.
 
 ### 6. API routes
-
-Two route files for auto-generated API documentation:
 
 `src/routes/docs/api/+page.svelte` — API overview:
 
@@ -215,52 +252,99 @@ Two route files for auto-generated API documentation:
 | Center        | `main`             | Route content (tome pages, API docs) |
 | Right sidebar | `DocsTertiaryNav`  | Section headers within current page  |
 
-**Responsive behavior**: The right sidebar collapses below ~1000px. The left
-sidebar collapses below ~800px and moves into a dialog accessible from the
-top bar.
+Right sidebar collapses below ~1000px, left below ~800px. Both move into a
+dialog accessible from the top bar's menu button.
 
 ### Key contexts
 
-The docs layout sets and consumes these contexts:
+| Context              | Type                       | Purpose                                      |
+| -------------------- | -------------------------- | -------------------------------------------- |
+| `library_context`    | `Library`                  | API metadata (modules, declarations, lookup) |
+| `tomes_context`      | `() => Map<string, Tome>`  | All registered tomes (function returning map) |
+| `tome_context`       | `() => Tome`               | Current page's tome (set by `TomeContent`)   |
+| `docs_links_context` | `DocsLinks`                | Fragment tracking for section navigation     |
 
-| Context              | Type                | Purpose                                      |
-| -------------------- | ------------------- | -------------------------------------------- |
-| `library_context`    | `Library`           | API metadata (modules, declarations, lookup) |
-| `tomes_context`      | `Map<string, Tome>` | All registered tomes                         |
-| `tome_context`       | `Tome`              | Current page's tome (set by `TomeContent`)   |
-| `docs_links_context` | `DocsLinks`         | Fragment tracking for section navigation     |
+### Runtime Classes
+
+`Library` class (`library.svelte.ts`) provides the runtime API documentation
+hierarchy:
+
+- **`Library`** — wraps `LibraryJson`, provides `modules`, `declarations`,
+  `module_by_path`, `declaration_by_name` lookup maps, and
+  `search_declarations(query)` for multi-term search
+- **`Module`** (`module.svelte.ts`) — wraps `ModuleJson`, provides `path`,
+  `declarations`, `url_api`, `module_comment`
+- **`Declaration`** (`declaration.svelte.ts`) — wraps `DeclarationJson`,
+  provides `name`, `kind`, `module_path`, `url_api`, `url_github`
+
+All use `$derived` for reactive computed properties.
 
 ## Component Reference
 
+### Documentation layout
+
+| Component          | Purpose                                                      |
+| ------------------ | ------------------------------------------------------------ |
+| `Docs`             | Three-column layout, sets `tomes_context` and `docs_links_context` |
+| `DocsPrimaryNav`   | Top bar with breadcrumb navigation and menu toggle           |
+| `DocsSecondaryNav` | Left sidebar — tome list grouped by category                 |
+| `DocsTertiaryNav`  | Right sidebar — section headers within current page          |
+| `DocsContent`      | Content wrapper for docs pages                               |
+| `DocsFooter`       | Footer with library info and breadcrumb                      |
+| `DocsSearch`       | Search input for filtering modules and declarations          |
+| `DocsMenu`         | Navigation menu for tomes                                    |
+| `DocsLink`         | Navigation link within docs                                  |
+| `DocsList`         | List component for docs navigation                           |
+| `DocsPageLinks`    | Links section within a docs page                             |
+| `DocsMenuHeader`   | Header within the docs navigation menu                       |
+
+### Tome components
+
+| Component           | Purpose                                               |
+| ------------------- | ----------------------------------------------------- |
+| `TomeContent`       | Individual tome page wrapper, sets `tome_context`     |
+| `TomeHeader`        | Default header rendered by `TomeContent`              |
+| `TomeSection`       | Section container with depth tracking and intersection |
+| `TomeSectionHeader` | Section heading with hashlink (auto h2/h3/h4)         |
+| `TomeLink`          | Cross-reference link to another tome                   |
+
+### API documentation
+
 | Component            | Purpose                                                      |
 | -------------------- | ------------------------------------------------------------ |
-| `Docs`               | Three-column layout, sets navigation contexts                |
-| `TomeContent`        | Individual tome page wrapper, sets `tome_context`            |
-| `TomeSection`        | Section container with depth tracking and intersection       |
-| `TomeSectionHeader`  | Section heading with hashlink (auto h2/h3/h4)                |
-| `TomeLink`           | Cross-reference link to another tome                         |
 | `ApiIndex`           | API overview with search, lists all modules and declarations |
 | `ApiModule`          | Single module's declarations with full detail                |
+| `ApiModulesList`     | Module listing within the API index                          |
 | `ApiDeclarationList` | Declaration listing within a module                          |
+| `DeclarationDetail`  | Full detail view of a single declaration                     |
 | `DeclarationLink`    | Link to a declaration in API docs                            |
 | `ModuleLink`         | Link to a module in API docs                                 |
-| `LibrarySummary`     | Compact package metadata card                                |
-| `LibraryDetail`      | Expanded package info with file type breakdown               |
+| `TypeLink`           | Link to a type reference                                     |
+
+### Library metadata
+
+| Component        | Purpose                                          |
+| ---------------- | ------------------------------------------------ |
+| `LibrarySummary` | Compact package metadata card                    |
+| `LibraryDetail`  | Expanded package info with file type breakdown   |
 
 ## See Also
 
 - **`svelte_preprocess_mdz`** — build-time compilation of static `<Mdz>` content
   to pre-rendered Svelte markup, eliminating runtime parsing for known-static
-  doc strings. See the `svelte_preprocess_mdz` tome in fuz_ui docs.
+  doc strings
 - **`vite_plugin_library_well_known`** — publishes library metadata at
-  `.well-known/library.json` (RFC 8615) for external tool discovery. See the
-  `vite_plugin_library_well_known` tome in fuz_ui docs.
+  `.well-known/library.json` (RFC 8615) for external tool discovery
+- **`svelte-docinfo`** (`@fuzdev/svelte-docinfo`) — standalone package with the
+  same TypeScript/Svelte analysis as fuz_ui, with CLI, Vite plugin, and
+  build-tool agnostic API. fuz_ui does not depend on it.
 - **./tsdoc-comments.md** — TSDoc/JSDoc authoring conventions, tag reference,
-  mdz auto-linking, and documentation auditing.
+  mdz auto-linking, and documentation auditing
 
 ## Cross-Project Pattern
 
-fuz_ui **defines** all documentation components. Other projects **import** them:
+fuz_ui **defines** all documentation components and the analysis pipeline.
+Other projects **import** them:
 
 ```ts
 // In fuz_ui (defines the components)
@@ -272,6 +356,6 @@ import Docs from '@fuzdev/fuz_ui/Docs.svelte';
 import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 ```
 
-The layout structure is identical — only tomes, categories, and breadcrumb
-branding differ. `library_gen()` + svelte-docinfo is the shared analysis
-engine.
+Layout structure is identical — only tomes, categories, and breadcrumb
+branding differ. `library_gen()` with fuz_ui's built-in analysis is the shared
+generation engine.

@@ -1,12 +1,12 @@
 # Svelte 5 Patterns
 
-Comprehensive guide to Svelte 5 runes and patterns used across the Fuz
-ecosystem.
+Svelte 5 runes and patterns used across the Fuz ecosystem.
 
 ## Contents
 
 - [State Runes](#state-runes)
 - [Derived Values](#derived-values)
+- [Reactive Collections](#reactive-collections)
 - [Schema-Driven Reactive Classes](#schema-driven-reactive-classes)
 - [Context Patterns](#context-patterns)
 - [Snippet Patterns](#snippet-patterns)
@@ -15,21 +15,21 @@ ecosystem.
 - [Props Patterns](#props-patterns)
 - [Event Handling](#event-handling)
 - [Component Composition](#component-composition)
+- [Runes in .svelte.ts Files](#runes-in-sveltets-files)
 - [Quick Reference](#quick-reference)
 
 ## State Runes
 
 ### `$state()` vs `$state.raw()`
 
-Use `$state()` for reactive objects that need deep tracking. Use `$state.raw()`
-for data that should be replaced wholesale rather than mutated.
+`$state()` for deep reactivity. `$state.raw()` for data replaced wholesale.
 
 ```typescript
 // $state() - deep reactivity, use for UI state
 let form_data = $state({name: '', email: ''});
 form_data.name = 'Alice'; // triggers reactivity
 
-// $state.raw() - shallow, use for API responses
+// $state.raw() - shallow, use for API responses and immutable data
 let ollama_show_response = $state.raw<OllamaShowResponse | null>(null);
 let completion_request = $state.raw<CompletionRequest | null>(null);
 let completion_response = $state.raw<CompletionResponse | null>(null);
@@ -38,6 +38,7 @@ let completion_response = $state.raw<CompletionResponse | null>(null);
 **When to use `$state.raw()`:**
 
 - API responses (replaced entirely on each fetch)
+- ReadonlyArray collections replaced via spread (`$state.raw([])`)
 - Large objects where deep tracking is wasteful
 - Immutable data structures
 - Objects from external libraries
@@ -48,6 +49,25 @@ let completion_response = $state.raw<CompletionResponse | null>(null);
 - UI state (toggles, selections, counters)
 - Objects you'll mutate property-by-property
 
+### The `$state()!` Non-null Assertion Pattern
+
+Class properties initialized by constructor or `init()` use `$state()!`:
+
+```typescript
+export class ThemeState {
+	theme: Theme = $state()!;
+	color_scheme: ColorScheme = $state()!;
+
+	constructor(options?: ThemeStateOptions) {
+		this.theme = options?.theme ?? default_themes[0]!;
+		this.color_scheme = options?.color_scheme ?? 'auto';
+	}
+}
+```
+
+Used in fuz_ui state classes (`ThemeState`, `ContextmenuState`, `DocsLinks`,
+`Library`) and zzz Cell subclasses.
+
 ### Arrays and Collections
 
 ```typescript
@@ -56,18 +76,27 @@ let items = $state<string[]>([]);
 items.push('new'); // triggers reactivity
 items[0] = 'updated'; // triggers reactivity
 
-// Raw array - only replacement tracked
-let api_results = $state.raw<Result[]>([]);
-api_results = [...api_results, new_result]; // triggers
-api_results.push(new_result); // does NOT trigger
+// Raw array - only replacement tracked (common for immutable lists)
+let selections: ReadonlyArray<ItemState> = $state.raw([]);
+selections = [...selections, new_item]; // triggers
+selections.push(new_item); // does NOT trigger (and type error with ReadonlyArray)
+```
+
+Real example from `ContextmenuState`:
+
+```typescript
+// ReadonlyArray + $state.raw() for immutable-style updates
+params: ReadonlyArray<ContextmenuParams> = $state.raw([]);
+selections: ReadonlyArray<ItemState> = $state.raw([]);
+items: ReadonlyArray<ItemState> = $state.raw([]);
 ```
 
 ## Derived Values
 
 ### `$derived` vs `$derived.by()`
 
-Use `$derived` for simple expressions. Use `$derived.by()` when you need loops,
-conditionals, or multi-step logic.
+`$derived` for simple expressions. `$derived.by()` for loops, conditionals,
+or multi-step logic.
 
 ```typescript
 // Simple expression - use $derived
@@ -91,24 +120,46 @@ let total = $derived.by(() => {
 });
 ```
 
-**Real example from Thread.svelte:**
+### `$derived` in Classes
+
+Class properties use `$derived` and `$derived.by()` directly:
 
 ```typescript
-// Thread hierarchy computation
-let threads = $derived.by(() => {
-	const result: Thread[] = [];
-	for (const message of messages) {
-		if (message.parent_id === thread_id) {
-			result.push(create_thread(message));
-		}
-	}
-	return result;
+// From Library class (fuz_ui/library.svelte.ts)
+export class Library {
+	readonly library_json: LibraryJson = $state.raw()!;
+
+	readonly name = $derived(this.library_json.name);
+	readonly repo_url = $derived(this.library_json.repo_url);
+	readonly modules = $derived(
+		this.source_json.modules
+			? this.source_json.modules.map((m) => new Module(this, m))
+			: [],
+	);
+	readonly module_by_path = $derived(
+		new Map(this.modules.map((m) => [m.path, m])),
+	);
+}
+```
+
+```typescript
+// From Thread class (zzz/thread.svelte.ts) - $derived.by for complex logic
+readonly model: Model = $derived.by(() => {
+	const model = this.app.models.find_by_name(this.model_name);
+	if (!model) throw new Error(`Model "${this.model_name}" not found`);
+	return model;
+});
+
+// From ContextmenuState - $derived for simple, $derived.by for multi-step
+can_collapse = $derived(this.selections.length > 1);
+
+can_expand = $derived.by(() => {
+	const selected = this.selections.at(-1);
+	return !!selected?.is_menu && selected.items.length > 0;
 });
 ```
 
 ### Derived with Dependencies
-
-Derived values automatically track their dependencies:
 
 ```typescript
 let search = $state('');
@@ -127,50 +178,81 @@ let filtered = $derived.by(() => {
 });
 ```
 
+## Reactive Collections
+
+### `SvelteMap` and `SvelteSet`
+
+From `svelte/reactivity` — reactive Map/Set that trigger updates on mutations:
+
+```typescript
+import {SvelteMap, SvelteSet} from 'svelte/reactivity';
+
+// From DocsLinks class (fuz_ui/docs_helpers.svelte.ts)
+export class DocsLinks {
+	readonly links: SvelteMap<string, DocsLinkInfo> = new SvelteMap();
+	readonly fragments_onscreen: SvelteSet<string> = new SvelteSet();
+}
+```
+
+Standard `Map`/`Set` are not tracked by Svelte's reactivity.
+
 ## Schema-Driven Reactive Classes
 
 Zod schemas paired with Svelte 5 runes classes — the schema defines the JSON
-shape, the class adds reactivity and behavior. See ./zod-schemas.md
-for schema conventions.
+shape, the class adds reactivity and behavior. See ./zod-schemas.md.
+
+### Simple Pattern (fuz_ui)
 
 ```typescript
-import {z} from 'zod';
+// theme_state.svelte.ts
+export class ThemeState {
+	theme: Theme = $state()!;
+	color_scheme: ColorScheme = $state()!;
 
-export const MessageJson = z.strictObject({
-	id: z.string(),
-	content: z.string(),
-	role: z.enum(['user', 'assistant']),
-	created: z.number(),
-});
-
-export type MessageJson = z.infer<typeof MessageJson>;
-
-export class Message {
-	id: string = $state()!;
-	content: string = $state()!;
-	role: 'user' | 'assistant' = $state()!;
-	created: number = $state()!;
-
-	constructor(json: MessageJson) {
-		this.id = json.id;
-		this.content = json.content;
-		this.role = json.role;
-		this.created = json.created;
+	constructor(options?: ThemeStateOptions) {
+		this.theme = options?.theme ?? default_themes[0]!;
+		this.color_scheme = options?.color_scheme ?? 'auto';
 	}
 
-	// Derived state
-	get is_user(): boolean {
-		return this.role === 'user';
-	}
-
-	// Serialize back to JSON
-	to_json(): MessageJson {
+	toJSON(): ThemeStateJson {
 		return {
-			id: this.id,
-			content: this.content,
-			role: this.role,
-			created: this.created,
+			theme: this.theme,
+			color_scheme: this.color_scheme,
 		};
+	}
+}
+```
+
+### Cell Pattern (zzz)
+
+Advanced version with `Cell` base class that automates JSON hydration from
+Zod schemas:
+
+```typescript
+// Schema with CellJson base, .meta for class registration
+export const ChatJson = CellJson.extend({
+	name: z.string().default(''),
+	thread_ids: z.array(Uuid).default(() => []),
+}).meta({cell_class_name: 'Chat'});
+
+export class Chat extends Cell<typeof ChatJson> {
+	// Schema fields use $state()! - set by Cell.init()
+	name: string = $state()!;
+	thread_ids: Array<Uuid> = $state()!;
+
+	// Computed values use $derived or $derived.by()
+	readonly threads: Array<Thread> = $derived.by(() => {
+		const result: Array<Thread> = [];
+		for (const id of this.thread_ids) {
+			const thread = this.app.threads.items.by_id.get(id);
+			if (thread) result.push(thread);
+		}
+		return result;
+	});
+
+	constructor(options: ChatOptions) {
+		super(ChatJson, options);
+		this.init(); // Must call at end of constructor
 	}
 }
 ```
@@ -178,32 +260,29 @@ export class Message {
 **Key patterns:**
 
 - Zod schema defines the JSON shape (see ./zod-schemas.md)
-- Class properties use `$state()` for reactivity
-- Constructor hydrates from JSON
-- `to_json()` method for serialization
-- Getters for derived values (automatically reactive)
+- Class properties use `$state()!` for reactivity (non-null assertion)
+- `$derived` / `$derived.by()` for computed values in classes
+- `$state.raw()` for properties replaced wholesale
+- `toJSON()` or `to_json()` for serialization (zzz Cell uses a `$derived` `json`
+  property)
 
 ## Context Patterns
 
 ### Creating Context
 
-Use `create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.js`. It has two
-overloads — without a fallback, `get()` throws if the context is unset and
-`get_maybe()` returns `undefined`; with a fallback function, `get()` uses it
-and `set()` value becomes optional:
+`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.js`. Two overloads:
+without fallback, `get()` throws if unset and `get_maybe()` returns `undefined`;
+with fallback, `get()` uses it and `set()` value is optional:
 
 ```typescript
-// context_helpers.ts (from @fuzdev/fuz_ui)
-import {getContext, setContext} from 'svelte';
-
-// Without fallback — get() throws if unset, get_maybe() returns undefined
+// Without fallback -- get() throws if unset, get_maybe() returns undefined
 export function create_context<T>(): {
 	get: (error_message?: string) => T;
 	get_maybe: () => T | undefined;
 	set: (value: T) => T;
 };
 
-// With fallback — get() uses fallback if unset, set() value is optional
+// With fallback -- get() uses fallback if unset, set() value is optional
 export function create_context<T>(fallback: () => T): {
 	get: () => T;
 	set: (value?: T) => T;
@@ -216,82 +295,154 @@ export function create_context<T>(fallback: () => T): {
 // Define the context (typically in a shared module)
 export const frontend_context = create_context<Frontend>();
 export const section_depth_context = create_context(() => 0);
+```
 
+```svelte
 <!-- Provider component sets the context -->
 <script>
   import type {Snippet} from 'svelte';
-  import { frontend_context } from './contexts.js';
+  import {frontend_context} from './frontend.svelte.js';
 
-  const {children}: {children: Snippet} = $props();
-  const frontend = new Frontend();
-  frontend_context.set(frontend);
+  const {app, children}: {app: Frontend; children: Snippet} = $props();
+  frontend_context.set(app);
 </script>
 
 {@render children()}
+```
 
+```svelte
 <!-- Consumer components get the context -->
 <script>
-  import { frontend_context } from './contexts.js';
-  const frontend = frontend_context.get();
+  import {frontend_context} from './frontend.svelte.js';
+  const app = frontend_context.get();
 </script>
 ```
 
+### Getter Function Context Pattern
+
+Some contexts wrap values in `() => T` so the reference stays stable while the
+underlying value can change:
+
+```typescript
+// Type is () => ThemeState, not ThemeState
+export const theme_state_context = create_context<() => ThemeState>();
+
+// Setting with a getter
+theme_state_context.set(() => theme_state);
+
+// Consuming - call the getter
+const get_theme_state = theme_state_context.get();
+const theme_state = get_theme_state();
+```
+
+Used when the context value might be reassigned (e.g., `theme_state` is a
+prop). Direct value contexts like `frontend_context` and `library_context` are
+for values stable for the context's lifetime.
+
 ### Common Contexts
 
-| Context                 | Type         | Purpose                        |
-| ----------------------- | ------------ | ------------------------------ |
-| `theme_state_context`   | `ThemeState` | Theme state and switching      |
-| `library_context`       | `Library`    | Package API metadata for docs  |
-| `tome_context`          | `Tome`       | Current documentation page     |
-| `frontend_context`      | `Frontend`   | Application state              |
-| `section_depth_context` | `number`     | Heading level depth (fallback) |
+**fuz_ui contexts:**
+
+| Context                      | Type                       | Source file                      | Purpose                       |
+| ---------------------------- | -------------------------- | -------------------------------- | ----------------------------- |
+| `theme_state_context`        | `() => ThemeState`         | `theme_state.svelte.ts`          | Theme state (getter pattern)  |
+| `library_context`            | `Library`                  | `library.svelte.ts`              | Package API metadata for docs |
+| `tomes_context`              | `() => Map<string, Tome>`  | `tome.ts`                        | Available documentation tomes |
+| `tome_context`               | `() => Tome`               | `tome.ts`                        | Current documentation page    |
+| `docs_links_context`         | `DocsLinks`                | `docs_helpers.svelte.ts`         | Documentation navigation      |
+| `section_depth_context`      | `number`                   | `TomeSection.svelte`             | Heading depth (fallback: 0)   |
+| `contextmenu_context`        | `() => ContextmenuState`   | `contextmenu_state.svelte.ts`    | Context menu state (getter)   |
+| `contextmenu_dimensions_context` | `Dimensions`           | `contextmenu_state.svelte.ts`    | Context menu positioning      |
+| `selected_variable_context`  | `SelectedStyleVariable`    | `style_variable_helpers.svelte.ts` | Style variable selection    |
+| `mdz_components_context`     | `MdzComponents`            | `mdz_components.ts`              | Custom mdz components         |
+| `mdz_base_context`           | `() => string \| undefined` | `mdz_components.ts`             | Base path for mdz links       |
+
+**zzz contexts:**
+
+| Context              | Type       | Source file          | Purpose           |
+| -------------------- | ---------- | -------------------- | ----------------- |
+| `frontend_context`   | `Frontend` | `frontend.svelte.ts` | Application state |
 
 ## Snippet Patterns
 
 Svelte 5 replaces slots with snippets (`{#snippet}` and `{@render}`).
 
-### Basic Snippets
+### The `children` Snippet
+
+Implicit `children` replaces the default slot. Typed as `Snippet` (or
+`Snippet<[params]>` with parameters):
 
 ```svelte
-<!-- Card.svelte -->
-<script>
+<script lang="ts">
 	import type {Snippet} from 'svelte';
 
-	const {
-		header,
-		content,
-	}: {
-		header?: Snippet;
-		content?: Snippet;
-	} = $props();
+	const {children}: {children: Snippet} = $props();
 </script>
 
-<div class="card">
-	{#if header}
-		<div class="card-header">
-			{@render header()}
-		</div>
-	{/if}
-	{#if content}
-		<div class="card-content">
-			{@render content()}
-		</div>
-	{/if}
+<div class="wrapper">
+	{@render children()}
 </div>
 ```
 
-Usage:
+Content between component tags becomes `children`:
 
 ```svelte
-<Card>
-	{#snippet header()}
-		<h2>Card Title</h2>
-	{/snippet}
+<Wrapper>
+	<p>This becomes the children snippet.</p>
+</Wrapper>
+```
 
-	{#snippet content()}
-		<p>Card body content here.</p>
-	{/snippet}
-</Card>
+### Children with Parameters
+
+`ThemeRoot` and `Dialog` pass data back to consumers via parameterized children:
+
+```svelte
+<!-- ThemeRoot.svelte passes theme_state, style, and html to children -->
+<script lang="ts">
+	const {children}: {
+		children: Snippet<[theme_state: ThemeState, style: string | null, theme_style_html: string | null]>;
+	} = $props();
+</script>
+
+{@render children(theme_state, style, theme_style_html)}
+```
+
+```svelte
+<!-- Dialog.svelte passes a close function -->
+<script lang="ts">
+	const {children}: {
+		children: Snippet<[close: (e?: Event) => void]>;
+	} = $props();
+</script>
+
+{@render children(close)}
+```
+
+### Named Snippets
+
+```svelte
+<script lang="ts">
+	import type {Snippet} from 'svelte';
+
+	const {
+		summary,
+		children,
+	}: {
+		summary: string | Snippet;
+		children: Snippet;
+	} = $props();
+</script>
+
+<details>
+	<summary>
+		{#if typeof summary === 'string'}
+			{summary}
+		{:else}
+			{@render summary()}
+		{/if}
+	</summary>
+	{@render children()}
+</details>
 ```
 
 ### Snippets with Parameters
@@ -323,32 +474,13 @@ Usage:
 {/if}
 ```
 
-Usage:
-
-```svelte
-<List items={users}>
-	{#snippet item(user)}
-		<span>{user.name} ({user.email})</span>
-	{/snippet}
-
-	{#snippet empty()}
-		<em>No users found.</em>
-	{/snippet}
-</List>
-```
-
 ### Default Snippet Content
 
 ```svelte
-<!-- Component with default snippet -->
 <script lang="ts">
 	import type {Snippet} from 'svelte';
 
-	const {
-		menu,
-	}: {
-		menu?: Snippet;
-	} = $props();
+	const {menu}: {menu?: Snippet} = $props();
 </script>
 
 {#if menu}
@@ -359,42 +491,20 @@ Usage:
 {/if}
 ```
 
-### Menu and Contextmenu Snippets
+### Icon as String or Snippet
 
-Common pattern for contextmenus and dropdowns:
+`Card` and `Alert` accept icons as string (emoji) or Snippet:
 
-```svelte
-<!-- Item.svelte -->
-<script lang="ts">
-	import type {Snippet} from 'svelte';
-	import Contextmenu from './Contextmenu.svelte';
-
-	const {
-		contextmenu,
-	}: {
-		contextmenu?: Snippet;
-	} = $props();
-</script>
-
-<div class="item">
-	<!-- content -->
-	{#if contextmenu}
-		<Contextmenu>
-			{@render contextmenu()}
-		</Contextmenu>
-	{/if}
-</div>
+```typescript
+const {icon}: {icon?: string | Snippet} = $props();
 ```
 
-Usage:
-
 ```svelte
-<Item>
-	{#snippet contextmenu()}
-		<MenuItem onclick={handle_edit}>Edit</MenuItem>
-		<MenuItem onclick={handle_delete}>Delete</MenuItem>
-	{/snippet}
-</Item>
+{#if typeof final_icon === 'string'}
+	{final_icon}
+{:else}
+	{@render final_icon()}
+{/if}
 ```
 
 ## Effect Patterns
@@ -433,12 +543,33 @@ $effect(() => {
 
 ### `$effect.pre()`
 
-Runs before DOM updates (like Svelte 4's `beforeUpdate`):
+Runs before DOM updates. Used in fuz_ui for dev-mode validation and in zzz
+for scroll position management:
 
 ```typescript
-$effect.pre(() => {
-	// Access DOM state before Svelte updates it
-	previous_scroll = container.scrollTop;
+// Dev-mode validation (GithubLink.svelte)
+if (DEV) {
+	$effect.pre(() => {
+		if (!path && !href_prop) {
+			throw new Error('GithubLink requires either `path` or `href` prop');
+		}
+	});
+}
+```
+
+### `effect_with_count()`
+
+From `@fuzdev/fuz_ui/rune_helpers.svelte.js` — passes call count to the
+effect, useful for skipping the initial run:
+
+```typescript
+import {effect_with_count} from '@fuzdev/fuz_ui/rune_helpers.svelte.js';
+
+// Skip the first run (count === 1), save on subsequent changes
+effect_with_count((count) => {
+	const v = theme_state.color_scheme;
+	if (count === 1) return; // skip initial
+	save_color_scheme(v);
 });
 ```
 
@@ -459,7 +590,7 @@ $effect(() => {
 });
 ```
 
-**Use cases for `untrack()`:**
+**Use cases:**
 
 - Reading configuration that shouldn't trigger re-runs
 - Accessing stable references (event handlers, callbacks)
@@ -467,15 +598,14 @@ $effect(() => {
 
 ## Attachment Patterns
 
-Svelte 5 replaces actions with attachments (`{@attach}`). Attachments in fuz_ui
-live in `*.svelte.ts` files and use the `Attachment` type from
+Svelte 5 attachments (`{@attach}`) replace actions (`use:`). In fuz_ui,
+attachments live in `*.svelte.ts` files and use `Attachment` from
 `svelte/attachments`.
 
 ### Attachment API
 
-An attachment is a function `(element) => cleanup | void`. In fuz_ui,
-attachments use a **factory pattern** — the exported function accepts
-configuration and returns the `Attachment`:
+An attachment is `(element) => cleanup | void`. fuz_ui uses a **factory
+pattern** — the export accepts configuration and returns the `Attachment`:
 
 ```typescript
 import type {Attachment} from 'svelte/attachments';
@@ -494,10 +624,10 @@ Usage: `{@attach my_attachment()}` or `{@attach my_attachment({...options})}`
 
 ### fuz_ui Attachments
 
-#### `autofocus` — Focus on Mount
+#### `autofocus` -- Focus on Mount
 
-Solves the problem where the HTML `autofocus` attribute doesn't work when
-elements mount from reactive conditionals (`{#if}`) in SPAs.
+Solves the HTML `autofocus` attribute not working when elements mount from
+reactive conditionals (`{#if}`) in SPAs.
 
 ```typescript
 // autofocus.svelte.ts
@@ -506,7 +636,7 @@ import type {Attachment} from 'svelte/attachments';
 export const autofocus =
 	(options?: FocusOptions): Attachment<HTMLElement | SVGElement> =>
 	(el) => {
-		el.focus({focusVisible: true, ...options});
+		el.focus({focusVisible: true, ...options} as FocusOptions);
 	};
 ```
 
@@ -522,9 +652,9 @@ export const autofocus =
 <input {@attach autofocus({preventScroll: true})} />
 ```
 
-#### `intersect` — IntersectionObserver
+#### `intersect` -- IntersectionObserver
 
-Wraps the IntersectionObserver API with a **lazy function pattern** for reactive
+Wraps IntersectionObserver with a **lazy function pattern** for reactive
 callbacks that update without recreating the observer.
 
 ```typescript
@@ -565,38 +695,77 @@ export const intersect =
 }))}>
 ```
 
-#### `contextmenu_attachment` — Context Menu Data
+#### `contextmenu_attachment` -- Context Menu Data
 
-Caches context menu params on an element via dataset for later retrieval at
-interaction time. Simpler pattern — direct params, no lazy function.
+Caches context menu params on an element via dataset for later retrieval.
+Direct params, no lazy function. Returns cleanup that removes the cache entry.
 
 ```typescript
 // contextmenu_state.svelte.ts (exported alongside Contextmenu state class)
 export const contextmenu_attachment =
-	<T extends ContextmenuParams>(
-		params: T | Array<T> | null | undefined,
+	<T extends ContextmenuParams, U extends T | Array<T>>(
+		params: U | null | undefined,
 	): Attachment<HTMLElement | SVGElement> =>
-	(el) => {
-		/* cache params in dataset */
+	(el): undefined | (() => void) => {
+		if (params == null) return;
+		// cache params in dataset, return cleanup
 	};
+```
+
+### Class Method Attachments (zzz)
+
+Attachments as methods on a state class, sharing reactive state with the
+instance:
+
+```typescript
+// scrollable.svelte.ts
+export class Scrollable {
+	scroll_y: number = $state(0);
+	readonly scrolled: boolean = $derived(this.scroll_y > this.threshold);
+
+	// Attachment as a class property - listens to scroll events
+	container: Attachment = (element) => {
+		const cleanup = on(element, 'scroll', () => {
+			this.scroll_y = element.scrollTop;
+		});
+		return () => cleanup();
+	};
+
+	// Attachment reads reactive state - reruns when `this.scrolled` changes
+	// because attachments run in an effect context
+	target: Attachment = (element) => {
+		if (this.scrolled) {
+			element.classList.add(this.target_class);
+		} else {
+			element.classList.remove(this.target_class);
+		}
+		return () => element.classList.remove(this.target_class);
+	};
+}
+```
+
+```svelte
+<div {@attach scrollable.container} {@attach scrollable.target}>
 ```
 
 ### Choosing a Pattern
 
-| Pattern                       | When to use                               | Example       |
-| ----------------------------- | ----------------------------------------- | ------------- |
-| **Simple factory**            | Fire-once, no ongoing observation         | `autofocus`   |
-| **Lazy function** (`() => p`) | Reactive callbacks without observer churn | `intersect`   |
-| **Direct params**             | Static config cached for later retrieval  | `contextmenu` |
+| Pattern                       | When to use                               | Example         |
+| ----------------------------- | ----------------------------------------- | --------------- |
+| **Simple factory**            | Fire-once, no ongoing observation         | `autofocus`     |
+| **Lazy function** (`() => p`) | Reactive callbacks without observer churn | `intersect`     |
+| **Direct params**             | Static config cached for later retrieval  | `contextmenu`   |
+| **Class method**              | Attachment shares state with a class      | `Scrollable`    |
 
 ### Writing a New Attachment
 
-1. Create `src/lib/my_attachment.svelte.ts` (use `.svelte.ts` for attachments)
+1. Create `src/lib/my_attachment.svelte.ts`
 2. Import `Attachment` type from `svelte/attachments`
 3. Export a factory function returning `Attachment<HTMLElement | SVGElement>`
-4. Return a cleanup function if holding resources (observers, listeners)
-5. Use `$effect` inside the attachment body for reactive behavior
-6. Add JSDoc with `@module` tag and `@param` tags
+4. Return cleanup if holding resources (observers, listeners)
+5. Use `$effect` inside for reactive behavior
+6. Use `on()` from `svelte/events` for programmatic event listeners
+7. Add JSDoc with `@module` and `@param` tags
 
 ## Props Patterns
 
@@ -618,66 +787,108 @@ export const contextmenu_attachment =
 
 ### Bindable Props
 
-```svelte
-<script lang="ts">
-	const {
-		value = $bindable(),
-	}: {
-		value: string;
-	} = $props();
-</script>
-
-<!-- Usage -->
-<Input bind:value={search} />
-```
-
-### Rest Props
+Use `let` (not `const`) for `$bindable()` props:
 
 ```svelte
 <script lang="ts">
-	import type {Snippet} from 'svelte';
-	import type {HTMLAttributes} from 'svelte/elements';
-
-	const {
-		variant = 'primary',
+	let {
+		value = $bindable(180),
 		children,
-		...rest
-	}: HTMLAttributes<HTMLDivElement> & {
-		variant?: 'primary' | 'secondary';
+	}: {
+		value?: number;
 		children?: Snippet;
 	} = $props();
 </script>
 
-<div class="box {variant}" {...rest}>
-	{#if children}
-		{@render children()}
-	{/if}
+<!-- Usage -->
+<HueInput bind:value={hue} />
+```
+
+Real examples from fuz_ui:
+
+```typescript
+// HueInput.svelte
+let {value = $bindable(180), children, ...rest} = $props();
+
+// Details.svelte
+let {open = $bindable(), ...rest} = $props();
+
+// DocsSearch.svelte
+let {search_query = $bindable(), ...rest} = $props();
+```
+
+### Rest Props with SvelteHTMLElements
+
+Use `SvelteHTMLElements` from `svelte/elements` intersected with custom props:
+
+```svelte
+<script lang="ts">
+	import type {Snippet} from 'svelte';
+	import type {SvelteHTMLElements} from 'svelte/elements';
+
+	const {
+		align = 'left',
+		icon,
+		children,
+		...rest
+	}: SvelteHTMLElements['div'] & SvelteHTMLElements['a'] & {
+		align?: 'left' | 'right' | 'above' | 'below';
+		icon?: string | Snippet;
+		children: Snippet;
+	} = $props();
+</script>
+
+<div {...rest} class="card {rest.class}">
+	{@render children()}
 </div>
 ```
+
+Use `SvelteHTMLElements['div']` (not `HTMLAttributes<HTMLDivElement>`).
+`rest.class` preserves user-provided classes alongside component classes.
 
 ## Event Handling
 
 Svelte 5 uses standard DOM event syntax:
 
 ```svelte
-<!-- Svelte 5 -->
 <button onclick={handle_click}>Click</button>
 <input oninput={(e) => value = e.currentTarget.value} />
 
-<!-- Event modifiers via wrapper functions -->
-<script>
-  function prevent_default<T extends Event>(fn: (e: T) => void) {
-    return (e: T) => {
-      e.preventDefault();
-      fn(e);
-    };
-  }
-</script>
+<!-- Conditional event handlers (pass undefined to remove) -->
+<svelte:window onkeydown={active ? on_window_keydown : undefined} />
+```
 
-<form onsubmit={prevent_default(handle_submit)}>
+### Programmatic Event Listeners
+
+`on()` from `svelte/events` for programmatic listeners (attachments,
+`.svelte.ts` files). Returns cleanup:
+
+```typescript
+import {on} from 'svelte/events';
+
+// Inside an attachment
+const cleanup = on(element, 'scroll', onscroll);
+return () => cleanup();
 ```
 
 ## Component Composition
+
+### Module Script Block
+
+`<script lang="ts" module>` for component-level exports (contexts, types):
+
+```svelte
+<script lang="ts" module>
+	import {create_context} from './context_helpers.js';
+
+	export const section_depth_context = create_context(() => 0);
+	export type RegisterSectionHeader = (get_fragment: () => string) => string | undefined;
+</script>
+
+<script lang="ts">
+	// instance script
+</script>
+```
 
 ### Forwarding Snippets
 
@@ -725,19 +936,109 @@ Svelte 5 uses standard DOM event syntax:
 {/each}
 ```
 
+### Dynamic Elements
+
+`svelte:element` for components rendering different HTML tags:
+
+```svelte
+<script lang="ts">
+	const {tag, href, children, ...rest} = $props();
+
+	const link = $derived(!!href);
+	const final_tag = $derived(tag ?? (link ? 'a' : 'div'));
+</script>
+
+<svelte:element this={final_tag} {...rest} {href}>
+	{@render children()}
+</svelte:element>
+```
+
+### Transitions
+
+```svelte
+<script>
+	import {slide} from 'svelte/transition';
+</script>
+
+{#if open}
+	<div transition:slide>{@render children()}</div>
+{/if}
+```
+
+## Runes in .svelte.ts Files
+
+`.svelte.ts` files use runes (`$state`, `$derived`, `$effect`) outside
+components.
+
+### Factory Functions with Getter/Setter Proxies
+
+```typescript
+// api_search.svelte.ts
+export const create_api_search = (library: Library): ApiSearchState => {
+	let query = $state('');
+	const all_modules = $derived(library.modules_sorted);
+	const filtered_modules = $derived.by(() => {
+		if (!query.trim()) return all_modules;
+		const terms = query.trim().toLowerCase().split(/\s+/);
+		return all_modules.filter((m) => {
+			const path_lower = m.path.toLowerCase();
+			return terms.every((term) => path_lower.includes(term));
+		});
+	});
+
+	return {
+		get query() { return query; },
+		set query(v: string) { query = v; },
+		modules: {
+			get all() { return all_modules; },
+			get filtered() { return filtered_modules; },
+		},
+	};
+};
+```
+
+### Reactive State Classes
+
+The most common pattern for shared state:
+
+```typescript
+// dimensions.svelte.ts
+export class Dimensions {
+	width: number = $state(0);
+	height: number = $state(0);
+}
+```
+
+### Effect Helpers
+
+```typescript
+// rune_helpers.svelte.ts
+export const effect_with_count = (fn: (count: number) => void, initial = 0): void => {
+	let count = initial;
+	$effect(() => {
+		fn(++count);
+	});
+};
+```
+
 ## Quick Reference
 
-| Pattern         | Use Case                           |
-| --------------- | ---------------------------------- |
-| `$state()`      | Mutable UI state, form data        |
-| `$state.raw()`  | API responses, immutable data      |
-| `$derived`      | Simple computed values             |
-| `$derived.by()` | Complex logic, loops, conditionals |
-| `$effect`       | Side effects, subscriptions        |
-| `$effect.pre()` | Before DOM update                  |
-| `untrack()`     | Read without tracking              |
-| `$props()`      | Component inputs                   |
-| `$bindable()`   | Two-way binding props              |
-| `{#snippet}`    | Named content slots                |
-| `{@render}`     | Render snippets                    |
-| `{@attach}`     | DOM element behaviors              |
+| Pattern              | Use Case                                      |
+| -------------------- | --------------------------------------------- |
+| `$state()`           | Mutable UI state, form data, class properties |
+| `$state()!`          | Class properties initialized by constructor   |
+| `$state.raw()`       | API responses, ReadonlyArrays, immutable data |
+| `$derived`           | Simple computed values, class properties       |
+| `$derived.by()`      | Complex logic, loops, conditionals             |
+| `$effect`            | Side effects, subscriptions                    |
+| `$effect.pre()`      | Before DOM update, dev-mode validation         |
+| `effect_with_count`  | Skip initial effect run                        |
+| `untrack()`          | Read without tracking                          |
+| `$props()`           | Component inputs (`const` or `let`)            |
+| `$bindable()`        | Two-way binding props (requires `let`)         |
+| `{#snippet}`         | Named content areas                            |
+| `{@render}`          | Render snippets                                |
+| `{@attach}`          | DOM element behaviors (replaces `use:`)        |
+| `create_context`     | Typed Svelte context                           |
+| `SvelteMap/Set`      | Reactive Map/Set collections                   |
+| `on()` (events)      | Programmatic event listeners                   |

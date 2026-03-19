@@ -1,23 +1,21 @@
 # TSDoc Comment Style Guide
 
-Conventions for JSDoc/TSDoc comments across the `@fuzdev` ecosystem
-(`fuz_ui`, `fuz_css`, `fuz_util`, `svelte-docinfo`) and `@fuzdev/gro`.
+JSDoc/TSDoc conventions for `@fuzdev` packages.
 
 ## Overview
 
 Doc comments flow through a three-stage pipeline:
 
-1. **`svelte-docinfo`** extracts JSDoc/TSDoc from TypeScript AST at build time,
-   producing structured metadata for each exported declaration
-2. **Gro gen tasks** run `svelte-docinfo` and output `library.json` with all
+1. **fuz_ui analysis** — `tsdoc_helpers.ts`, `ts_helpers.ts`,
+   `svelte_helpers.ts` extract JSDoc/TSDoc from TypeScript AST, producing
+   structured metadata per declaration
+2. **Gro gen tasks** — `library.gen.ts` outputs `library.json` with all
    module and declaration metadata
-3. **`mdz`** (fuz_ui's markdown dialect) renders documentation with
-   auto-linking — backtick-wrapped identifiers become clickable links to API
-   docs
+3. **`mdz`** renders docs with auto-linking — backticked identifiers become
+   clickable links to API docs
 
-As a doc comment author, the key thing to know is: **write standard JSDoc with
-the tags below, wrap identifier references in backticks, and the system handles
-the rest.**
+**Write standard JSDoc with the tags below, wrap identifier references in
+backticks, and the system handles the rest.**
 
 ## Writing Good Documentation
 
@@ -44,8 +42,6 @@ solves.
 ```
 
 ### Document workflows with numbered steps
-
-For multi-stage processes, numbered steps make the flow scannable:
 
 ```ts
 /**
@@ -78,8 +74,6 @@ For multi-stage processes, numbered steps make the flow scannable:
 
 ### Explain system context
 
-Show where this fits in the larger architecture:
-
 ```ts
 /**
  * Waits for package version to propagate to NPM registry.
@@ -91,14 +85,14 @@ Show where this fits in the larger architecture:
 
 ### When to document
 
-Focus doc comments on:
+Focus on:
 
-- **Public API surfaces** — all exported functions that consumers use
-- **Complexity** — where the "why" isn't obvious from the code
+- **Public API surfaces** — all exported functions consumers use
+- **Complexity** — where the "why" isn't obvious
 - **Side effects** — mutations, async operations, error conditions
-- **Domain knowledge** — business rules, algorithms, mathematical concepts
+- **Domain knowledge** — business rules, algorithms
 
-When to skip:
+Skip:
 
 - Simple getters/setters with obvious behavior
 - Internal helpers with clear names
@@ -108,8 +102,8 @@ When to skip:
 
 ### Main description
 
-Complete sentences ending in a period. For longer descriptions, separate the
-summary from details with a blank line:
+Complete sentences ending in a period. Separate summary from details with a
+blank line:
 
 ```ts
 /**
@@ -122,23 +116,15 @@ summary from details with a blank line:
 
 ### `@param`
 
-Documents function parameters.
-
 **Format:** `@param name - description`
 
-**Rules:**
-
-- use a hyphen separator between name and description (per TSDoc spec)
-- **single-sentence descriptions:** lowercase first word, no trailing period
-- **multi-sentence descriptions:** capitalize first word, end with a period
-  (all sentences punctuated normally)
-- acronyms (CSS, HTML, URL, JSON, API, DOM) and proper names (Zod, Fisher-Yates)
-  stay uppercase regardless
-- wrap type/identifier references in backticks (same as main descriptions)
-- must be in source parameter order
-- can include type constraints or expected formats
-- the parser strips the leading `- ` for clean rendering, so forgetting it
-  is harmless
+- Hyphen separator (per TSDoc spec)
+- **Single-sentence:** lowercase, no period
+- **Multi-sentence:** capitalize, end with period
+- Acronyms (CSS, HTML, URL) and proper names (Zod, Fisher-Yates) stay uppercase
+- Wrap type/identifier references in backticks
+- Must be in source parameter order
+- Parser strips leading `- ` for rendering
 
 ```ts
 /**
@@ -148,7 +134,7 @@ Documents function parameters.
  */
 ```
 
-Multi-sentence example:
+Multi-sentence:
 
 ```ts
 /**
@@ -160,15 +146,7 @@ Multi-sentence example:
 
 ### `@returns`
 
-Describes the return value. Use `@returns` (not `@return`). Wrap type references
-in backticks.
-
-**Rules:**
-
-- **single-sentence descriptions:** lowercase first word, no trailing period
-- **multi-sentence descriptions:** capitalize first word, end with a period
-- acronyms (CSS, HTML, URL, JSON, API, DOM) and proper names stay uppercase
-  regardless
+Use `@returns` (not `@return`). Same capitalization rules as `@param`.
 
 ```ts
 /**
@@ -191,30 +169,30 @@ export async function fetch_user(id: string): Promise<User> {
 
 ### `@throws`
 
-Documents errors that can be thrown. Multiple `@throws` tags list all possible
-errors.
+Three formats (all used):
 
-Formats:
-
-- `@throws ErrorType description of when this is thrown`
-- `@throws just description without type`
+- `@throws ErrorType description` — type as first word (most common)
+- `@throws {ErrorType} description` — type in curly braces
+- `@throws description` — no type
 
 ```ts
 /**
- * Validates and parses user input.
- * @param input - untrusted user input
- * @returns parsed data
- * @throws TypeError if input is not a string
- * @throws SyntaxError if JSON parsing fails
- * @throws RangeError if input exceeds 1000 characters
+ * @throws Error if task with given name doesn't exist
+ */
+
+/**
+ * @throws {TaskError} if production cycles detected
+ */
+
+/**
+ * @throws if timeout_ms is negative
  */
 ```
 
 ### `@example`
 
-Code examples showing how to use the identifier. Multiple examples allowed.
-Code must be wrapped in fenced code blocks for syntax highlighting — `mdz`
-renders examples as markdown.
+Code must be in fenced code blocks for syntax highlighting — `mdz` renders
+examples as markdown.
 
 ````ts
 /**
@@ -234,7 +212,7 @@ renders examples as markdown.
  */
 ````
 
-Interface fields can have inline `@example` tags too:
+Interface fields can have inline `@example` tags:
 
 ````ts
 export interface ModuleSourceOptions {
@@ -256,8 +234,8 @@ export interface ModuleSourceOptions {
 
 ### `@deprecated`
 
-Marks an identifier as deprecated. Include migration guidance with
-backtick-linked replacement:
+Include migration guidance with backtick-linked replacement. Rarely used —
+"no backwards compatibility" policy means deprecated code is usually deleted.
 
 ```ts
 /**
@@ -268,16 +246,17 @@ backtick-linked replacement:
 
 ### `@see`
 
-Links to related references. Used for both external URLs and sibling module
-cross-references.
+Three patterns:
 
-For external URLs, use `{@link}` syntax:
+**External URLs** — `{@link}` for display text, bare URL when self-explanatory:
 
 ```ts
+/** @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event} */
 /** @see {@link https://tools.ietf.org/html/rfc5322|RFC 5322} */
+/** @see https://github.com/colinhacks/zod#brand */
 ```
 
-For sibling modules, use the module filename directly:
+**Sibling modules** — filename for cross-references within a package:
 
 ```ts
 /**
@@ -291,16 +270,16 @@ For sibling modules, use the module filename directly:
  */
 ```
 
-For identifiers within the same codebase, wrap in backticks instead of using
-`{@link}`:
+**Identifiers** — wrap in backticks (not `{@link}`):
 
 ```ts
 /** @see `tsdoc_parse` for the extraction step */
+/** @see `format_number` in `maths.ts` for the underlying implementation. */
 ```
 
 ### `@since`
 
-Documents what version introduced this identifier:
+Supported by the parser but not currently used. Use when versioning matters.
 
 ```ts
 /**
@@ -339,60 +318,39 @@ const {
 
 ### `@nodocs` (non-standard)
 
-Excludes a declaration from documentation generation and flat namespace
-validation. This is a `svelte-docinfo` extension not in standard TSDoc.
+Excludes from docs generation and flat namespace validation. Supported by
+fuz_ui's `tsdoc_helpers.ts` and `svelte-docinfo`.
 
 Use cases:
 
-- Internal helpers that shouldn't appear in public API docs
-- Declarations that conflict with the flat namespace but need to coexist
+- **Gro task exports** — `Args` and `task` are build system internals (most
+  common use)
+- **Gen file exports** — `gen` function called by Gro
+- **Flat namespace conflicts** — declarations that need to coexist
 
 ```ts
-/**
- * Internal helper for parsing — not part of public API.
- * @nodocs
- */
-export function internal_parse_helper(input: string): void {
-	// ...
-}
+/** @nodocs */
+export const Args = z.object({...});
+
+/** @nodocs */
+export const task: Task<typeof Args> = {...};
 ```
 
-Prefer renaming to follow `domain_action` patterns when possible. Use
-`@nodocs` only when exclusion is the right solution.
+Prefer renaming to `domain_action` patterns when possible. Use `@nodocs` only
+when exclusion is the right solution.
 
 ### `@mutates` (non-standard)
 
-Documents side effects when a function mutates its parameters or external state.
-This is a `svelte-docinfo` extension not in standard TSDoc.
+Documents mutations to parameters or external state. Supported by fuz_ui's
+`tsdoc_helpers.ts`.
 
-**Format:** `@mutates <target> - <description>`
+Two formats:
 
-**Rules:**
+- `@mutates target - description` — bare name with hyphen (most common)
+- `` @mutates `target` `` — backtick-wrapped, no description (when obvious)
 
-- use a hyphen separator between target and description (consistent with
-  `@param`)
-- **single-sentence descriptions:** lowercase first word, no trailing period
-- **multi-sentence descriptions:** capitalize first word, end with a period
-- proper nouns (Fisher-Yates) and acronyms stay uppercase regardless
-- explicitly state what mutation happens
-- only document mutations that "leak" — visible outside the function
-- the parser strips the leading `- ` for clean rendering
-
-**What to document:**
-
-- direct parameter mutations (arrays, objects, DOM events)
-- mutations to module-level variables
-- mutations to static class properties
-- calls to functions that mutate parameters
-- mutations to objects in nested properties (like `options.cache`)
-
-**What NOT to document:**
-
-- internal-only mutations (local variables, closure state)
-- mutations to instance properties (`this.x` in class methods)
-- mutations that don't escape the function scope
-
-Examples:
+Same capitalization rules as `@param`. Only document mutations visible outside
+the function — not internal locals, closure state, or `this.x` in methods.
 
 ```ts
 /**
@@ -407,61 +365,61 @@ export function shuffle<T>(array: T[]): T[] {
 
 ```ts
 /**
- * Handles the value of an event's target and invokes a callback.
- * @mutates event - calls `swallow` which mutates the event if `swallow_event` is true
- */
-```
-
-```ts
-/**
- * Apply parsed TSDoc metadata to a declaration.
- * @param declaration - declaration object to update
- * @param tsdoc - parsed TSDoc comment (if available)
- * @mutates declaration - adds `doc_comment`, `deprecated_message`, `examples`, `see_also`, `throws`, `since` fields
+ * Apply named middleware specs to a Hono app.
+ *
+ * @param app - the Hono app
+ * @param specs - middleware specs to apply
+ * @mutates `app`
  */
 ```
 
 ### `@module`
 
-Marks a module-level doc comment. Place at the end of the comment block. See
-[Module-level documentation](#module-level-documentation) for full patterns.
+Marks a module-level doc comment. Place at end of comment block. Works in
+`.ts` files and `.svelte` components.
+
+```svelte
+<script lang="ts">
+	/**
+	 * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/alert/}
+	 *
+	 * @module
+	 */
+</script>
+```
 
 ### Tag order
-
-When multiple tags are present, follow this order:
 
 1. Main description
 2. `@param` (in source parameter order)
 3. `@returns`
-4. `@throws`
-5. `@example`
-6. `@deprecated`
-7. `@see`
-8. `@since`
-9. `@default`
-10. `@nodocs`
-11. `@mutates`
+4. `@mutates`
+5. `@throws`
+6. `@example`
+7. `@deprecated`
+8. `@see`
+9. `@since`
+10. `@default`
+11. `@nodocs`
+
+`@mutates` goes after `@returns` (or after `@param` if no return), logically
+adjacent to parameter and return documentation.
 
 ## Inter-linking with mdz
 
-`mdz` auto-links backtick-wrapped identifiers to API documentation. This is the
-primary mechanism for cross-referencing within doc comments.
+Backtick-wrapped identifiers auto-link to API docs.
 
 ### How it works
 
 1. `mdz` parses backtick content as `Code` nodes
-2. `DocsLink.svelte` resolves each reference:
-   - first tries `library.lookup_declaration(reference)` — matches exported
-     functions, types, classes, variables
-   - then tries `library.lookup_module(reference)` — matches module filenames
-   - falls back to plain `<code>` if neither matches
-3. Matched references render as clickable links to the API docs page
+2. `DocsLink.svelte` resolves: `library.lookup_declaration(ref)` →
+   `library.lookup_module(ref)` → plain `<code>` fallback
+3. Matches render as clickable links to API docs
 
 ### Always link
 
-**Wrap every mention of an exported identifier, module filename, or type name in
-backticks.** This maximizes discoverability — readers can click through to see
-the full API.
+**Wrap every mention of an exported identifier, module filename, or type name
+in backticks.** This maximizes discoverability.
 
 ```ts
 /**
@@ -484,17 +442,10 @@ What to wrap:
 
 ### Internal paths
 
-Paths starting with `/` after whitespace are auto-linked as internal navigation:
+Paths starting with `/` after whitespace auto-link as internal navigation.
 
-```ts
-/**
- * See /docs/api for the full API reference.
- */
-```
-
-**Gotcha — API route lists in backend modules**: Any `/word` pattern gets
-auto-linked, including HTTP route paths. In backend module docs that list routes,
-bare paths create broken internal links that fail SvelteKit prerender:
+**Gotcha — API route lists**: `/word` patterns get auto-linked, including HTTP
+routes. Bare paths create broken links that fail SvelteKit prerender:
 
 ```ts
 // BAD — mdz auto-links /login as internal route, breaks prerender
@@ -512,13 +463,11 @@ bare paths create broken internal links that fail SvelteKit prerender:
 
 ### Case sensitivity
 
-References are case-sensitive and must match the exact exported identifier name.
-`` `library` `` will NOT match `Library`.
+References are case-sensitive. `` `library` `` will NOT match `Library`.
 
 ### `{@link}` vs backticks
 
-Use backticks for identifier references. Reserve `{@link}` for external URLs in
-`@see` tags:
+Backticks for identifiers. `{@link}` for external URLs in `@see`:
 
 ```ts
 // Preferred — backtick for identifier
@@ -535,10 +484,10 @@ Use backticks for identifier references. Reserve `{@link}` for external URLs in
 
 ### Module-level documentation
 
-Every module should have a doc comment with the `@module` tag. This is the
-entry point for understanding the module's purpose.
+Prioritize `@module` for modules with design rationale, pipeline stages, or
+cross-references.
 
-**Basic pattern:**
+**Basic:**
 
 ```ts
 /**
@@ -551,8 +500,7 @@ entry point for understanding the module's purpose.
  */
 ```
 
-**Design sections** use `##` headings inside the doc comment for complex
-modules:
+**Design sections** with `##` headings for complex modules:
 
 ```ts
 /**
@@ -604,7 +552,7 @@ modules:
  */
 ```
 
-**Design philosophy** for core modules:
+**Design philosophy:**
 
 ```ts
 /**
@@ -623,8 +571,6 @@ modules:
 ```
 
 ### Functions
-
-Full tag example:
 
 ```ts
 /**
@@ -653,9 +599,6 @@ export const library_find_duplicates = (
 ```
 
 ### Classes
-
-Class-level docs describe hierarchy and purpose. Property docs for `$derived`
-fields use brief inline comments:
 
 ```ts
 /**
@@ -695,8 +638,6 @@ export class Library {
 ```
 
 ### Interfaces
-
-Field-level inline docs with `@default` and `@example`:
 
 ````ts
 /**
@@ -752,8 +693,7 @@ export interface ModuleSourceOptions {
 
 ### Svelte components
 
-Document props inline in the `$props()` type annotation using JSDoc on each
-field:
+Document props inline in the `$props()` type annotation:
 
 ```svelte
 <script lang="ts">
@@ -793,12 +733,10 @@ field:
 </script>
 ```
 
-For props with obvious types and no default, a comment is optional. Focus
-documentation on behavior, constraints, and non-obvious defaults.
+For obvious props with no default, a comment is optional. Focus on behavior,
+constraints, and non-obvious defaults.
 
 ### Type aliases
-
-Bullet lists describe union type variants:
 
 ```ts
 /**
@@ -813,8 +751,7 @@ export type AnalyzerType = 'typescript' | 'svelte';
 
 ### Bullet items
 
-Bullet items that are NOT complete sentences should use lowercase and no
-trailing period:
+Non-sentence bullets: lowercase, no trailing period:
 
 ```md
 - this is a bullet item describing something
@@ -824,39 +761,21 @@ trailing period:
 
 ## Auditing Coverage
 
-Use `generate_jsdoc_audit.ts` to audit JSDoc coverage across a project:
-
 ```bash
 gro run skills/fuz-stack/scripts/generate_jsdoc_audit.ts
 ```
 
-This generates `jsdoc_audit.md` containing a checklist of all files in
-`src/lib/` with status indicators for JSDoc presence.
+Generates `jsdoc_audit.md` — a checklist of `src/lib/` files with JSDoc.
+Files without JSDoc are not listed.
 
 ### When to audit
 
-- **Pre-release** — ensure public APIs are documented
-- **Post-refactoring** — verify documentation stayed in sync
-- **Code reviews** — identify documentation gaps
-- **Regular maintenance** — periodic documentation sweeps
-
-### Interpreting results
-
-- **Files WITH JSDoc** — review for accuracy, completeness, and adherence to
-  conventions
-- **Files WITHOUT JSDoc** — evaluate if documentation is needed (many utility
-  functions don't need JSDoc if TypeScript types are sufficient)
+- Pre-release — ensure public APIs are documented
+- Post-refactoring — verify docs stayed in sync
+- Code reviews — identify documentation gaps
 
 ## Ecosystem Conventions
 
-These conventions are shared across `@fuzdev` packages:
-
-- `fuz_ui` — Svelte UI components, `mdz` rendering, documentation system
-- `fuz_css` — CSS framework and design system
-- `fuz_util` — general-purpose utilities
-- `svelte-docinfo` — build-time code analysis and metadata extraction
-- Gro (`@fuzdev/gro`) — build system and code generation
-
-All packages use the same identifier naming pattern (`domain_action`), the same
-JSDoc tag conventions, and generate documentation through the same
-`svelte-docinfo` → `library.json` → `mdz` pipeline.
+Shared across `@fuzdev` packages (fuz_ui, fuz_css, fuz_util, fuz_app, gro).
+All use `domain_action` naming, the same JSDoc tags, and generate docs through
+fuz_ui analysis → `library.json` → `mdz` pipeline.
