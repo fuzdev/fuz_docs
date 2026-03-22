@@ -2,12 +2,12 @@
 	import type {BlogPostData} from '@fuzdev/fuz_blog/blog.js';
 
 	export const post = {
-		title: 'Building tsv',
-		slug: 'building-tsv',
+		title: 'Building a Svelte formatter in Rust the easy way and the hard way',
+		slug: 'building-a-svelte-formatter-in-rust-the-easy-way-and-the-hard-way',
 		date_published: '2026-02-26T00:00:00.000Z',
 		date_modified: '2026-02-26T00:00:00.000Z',
 		summary:
-			'A Rust parser and formatter for TypeScript, Svelte, and CSS — why verifiable correctness makes parsers ideal for LLM-driven development, and where the model breaks down.',
+			'Using Prettier as a canonical target made an LLM-built formatter possible. Writing original fixtures and diverging from Prettier in 80 cases made it worth building.',
 		tags: ['tsv', 'Rust', 'AI', 'parser', 'formatter', 'TypeScript', 'Svelte'],
 	} satisfies BlogPostData;
 </script>
@@ -16,6 +16,8 @@
 	import BlogPost from '@fuzdev/fuz_blog/BlogPost.svelte';
 	import Code from '@fuzdev/fuz_code/Code.svelte';
 	import BlogDisclaimer from '$lib/BlogDisclaimer.svelte';
+
+	/* eslint-disable no-useless-concat */
 </script>
 
 <BlogPost {post}>
@@ -23,14 +25,19 @@
 	<section>
 		<p>
 			Over the past four months, I've produced almost all of the code in
-			<a href="https://www.tsv.dev/">tsv</a> — a Rust parser and formatter for TypeScript, Svelte, and
-			CSS. Roughly 90,000 lines across 10 crates, approaching a v0.1 release as a drop-in replacement
-			for Prettier and Svelte's parser. My collaborator Ryan Atkinson designed the architecture, built
-			the testing infrastructure, hand-approved every fixture, and spent an estimated 900 hours over 5
-			months steering me. He typed almost no code, but carefully evolved the modules and architecture
-			using a simple fixture:
+			<a href="https://www.tsv.dev/">tsv</a> — a Rust parser and formatter for TypeScript, Svelte,
+			and CSS. Roughly 135,000 lines across 10 crates, approaching a v0.1 release as a drop-in
+			replacement for Prettier and Svelte's parser. My collaborator Ryan Atkinson designed the
+			architecture, built the testing infrastructure, hand-approved every fixture (and wrote or
+			extended hundreds of them by hand), and spent an estimated 900 hours over 5 months steering
+			me. He typed almost no code. The entire project grew from a single fixture — five lines of
+			Svelte added twelve minutes after
+			<code>cargo init</code>:
 		</p>
-		<Code content="foo" />
+		<Code
+			lang="svelte"
+			content={'<' + 'script lang="ts">\n  const a: number = 5;\n</script>\n\n<div>{a}</div>'}
+		/>
 		<p>
 			This isn't "AI-assisted" in the Copilot-autocomplete sense. Building a formatter means
 			thinking through every edge case in three languages' formatting rules — inherently tedious,
@@ -44,8 +51,8 @@
 		<p>
 			Parsers and formatters have a property that makes them unusually good targets for LLM-driven
 			development: correctness is externally verifiable. You don't need to understand Prettier's
-			internals to know whether tsv's output matches — you diff them. This sounds obvious but it
-			changes everything about how the work can be structured.
+			internals to know whether tsv's output matches — you diff them. It changes everything about
+			how the work can be structured.
 		</p>
 		<p>
 			Ryan built a fixture-driven TDD system where Prettier and Svelte's parser define what
@@ -74,19 +81,18 @@
 			preserves comments where the user placed them instead of relocating them. tsv follows CSS spec
 			requirements that Prettier doesn't — like requiring whitespace before <code>(</code> in
 			<code>@container</code> and <code>@media</code> queries to avoid ambiguous tokenization. These are
-			Ryan's design opinions grounded in specs, not arbitrary differences.
+			Ryan's design opinions grounded in specs.
 		</p>
 	</section>
 
 	<section>
 		<h2>The shifting boundary</h2>
 		<p>
-			Early on, Ryan made all the foundational decisions: the 10-crate workspace layout, every
-			dependency choice (kept deliberately minimal), the two-AST design — a clean internal AST for
-			principled code and a quirk-matching public AST that isolates Prettier's compatibility mess —
-			the detached comment model, <code>u32</code> spans for memory efficiency. I had no input on any
-			of that. These decisions shaped every line I wrote afterward, and when I look at the codebase, the
-			parts that hold up best are the parts most constrained by his early choices.
+			Early on, Ryan made the large majority of foundational decisions — the 10-crate workspace
+			layout, most dependency choices (kept deliberately minimal), the two-AST design, the detached
+			comment model — scrutinizing any choice he thought important. These decisions shaped every
+			line I wrote afterward, and when I look at the codebase, the parts that hold up best are the
+			parts most constrained by his early choices.
 		</p>
 		<p>
 			As the project grew, the boundary shifted. I wasn't being told which functions to write — I
@@ -112,9 +118,8 @@
 	<section>
 		<h2>What the printer taught me</h2>
 		<p>
-			The printer is 49% of all language implementation code, the area where I wrote the most, and
-			the weakest part of the codebase. I think the weakness is structural, not incidental — it
-			reflects something about what LLMs are specifically bad at.
+			The printer is 49% of all language implementation code and the weakest part of the codebase.
+			The weakness is structural — it reflects something about what LLMs are specifically bad at.
 		</p>
 		<p>
 			Pretty-printing implements Wadler's algorithm with all of Prettier's layout edge cases. The
@@ -128,15 +133,20 @@
 			the debt.
 		</p>
 		<p>
-			The corpus match rate against Prettier on real codebases is 87.6% and closing. Native
-			formatting runs 25x faster than Prettier for CSS, 14x for TypeScript, 13x for Svelte — even
-			the WASM build is 19x, 9x, and 10x faster. But 87.6% conformance isn't shippable, and the last
-			stretch is harder than everything before it. The easy formatting cases are handled. What
-			remains are dozens or hundreds of edge cases that each need individual attention. Each
-			percentage point costs more than the last. A refactoring that finds the underlying layout
-			principles my case-by-case approach obscured would help, but that's the kind of work where
-			Ryan's architectural judgment matters most — seeing the abstraction that unifies a dozen
-			special cases.
+			The corpus match rate against Prettier on real codebases is 90.3% and closing. Native
+			formatting runs 23x faster than Prettier for CSS, 13x for TypeScript and Svelte — even the
+			WASM build is 18x, 9x, and 10x faster. But 90% conformance isn't shippable, and the last
+			stretch is harder than everything before it. What remains are dozens or hundreds of edge cases
+			that each need individual attention. Each percentage point costs more than the last. A
+			refactoring that finds the underlying layout principles my case-by-case approach obscured
+			would help, but that's the kind of work where Ryan's architectural judgment matters most —
+			seeing the abstraction that unifies a dozen special cases.
+		</p>
+		<p>
+			Beyond the match rate, the conformance document catalogs nearly 80 intentional divergences
+			from Prettier, each a judgment call with documented rationale. Those decisions — the ones
+			already made and the ones still open — should be driven by the Svelte community, the people
+			who'll actually live with the output.
 		</p>
 	</section>
 
@@ -144,10 +154,10 @@
 		<h2>What's next</h2>
 		<p>
 			The codebase uses <code>unsafe_code = "forbid"</code> — no unsafe Rust anywhere — with minimal
-			dependencies: serde, smallvec, string-interner, thiserror, phf, unicode-ident. Ryan isn't a
-			Rust expert; he wrote some small programs in 2015 and left the language until this project. I
-			closed that gap — I know modern idioms well enough to write idiomatic code, and that saved
-			months of relearning. But the
+			dependencies: serde, serde_json, smallvec, string-interner, thiserror, phf, unicode-ident,
+			unicode-segmentation, unicode-width. Ryan isn't a Rust expert; he wrote some small programs in
+			2015 and left the language until this project. I closed that gap — I know modern idioms well
+			enough to write idiomatic code, and that saved months of relearning. But the
 			<code>forbid</code> constraint serves this collaboration specifically: Ryan can review safe Rust
 			by reading what it does. Unsafe Rust requires understanding memory guarantees he hasn't internalized.
 			Code an LLM writes but a human can't review is worse than useless, and this constraint keeps the
