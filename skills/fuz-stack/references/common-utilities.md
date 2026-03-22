@@ -41,7 +41,7 @@ const config = unwrap(parse_config(text));
 | `NOT_OK`       | Frozen `{ok: false}` constant for results with no extra data              |
 | `unwrap()`     | Returns `result.value` if ok, throws `ResultError` if not                 |
 | `unwrap_error()`| Returns the type-narrowed `{ok: false} & TError` result, throws if ok    |
-| `ResultError`  | Custom `Error` subclass thrown by `unwrap`, carries the failed result      |
+| `ResultError`  | Custom `Error` subclass thrown by `unwrap`, carries `.result` and supports `ErrorOptions` |
 
 `unwrap` signature:
 
@@ -66,7 +66,7 @@ opposite of `unwrap` returning just `.value`.
 
 ## Logger
 
-Instance-based hierarchical logging via `@fuzdev/fuz_util/log.js`:
+Hierarchical logging via `@fuzdev/fuz_util/log.js`:
 
 ```typescript
 import {Logger} from '@fuzdev/fuz_util/log.js';
@@ -123,11 +123,11 @@ Each method (except `raw`) checks `this.level` before outputting. Prefixes
 include the label in brackets and a level indicator for error, warn, and debug.
 Info has no level prefix — just the label.
 
-### Instance-Based Configuration
+### Inheritance
 
-No static state. Level, colors, and console are instance properties with
-getter/setter. Children inherit from parent via prototype chain — changing a
-parent's level affects children that haven't set their own override.
+No static state. Level, colors, and console are instance properties.
+Children inherit from parent — changing a parent's level affects children
+that haven't set their own override.
 
 ```typescript
 const root = new Logger('app');
@@ -137,15 +137,26 @@ root.level = 'debug';  // child also becomes debug (inherits)
 child.level = 'warn';  // child overrides, root unaffected
 
 child.clear_level_override();  // child inherits from root again
+child.clear_colors_override(); // child inherits colors from root again
+child.clear_console_override(); // child inherits console from root again
 ```
 
+The `root` getter walks the parent chain to find the root logger, useful for
+setting global configuration.
+
 Colors automatically disabled when `NO_COLOR` or `CLAUDECODE` env vars are set.
+
+### Additional Logger Exports
+
+| Export               | Purpose                                   |
+| -------------------- | ----------------------------------------- |
+| `log_level_to_number`| Converts a `LogLevel` to its numeric value (0-4) |
+| `log_level_parse`    | Validates a log level string, throws on invalid   |
 
 ## Timings
 
 Performance measurement via `@fuzdev/fuz_util/timings.js`. Tracks multiple
-named timing operations. Used in Gro's `TaskContext` for task and plugin
-performance.
+named timing operations, used in Gro's `TaskContext` for task performance.
 
 ```typescript
 import {Timings} from '@fuzdev/fuz_util/timings.js';
@@ -186,17 +197,18 @@ data at debug level after task execution. `Timings` itself does not log.
 
 ### Stopwatch
 
-`create_stopwatch(decimals?)` — lower-level primitive returning a function
-that tracks elapsed time from creation. Pass `reset: true` to restart.
+`create_stopwatch(decimals?)` — lower-level primitive returning a `Stopwatch`
+function that tracks elapsed time from creation. Call with `true` to reset.
+Default `decimals` is 2.
 
 ```typescript
-import {create_stopwatch} from '@fuzdev/fuz_util/timings.js';
+import {create_stopwatch, type Stopwatch} from '@fuzdev/fuz_util/timings.js';
 
-const elapsed = create_stopwatch();
+const elapsed: Stopwatch = create_stopwatch();
 await work();
-console.log(elapsed()); // e.g., 142.37
-console.log(elapsed(true)); // time since first call, then resets
-console.log(elapsed()); // time since reset
+console.log(elapsed()); // e.g., 142.37 — ms since creation
+console.log(elapsed(true)); // ms since creation, then resets start time
+console.log(elapsed()); // ms since reset
 ```
 
 ## DAG Execution

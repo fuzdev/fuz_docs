@@ -7,6 +7,7 @@ Testing conventions for the Fuz stack: vitest usage, fixtures, mocks, helpers.
 - [File Organization](#file-organization) (naming, subdirectories, assertions, jsdom)
 - [Database Testing](#database-testing) (PGlite, vitest projects, describe_db)
 - [Test Helpers](#test-helpers)
+- [Shared Test Factories](#shared-test-factories)
 - [Fixture-Based Testing](#fixture-based-testing)
 - [Mock Patterns](#mock-patterns)
 - [Environment Flags](#environment-flags)
@@ -24,6 +25,7 @@ src/
     ├── module.aspect.test.ts       # split tests by aspect
     ├── test_helpers.ts             # shared test utilities
     ├── domain_test_helpers.ts      # domain-specific helpers
+    ├── domain_test_aspect.ts       # shared test factory (NOT a test file)
     ├── domain/                     # mirrors lib/ subdirectories
     │   ├── module.test.ts
     │   └── module.db.test.ts
@@ -37,10 +39,8 @@ src/
             └── update.task.ts      # regeneration task for this feature
 ```
 
-Tests are NOT co-located with source. All tests live in `src/test/`.
-
-When source uses domain subdirectories (`src/lib/auth/`, `src/lib/env/`),
-tests mirror that structure (`src/test/auth/`, `src/test/env/`).
+Tests live in `src/test/`, mirroring `src/lib/` subdirectories
+(e.g., `src/lib/auth/` -> `src/test/auth/`).
 
 ### Test File Naming
 
@@ -120,16 +120,7 @@ try {
 }
 ```
 
-For async rejects, same try/catch pattern:
-
-```typescript
-try {
-	await async_fn();
-	assert.fail('Expected error');
-} catch (e: any) {
-	assert.include(e.message, 'expected substring');
-}
-```
+Same try/catch pattern works for async rejects (with `await`).
 
 ### jsdom Environment
 
@@ -145,19 +136,34 @@ fuz_app (auth_state, popover).
 **Gotcha:** jsdom normalizes CSS values — `style.setProperty('top', '0')`
 stores `'0px'`. Match the normalized form in assertions.
 
+**Gotcha:** jsdom lacks `ResizeObserver` and `IntersectionObserver`. Mock them
+before importing components:
+
+```typescript
+// @vitest-environment jsdom
+import {vi} from 'vitest';
+
+class ResizeObserverMock {
+	observe = vi.fn();
+	unobserve = vi.fn();
+	disconnect = vi.fn();
+}
+vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+```
+
 ## Database Testing
 
-fuz_app provides database testing infrastructure. Only fuz_app currently uses
-this pattern.
+fuz_app provides database testing infrastructure. Only fuz_app uses this
+pattern currently.
 
 ### The `.db.test.ts` Convention
 
 Any test using a `Db` instance should use `.db.test.ts` suffix. `.db` always
 goes immediately before `.test.ts` — e.g., `foo.integration.db.test.ts`.
 
-Enables vitest `projects` to run all DB tests in a single worker with
-`isolate: false` + `fileParallelism: false`, sharing one PGlite WASM instance
-(~500-700ms cold start saved per file). Non-DB tests stay fully parallel.
+Vitest `projects` runs all DB tests in a single worker (`isolate: false` +
+`fileParallelism: false`), sharing one PGlite WASM instance (~500-700ms
+cold start saved per file). Non-DB tests stay fully parallel.
 
 ### Vitest Projects Configuration
 
@@ -218,6 +224,7 @@ import {
 	create_pg_factory,
 	create_describe_db,
 	AUTH_INTEGRATION_TRUNCATE_TABLES,
+	log_db_factory_status,
 } from '$lib/testing/db.js';
 
 const init_schema = async (db: Db): Promise<void> => {
@@ -227,6 +234,8 @@ const init_schema = async (db: Db): Promise<void> => {
 export const pglite_factory = create_pglite_factory(init_schema);
 export const pg_factory = create_pg_factory(init_schema, process.env.TEST_DATABASE_URL);
 export const db_factories = [pglite_factory, pg_factory];
+
+log_db_factory_status(db_factories);
 
 export const describe_db = create_describe_db(db_factories, AUTH_INTEGRATION_TRUNCATE_TABLES);
 ```
@@ -269,15 +278,17 @@ const {app, create_session_headers, create_bearer_headers, create_account, clean
 
 ### PGlite WASM Caching
 
-All `create_pglite_factory` instances in the same worker share a single PGlite
-WASM instance via module-level cache. Subsequent `factory.create()` calls reset
-the schema (`DROP SCHEMA public CASCADE`) instead of paying the cold-start cost.
+`create_pglite_factory` instances in the same worker share a single PGlite
+WASM instance via module-level cache. Subsequent calls reset the schema
+(`DROP SCHEMA public CASCADE`) instead of paying cold-start cost.
 
 ## Test Helpers
 
 ### General Helpers
 
-Each repo has `test_helpers.ts`:
+Most repos have `test_helpers.ts` (fuz_ui, fuz_css, gro, fuz_gitops).
+fuz_util uses only domain-specific helpers. fuz_app's test infrastructure
+lives in `src/lib/testing/` (library exports, not test helpers).
 
 ```typescript
 // src/test/test_helpers.ts — from gro
@@ -290,18 +301,17 @@ import {vi} from 'vitest';
 export const create_mock_logger = (): Logger => ({...});
 
 /**
- * Creates mock build cache metadata for testing.
+ * Creates a mock TaskContext for testing.
  */
-export const create_mock_build_cache_metadata = (
-	overrides: Partial<BuildCacheMetadata> = {},
-): BuildCacheMetadata => ({
-	version: '1',
-	git_commit: 'abc123',
-	timestamp: '2025-10-21T10:00:00.000Z',
-	outputs: [],
-	...overrides,
-});
+export const create_mock_task_context = <TArgs extends object = any>(
+	args: Partial<TArgs> = {},
+	config_overrides: Partial<GroConfig> = {},
+	defaults?: TArgs,
+): TaskContext<TArgs> => ({...});
 ```
+
+fuz_ui's `test_helpers.ts` also provides generic fixture infrastructure
+(`load_fixtures_generic`, `run_update_task`) used by all fixture categories.
 
 ### Domain-Specific Helpers
 
@@ -309,31 +319,37 @@ export const create_mock_build_cache_metadata = (
 
 | File                                 | Repo     | Purpose                                  |
 | ------------------------------------ | -------- | ---------------------------------------- |
-| `test_helpers.ts`                    | all      | General shared helpers                   |
-| `csp_test_helpers.ts`               | fuz_ui   | CSP policy test utilities                |
-| `contextmenu_test_helpers.ts`       | fuz_ui   | DOM event factories, mount/unmount       |
-| `deep_equal_test_helpers.ts`        | fuz_util | Deep equality test cases                 |
-| `log_test_helpers.ts`               | fuz_util | Logger mock setup                        |
+| `csp_test_helpers.ts`               | fuz_ui   | CSP test constants and source factories  |
+| `contextmenu_test_helpers.ts`       | fuz_ui   | Contextmenu mounting and attachment setup |
+| `module_test_helpers.ts`            | fuz_ui   | Module analysis test options and program setup |
+| `deep_equal_test_helpers.ts`        | fuz_util | Bidirectional equality assertions and batch helpers |
+| `log_test_helpers.ts`               | fuz_util | Logger mock console with captured args   |
+| `random_test_helpers.ts`            | fuz_util | Custom PRNG factories for distribution testing |
 | `build_cache_test_helpers.ts`       | gro      | Build cache mock factories               |
-| `deploy_task_test_helpers.ts`       | gro      | Deploy task mock operations              |
+| `build_task_test_helpers.ts`        | gro      | Build task context and mock plugins      |
+| `deploy_task_test_helpers.ts`       | gro      | Deploy task context and git mock setup   |
 | `css_class_extractor_test_helpers.ts`| fuz_css  | Extractor assertion helpers              |
 
 Fixture-specific helpers live inside the fixture directory:
 
-| File                                       | Repo    | Purpose                      |
-| ------------------------------------------ | ------- | ---------------------------- |
-| `fixtures/mdz/mdz_test_helpers.ts`        | fuz_ui  | mdz fixture loading          |
-| `fixtures/tsdoc/tsdoc_test_helpers.ts`    | fuz_ui  | tsdoc fixture loading        |
-| `fixtures/svelte/svelte_test_helpers.ts`  | fuz_ui  | svelte fixture loading       |
+| File                                                                  | Repo    | Purpose                      |
+| --------------------------------------------------------------------- | ------- | ---------------------------- |
+| `fixtures/mdz/mdz_test_helpers.ts`                                   | fuz_ui  | mdz fixture loading          |
+| `fixtures/tsdoc/tsdoc_test_helpers.ts`                               | fuz_ui  | tsdoc fixture loading        |
+| `fixtures/ts/ts_test_helpers.ts`                                     | fuz_ui  | TypeScript fixture loading   |
+| `fixtures/svelte/svelte_test_helpers.ts`                             | fuz_ui  | Svelte fixture loading       |
+| `fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts`| fuz_ui  | Preprocessor fixture loading |
 
 ### Svelte Component Test Helpers
 
-For UI tests with jsdom:
+fuz_ui's `test_helpers.ts` provides component lifecycle and DOM event
+factories for jsdom tests:
 
 ```typescript
 // src/test/test_helpers.ts — from fuz_ui
 import {mount, unmount, type Component} from 'svelte';
 
+// Component lifecycle
 export const mount_component = <TProps extends Record<string, any>>(
 	Component: Component<TProps>,
 	props: TProps,
@@ -348,7 +364,61 @@ export const unmount_component = async (instance: any, container: HTMLElement): 
 	await unmount(instance);
 	container.remove();
 };
+
+// DOM event factories
+export const create_contextmenu_event = (x: number, y: number, options?: MouseEventInit): MouseEvent => {...};
+export const create_keyboard_event = (key: string, options?: KeyboardEventInit): KeyboardEvent => {...};
+export const create_mouse_event = (type: string, options?: MouseEventInit): MouseEvent => {...};
+export const create_touch_event = (type: string, touches: Array<{clientX: number; clientY: number}>, options?: TouchEventInit): TouchEvent => {...};
+export const set_event_target = (event: Event, target: EventTarget): void => {...};
+
+// Fixture utilities
+export const normalize_json = (obj: any): any => {...};
+export const load_fixtures_generic = async <T>(config: FixtureLoaderConfig<T>): Promise<Array<GenericFixture<T>>> => {...};
+export const run_update_task = async <TInput, TOutput>(config: UpdateTaskConfig<TInput, TOutput>, log): Promise<{...}> => {...};
 ```
+
+## Shared Test Factories
+
+When multiple components share behavior (e.g., `ContextmenuRoot` and
+`ContextmenuRootForSafariCompatibility`), extract test logic into factory
+modules exporting `create_shared_*_tests()`. Test files become thin wrappers:
+
+```typescript
+// src/test/contextmenu_test_core.ts — factory module (NOT a test file)
+export const create_shared_core_tests = (
+	Component: any,
+	component_name: string,
+	options: SharedTestOptions = {},
+): void => {
+	describe(`${component_name} - Core Functionality`, () => {
+		// shared tests here
+	});
+};
+```
+
+```typescript
+// src/test/ContextmenuRoot.core.test.ts — thin wrapper
+// @vitest-environment jsdom
+import {vi} from 'vitest';
+import {create_shared_core_tests} from './contextmenu_test_core.js';
+import ContextmenuRoot from '$lib/ContextmenuRoot.svelte';
+
+vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+create_shared_core_tests(ContextmenuRoot, 'ContextmenuRoot');
+```
+
+```typescript
+// src/test/ContextmenuRootForSafariCompatibility.core.test.ts — same tests, different component
+create_shared_core_tests(
+	ContextmenuRootForSafariCompatibility,
+	'ContextmenuRootForSafariCompatibility',
+	{requires_longpress: true},
+);
+```
+
+fuz_ui uses this for contextmenu components with 8 factory modules
+(`contextmenu_test_{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts`).
 
 ## Fixture-Based Testing
 
@@ -481,8 +551,17 @@ files and run the update task.
 ### Fixture Testing in fuz_gitops
 
 Different fixture pattern: generated git repositories from fixture data files.
-Fixtures define repos with dependencies, changesets, and expected outcomes. See
-`src/test/fixtures/generate_repos.ts` and `src/test/fixtures/check.test.ts`.
+Fixtures define repos with dependencies, changesets, and expected outcomes.
+
+- `src/test/fixtures/repo_fixtures/*.ts` — source of truth for test repo definitions
+- `src/test/fixtures/generate_repos.ts` — idempotent repo generation logic
+- `src/test/fixtures/configs/*.config.ts` — isolated gitops config per fixture
+- `src/test/fixtures/check.test.ts` — validates command output against expectations
+- `src/test/fixtures/mock_operations.ts` — configurable DI mocks (not vi.fn())
+
+10 scenarios covering publishing, cascades, cycles, private packages, major
+bumps, peer deps, and isolation. Repos auto-generated on first test run;
+regenerate with `gro src/test/fixtures/generate_repos`.
 
 ## Mock Patterns
 
@@ -490,15 +569,17 @@ Fixtures define repos with dependencies, changesets, and expected outcomes. See
 
 DI via small `*Deps` or `*Operations` interfaces. Functions accept an
 operations parameter with a default; tests inject controlled implementations.
+See [dependency-injection.md](./dependency-injection.md) for the full pattern.
 
 **fuz_gitops operations pattern:**
 
 ```typescript
 // src/lib/operations.ts — interfaces for all side effects
+// each method uses options objects and returns Result
 export interface GitOperations {
-	commit: (dir: string, msg: string) => Promise<void>;
-	push: (dir: string) => Promise<void>;
-	// ...
+	current_branch_name: (options?: {cwd?: string}) => Promise<Result<{value: string}, {message: string}>>;
+	add_and_commit: (options: {files: string | Array<string>; message: string; cwd?: string}) => Promise<Result<object, {message: string}>>;
+	// ... ~15 more methods
 }
 export interface GitopsOperations {
 	git: GitOperations;
@@ -513,19 +594,19 @@ export interface GitopsOperations {
 
 ```typescript
 // src/test/test_helpers.ts — from fuz_gitops
-export const create_mock_operations = (): GitopsOperations => ({
-	git: {
-		commit: vi.fn(),
-		push: vi.fn(),
-		// ...
-	},
-	npm: {
-		publish: vi.fn(),
-		// ...
-	},
-	// ...
+// Granular factories per operations interface:
+export const create_mock_git_ops = (): GitOperations => ({...});
+export const create_mock_repo = (options: MockRepoOptions): LocalRepo => ({...});
+export const create_mock_gitops_ops = (overrides?): GitopsOperations => ({...});
+
+// src/test/fixtures/mock_operations.ts — configurable mocks for fixture tests
+export const create_mock_git_ops = (): GitOperations => ({
+	current_branch_name: async () => ({ok: true, value: 'main'}),
+	// ... plain objects implementing interfaces, no vi.fn()
 });
 ```
+
+fuz_gitops uses **zero vi.mock()** — all tests inject mock operations via DI.
 
 **fuz_app deps pattern:**
 
@@ -533,17 +614,19 @@ export const create_mock_operations = (): GitopsOperations => ({
 import {stub_app_deps} from '$lib/testing/stubs.js';
 import {create_mock_runtime} from '$lib/runtime/mock.js';
 
-const deps = stub_app_deps();          // safe defaults for auth deps
+const deps = stub_app_deps;            // throwing stubs for auth deps
 const runtime = create_mock_runtime(); // MockRuntime for CLI tests
 ```
 
 ### vi.mock() Usage
 
-Used in gro and some fuz_app unit tests, but avoid in `.db.test.ts` where
+Used in gro and some fuz_app unit tests. Avoid in `.db.test.ts` where
 `isolate: false` shares module state. When needed:
 
-- Pair with `vi.restoreAllMocks()` in `afterEach`
-- Prefer DI-based testing when possible
+- gro: `vi.clearAllMocks()` in `beforeEach`, `vi.resetAllMocks()` in `afterEach`
+- `.db.test.ts`: if unavoidable, use `vi.restoreAllMocks()` in `afterEach` —
+  module-level mocks leak with `isolate: false`
+- Prefer DI when possible
 
 ### Mock Factory Naming
 
@@ -568,7 +651,7 @@ export const create_mock_repo = (options: MockRepoOptions): LocalRepo => ({...})
 
 ### Mock Call Assertions
 
-Vitest mock typing creates precise tuple types for `.mock.calls`. Use `as any`:
+Vitest creates precise tuple types for `.mock.calls`. Use `as any`:
 
 ```typescript
 const spy = vi.fn();
@@ -641,8 +724,7 @@ describe('format_duration', () => {
 });
 ```
 
-For larger tables, extract as a typed constant. Use `null` sentinels for
-"missing" cases:
+For larger tables, extract as a typed constant. Use `null` for "missing" cases:
 
 ```typescript
 const cases: Array<[label: string, initial: string | null, key: string, expected: string]> = [
@@ -676,8 +758,7 @@ test.each(POSITION_CASES)(
 );
 ```
 
-Tests that compute expected values dynamically or need extra assertions should
-stay standalone.
+Tests with dynamic expected values or extra assertions should stay standalone.
 
 ### Composable Test Suites (fuz_app)
 
@@ -688,7 +769,9 @@ stay standalone.
 | `describe_standard_admin_integration_tests`   | 7      | Accounts, permits, sessions, audit log   |
 | `describe_rate_limiting_tests`                | 3      | IP, per-account, bearer rate limiting    |
 | `describe_round_trip_validation`              | varies | Schema-driven positive-path validation   |
+| `describe_data_exposure_tests`                | 6      | Schema-level + runtime field blocklists  |
 | `describe_standard_adversarial_headers`       | 7      | Header injection cases                   |
+| `describe_standard_tests`                     | -      | Convenience wrapper: integration + admin |
 
 Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
 configuration with `session_options` and `create_route_specs`.
@@ -702,8 +785,10 @@ configuration with `session_options` and `create_route_specs`.
 | `module.aspect.test.ts`           | Split test suites by aspect                      |
 | `module.db.test.ts`               | DB test — shared WASM worker via vitest projects |
 | `module.fixtures.test.ts`         | Fixture-based test file                          |
-| `test_helpers.ts`                 | General shared test utilities                    |
+| `test_helpers.ts`                 | General shared test utilities (most repos)       |
 | `{domain}_test_helpers.ts`       | Domain-specific test utilities                   |
+| `{domain}_test_{aspect}.ts`      | Shared test factory modules (not test files)     |
+| `create_shared_*_tests()`        | Factory function for reusable test suites        |
 | `fixtures/feature/case/`          | Subdirectory per fixture case                    |
 | `fixtures/update.task.ts`         | Parent: runs all child update tasks              |
 | `fixtures/feature/update.task.ts` | Child: regenerates one feature                   |
@@ -712,9 +797,10 @@ configuration with `session_options` and `create_route_specs`.
 | `assert.throws(fn, /regex/)`     | Returns void; second arg: constructor/string/RegExp (not function) |
 | try/catch + `assert.include`     | For inspecting thrown errors or async rejects    |
 | `// @vitest-environment jsdom`    | Pragma for UI tests needing DOM                  |
+| `vi.stubGlobal('ResizeObserver')` | Required in jsdom for components using ResizeObserver |
 | `describe_db(name, fn)`          | DB test wrapper (fuz_app)                        |
 | `create_test_app()`              | Full Hono app for integration tests (fuz_app)    |
-| `stub_app_deps()`                | Safe default deps for unit tests (fuz_app)       |
+| `stub_app_deps`                  | Throwing stub deps for unit tests (fuz_app)      |
 | DI via `*Operations`/`*Deps`     | Preferred over vi.mock() for side effects        |
 | `create_mock_*()`                 | Factory functions for test data                  |
 | `SKIP_EXAMPLE_TESTS=1`           | Skip slow fuz_css integration tests              |

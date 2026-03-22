@@ -9,8 +9,8 @@ Doc comments flow through a three-stage pipeline:
 1. **fuz_ui analysis** — `tsdoc_helpers.ts`, `ts_helpers.ts`,
    `svelte_helpers.ts` extract JSDoc/TSDoc from TypeScript AST, producing
    structured metadata per declaration
-2. **Gro gen tasks** — `library.gen.ts` outputs `library.json` with all
-   module and declaration metadata
+2. **Gro gen tasks** — `library.gen.ts` outputs `library.json` and
+   `library.ts` with all module and declaration metadata
 3. **`mdz`** renders docs with auto-linking — backticked identifiers become
    clickable links to API docs
 
@@ -24,7 +24,7 @@ backticks, and the system handles the rest.**
 Don't restate the function name. Explain why this exists and what problem it
 solves.
 
-```ts
+```typescript
 // Weak — restates function name
 /**
  * Predicts the next version for a repo based on its changesets.
@@ -43,16 +43,15 @@ solves.
 
 ### Document workflows with numbered steps
 
-```ts
+```typescript
 /**
- * Library metadata generation pipeline.
+ * Multi-repo publishing pipeline.
  *
- * Pipeline stages:
- * 1. **Collection** — `library_collect_source_files` gathers and filters source files
- * 2. **Analysis** — `library_analyze_module` extracts metadata per module
- * 3. **Validation** — `library_find_duplicates` checks flat namespace constraints
- * 4. **Transformation** — `library_merge_re_exports` resolves re-export relationships
- * 5. **Output** — `library_sort_modules` prepares deterministic output
+ * Steps:
+ * 1. **Sort** — `compute_topological_order` determines publish order
+ * 2. **Changeset** — `predict_next_version` simulates version bumps
+ * 3. **Publish** — `publish_package` publishes and waits for propagation
+ * 4. **Update** — `update_dependents` bumps downstream version ranges
  *
  * @module
  */
@@ -60,7 +59,7 @@ solves.
 
 ### Name algorithms and explain rationale
 
-```ts
+```typescript
 /**
  * Computes topological sort order for dependency graph.
  *
@@ -74,7 +73,7 @@ solves.
 
 ### Explain system context
 
-```ts
+```typescript
 /**
  * Waits for package version to propagate to NPM registry.
  *
@@ -105,7 +104,7 @@ Skip:
 Complete sentences ending in a period. Separate summary from details with a
 blank line:
 
-```ts
+```typescript
 /**
  * Formats a person's name in display order.
  *
@@ -126,7 +125,7 @@ blank line:
 - Must be in source parameter order
 - Parser strips leading `- ` for rendering
 
-```ts
+```typescript
 /**
  * Parses a semantic version string.
  * @param version_string - version to parse (format: "major.minor.patch")
@@ -136,7 +135,7 @@ blank line:
 
 Multi-sentence:
 
-```ts
+```typescript
 /**
  * Computes topological sort order for dependency graph.
  * @param exclude_dev - If true, excludes dev dependencies to break cycles.
@@ -148,7 +147,7 @@ Multi-sentence:
 
 Use `@returns` (not `@return`). Same capitalization rules as `@param`.
 
-```ts
+```typescript
 /**
  * Gets the current time.
  * @returns the current `Date` in milliseconds since epoch
@@ -157,7 +156,7 @@ Use `@returns` (not `@return`). Same capitalization rules as `@param`.
 
 For async functions, describe what the `Promise` resolves to:
 
-```ts
+```typescript
 /**
  * Fetches user data from the API.
  * @returns user object with id, name, and email fields
@@ -175,7 +174,7 @@ Three formats (all used):
 - `@throws {ErrorType} description` — type in curly braces
 - `@throws description` — no type
 
-```ts
+```typescript
 /**
  * @throws Error if task with given name doesn't exist
  */
@@ -194,7 +193,7 @@ Three formats (all used):
 Code must be in fenced code blocks for syntax highlighting — `mdz` renders
 examples as markdown.
 
-````ts
+````typescript
 /**
  * Convert raw TSDoc `@see` content to mdz format for rendering.
  *
@@ -202,7 +201,7 @@ examples as markdown.
  * @returns mdz-formatted string ready for `Mdz` component
  *
  * @example
- * ```ts
+ * ```typescript
  * tsdoc_see_to_mdz('{@link https://fuz.dev|API Docs}')
  * // → '[API Docs](https://fuz.dev)'
  *
@@ -214,17 +213,17 @@ examples as markdown.
 
 Interface fields can have inline `@example` tags:
 
-````ts
+````typescript
 export interface ModuleSourceOptions {
 	/**
 	 * Source directory paths to include, relative to `project_root`.
 	 *
 	 * @example
-	 * ```ts
+	 * ```typescript
 	 * ['src/lib'] // single source directory
 	 * ```
 	 * @example
-	 * ```ts
+	 * ```typescript
 	 * ['src/lib', 'src/routes'] // multiple directories
 	 * ```
 	 */
@@ -237,7 +236,7 @@ export interface ModuleSourceOptions {
 Include migration guidance with backtick-linked replacement. Rarely used —
 "no backwards compatibility" policy means deprecated code is usually deleted.
 
-```ts
+```typescript
 /**
  * Legacy way to process data.
  * @deprecated Use `process_data_v2` instead for better performance.
@@ -250,7 +249,7 @@ Three patterns:
 
 **External URLs** — `{@link}` for display text, bare URL when self-explanatory:
 
-```ts
+```typescript
 /** @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event} */
 /** @see {@link https://tools.ietf.org/html/rfc5322|RFC 5322} */
 /** @see https://github.com/colinhacks/zod#brand */
@@ -258,7 +257,7 @@ Three patterns:
 
 **Sibling modules** — filename for cross-references within a package:
 
-```ts
+```typescript
 /**
  * Gro-specific library metadata generation.
  *
@@ -272,7 +271,7 @@ Three patterns:
 
 **Identifiers** — wrap in backticks (not `{@link}`):
 
-```ts
+```typescript
 /** @see `tsdoc_parse` for the extraction step */
 /** @see `format_number` in `maths.ts` for the underlying implementation. */
 ```
@@ -281,7 +280,7 @@ Three patterns:
 
 Supported by the parser but not currently used. Use when versioning matters.
 
-```ts
+```typescript
 /**
  * Generates a UUID v4.
  * @since 1.5.0
@@ -328,7 +327,7 @@ Use cases:
 - **Gen file exports** — `gen` function called by Gro
 - **Flat namespace conflicts** — declarations that need to coexist
 
-```ts
+```typescript
 /** @nodocs */
 export const Args = z.object({...});
 
@@ -352,7 +351,7 @@ Two formats:
 Same capitalization rules as `@param`. Only document mutations visible outside
 the function — not internal locals, closure state, or `this.x` in methods.
 
-```ts
+```typescript
 /**
  * Shuffles an array in place using the Fisher-Yates algorithm.
  * @param array - the array to shuffle
@@ -363,7 +362,7 @@ export function shuffle<T>(array: T[]): T[] {
 }
 ```
 
-```ts
+```typescript
 /**
  * Apply named middleware specs to a Hono app.
  *
@@ -412,8 +411,8 @@ Backtick-wrapped identifiers auto-link to API docs.
 ### How it works
 
 1. `mdz` parses backtick content as `Code` nodes
-2. `DocsLink.svelte` resolves: `library.lookup_declaration(ref)` →
-   `library.lookup_module(ref)` → plain `<code>` fallback
+2. `DocsLink.svelte` resolves: `library.declaration_by_name.get(ref)` →
+   `library.module_by_path.get(ref)` → plain `<code>` fallback
 3. Matches render as clickable links to API docs
 
 ### Always link
@@ -421,7 +420,7 @@ Backtick-wrapped identifiers auto-link to API docs.
 **Wrap every mention of an exported identifier, module filename, or type name
 in backticks.** This maximizes discoverability.
 
-```ts
+```typescript
 /**
  * Wraps `LibraryJson` with computed properties and provides the root
  * of the API documentation hierarchy: `Library` → `Module` → `Declaration`.
@@ -447,7 +446,7 @@ Paths starting with `/` after whitespace auto-link as internal navigation.
 **Gotcha — API route lists**: `/word` patterns get auto-linked, including HTTP
 routes. Bare paths create broken links that fail SvelteKit prerender:
 
-```ts
+```typescript
 // BAD — mdz auto-links /login as internal route, breaks prerender
 /**
  * - POST /login
@@ -469,7 +468,7 @@ References are case-sensitive. `` `library` `` will NOT match `Library`.
 
 Backticks for identifiers. `{@link}` for external URLs in `@see`:
 
-```ts
+```typescript
 // Preferred — backtick for identifier
 /** See `tsdoc_parse` for the extraction step. */
 
@@ -489,7 +488,7 @@ cross-references.
 
 **Basic:**
 
-```ts
+```typescript
 /**
  * Module path and metadata helpers.
  *
@@ -502,7 +501,7 @@ cross-references.
 
 **Design sections** with `##` headings for complex modules:
 
-```ts
+```typescript
 /**
  * TSDoc/JSDoc parsing helpers using the TypeScript Compiler API.
  *
@@ -530,9 +529,11 @@ cross-references.
  */
 ```
 
-**Pipeline stages** with `@see` cross-references:
+**Pipeline stages** — combines numbered steps with `@see` cross-references
+(see also the [Document workflows with numbered steps](#document-workflows-with-numbered-steps)
+pattern above):
 
-```ts
+```typescript
 /**
  * Library metadata generation pipeline.
  *
@@ -554,7 +555,7 @@ cross-references.
 
 **Design philosophy:**
 
-```ts
+```typescript
 /**
  * mdz — minimal markdown dialect for Fuz documentation.
  *
@@ -572,7 +573,7 @@ cross-references.
 
 ### Functions
 
-```ts
+```typescript
 /**
  * Find duplicate declaration names across modules.
  *
@@ -600,7 +601,7 @@ export const library_find_duplicates = (
 
 ### Classes
 
-```ts
+```typescript
 /**
  * Rich runtime representation of a library.
  *
@@ -624,22 +625,27 @@ export class Library {
 	modules = $derived(/* ... */);
 
 	/**
-	 * Declaration lookup map by name. Provides O(1) lookup.
+	 * Module lookup map by path.
 	 */
-	declaration_map = $derived(/* ... */);
+	module_by_path = $derived(/* ... */);
 
 	/**
-	 * Look up a declaration by name.
+	 * Declaration lookup map by name.
 	 */
-	lookup_declaration(name: string): Declaration | undefined {
-		return this.declaration_map.get(name);
+	declaration_by_name = $derived(/* ... */);
+
+	/**
+	 * Search declarations by query string with multi-term AND logic.
+	 */
+	search_declarations(query: string): Array<Declaration> {
+		// ...
 	}
 }
 ```
 
 ### Interfaces
 
-````ts
+````typescript
 /**
  * File information for source analysis.
  *
@@ -651,7 +657,7 @@ export class Library {
 export interface SourceFileInfo {
 	/** Absolute path to the file. */
 	id: string;
-	/** File content (required — analysis functions don't read from disk). */
+	/** File content (required - analysis functions don't read from disk). */
 	content: string;
 	/**
 	 * Absolute file paths of modules this file imports (optional).
@@ -659,10 +665,15 @@ export interface SourceFileInfo {
 	 * Order should be declaration order in source for deterministic output.
 	 */
 	dependencies?: ReadonlyArray<string>;
+	/**
+	 * Absolute file paths of modules that import this file (optional).
+	 * Only include resolved local imports, not node_modules.
+	 */
+	dependents?: ReadonlyArray<string>;
 }
 ````
 
-````ts
+````typescript
 export interface ModuleSourceOptions {
 	/**
 	 * Absolute path to the project root directory.
@@ -670,7 +681,7 @@ export interface ModuleSourceOptions {
 	 * All `source_paths` are relative to this.
 	 *
 	 * @example
-	 * ```ts
+	 * ```typescript
 	 * '/home/user/my-project'
 	 * ```
 	 */
@@ -679,11 +690,11 @@ export interface ModuleSourceOptions {
 	 * Source directory paths to include, relative to `project_root`.
 	 *
 	 * @example
-	 * ```ts
+	 * ```typescript
 	 * ['src/lib'] // single source directory
 	 * ```
 	 * @example
-	 * ```ts
+	 * ```typescript
 	 * ['src/lib', 'src/routes'] // multiple directories
 	 * ```
 	 */
@@ -738,13 +749,12 @@ constraints, and non-obvious defaults.
 
 ### Type aliases
 
-```ts
+```typescript
 /**
  * Analyzer type for source files.
  *
- * - `'typescript'` — TypeScript/JS files analyzed via TypeScript Compiler API
- * - `'svelte'` — Svelte components analyzed via svelte2tsx + TypeScript
- *   Compiler API
+ * - `'typescript'` - TypeScript/JS files analyzed via TypeScript Compiler API
+ * - `'svelte'` - Svelte components analyzed via svelte2tsx + TypeScript Compiler API
  */
 export type AnalyzerType = 'typescript' | 'svelte';
 ```
@@ -765,8 +775,9 @@ Non-sentence bullets: lowercase, no trailing period:
 gro run skills/fuz-stack/scripts/generate_jsdoc_audit.ts
 ```
 
-Generates `jsdoc_audit.md` — a checklist of `src/lib/` files with JSDoc.
-Files without JSDoc are not listed.
+Generates `jsdoc_audit.md` — a checklist of `src/lib/` files that contain
+JSDoc, for reviewing and cleaning up existing comments. Files without JSDoc
+are omitted.
 
 ### When to audit
 

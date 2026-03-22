@@ -23,7 +23,8 @@ interface Task<
 - `Args` — optional Zod schema for CLI argument parsing and validation
   (see ./zod-schemas.md)
 
-Only `TArgs` is used in practice — tasks are either `Task` or `Task<Args>`.
+`TArgsSchema` and `TReturn` are rarely customized — tasks are either
+`Task` (default args) or `Task<Args>` (with a custom Zod-inferred `Args` type).
 
 ### Basic task example
 
@@ -112,7 +113,8 @@ export const task: Task = {
 };
 ```
 
-This is the pattern used by `check.task.ts`.
+This is the core pattern used by `check.task.ts` (which adds conditional
+execution via `--no-*` flags).
 
 ## Args Pattern
 
@@ -152,8 +154,8 @@ export const Args = z.strictObject({
 });
 ```
 
-`gro check --no-test` disables testing. `--help` hides `no-*` entries,
-showing only the positive flag.
+`gro check --no-test` disables testing. `--help` hides the positive flags
+when a `no-*` dual exists, showing only the `no-*` entry.
 
 ## Error Handling
 
@@ -171,11 +173,11 @@ Use when the message is sufficient for the user to fix the problem.
 
 ### SilentError
 
-Exit with non-zero code when the throwing code already handled logging.
-Primarily internal to `invoke_task.ts`:
+Exit with non-zero code when the error is already logged. Primarily
+internal to `invoke_task.ts`:
 
 ```typescript
-import {SilentError} from '@fuzdev/gro';
+import {SilentError} from '@fuzdev/gro/task.js';
 
 log.error('Detailed error information...');
 throw new SilentError();
@@ -226,16 +228,14 @@ export const task: Task = {
 
 ## Task Composition
 
-Compose via `invoke_task` (recommended) or direct import.
-
-**`invoke_task`:** Respects overrides, provides logging context, auto-forwards
-CLI args from `--` sections:
+**`invoke_task` (recommended):** Respects overrides, provides logging context,
+auto-forwards CLI args from `--` sections:
 
 ```typescript
 await invoke_task('build', {sync: false, gen: false});
 ```
 
-**Direct import:** Tighter coupling but faster:
+**Direct import:** Bypasses override resolution, tighter coupling:
 
 ```typescript
 import {task as test_task} from './test.task.js';
@@ -250,13 +250,15 @@ CLI args forwarded to composed tasks via `--` separators:
 gro check -- gro test --coverage
 ```
 
-Forwards `--coverage` to the `test` task when `check` invokes it. Multiple
-`--` sections can target different commands.
+Forwards `--coverage` to `test` when `check` invokes it. Multiple `--`
+sections can target different sub-tasks.
 
 ## Quick Reference
 
-| Export        | Type      | Import from     | Purpose                              |
-| ------------- | --------- | --------------- | ------------------------------------ |
-| `Task`        | Interface | `@fuzdev/gro`   | Task definition (run, summary, Args) |
-| `TaskContext`  | Interface | `@fuzdev/gro`  | Context passed to task.run           |
-| `TaskError`   | Class     | `@fuzdev/gro`   | Known failure (no stack trace)       |
+| Export        | Type      | Import from           | Purpose                                        |
+| ------------- | --------- | --------------------- | ---------------------------------------------- |
+| `Task`        | Interface | `@fuzdev/gro`         | Task definition (run, summary, Args)           |
+| `TaskContext` | Interface | `@fuzdev/gro`         | Context passed to task.run                     |
+| `TaskError`   | Class     | `@fuzdev/gro`         | Known failure (no stack trace)                 |
+| `SilentError` | Class     | `@fuzdev/gro/task.js` | Exit silently (error already logged)           |
+| `InvokeTask`  | Type      | `@fuzdev/gro/task.js` | `(task_name, args?, config?) => Promise<void>` |

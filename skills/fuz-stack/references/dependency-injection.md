@@ -12,8 +12,8 @@ flow through function signatures.
 ### Bottom-up composition
 
 Define small focused interfaces. Leaf functions import them directly. App-level
-composites assemble them for wiring — the entry point builds the composite and
-threads it down, but leaf functions never take the composite as a param.
+composites assemble them for wiring — the entry point builds the composite
+and threads it down, but leaf functions never take the composite as a param.
 
 ```typescript
 // Small standalone interfaces in fuz_app/runtime/deps.ts
@@ -81,7 +81,7 @@ Small standalone interfaces avoid this:
 - **fuz_gitops `operations.ts`**: `GitopsOperations`, `GitOperations`, `FsOperations`, etc.
   (uses `*Operations` naming — see below)
 
-### Two naming conventions coexist
+### Repo naming: `*Deps` vs `*Operations`
 
 **`*Deps` naming** (fuz_app, fuz_css — preferred):
 
@@ -105,7 +105,7 @@ Small standalone interfaces avoid this:
 | Mock factory      | `create_mock_{domain}_ops`        | `create_mock_git_ops`            |
 | Combined mock     | `create_mock_gitops_ops`          | all sub-mocks                    |
 
-## Three Naming Conventions
+## Parameter Type Suffixes
 
 Three suffixes for single-object parameters, each with distinct test behavior:
 
@@ -116,26 +116,24 @@ Three suffixes for single-object parameters, each with distinct test behavior:
 | `*Context` | Scoped world for a callback/handler | Depends on scope (may contain deps + data) | The world available within a bounded scope |
 
 The `*Deps` / `*Options` boundary is validated by testing patterns: deps get
-mock factories with per-test overrides, options are plain objects spread
+mock factories with per-test overrides; options are plain objects reused
 across test cases.
 
-`*Context` is the world available to a callback within a bounded scope:
+`*Context` is the world available within a bounded scope — may contain both
+deps and data:
 
-- `RouteContext` — per-request: `{db, pool_db, pending_effects}`
+- `RouteContext` — per-request: `{db, background_db, pending_effects}`
 - `AppServerContext` — per-setup-callback: `{deps, backend, session_options, ...}`
-
-Context objects may contain both deps and data — the scope is the organizing
-principle, not the content type.
 
 ### `*Config` eliminated, `*Input` for mutations
 
-No separate `*Config` suffix — `?` on fields already communicates required vs
-optional. All parameter bags use `*Options`. `*Input` is reserved for mutation
-payloads (data being written in create/update operations).
+No `*Config` suffix — `?` on fields handles required vs optional. All parameter
+bags use `*Options`. `*Input` is reserved for mutation payloads (create/update
+data).
 
 ## Grouped Operations Pattern (fuz_gitops)
 
-A composite interface groups I/O by domain, injected as an optional parameter
+Composite interface grouping I/O by domain, injected as an optional parameter
 with a production default.
 
 ### Interface definition
@@ -210,8 +208,8 @@ export const default_gitops_operations: GitopsOperations = {
 
 ## CacheDeps Pattern (fuz_css)
 
-Focused deps interface for cache file I/O, `*Deps` naming with
-`deps.ts` + `deps_defaults.ts`.
+Focused deps interface for cache file I/O. Files: `deps.ts` +
+`deps_defaults.ts`.
 
 ```typescript
 // deps.ts
@@ -254,11 +252,11 @@ const { deps = default_cache_deps } = options;
 
 ## AppDeps Pattern (fuz_app)
 
-Stateless capabilities bundle for server code with three-part vocabulary:
+Stateless capabilities bundle for server code. Three-part vocabulary:
 
 | Category          | Type        | Examples                                        | Rule                             |
 | ----------------- | ----------- | ----------------------------------------------- | -------------------------------- |
-| **Capabilities**  | `AppDeps`   | `keyring`, `password`, `db`, `log`              | Stateless, injectable, swappable |
+| **Capabilities**  | `AppDeps`   | `keyring`, `password`, `db`, `log`, `on_audit_event` | Stateless, injectable, swappable |
 | **Route caps**    | `RouteFactoryDeps` | `Omit<AppDeps, 'db'>` — for route factories     | Handlers get `db` via `RouteContext` |
 | **Parameters**    | `*Options`  | `session_options`, `rate_limiter`, `token_path`  | Static values set at startup    |
 | **Runtime state** | inline ref  | `bootstrap_status: {available, token_path}`      | Mutable — NOT in deps or options |
@@ -275,6 +273,7 @@ export interface AppDeps {
 	password: PasswordHashDeps;
 	db: Db;
 	log: Logger;
+	on_audit_event: (event: AuditLogEvent) => void;
 }
 
 // Route factories use RouteFactoryDeps — AppDeps without db
@@ -326,21 +325,53 @@ export const create_audit_log_route_specs = (
 ): Array<RouteSpec> => { /* ... */ };
 ```
 
-### Narrowing with `Pick<>`
+### Ad-hoc per-function deps
 
-`Pick<>` on small `*Deps` interfaces is fine — minimal coupling:
+Functions with a unique combination of capabilities define their own
+`*Deps` interface co-located with the consuming function:
 
 ```typescript
-// Only need hashing for account creation, not verification
+// auth/bootstrap_account.ts
+export interface BootstrapAccountDeps {
+	db: Db;
+	token_path: string;
+	read_file: (path: string) => Promise<string>;
+	delete_file: (path: string) => Promise<void>;
+	password: Pick<PasswordHashDeps, 'hash_password'>;
+	log: Logger;
+}
+
+// auth/bootstrap_routes.ts
+export interface CheckBootstrapStatusDeps {
+	stat: (path: string) => Promise<StatResult | null>;
+	db: Db;
+	log: Logger;
+}
+
+// auth/api_token_queries.ts — extends QueryDeps with additional capabilities
+export interface ApiTokenQueryDeps extends QueryDeps {
+	log: Logger;
+}
+```
+
+Use ad-hoc deps when:
+- The combination is unique to one function
+- Sharing the interface would add coupling without reuse
+- The function mixes data (`token_path`) with capabilities (`read_file`)
+
+### Narrowing with `Pick<>`
+
+`Pick<>` on small `*Deps` interfaces is fine — minimal coupling.
+The anti-pattern is `Pick<GodType>`, coupling every consumer to a large
+composite.
+
+```typescript
 password: Pick<PasswordHashDeps, 'hash_password'>;
 ```
 
-The anti-pattern is `Pick<GodType>` — coupling every consumer to a large
-composite. Use small standalone `*Deps` interfaces instead.
+### Two-step init
 
-### Two-step init flow
-
-Create the backend (DB + deps), then assemble the HTTP server:
+Create backend (DB + deps), then assemble the HTTP server:
 
 ```typescript
 // server/app_backend.ts
@@ -362,24 +393,9 @@ export interface AppBackend {
 
 ## RuntimeDeps Pattern (fuz_app)
 
-Composable small `*Deps` interfaces for runtime operations, with
-platform-specific factories. Functions accept the narrowest interface they need.
+The 8 small `*Deps` interfaces and `RuntimeDeps` composite shown in
+"Bottom-up composition" above live in `runtime/deps.ts`. Platform factories:
 
-```typescript
-// runtime/deps.ts — 8 small interfaces, 1 composite
-interface EnvDeps { env_get, env_set }
-interface FsReadDeps { stat, read_file }
-interface FsWriteDeps { mkdir, write_file, rename }
-interface FsRemoveDeps { remove }
-interface CommandDeps { run_command }
-interface LogDeps { warn }
-interface TerminalDeps { stdout_write, stdin_read }
-interface ProcessDeps { exit }
-
-interface RuntimeDeps extends all of the above { env_all, args, cwd, run_command_inherit }
-```
-
-Platform factories:
 - `create_deno_runtime(args)` — Deno implementation
 - `create_node_runtime(args)` — Node.js implementation
 - `create_mock_runtime(args)` — test implementation with observable state
@@ -389,15 +405,14 @@ Platform factories:
 ### Single options object (in operations interfaces)
 
 ```typescript
-// Good — in operations interfaces
+// Good
 checkout: (options: {branch: string; cwd?: string}) => Promise<Result<...>>;
 
 // Not this
 checkout: (branch: string, cwd?: string) => Promise<Result<...>>;
 ```
 
-General utility functions may use positional parameters when signatures are
-simple.
+General utility functions may use positional parameters for simple signatures.
 
 ### Result returns, never throw
 
@@ -415,9 +430,9 @@ read_text: (options: {path: string}) => Promise<string | null>;
 
 ### No `vi.mock` — plain objects instead
 
-Plain objects implementing interfaces. No `vi.mock()` for module replacement,
-no Sinon. Individual `vi.fn()` for tracking calls is acceptable, but DI
-interfaces are satisfied by plain objects:
+Plain objects implementing interfaces. No `vi.mock()`, no Sinon. Individual
+`vi.fn()` for call tracking is acceptable, but DI interfaces are satisfied
+by plain objects:
 
 ```typescript
 const mock_git: GitOperations = {
@@ -451,8 +466,7 @@ Deps are stateless functions and instances — never mutable state. Mutable refs
 ### Runtime agnosticism
 
 Never import env at module level in server code that might run outside
-SvelteKit — breaks Deno compilation. Load env via deps parameters, flow
-through constructors.
+SvelteKit — breaks Deno compilation. Load env via deps parameters.
 
 ## File Naming Convention
 
@@ -513,16 +527,6 @@ export const update_package_json = async (
 };
 ```
 
-### Optional with default (fuz_css)
-
-```typescript
-// In CssCacheOptions (part of GenFuzCssOptions):
-deps?: CacheDeps;  // defaults to default_cache_deps
-
-// Destructured in gen_fuz_css:
-const { deps = default_cache_deps } = options;
-```
-
 ### Required first param (fuz_app route factories)
 
 ```typescript
@@ -540,7 +544,8 @@ export const create_account_route_specs = (
 // dev/setup.ts — accepts exactly the capabilities needed
 export const setup_bootstrap_token = async (
 	deps: FsReadDeps & FsWriteDeps & CommandDeps & EnvDeps,
-	options: BootstrapTokenOptions,
+	app_name: string,
+	options?: SetupBootstrapTokenOptions,
 ): Promise<void> => { /* ... */ };
 ```
 
@@ -619,7 +624,7 @@ export const create_mock_cache_deps = (state: MockFsState): CacheDeps => ({
 
 ### Tracking mocks (fuz_gitops)
 
-Mocks that record calls for test assertions:
+Record calls for test assertions:
 
 ```typescript
 export const create_tracking_process_ops = (): {
@@ -644,7 +649,8 @@ export const create_tracking_process_ops = (): {
 
 ### Stub and throwing proxy (fuz_app)
 
-Two safety levels for surface testing:
+Two safety levels for surface testing (simplified — actual code handles
+additional JS internals):
 
 ```typescript
 // Throwing stub — catches unexpected access with descriptive errors
@@ -659,11 +665,12 @@ export const create_throwing_stub = <T>(label: string): T =>
 export const stub_app_deps: AppDeps = {
 	stat: create_throwing_stub('stat'),
 	read_file: create_throwing_stub('read_file'),
+	delete_file: create_throwing_stub('delete_file'),
 	keyring: create_throwing_stub('keyring'),
 	password: create_throwing_stub('password'),
 	db: create_throwing_stub('db'),
 	log: create_throwing_stub('log'),
-	// ...
+	on_audit_event: () => {},
 };
 
 // create_stub_app_deps — no-op stubs that silently pass
@@ -675,6 +682,7 @@ export const create_stub_app_deps = (): AppDeps => ({
 	password: create_noop_stub('password'),
 	db: stub_db,
 	log: new Logger('test', {level: 'off'}),
+	on_audit_event: () => {},
 });
 ```
 
