@@ -9,15 +9,15 @@
 	} = $props();
 </script>
 
-<div class="breadcrumbs">
-	<Breadcrumb />
-</div>
-<div class="wrapper">
+<section class="breadcrumbs">
+	<Breadcrumb>📜</Breadcrumb>
+</section>
+<section class="wrapper">
 	{@render children()}
-</div>
-<div class="breadcrumbs">
-	<Breadcrumb />
-</div>
+</section>
+<section class="breadcrumbs">
+	<Breadcrumb>📜</Breadcrumb>
+</section>
 
 <style>
 	.wrapper {

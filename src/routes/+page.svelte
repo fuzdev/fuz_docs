@@ -51,6 +51,7 @@
 			<Card href={resolve('/skills')}>skills{#snippet icon()}🧙{/snippet}</Card>
 			<Card href={DOCS_PATH}>docs{#snippet icon()}📜{/snippet}</Card>
 			<Card href={resolve('/tools')}>tools{#snippet icon()}🪄{/snippet}</Card>
+			<Card href={resolve('/blog')}>blog{#snippet icon()}🔮{/snippet}</Card>
 		</section>
 		<section class="panel p_lg shadow_inset_xs">
 			<ProjectLinks />

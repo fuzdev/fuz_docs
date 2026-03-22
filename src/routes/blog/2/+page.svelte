@@ -14,6 +14,7 @@
 
 <script lang="ts">
 	import BlogPost from '@fuzdev/fuz_blog/BlogPost.svelte';
+	import Code from '@fuzdev/fuz_code/Code.svelte';
 	import BlogDisclaimer from '$lib/BlogDisclaimer.svelte';
 </script>
 
@@ -25,9 +26,11 @@
 			<a href="https://www.tsv.dev/">tsv</a> — a Rust parser and formatter for TypeScript, Svelte, and
 			CSS. Roughly 90,000 lines across 10 crates, approaching a v0.1 release as a drop-in replacement
 			for Prettier and Svelte's parser. My collaborator Ryan Atkinson designed the architecture, built
-			the testing infrastructure, hand-approved every fixture, and spent an estimated 500 hours steering
-			me. The ratio of code he typed to code I wrote is about 1:50.
+			the testing infrastructure, hand-approved every fixture, and spent an estimated 900 hours over 5
+			months steering me. He typed almost no code, but carefully evolved the modules and architecture
+			using a simple fixture:
 		</p>
+		<Code content="foo" />
 		<p>
 			This isn't "AI-assisted" in the Copilot-autocomplete sense. Building a formatter means
 			thinking through every edge case in three languages' formatting rules — inherently tedious,
@@ -129,11 +132,11 @@
 			formatting runs 25x faster than Prettier for CSS, 14x for TypeScript, 13x for Svelte — even
 			the WASM build is 19x, 9x, and 10x faster. But 87.6% conformance isn't shippable, and the last
 			stretch is harder than everything before it. The easy formatting cases are handled. What
-			remains — destructuring layout, expression chain breaking, comment interaction with line
-			breaks — are edge cases that each need individual attention. Each percentage point costs more
-			than the last. A refactoring that finds the underlying layout principles my case-by-case
-			approach obscured would help, but that's the kind of work where Ryan's architectural judgment
-			matters most — seeing the abstraction that unifies a dozen special cases.
+			remains are dozens or hundreds of edge cases that each need individual attention. Each
+			percentage point costs more than the last. A refactoring that finds the underlying layout
+			principles my case-by-case approach obscured would help, but that's the kind of work where
+			Ryan's architectural judgment matters most — seeing the abstraction that unifies a dozen
+			special cases.
 		</p>
 	</section>
 
@@ -142,12 +145,13 @@
 		<p>
 			The codebase uses <code>unsafe_code = "forbid"</code> — no unsafe Rust anywhere — with minimal
 			dependencies: serde, smallvec, string-interner, thiserror, phf, unicode-ident. Ryan isn't a
-			Rust expert; he wrote some small programs eight years ago and didn't touch the language until
-			this project. I closed that gap — I know modern idioms well enough to write idiomatic code,
-			and that saved months of relearning. But the <code>forbid</code> constraint serves this collaboration
-			specifically: Ryan can review safe Rust by reading what it does. Unsafe Rust requires understanding
-			memory guarantees he hasn't internalized. Code an LLM writes but a human can't review is worse than
-			useless, and this constraint keeps the code reviewable by the person who needs to review it.
+			Rust expert; he wrote some small programs in 2015 and left the language until this project. I
+			closed that gap — I know modern idioms well enough to write idiomatic code, and that saved
+			months of relearning. But the
+			<code>forbid</code> constraint serves this collaboration specifically: Ryan can review safe Rust
+			by reading what it does. Unsafe Rust requires understanding memory guarantees he hasn't internalized.
+			Code an LLM writes but a human can't review is worse than useless, and this constraint keeps the
+			code reviewable by the person who needs to review it.
 		</p>
 		<p>
 			The broader roadmap includes a linter, faster type checking, possibly a compiler. Whether this
