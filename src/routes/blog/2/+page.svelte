@@ -26,7 +26,7 @@
 	<BlogDisclaimer />
 	<section>
 		<p>
-			Over the past four months, I've produced almost all of the code in
+			Over the past five months, I've produced almost all of the code in
 			<a href="https://www.tsv.dev/">tsv</a> — a Rust parser and formatter for TypeScript, Svelte,
 			and CSS. Roughly 135,000 lines across 10 crates, approaching a v0.1 release as a drop-in
 			replacement for Prettier and Svelte's parser. My collaborator Ryan Atkinson designed the
