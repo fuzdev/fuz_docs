@@ -88,7 +88,7 @@ export const gen: Gen = {
 | `log`             | `Logger`                | scoped logger                                       |
 | `timings`         | `Timings`               | performance measurement                             |
 | `invoke_task`     | `InvokeTask`            | invoke other Gro tasks                              |
-| `changed_file_id` | `PathId \| undefined`   | only set during dependency resolution, not during generation |
+| `changed_file_id` | `PathId \| undefined`   | set during dependency resolution; `undefined` during generation |
 
 Most commonly used: `origin_path` (generated-by banners), `log`, and `filer`
 (reading source files).
@@ -124,9 +124,8 @@ export const gen: Gen = () => {
 };
 ```
 
-Relative `filename` resolves relative to the gen file's directory. Absolute
-writes to that exact path (used by `blog.gen.ts` to write files outside its
-own directory, e.g., `static/blog/feed.xml`).
+Relative `filename` resolves from the gen file's directory. Absolute paths
+write to that exact location (e.g., `blog.gen.ts` writes `static/blog/feed.xml`).
 
 ### null — skip generation
 
@@ -158,8 +157,8 @@ generates a manifest, per-skill data files, and per-page `+page.svelte` routes.
 ## Dependencies
 
 Control when a gen file re-runs during watch mode. Without `dependencies`,
-re-runs only when the gen file or its imports change (tracked by filer's
-dependency graph). Use `GenConfig` for broader triggers:
+re-runs only when the gen file or its imports change (tracked by filer).
+Use `GenConfig` for broader triggers:
 
 ```typescript
 type GenDependencies = 'all' | GenDependenciesConfig | GenDependenciesResolver;
@@ -235,7 +234,7 @@ export const gen = gen_fuz_css();
 
 Returns a `GenConfig` that scans source files, extracts CSS class usage via
 AST, and generates a bundled `fuz.css` with only the classes, base styles,
-and theme variables used. Accepts `GenFuzCssOptions` for customization.
+and theme variables actually used. Accepts `GenFuzCssOptions` for customization.
 
 ### Theme CSS generation
 
@@ -358,7 +357,7 @@ export const gen: Gen = ({origin_path}) => {
 | `RawGenResult`         | Type      | `@fuzdev/gro/gen.js`  | string, RawGenFile, null, or nested array        |
 | `RawGenFile`           | Interface | `@fuzdev/gro/gen.js`  | output file with content, filename, format       |
 | `GenDependencies`      | Type      | `@fuzdev/gro/gen.js`  | 'all', config object, or resolver function       |
-| `GenDependenciesConfig`| Interface | `@fuzdev/gro/gen.js`  | patterns (RegExp[]) and files (PathId[])         |
+| `GenDependenciesConfig`| Interface | `@fuzdev/gro/gen.js`  | patterns? (RegExp[]) and files? (PathId[])       |
 
 `Gen` and `GenContext` are also re-exported from `@fuzdev/gro` (the package
 index).

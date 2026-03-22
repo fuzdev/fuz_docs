@@ -47,7 +47,7 @@ namespace, and generate output files.
 
 A **Tome** is a documentation page. Zod schema in `@fuzdev/fuz_ui/tome.js`:
 
-```ts
+```typescript
 const Tome = z.object({
   name: z.string(),            // URL slug and display name
   category: z.string(),        // grouping in sidebar navigation
@@ -79,7 +79,7 @@ Categories group tomes in sidebar navigation. Project-specific:
 
 Every project with docs has `src/routes/docs/tomes.ts`:
 
-```ts
+```typescript
 import type {Tome} from '@fuzdev/fuz_ui/tome.js';
 import introduction from '$routes/docs/introduction/+page.svelte';
 import api from '$routes/docs/api/+page.svelte';
@@ -120,7 +120,7 @@ Six files, following the pattern in fuz_ui and fuz_css.
 
 `src/routes/library.gen.ts`:
 
-```ts
+```typescript
 import {library_gen} from '@fuzdev/fuz_ui/library_gen.js';
 import {library_throw_on_duplicates} from '@fuzdev/fuz_ui/library_generate.js';
 
@@ -257,12 +257,13 @@ dialog accessible from the top bar's menu button.
 
 ### Key contexts
 
-| Context              | Type                       | Purpose                                      |
-| -------------------- | -------------------------- | -------------------------------------------- |
-| `library_context`    | `Library`                  | API metadata (modules, declarations, lookup) |
-| `tomes_context`      | `() => Map<string, Tome>`  | All registered tomes (function returning map) |
-| `tome_context`       | `() => Tome`               | Current page's tome (set by `TomeContent`)   |
-| `docs_links_context` | `DocsLinks`                | Fragment tracking for section navigation     |
+See [Helpers](#helpers) for the full list. The four contexts that wire the
+layout together:
+
+- `library_context` (`Library`) — API metadata
+- `tomes_context` (`() => Map<string, Tome>`) — registered tomes (set by `Docs`)
+- `tome_context` (`() => Tome`) — current page's tome (set by `TomeContent`)
+- `docs_links_context` (`DocsLinks`) — fragment tracking for section navigation
 
 ### Runtime Classes
 
@@ -328,25 +329,12 @@ All use `$derived` for reactive computed properties.
 | `LibrarySummary` | Compact package metadata card                    |
 | `LibraryDetail`  | Expanded package info with file type breakdown   |
 
-## See Also
-
-- **`svelte_preprocess_mdz`** — build-time compilation of static `<Mdz>` content
-  to pre-rendered Svelte markup, eliminating runtime parsing for known-static
-  doc strings
-- **`vite_plugin_library_well_known`** — publishes library metadata at
-  `.well-known/library.json` (RFC 8615) for external tool discovery
-- **`svelte-docinfo`** (`@fuzdev/svelte-docinfo`) — standalone package with the
-  same TypeScript/Svelte analysis as fuz_ui, with CLI, Vite plugin, and
-  build-tool agnostic API. fuz_ui does not depend on it.
-- **./tsdoc-comments.md** — TSDoc/JSDoc authoring conventions, tag reference,
-  mdz auto-linking, and documentation auditing
-
 ## Cross-Project Pattern
 
 fuz_ui **defines** all documentation components and the analysis pipeline.
 Other projects **import** them:
 
-```ts
+```typescript
 // In fuz_ui (defines the components)
 import Docs from '$lib/Docs.svelte';
 import {library_context} from '$lib/library.svelte.js';
@@ -359,3 +347,16 @@ import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 Layout structure is identical — only tomes, categories, and breadcrumb
 branding differ. `library_gen()` with fuz_ui's built-in analysis is the shared
 generation engine.
+
+## See Also
+
+- **`svelte_preprocess_mdz`** — build-time compilation of static `<Mdz>` content
+  to pre-rendered Svelte markup, eliminating runtime parsing for known-static
+  doc strings
+- **`vite_plugin_library_well_known`** — publishes library metadata at
+  `.well-known/library.json` (RFC 8615) for external tool discovery
+- **`svelte-docinfo`** (`@fuzdev/svelte-docinfo`) — standalone package with the
+  same TypeScript/Svelte analysis as fuz_ui, with CLI, Vite plugin, and
+  build-tool agnostic API. fuz_ui does not depend on it.
+- **./tsdoc-comments.md** — TSDoc/JSDoc authoring conventions, tag reference,
+  mdz auto-linking, and documentation auditing

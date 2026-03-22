@@ -46,10 +46,17 @@ export type PathId = Flavored<string, 'PathId'>;
 // fuz_util/colors.ts
 export type Hue = Flavored<number, 'Hue'>;           // [0, 1]
 export type Saturation = Flavored<number, 'Saturation'>; // [0, 1]
+export type Lightness = Flavored<number, 'Lightness'>; // [0, 1]
+export type Red = Flavored<number, 'Red'>;             // [0, 255]
+export type Green = Flavored<number, 'Green'>;         // [0, 255]
+export type Blue = Flavored<number, 'Blue'>;           // [0, 255]
+
+// fuz_util/url.ts
+export type Url = Flavored<string, 'Url'>;
 ```
 
 Also: `BlogPostId` (fuz_blog), `InputPath` (gro), `VocabName`/`ReorderableId`
-(zzz), `Url` (fuz_util).
+(zzz).
 
 ### Branded (strict)
 
@@ -72,15 +79,15 @@ const phone1: PhoneNumber = '555-1234';                // error — must cast
 const phone2: PhoneNumber = '555-1234' as PhoneNumber;  // ok
 ```
 
-Exported but not used in the ecosystem. In practice: `Flavored` for
-TypeScript-only nominal typing, Zod `.brand()` for runtime-validated types.
+Exported but unused in the ecosystem. In practice, use `Flavored` for
+compile-time nominal typing and Zod `.brand()` for runtime-validated types.
 
 ### Choosing between them
 
-| Type     | Cast from base | Safety  | Use when                               |
-| -------- | -------------- | ------- | -------------------------------------- |
-| Flavored | Not required   | Loose   | IDs, paths, ergonomic APIs             |
-| Branded  | Required       | Strict  | Validated data, security-sensitive     |
+| Type     | Base assignable? | Safety | Use when                           |
+| -------- | ---------------- | ------ | ---------------------------------- |
+| Flavored | Yes (no cast)    | Loose  | IDs, paths, ergonomic APIs         |
+| Branded  | No (cast needed) | Strict | Validated data, security-sensitive |
 
 ### Zod `.brand()` — runtime-validated nominal types
 
@@ -231,7 +238,7 @@ type NotNull<T> = T extends null ? never : T;
 | Type              | Purpose                                         |
 | ----------------- | ----------------------------------------------- |
 | `Flavored<TValue, TName>` | Loose nominal typing (no cast from base) |
-| `Branded<TValue, TName>`  | Strict nominal typing (cast required, unused in ecosystem) |
+| `Branded<TValue, TName>`  | Strict nominal typing (cast required, ecosystem uses Zod `.brand()` instead) |
 | `OmitStrict<T, K>`| Omit with key validation                        |
 | `PickUnion<T, K>` | Pick that distributes over unions               |
 | `KeyofUnion<T>`   | keyof that distributes over unions              |

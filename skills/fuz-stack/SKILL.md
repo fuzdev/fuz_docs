@@ -1,6 +1,6 @@
 ---
 name: fuz-stack
-description: Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript and Svelte 5 projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps interfaces, AppDeps, mock factories), or setting up documentation (tomes, library.gen.ts, API routes, docs layout).
+description: Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript and Svelte 5 projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, library.gen.ts, API routes, docs layout).
 license: MIT
 metadata:
   author: ryanatkn
@@ -63,15 +63,10 @@ class DocsLinks {}
 
 **NOT** camelCase for functions/variables. Intentional divergence:
 
-- **Rust alignment** — `keyed_hash` stays `keyed_hash` in both languages,
-  zero renaming cost as code migrates.
-- **PostgreSQL alignment** — `get_user_sessions()` in TS calls
-  `get_user_sessions()` in Postgres with no mental translation.
-- **Domain-prefix legibility** — underscores as explicit word boundaries:
-  `package_json_load`, `contextmenu_open`. camelCase collapses those
-  boundaries (`packageJsonLoad`).
-- **Flat namespace searchability** — `git_push` appears identically in TS,
-  Rust, and SQL; one grep finds all occurrences across layers.
+- **Cross-language alignment** — same identifiers in TS, Rust, and SQL with
+  zero renaming cost (`keyed_hash`, `get_user_sessions`, `git_push`).
+- **Legibility** — underscores as explicit word boundaries:
+  `package_json_load` vs `packageJsonLoad`.
 
 **External APIs keep their native casing.** `.map()`, `addEventListener()`,
 `initSync` — only identifiers you define follow snake_case.
@@ -136,8 +131,6 @@ All exported identifiers must have **unique names across all modules**:
   `/** @nodocs */` to exclude from validation
 - Example: `DocsLink` interface -> `DocsLinkInfo` when it conflicts with
   `DocsLink.svelte`
-
-Flat namespace design enables direct imports and prevents silent overwrites.
 
 ### File Organization
 
@@ -226,14 +219,10 @@ src/test/
 - **Comments**:
   - JSDoc (`/** ... */`) = proper sentences with periods
   - Inline (`//`) = fragments, no capital or period
-- **No barrel exports**: Every module imported by exact file path — no
-  `index.ts` aggregation. Consumers use deep imports like
-  `import {foo} from '@fuzdev/pkg/path/to/module.js'`. Package `exports` in
-  `package.json` use wildcard patterns (`"./*.js"`) so every `dist/` module
-  is importable.
+- **No barrel exports**: Import by exact file path, no `index.ts`. Package
+  `exports` use wildcard patterns (`"./*.js"`) so every module is importable.
 - **No backwards compatibility**: Delete unused code, rename directly, no
-  deprecated stubs or shims. Document breaking changes in changesets. The flat
-  namespace and `gro gen` duplicate detection catch missed references.
+  deprecated stubs or shims. Document breaking changes in changesets.
 
 ## Gro Commands (Temporary Build Tool)
 
@@ -307,7 +296,9 @@ patterns, and auditing.
 ## Svelte 5 Patterns
 
 See ./references/svelte-patterns.md for `$state.raw()`, `$derived.by()`,
-snippets, effects, and attachments.
+reactive collections (SvelteMap/SvelteSet), schema-driven reactive classes,
+snippets, effects, attachments, props, event handling, component composition,
+and legacy features to avoid.
 
 ### Runes API
 
@@ -325,11 +316,12 @@ doc page).
 
 Projects use **tomes** (not "stories") with auto-generated API docs.
 
-**Pipeline**: fuz_ui analysis (ts_helpers, svelte_helpers, tsdoc_helpers) →
-`library_gen.ts` → `library.json` → Tome pages + API routes.
+**Pipeline**: source files → `library_generate()` → `library.json` +
+`library.ts` → `Library` class → Tome pages + API routes.
 
-See ./references/documentation-system.md for setup and the full pipeline. TSDoc
-authoring conventions: ./references/tsdoc-comments.md.
+See ./references/documentation-system.md for setup, the full pipeline, Tome
+system, layout architecture, and component reference. TSDoc authoring
+conventions: ./references/tsdoc-comments.md.
 
 ## mdz - Minimal Markdown Dialect
 
@@ -367,8 +359,9 @@ For parsers and transformers, use fixture-based testing: input files in
 `gro src/test/fixtures/<feature>/update`. **Never manually edit
 `expected.json`** — always regenerate via task.
 
-See ./references/testing-patterns.md for file organization, mock factories,
-fixture workflow, database testing, and composable test suites.
+See ./references/testing-patterns.md for file organization, test helpers,
+shared test factories, mock factories, fixture workflow, database testing,
+environment flags, and test structure.
 
 ## TODOs
 
@@ -382,12 +375,12 @@ a session.**
 ## Custom Tasks
 
 See ./references/task-patterns.md for the Task interface, Zod-based Args,
-TaskContext, error handling, and override patterns.
+TaskContext, error handling, override patterns, and task composition.
 
 ## fuz_css
 
 See ./references/css-patterns.md for setup, variables, composites, modifiers,
-and extraction.
+extraction, and dynamic theming.
 
 ### 3-Layer Architecture
 
@@ -423,15 +416,21 @@ and extraction.
 **Small standalone `*Deps` interfaces, composed bottom-up.** Leaf functions
 import small interfaces directly (not `Pick<Composite>`).
 
+- **Three suffixes** — `*Deps` (capabilities/functions, fresh mock factories per
+  test), `*Options` (data/config values, literal objects), `*Context` (scoped
+  world for a callback/handler). No `*Config` suffix — use `*Options`.
 - **Grouped deps** — composite interface by domain. fuz_css uses `deps.ts` +
   `deps_defaults.ts`; fuz_gitops uses `operations.ts` + `operations_defaults.ts`.
 - **AppDeps** — stateless capabilities bundle for server code (fuz_app
   `auth/deps.ts`).
+- **RuntimeDeps** — composable small `*Deps` interfaces for runtime operations
+  (env, fs, commands), with platform-specific factories (Deno, Node, mock).
 - **Design principles** — single `options` object params, `Result` returns
-  (never throw), `null` for not-found, plain object mocks (no mocking libs).
+  (never throw), `null` for not-found, plain object mocks (no mocking libs),
+  stateless capabilities, runtime agnosticism.
 
-See ./references/dependency-injection.md for the full pattern guide, file naming
-conventions, consumption patterns, and mock factories.
+See ./references/dependency-injection.md for the full pattern guide, naming
+conventions, consumption patterns, RuntimeDeps, and mock factories.
 
 ## Common Utilities
 
@@ -470,7 +469,8 @@ stack; treat them as critical review points.
   `parse` for internal assertions.
 
 See ./references/zod-schemas.md for branded types, transform pipelines,
-discriminated unions, route specs, and introspection.
+discriminated unions, route specs, schemas as runtime data, instance schemas
+(zzz Cell), and introspection.
 
 ## Quick Reference
 

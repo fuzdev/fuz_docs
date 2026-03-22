@@ -5,8 +5,7 @@ Zod schema conventions for `@fuzdev` TypeScript/Svelte projects.
 ## Schema-First Design
 
 Zod schemas are source of truth for JSON shape, TypeScript type (`z.infer`),
-defaults, metadata, CLI help text, and serialization. Schema changes cascade
-through the stack — treat them as critical review points.
+defaults, metadata, CLI help text, and serialization.
 
 - **`.meta({description})`** — introspectable metadata for CLI help and runtime
   reflection
@@ -29,9 +28,10 @@ through the stack — treat them as critical review points.
 
 | Layer | Module | Key exports |
 |---|---|---|
-| Foundation | `@fuzdev/fuz_util/zod.ts` | `zod_to_schema_description`, `zod_to_schema_default`, `zod_to_schema_aliases`, `zod_to_schema_type_string`, `zod_to_schema_properties`, `zod_to_schema_names_with_aliases`, `zod_to_subschema`, `zod_unwrap_def`, `zod_get_base_type`, `zod_is_optional`, `zod_is_nullable`, `zod_has_default`, `zod_unwrap_to_object`, `zod_extract_fields` |
-| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | `Uuid`, `Datetime`, `create_uuid`, `get_datetime_now`, `format_zod_validation_error`, `get_innermost_type`, `zod_get_schema_keys`, `get_field_schema` |
-| CLI | `@fuzdev/fuz_app/cli/help.ts` | `create_help`, `format_arg_name` — schema-driven help text |
+| Foundation | `@fuzdev/fuz_util/zod.ts` | `zod_to_schema_description`, `zod_to_schema_default`, `zod_to_schema_aliases`, `zod_to_schema_type_string`, `zod_to_schema_properties`, `zod_to_schema_names_with_aliases`, `zod_to_subschema`, `zod_unwrap_def`, `zod_get_base_type`, `zod_is_optional`, `zod_is_nullable`, `zod_has_default`, `zod_unwrap_to_object`, `zod_extract_fields`, `zod_format_value`, `ZodSchemaProperty`, `ZodFieldInfo`, `ZOD_WRAPPER_TYPES` |
+| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | `Uuid`, `Datetime`, `create_uuid`, `get_datetime_now`, `format_zod_validation_error`, `get_innermost_type`, `get_innermost_type_name`, `zod_get_schema_keys`, `get_field_schema`, `maybe_get_field_schema`, `is_array_schema`, `get_inner_array_schema`, `Any`, `HttpStatus`, `TypeLiteral`, `SvelteMapSchema` |
+| CLI args | `@fuzdev/fuz_app/cli/args.ts` | `parse_command_args`, `create_extract_global_flags` — schema-validated CLI arg parsing |
+| CLI help | `@fuzdev/fuz_app/cli/help.ts` | `create_help`, `format_arg_name`, `to_max_length`, `CommandMeta`, `HelpGenerator` — schema-driven help text |
 
 ## Core Conventions
 
@@ -88,8 +88,8 @@ const MyThing = z.strictObject({...});
 
 ## Branded Types
 
-Nominal typing for primitive schemas — a `Uuid` is not interchangeable with
-`string` at the type level:
+Nominal typing for primitives — a `Uuid` is not interchangeable with `string`
+at the type level:
 
 ```typescript
 // zzz/zod_helpers.ts — Zod 4 built-in validators + brand
@@ -161,13 +161,15 @@ export type DiskfileJsonInput = z.input<typeof DiskfileJson>;
 ## Zod 4 Primitives
 
 ```typescript
-z.uuid()              // UUID validation (used with .brand('Uuid'))
-z.iso.datetime()      // ISO 8601 datetime (used with .brand('Datetime'))
-z.email()             // email validation
-z.url()               // URL validation
-z.coerce.number()     // string-to-number coercion (env vars)
-z.looseObject({...})  // accepts unknown keys (external data)
+z.uuid()               // UUID validation (used with .brand('Uuid'))
+z.iso.datetime()       // ISO 8601 datetime (used with .brand('Datetime'))
+z.email()              // email validation
+z.url()                // URL validation
+z.coerce.number()      // string-to-number coercion (env vars)
+z.looseObject({...})   // accepts unknown keys (external data)
 z.toJSONSchema(schema) // export schema as JSON Schema
+z.prettifyError(error) // format ZodError for display (used in CLI arg parsing)
+z.instanceof(MyClass)  // runtime class instance check (used for Cell class schemas in zzz)
 ```
 
 ## Discriminated Unions
@@ -197,7 +199,7 @@ export type ActionKind = z.infer<typeof ActionKind>;
 `.extend()` adds or overrides fields, preserving strict mode:
 
 ```typescript
-// fuz_app/action_spec.ts
+// fuz_app/actions/action_spec.ts
 export const ActionSpec = z.strictObject({
 	method: z.string(),
 	kind: ActionKind,
@@ -222,7 +224,8 @@ Every Cell class has a schema built with `CellJson.extend()`. Fields must have
 export const ChatJson = CellJson.extend({
 	name: z.string().default(''),
 	thread_ids: z.array(Uuid).default(() => []),
-	view_mode: z.enum(['simple', 'multi']).default('simple'),
+	main_input: z.string().default(''),
+	view_mode: ChatViewMode,
 	selected_thread_id: Uuid.nullable().default(null),
 }).meta({cell_class_name: 'Chat'});
 export type ChatJson = z.infer<typeof ChatJson>;
@@ -257,36 +260,46 @@ Extracted by `fuz_util/zod.ts`:
 `SchemaFieldMeta` (from `@fuzdev/fuz_app/schema_meta.js`):
 
 ```typescript
+import type {Sensitivity} from './sensitivity.js';
+
 interface SchemaFieldMeta {
-	description?: string;    // human-readable (env surface, docs)
-	sensitivity?: string;    // 'secret' masks values in logs/surface
+	description?: string;       // human-readable (env surface, docs)
+	sensitivity?: Sensitivity;  // 'secret' masks values in logs/surface
 }
 ```
 
-Usage in env schemas:
+`Sensitivity` is the string literal type `'secret'` (from
+`@fuzdev/fuz_app/sensitivity.js`).
+
+Usage in env schemas (`fuz_app/server/env.ts`):
 
 ```typescript
-DATABASE_URL: z.union([z.url(), z.literal('')]).optional()
-	.meta({description: 'Database connection URL', sensitivity: 'secret'}),
+DATABASE_URL: z.string().min(1).meta({
+	description: 'Database URL (postgres://, file://, or memory://)',
+	sensitivity: 'secret',
+}),
 ALLOWED_ORIGINS: z.string().min(1, 'ALLOWED_ORIGINS is required')
 	.meta({description: 'Comma-separated origin patterns for API verification'}),
 PORT: z.coerce.number().default(4040)
 	.meta({description: 'HTTP server port'}),
 ```
 
-- `env_schema_to_surface` reads `sensitivity` and `description` into `AppSurfaceEnv`
-- `format_env_display_value` masks values where `sensitivity === 'secret'`
-- `generate_valid_value` generates values from type heuristics via JSON Schema
+- `env_schema_to_surface` (`fuz_app/http/surface.ts`) reads `sensitivity` and
+  `description` into `AppSurfaceEnv`
+- `format_env_display_value(value, secret)` (`fuz_app/env/mask.ts`) masks
+  values when `secret` is true
+- `generate_valid_value` (`fuz_app/testing/schema_generators.ts`) generates
+  values from type heuristics via JSON Schema
 
 ## Validation at Boundaries
 
 ### safeParse for External Input
 
 ```typescript
-// fuz_app/route_spec.ts — input validation middleware
+// fuz_app/http/route_spec.ts — input validation middleware
 const result = input_schema.safeParse(body);
 if (!result.success) {
-	return c.json({error: 'invalid_request_body', issues: result.error.issues}, 400);
+	return c.json({error: ERROR_INVALID_REQUEST_BODY, issues: result.error.issues}, 400);
 }
 c.set('validated_input', result.data);
 ```
@@ -299,8 +312,15 @@ RoleName.parse(name); // throws if name doesn't match the regex
 
 ### Formatting Errors
 
+`z.prettifyError` for CLI output, `format_zod_validation_error` for inline
+messages:
+
 ```typescript
-// zzz/zod_helpers.ts
+// Zod 4 built-in — multi-line, human-readable (CLI args, error display)
+// fuz_app/cli/args.ts
+return {success: false, error: z.prettifyError(parsed.error)};
+
+// zzz/zod_helpers.ts — single-line, compact (inline error messages)
 export const format_zod_validation_error = (error: z.ZodError): string =>
 	error.issues
 		.map((i) => {
@@ -330,6 +350,23 @@ export const format_zod_validation_error = (error: z.ZodError): string =>
 | `zod_has_default(schema)` | Check if schema has a default value |
 | `zod_unwrap_to_object(schema)` | Unwrap to inner `ZodObject`, or `null` |
 | `zod_extract_fields(schema)` | Extract `ZodFieldInfo[]` from an object schema |
+| `zod_format_value(value)` | Format a value for display in help text |
+| `ZOD_WRAPPER_TYPES` | `Set` of wrapper type names traversed by `zod_unwrap_def` |
+
+## Instance Schemas (zzz)
+
+`z.instanceof()` validates class instances at runtime — used in zzz so action
+specs can reference Cell instances as typed values without JSON serialization:
+
+```typescript
+// zzz/chat.svelte.ts
+export const ChatSchema = z.instanceof(Chat);
+
+// zzz/part.svelte.ts
+export const PartSchema = z.instanceof(Part);
+export const TextPartSchema = z.instanceof(TextPart);
+export const DiskfilePartSchema = z.instanceof(DiskfilePart);
+```
 
 ## Route Spec Schemas
 
@@ -348,11 +385,11 @@ const my_route: RouteSpec = {
 };
 ```
 
-- `z.null()` for routes with no request body
+- `z.null()` for no request body
 - `z.strictObject()` for inputs — rejects unknown keys
 - `z.looseObject()` for outputs with variable extra fields
-- Input validated by auto-generated middleware (`safeParse`)
-- Output validated in DEV only (console warning on mismatch)
+- Input validated via auto-generated `safeParse` middleware
+- Output validated in DEV only (warns on mismatch)
 
 ### JSON Schema Export
 
