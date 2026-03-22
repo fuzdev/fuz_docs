@@ -8572,7 +8572,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.197.1",
+			"version": "0.197.2",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -8716,7 +8716,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.197.1",
+			"version": "0.197.2",
 			"modules": [
 				{
 					"path": "args.ts",
@@ -14890,7 +14890,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.57.0",
+			"version": "0.58.0",
 			"description": "CSS framework and design system for semantic HTML",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -14960,8 +14960,8 @@
 				"@fuzdev/blake3_wasm": "^0.1.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_ui": "^0.191.1",
-				"@fuzdev/fuz_util": "^0.54.0",
-				"@fuzdev/gro": "^0.197.0",
+				"@fuzdev/fuz_util": "^0.55.0",
+				"@fuzdev/gro": "^0.197.2",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
@@ -14979,7 +14979,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.4.1",
-				"svelte": "^5.54.0",
+				"svelte": "^5.54.1",
 				"svelte-check": "^4.4.4",
 				"svelte2tsx": "^0.7.51",
 				"tslib": "^2.8.1",
@@ -15024,7 +15024,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.57.0",
+			"version": "0.58.0",
 			"modules": [
 				{
 					"path": "class_variable_index.ts",
@@ -38507,7 +38507,7 @@
 				"@fuzdev/fuz_mastodon": "^0.39.0",
 				"@fuzdev/fuz_ui": "^0.191.1",
 				"@fuzdev/fuz_util": "^0.55.0",
-				"@fuzdev/gro": "^0.197.1",
+				"@fuzdev/gro": "^0.197.2",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
@@ -38663,7 +38663,7 @@
 			},
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
-				"@fuzdev/fuz_app": "file:../fuz_app",
+				"@fuzdev/fuz_app": "^0.2.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.57.0",
 				"@fuzdev/fuz_ui": "^0.191.1",
@@ -38685,7 +38685,7 @@
 				"ollama": "^0.6.3",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.4.1",
-				"svelte": "^5.54.0",
+				"svelte": "^5.54.1",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -38698,7 +38698,7 @@
 			"dependencies": {
 				"@anthropic-ai/sdk": "^0.71.2",
 				"@fuzdev/blake3_wasm": "^0.1.0",
-				"@fuzdev/gro": "^0.197.1",
+				"@fuzdev/gro": "^0.197.2",
 				"@google/generative-ai": "^0.24.1",
 				"@xterm/xterm": "^6.0.0",
 				"date-fns": "^4.1.0",
@@ -43220,13 +43220,13 @@
 						{
 							"name": "click_outside",
 							"kind": "function",
-							"doc_comment": "Creates an attachment that calls `callback` when a mousedown occurs outside the element.",
-							"source_line": 6,
-							"type_signature": "(callback: () => void): Attachment<HTMLElement>",
+							"doc_comment": "Creates an attachment that calls `cb` when a mousedown occurs outside the element.",
+							"source_line": 7,
+							"type_signature": "(cb: () => void): Attachment<HTMLElement>",
 							"return_type": "Attachment<HTMLElement>",
 							"parameters": [
 								{
-									"name": "callback",
+									"name": "cb",
 									"type": "() => void"
 								}
 							]

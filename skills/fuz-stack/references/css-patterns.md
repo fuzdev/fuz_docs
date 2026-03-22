@@ -100,6 +100,20 @@ keeping normalizations (font inheritance, border-collapse):
 Common for navigation menus, custom list components, and links used as buttons.
 Applied to interactive elements and decorative containers.
 
+### `.inline` Class
+
+Forces inline-block display on elements that normally render as block-level,
+for embedding within paragraph text:
+
+```svelte
+<p>Click <button class="inline">here</button> to continue.</p>
+<p>Enter your <input class="inline" /> name.</p>
+```
+
+Applies to `code`, `input`, `textarea`, `select`, and `button`. These elements
+also get inline-block automatically when nested inside `<p>` tags (no class
+needed).
+
 ## Style Variables (Design Tokens)
 
 Defined in TypeScript, rendered to CSS. Each can have `light` and/or `dark`
@@ -188,8 +202,10 @@ Map directly to style variable values:
   `inset_md`
 - **Borders**: `border_radius_xs`, `border_width_2`, `border_color_30`,
   `border_color_a_50`
-- **Shadows**: `shadow_md`, `shadow_inset_xs`, `shadow_alpha_50`,
-  `shadow_color_umbra`
+- **Shadows**: `shadow_md`, `shadow_top_md`, `shadow_bottom_lg`,
+  `shadow_inset_xs`, `shadow_inset_top_sm`, `shadow_inset_bottom_xs`,
+  `shadow_alpha_50`, `shadow_color_umbra` (also `_highlight`, `_glow`,
+  `_shroud`)
 - **Hue**: `hue_a` through `hue_j` (sets `--hue` variable)
 
 ### Composite Classes
@@ -270,7 +286,8 @@ Arbitrary: `min-width(800px):`, `max-width(600px):`
 
 **State modifiers — structural**: `first:`, `last:`, `only:`, `odd:`, `even:`,
 `first-of-type:`, `last-of-type:`, `only-of-type:`, `empty:`. Parameterized:
-`nth-child(2n+1):`, `nth-of-type(2n):`
+`nth-child(2n+1):`, `nth-last-child(2n):`, `nth-of-type(2n):`,
+`nth-last-of-type(2n):`
 
 **State modifiers — UI**: `fullscreen:`, `modal:`, `open:`, `popover-open:`,
 `paused:`, `playing:`
