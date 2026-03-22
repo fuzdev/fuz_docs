@@ -29,8 +29,8 @@
 							>agent skills</a
 						>
 						for the
-						<a href="https://www.fuz.dev/">Fuz</a> ecosystem, designed primarily for consumption by machine
-						agents.
+						<a href="https://www.fuz.dev/">Fuz</a> ecosystem, designed primarily for both human and machine
+						consumption.
 					</p>
 					<p>
 						This website is inconsistently human-reviewed — everything is in flux, not all patterns

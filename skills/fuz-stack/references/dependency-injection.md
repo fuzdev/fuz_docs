@@ -72,7 +72,7 @@ Small standalone interfaces avoid this:
 
 ### Where shared interfaces live
 
-- **fuz_app `auth/deps.ts`**: `AppDeps` (server capabilities), `RouteDeps` (`Omit<AppDeps, 'db'>`)
+- **fuz_app `auth/deps.ts`**: `AppDeps` (server capabilities), `RouteFactoryDeps` (`Omit<AppDeps, 'db'>`)
 - **fuz_app `auth/password.ts`**: `PasswordHashDeps` (hash, verify, verify_dummy)
 - **fuz_app `runtime/deps.ts`**: `EnvDeps`, `FsReadDeps`, `FsWriteDeps`, `FsRemoveDeps`,
   `CommandDeps`, `LogDeps`, `TerminalDeps`, `ProcessDeps`, `RuntimeDeps` (full bundle)
@@ -88,7 +88,7 @@ Small standalone interfaces avoid this:
 | What              | Convention                  | Example                              |
 | ----------------- | --------------------------- | ------------------------------------ |
 | Small interface   | `{Domain}Deps`              | `EnvDeps`, `FsReadDeps`, `CacheDeps` |
-| Capability bundle | `{Scope}Deps`               | `AppDeps`, `RouteDeps`               |
+| Capability bundle | `{Scope}Deps`               | `AppDeps`, `RouteFactoryDeps`        |
 | Full composite    | `RuntimeDeps`               | extends all small `*Deps` interfaces |
 | Default impl      | `default_{domain}_deps`     | `default_cache_deps`                 |
 | Mock factory      | `create_mock_{domain}_deps` | `create_mock_cache_deps`             |
@@ -259,7 +259,7 @@ Stateless capabilities bundle for server code with three-part vocabulary:
 | Category          | Type        | Examples                                        | Rule                             |
 | ----------------- | ----------- | ----------------------------------------------- | -------------------------------- |
 | **Capabilities**  | `AppDeps`   | `keyring`, `password`, `db`, `log`              | Stateless, injectable, swappable |
-| **Route caps**    | `RouteDeps` | `Omit<AppDeps, 'db'>` — for route factories     | Handlers get `db` via `RouteContext` |
+| **Route caps**    | `RouteFactoryDeps` | `Omit<AppDeps, 'db'>` — for route factories     | Handlers get `db` via `RouteContext` |
 | **Parameters**    | `*Options`  | `session_options`, `rate_limiter`, `token_path`  | Static values set at startup    |
 | **Runtime state** | inline ref  | `bootstrap_status: {available, token_path}`      | Mutable — NOT in deps or options |
 
@@ -277,8 +277,8 @@ export interface AppDeps {
 	log: Logger;
 }
 
-// Route factories use RouteDeps — AppDeps without db
-export type RouteDeps = Omit<AppDeps, 'db'>;
+// Route factories use RouteFactoryDeps — AppDeps without db
+export type RouteFactoryDeps = Omit<AppDeps, 'db'>;
 ```
 
 ### QueryDeps for database functions
@@ -303,9 +303,9 @@ because `RouteContext` structurally satisfies `QueryDeps`.
 Factories take narrowed deps reflecting what they actually use:
 
 ```typescript
-// Uses keyring, password, log — gets RouteDeps (AppDeps minus db)
+// Uses keyring, password, log — gets RouteFactoryDeps (AppDeps minus db)
 export const create_account_route_specs = (
-	deps: RouteDeps,
+	deps: RouteFactoryDeps,
 	options: AccountRouteOptions,
 ): Array<RouteSpec> => {
 	const {keyring, password} = deps;
@@ -478,7 +478,7 @@ src/test/
 **fuz_app** (`*Deps` across multiple directories):
 ```
 src/lib/
-├── auth/deps.ts       # AppDeps, RouteDeps
+├── auth/deps.ts       # AppDeps, RouteFactoryDeps
 ├── auth/password.ts   # PasswordHashDeps
 ├── runtime/deps.ts    # EnvDeps, FsReadDeps, ..., RuntimeDeps
 ├── runtime/mock.ts    # create_mock_runtime (MockRuntime)
@@ -527,7 +527,7 @@ const { deps = default_cache_deps } = options;
 
 ```typescript
 export const create_account_route_specs = (
-	deps: RouteDeps,
+	deps: RouteFactoryDeps,
 	options: AccountRouteOptions,
 ): Array<RouteSpec> => {
 	/* ... */

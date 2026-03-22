@@ -265,9 +265,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 270,
-			"exported_module_count": 265,
-			"export_count": 871,
+			"module_count": 271,
+			"exported_module_count": 266,
+			"export_count": 872,
 			"peer_dependencies": [],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
