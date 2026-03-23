@@ -25,14 +25,14 @@ export const feed: BlogFeed = {
 		},
 		{
 			id: 'https://docs.fuz.dev/blog/2',
-			url: 'https://docs.fuz.dev/blog/building-tsv',
+			url: 'https://docs.fuz.dev/blog/building-a-svelte-formatter-in-rust-the-easy-way-and-the-hard-way',
 			blog_post_id: 2,
-			title: 'Building tsv',
-			slug: 'building-tsv',
+			title: 'Building a Svelte formatter in Rust the easy way and the hard way',
+			slug: 'building-a-svelte-formatter-in-rust-the-easy-way-and-the-hard-way',
 			date_published: '2026-02-26T00:00:00.000Z',
 			date_modified: '2026-02-26T00:00:00.000Z',
 			summary:
-				'A Rust parser and formatter for TypeScript, Svelte, and CSS — why verifiable correctness makes parsers ideal for LLM-driven development, and where the model breaks down.',
+				'Using Prettier as a canonical target made an LLM-built formatter possible. Writing original fixtures and diverging from Prettier in 80 cases made it worth building.',
 			tags: ['tsv', 'Rust', 'AI', 'parser', 'formatter', 'TypeScript', 'Svelte'],
 		},
 	],
