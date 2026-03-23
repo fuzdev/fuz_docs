@@ -77,8 +77,10 @@
 	<section>
 		<h2>The hard way</h2>
 		<p>
-			If tsv only matched Prettier, it wouldn't need to exist. The project becomes interesting where
-			it diverges — around 80 documented cases, each a deliberate design decision.
+			If tsv only matched Prettier, tools like
+			<a href="https://oxc.rs/docs/guide/usage/formatter.html">Oxfmt</a> already do that. tsv exists to
+			be a formatter built for Svelte users — and that means diverging from Prettier in around 80 documented
+			cases, each a deliberate design decision.
 		</p>
 		<p>
 			Ryan avoided Prettier's existing test suites. Every fixture was hand-crafted or hand-approved.
