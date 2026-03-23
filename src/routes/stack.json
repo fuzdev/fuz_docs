@@ -3,7 +3,7 @@
 		"rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
 		"cargo": "cargo 1.94.0 (85eff7c80 2026-01-15)",
 		"node": "v24.9.0",
-		"svelte": "5.54.0",
+		"svelte": "5.55.0",
 		"sveltekit": "2.55.0",
 		"typescript": "5.9.3",
 		"gro": "0.197.2",
@@ -80,7 +80,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.191.1",
+			"version": "0.191.2",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -88,7 +88,7 @@
 			"published": true,
 			"module_count": 111,
 			"exported_module_count": 111,
-			"export_count": 389,
+			"export_count": 390,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
@@ -101,7 +101,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.2.0",
+			"version": "0.2.1",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",

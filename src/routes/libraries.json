@@ -22018,7 +22018,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.191.1",
+			"version": "0.191.2",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -22099,9 +22099,9 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@fuzdev/fuz_code": "^0.45.1",
-				"@fuzdev/fuz_css": "^0.57.0",
+				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_util": "^0.55.0",
-				"@fuzdev/gro": "^0.197.0",
+				"@fuzdev/gro": "^0.197.2",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
@@ -22119,7 +22119,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.5.1",
-				"svelte": "^5.54.0",
+				"svelte": "^5.54.1",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -22166,7 +22166,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.191.1",
+			"version": "0.191.2",
 			"modules": [
 				{
 					"path": "Alert.svelte",
@@ -26629,7 +26629,7 @@
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_ui",
+							"name": "logo_fuz_app",
 							"kind": "variable",
 							"source_line": 66,
 							"type_signature": "SvgData"
@@ -26641,57 +26641,63 @@
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_code",
+							"name": "logo_fuz_ui",
 							"kind": "variable",
 							"source_line": 79,
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_blog",
+							"name": "logo_fuz_code",
 							"kind": "variable",
 							"source_line": 85,
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_mastodon",
+							"name": "logo_fuz_blog",
 							"kind": "variable",
 							"source_line": 91,
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_gitops",
+							"name": "logo_fuz_mastodon",
 							"kind": "variable",
 							"source_line": 97,
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_docs",
+							"name": "logo_fuz_gitops",
 							"kind": "variable",
 							"source_line": 103,
 							"type_signature": "SvgData"
 						},
 						{
-							"name": "logo_fuz_template",
+							"name": "logo_fuz_docs",
 							"kind": "variable",
 							"source_line": 109,
 							"type_signature": "SvgData"
 						},
 						{
+							"name": "logo_fuz_template",
+							"kind": "variable",
+							"source_line": 115,
+							"type_signature": "SvgData"
+						},
+						{
 							"name": "logo_fuz_util",
 							"kind": "variable",
-							"source_line": 119,
+							"source_line": 125,
 							"type_signature": "SvgData"
 						},
 						{
 							"name": "logo_github",
 							"kind": "variable",
-							"source_line": 145,
+							"source_line": 151,
 							"type_signature": "SvgData"
 						},
 						{
 							"name": "logo_mdn",
 							"kind": "variable",
-							"source_line": 158,
+							"source_line": 164,
 							"type_signature": "SvgData"
 						}
 					],
@@ -30564,17 +30570,17 @@
 		"owner_name": "fuzdev",
 		"homepage_url": "https://app.fuz.dev/",
 		"logo_url": "https://app.fuz.dev/logo.svg",
-		"logo_alt": "a friendly pixelated spider facing you",
+		"logo_alt": "a friendly teal spider facing you",
 		"npm_url": "https://www.npmjs.com/package/@fuzdev/fuz_app",
 		"changelog_url": "https://github.com/fuzdev/fuz_app/blob/main/CHANGELOG.md",
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.2.0",
+			"version": "0.2.1",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
-			"logo_alt": "a friendly pixelated spider facing you",
+			"logo_alt": "a friendly teal spider facing you",
 			"license": "MIT",
 			"homepage": "https://app.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_app",
@@ -30615,7 +30621,7 @@
 				"@fuzdev/blake3_wasm": "^0.1.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
-				"@fuzdev/fuz_ui": "^0.191.1",
+				"@fuzdev/fuz_ui": "^0.191.2",
 				"@fuzdev/fuz_util": "^0.55.0",
 				"@fuzdev/gro": "^0.197.2",
 				"@jridgewell/trace-mapping": "^0.3.31",
@@ -30685,7 +30691,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.2.0",
+			"version": "0.2.1",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -54892,10 +54898,10 @@
 			},
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
-				"@fuzdev/fuz_app": "^0.2.0",
+				"@fuzdev/fuz_app": "^0.2.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.57.0",
-				"@fuzdev/fuz_ui": "^0.191.1",
+				"@fuzdev/fuz_ui": "^0.191.2",
 				"@fuzdev/fuz_util": "^0.55.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
