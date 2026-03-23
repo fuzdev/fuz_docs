@@ -38,15 +38,15 @@ and skills (same concept as [agentskills.io](https://agentskills.io/)).
 2. Go to [claude.ai/customize/skills](https://claude.ai/customize/skills)
 3. Upload the `skills/fuz-stack/` or `skills/grimoire/` folder
 
-You may also try pointing your agent to:
-
-- https://github.com/fuzdev/fuz_docs/blob/main/skills/fuz-stack/SKILL.md
-- https://github.com/fuzdev/fuz_docs/blob/main/skills/grimoire/SKILL.md
-
 **Claude Code:**
 
 Copy a skill folder to `~/.claude/skills/`, e.g.
 `~/.claude/skills/fuz-stack/`.
+
+You may also try pointing your agent to:
+
+- [github.com/fuzdev/fuz_docs/blob/main/skills/fuz-stack/SKILL.md](https://github.com/fuzdev/fuz_docs/blob/main/skills/fuz-stack/SKILL.md)
+- [github.com/fuzdev/fuz_docs/blob/main/skills/grimoire/SKILL.md](https://github.com/fuzdev/fuz_docs/blob/main/skills/grimoire/SKILL.md)
 
 ## License
 
