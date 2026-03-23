@@ -56,7 +56,7 @@
 			<ProjectLinks />
 		</section>
 		<section>
-			<DocsFooter {library}>
+			<DocsFooter {library} root_url="https://www.fuz.dev/">
 				{#snippet logo_header()}
 					<a href={resolve('/about')} class="mb_xs">about</a>
 				{/snippet}

@@ -80,7 +80,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.191.2",
+			"version": "0.191.3",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",

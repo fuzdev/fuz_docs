@@ -27,7 +27,7 @@
 		</div>
 	</section>
 	<section class="box mb_xl7">
-		<DocsFooter {library}>
+		<DocsFooter {library} root_url="https://www.fuz.dev/">
 			<div class="mb_xl5">
 				<Breadcrumb><Svg data={logo_fuz} size="var(--icon_size_sm)" /></Breadcrumb>
 			</div>
