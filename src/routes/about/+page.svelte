@@ -11,7 +11,7 @@
 	const library = library_context.get();
 </script>
 
-<main class="width_atmost_md">
+<main class="width_atmost_md pb_xl9">
 	<section>
 		<header class="box">
 			<h1 class="mb_xl5" style:margin-top={MAIN_HEADER_MARGIN_TOP}>
@@ -21,12 +21,12 @@
 		<Breadcrumb><Svg data={logo_fuz} size="var(--icon_size_sm)" /></Breadcrumb>
 	</section>
 	<EcosystemLinksPanel />
-	<section class="box width:100% mb_lg">
+	<section class="box width:100%">
 		<div class="panel p_md width_atmost_md">
 			<LibraryDetail {library} />
 		</div>
 	</section>
-	<section class="box mb_xl7">
+	<section class="box">
 		<DocsFooter {library} root_url="https://www.fuz.dev/">
 			<div class="mb_xl5">
 				<Breadcrumb><Svg data={logo_fuz} size="var(--icon_size_sm)" /></Breadcrumb>

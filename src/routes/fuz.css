@@ -1303,6 +1303,9 @@ a.chip {
 .pb_xl {
 	padding-bottom: var(--space_xl);
 }
+.pb_xl9 {
+	padding-bottom: var(--space_xl9);
+}
 .pl_lg {
 	padding-left: var(--space_lg);
 }
@@ -1374,9 +1377,6 @@ a.chip {
 }
 .mb_xl5 {
 	margin-bottom: var(--space_xl5);
-}
-.mb_xl7 {
-	margin-bottom: var(--space_xl7);
 }
 .mb_xl9 {
 	margin-bottom: var(--space_xl9);
