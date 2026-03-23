@@ -26,6 +26,9 @@
 		'type-utilities': 'Nominal typing (Flavored/Branded), strict utility types',
 		'documentation-system': 'Docs pipeline — Tome system, layout architecture, project setup',
 		'zod-schemas': 'Zod conventions — strictObject, branded types, introspection',
+		'rust-conventions':
+			'Shared Rust patterns — edition 2024, unsafe forbid, lints, crate structure',
+		'wasm-patterns': 'WASM build targets — wasm-bindgen, component model, JS interop',
 	};
 </script>
 

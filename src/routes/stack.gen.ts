@@ -10,6 +10,7 @@ const TYPESCRIPT_REPOS = [
 	{path: 'gro', name: '@fuzdev/gro'},
 	{path: 'fuz_css', name: '@fuzdev/fuz_css'},
 	{path: 'fuz_ui', name: '@fuzdev/fuz_ui'},
+	{path: 'fuz_app', name: '@fuzdev/fuz_app'},
 	{path: 'fuz_code', name: '@fuzdev/fuz_code'},
 	{path: 'fuz_template', name: '@fuzdev/fuz_template'},
 	{path: 'fuz_blog', name: '@fuzdev/fuz_blog'},

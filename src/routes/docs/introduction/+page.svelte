@@ -21,7 +21,7 @@
 			all patterns are endorsed, and some content is plain slop.
 		</p>
 		<p>
-			This website is primarily designed for machine agents. Humans are welcome to browse
+			This website is designed for both human and machine consumption. Humans are welcome to browse
 			<a href={resolve('/docs' as any)}>docs</a> and
 			<a href={resolve('/skills' as any)}>skills</a>, but expect rough edges.
 		</p>
