@@ -18,6 +18,22 @@ metadata:
 > **Skip for**: Grimoire-only edits, Rust projects (use repo CLAUDE.md),
 > third-party code review, simple git/shell operations.
 
+## Why These Conventions
+
+The Fuz stack is designed so the full software lifecycle — produce, deploy,
+operate — is accessible to anyone with intent and an AI partner. These
+conventions serve that goal: consistent, self-describing patterns that AI
+agents can learn once and apply everywhere. snake_case aligns TS, Rust, and
+SQL with zero renaming. Zod schemas are the single source of truth for shape,
+types, defaults, and validation. The Cell pattern gives every piece of state
+the same structure. When conventions are this consistent, AI can reliably
+bridge the gap between a person's intent and the stack's implementation.
+
+The stack composes: `fuz_util → fuz_css → fuz_ui → apps`, with `fuz_app`
+as the shared backend spine (auth, sessions, DB, SSE). zzz (local-first
+forge) and tx (cloud orchestrator) build on the same primitives. Understanding
+one part transfers to understanding the others.
+
 ## Package Ecosystem
 
 `@fuzdev/*` packages draw from these conventions. Each package's `CLAUDE.md`
@@ -25,11 +41,11 @@ is authoritative for what it actually uses.
 
 | Package        | Description                                                              |
 | -------------- | ------------------------------------------------------------------------ |
-| `fuz_util`     | utility belt for JS                                                      |
-| `gro`          | task runner and toolkit extending SvelteKit                              |
-| `fuz_css`      | CSS framework and design system for semantic HTML                        |
-| `fuz_ui`       | Svelte UI library                                                        |
-| `fuz_app`      | shared backend library (auth, sessions, DB, SSE, route specs, CLI)       |
+| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types        |
+| `gro`          | task runner and toolkit extending SvelteKit (temporary, until `fuz`)     |
+| `fuz_css`      | CSS framework and design system — apps look good by default              |
+| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs               |
+| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon           |
 | `fuz_docs`     | experimental AI-generated docs and skills for Fuz                        |
 | `fuz_template` | a static web app and Node library template                               |
 | `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more |
@@ -37,11 +53,12 @@ is authoritative for what it actually uses.
 | `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz           |
 | `fuz_gitops`   | a tool for managing many repos                                           |
 | `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`) |
-| `zzz`          | local-first forge for power users and devs                               |
+| `zzz`          | local-first forge — produce software with AI assistance                  |
+| `tx`           | system orchestrator — deploy and operate infrastructure                  |
 
 `gro` is a temporary build tool, will be replaced by `fuz`.
 
-**Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_* apps`
+**Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_app -> zzz, tx, apps`
 
 ## Coding Conventions
 
