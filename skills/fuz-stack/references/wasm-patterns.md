@@ -545,4 +545,4 @@ wasm-bindgen's deno target uses `fetch()` to load WASM, incompatible with
 | tsv WASM bindings                | `private_tsv/crates/tsv_wasm/`                                                  |
 | Component model spec — WIT       | [WebAssembly/component-model WIT](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md) |
 | Component model spec — Explainer | [WebAssembly/component-model Explainer](https://github.com/WebAssembly/component-model/blob/main/design/mvp/Explainer.md) |
-| Rust conventions (WASM errors)   | `references/rust_conventions.md`                                                |
+| Rust patterns (WASM errors)      | `references/rust-patterns.md`                                                   |

@@ -1,4 +1,4 @@
-# Rust Conventions for the Fuz Ecosystem
+# Rust Patterns for the Fuz Ecosystem
 
 **Applies to**: `fuz` (daemon + CLI), `tsv` (parser/formatter), `blake3` (WASM
 bindings). All projects use **Rust edition 2024**, resolver 2.
@@ -13,8 +13,8 @@ This covers shared patterns.
 - **Code quality**: `unsafe_code = "forbid"`, pedantic lints, tests expected.
 - **Performance**: If it's slow, it's a bug.
 - **Copious `// TODO:` comments**: Mark known future work, unfinished parts.
-- **`todo!()` macro policy varies**: tsv allows it (parser development). fuz
-  warns via `todo = "warn"` — use `#[allow(clippy::todo)]` with justification.
+- **`todo!()` macro warns**: All projects set `todo = "warn"` — use
+  `#[allow(clippy::todo)]` with justification when needed.
 
 ## Lints
 
@@ -49,24 +49,26 @@ cargo_common_metadata = "allow"
 multiple_crate_versions = "allow"
 
 # Restriction lints (panic points need explicit #[allow] with justification)
+clone_on_ref_ptr = "warn"
 dbg_macro = "warn"
 expect_used = "warn"
 panic = "warn"
+todo = "warn"
 unwrap_used = "warn"
 ```
 
 ### Project-specific lint differences
 
-- `missing_debug_implementations`: "warn" in fuz, "allow" in tsv/blake3
-  (parser types contain non-Debug fields like `Chars`, `RefCell<Interner>`)
-- `todo`: "warn" in fuz (requires explicit `#[allow]`), not set in tsv/blake3
-- `clone_on_ref_ptr`: "warn" in tsv only
-- tsv/blake3 share additional pedantic/nursery allows for parser code:
+- `missing_debug_implementations`: "warn" in fuz, "allow" in tsv (parser types
+  contain non-Debug fields like `Chars`, `RefCell<Interner>`), not set in blake3
+- tsv has additional pedantic/nursery allows for parser code:
   `cast_possible_truncation`, `cast_lossless`, `cast_possible_wrap`,
   `wildcard_imports`, `cognitive_complexity`, etc.
-- **Crate-level overrides**: `fuz_pty` and `tsv_napi` override
-  `unsafe_code = "allow"` (FFI/N-API require unsafe). These crates duplicate
-  workspace lints since Cargo doesn't allow partial overrides.
+- **Crate-level overrides**: `fuz_pty`, `tsv_napi`, and `blake3_component`
+  override `unsafe_code = "allow"` (FFI/N-API/wit-bindgen require unsafe).
+  These crates duplicate workspace lints since Cargo doesn't allow partial
+  overrides. `blake3_component` also allows `same_length_and_capacity` and
+  `use_self` (false positives from wit-bindgen generated code).
 
 Each crate opts in with `[lints] workspace = true`.
 
@@ -181,7 +183,7 @@ pub fn keyed_hash(key: &[u8], data: &[u8]) -> Result<Vec<u8>, JsError> {
 }
 ```
 
-For component model errors, see `references/wasm_patterns.md`.
+For component model errors, see `references/wasm-patterns.md`.
 
 ## Naming Conventions
 
@@ -225,7 +227,7 @@ project/
 ├── crates/
 │   ├── {proj}_common/  # Foundation utilities (shared types, errors)
 │   ├── {proj}_*/       # Feature-specific crates
-│   ├── {proj}_cli/     # Production binary (pure Rust)
+│   ├── {proj}_cli/     # Production binary (or just {proj}/ — see below)
 │   ├── {proj}_debug/   # Dev binary (may use Deno sidecar)
 │   └── {proj}_wasm/    # Interface crates: WASM, FFI, N-API
 ├── tests/              # Integration tests (tsv only; fuz uses unit tests)
@@ -233,7 +235,10 @@ project/
 └── docs/               # Architecture and reference documentation
 ```
 
-Crate naming: `{project}_{crate}` (`fuz_common`, `tsv_lang`, `blake3_wasm_core`).
+Crate naming: generally `{project}_{crate}` (`fuz_common`, `tsv_lang`,
+`blake3_wasm_core`). Exceptions: fuz's CLI is just `fuz` (not `fuz_cli`) and
+its daemon is `fuzd` (not `fuz_daemon`) — short names for frequently-typed
+commands.
 
 ### Common crate patterns
 
@@ -395,7 +400,7 @@ without explicit request.
 | `wit-bindgen`  | Component model (blake3)    |
 | `napi`         | N-API bindings (tsv)        |
 
-See `references/wasm_patterns.md` for build targets, WIT design, and
+See `references/wasm-patterns.md` for build targets, WIT design, and
 optimization profiles.
 
 ## Patterns

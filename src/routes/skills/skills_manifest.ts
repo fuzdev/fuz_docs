@@ -20,7 +20,7 @@ export const skills: Array<Skill_Meta> = [
 			{slug: 'css-patterns', title: 'CSS Patterns'},
 			{slug: 'dependency-injection', title: 'Dependency Injection'},
 			{slug: 'documentation-system', title: 'Documentation System'},
-			{slug: 'rust-conventions', title: 'Rust Conventions for the Fuz Ecosystem'},
+			{slug: 'rust-patterns', title: 'Rust Patterns for the Fuz Ecosystem'},
 			{slug: 'svelte-patterns', title: 'Svelte 5 Patterns'},
 			{slug: 'task-patterns', title: 'Task Patterns'},
 			{slug: 'testing-patterns', title: 'Testing Patterns'},
