@@ -41522,8 +41522,8 @@
 							"name": "create_static_middleware",
 							"kind": "function",
 							"doc_comment": "Create static file serving middleware for SvelteKit static builds.\n\nReturns an array of middleware handlers to register on `'/*'`.",
-							"source_line": 39,
-							"type_signature": "(serve_static: ServeStaticFactory, options?: { root?: string | undefined; spa_fallback?: string | undefined; } | undefined): MiddlewareHandler[]",
+							"source_line": 42,
+							"type_signature": "(serve_static: ServeStaticFactory, options?: { root?: string | undefined; spa_fallback?: string | undefined; is_spa_route?: ((path: string) => boolean) | undefined; } | undefined): MiddlewareHandler[]",
 							"return_type": "MiddlewareHandler[]",
 							"return_description": "array of middleware handlers to apply in order",
 							"parameters": [
@@ -41534,7 +41534,7 @@
 								},
 								{
 									"name": "options",
-									"type": "{ root?: string | undefined; spa_fallback?: string | undefined; } | undefined",
+									"type": "{ root?: string | undefined; spa_fallback?: string | undefined; is_spa_route?: ((path: string) => boolean) | undefined; } | undefined",
 									"optional": true,
 									"description": "optional root directory and SPA fallback path"
 								}
@@ -54758,9 +54758,9 @@
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_mastodon": "^0.39.0",
-				"@fuzdev/fuz_ui": "^0.191.3",
+				"@fuzdev/fuz_ui": "^0.191.4",
 				"@fuzdev/fuz_util": "^0.55.0",
-				"@fuzdev/gro": "^0.197.2",
+				"@fuzdev/gro": "^0.197.3",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",

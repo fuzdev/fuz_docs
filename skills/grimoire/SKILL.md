@@ -1,6 +1,6 @@
 ---
 name: grimoire
-description: Navigate and maintain a grimoire — a markdown meta-repo that coordinates work across multiple sibling repositories. Covers the three primitives: lore (per-repo planning projections), quests (cross-repo goals), and skills (agent knowledge files). Use when orienting work across repos, reading project planning context, checking TODOs before working on a project, updating planning docs after completing work, creating or updating lore entries, drafting new quests, deciding whether to create a quest vs a lore TODO, pruning stale decisions from lore entries, or understanding grimoire conventions and structure.
+description: Navigate and maintain a grimoire — a markdown meta-repo that coordinates work across multiple sibling repositories. Covers the three primitives: skills (agent knowledge files), lore (per-repo planning projections), and quests (cross-repo goals). Use when orienting work across repos, reading project planning context, checking TODOs before working on a project, updating planning docs after completing work, creating or updating lore entries, drafting new quests, deciding whether to create a quest vs a lore TODO, pruning stale decisions from lore entries, or understanding grimoire conventions and structure.
 license: MIT
 metadata:
   author: ryanatkn
@@ -34,9 +34,19 @@ the grimoire's view of repos — projection, not duplication. Content graduates
 upward; understanding flows back down as lore.
 
 **Structure**: A grimoire directory typically lives alongside the repos it
-coordinates, with three core primitives and supporting layers.
+coordinates, with three core primitives — skills, lore, quests — and supporting layers.
 
 ## Three Primitives
+
+### Skills (`skills/`)
+
+[Agent skills](https://agentskills.io/) that teach agents how to work in this
+ecosystem. Each skill has a `SKILL.md` with YAML frontmatter plus optional
+`references/`, `scripts/`, and `assets/` subdirs following the
+[Agent Skills spec](https://github.com/anthropics/skills).
+
+Skills may live in the grimoire itself or in a dedicated docs/skills repo. Skills
+can have lore entries when they need planning context.
 
 ### Lore (`lore/`)
 
@@ -233,15 +243,6 @@ about the domain. Refine patterns and design ethos, not just append a summary.
 Add a brief entry to `quests/HISTORY.md` (repos, what was done, key choices),
 then delete the quest file, update cross-references, and remove it from the
 index. Full details live in git history; HISTORY.md is the lightweight summary.
-
-### Skills (`skills/`)
-
-Claude Code skills that teach agents how to work in this ecosystem. Each skill has
-a `SKILL.md` with YAML frontmatter plus optional `references/`, `scripts/`, and
-`assets/` subdirs.
-
-Skills may live in the grimoire itself or in a dedicated docs/skills repo. Skills
-can have lore entries when they need planning context.
 
 ## Supporting Layers
 

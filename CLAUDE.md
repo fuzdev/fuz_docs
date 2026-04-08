@@ -198,11 +198,13 @@ skills/
 │   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
 │   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
+│   │   ├── rust_conventions.md        # Rust project conventions (private_fuz, tsv)
 │   │   ├── svelte-patterns.md         # Svelte 5 runes, contexts, snippets, attachments
 │   │   ├── task-patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
 │   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions
 │   │   ├── tsdoc-comments.md          # TSDoc style guide and API docs system
 │   │   ├── type-utilities.md          # Nominal typing (Flavored/Branded), strict utility types
+│   │   ├── wasm_patterns.md           # WASM conventions (blake3, cross-language bindings)
 │   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
 │   └── scripts/
 │       └── generate_jsdoc_audit.ts    # Tool for auditing JSDoc coverage
