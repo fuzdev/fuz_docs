@@ -24,12 +24,14 @@ export interface EnvDeps {
 
 export interface FsReadDeps {
 	stat: (path: string) => Promise<StatResult | null>;
-	read_file: (path: string) => Promise<string>;
+	read_text_file: (path: string) => Promise<string>;
+	read_file: (path: string) => Promise<Uint8Array>;
 }
 
 export interface FsWriteDeps {
 	mkdir: (path: string, options?: {recursive?: boolean}) => Promise<void>;
-	write_file: (path: string, content: string) => Promise<void>;
+	write_text_file: (path: string, content: string) => Promise<void>;
+	write_file: (path: string, data: Uint8Array) => Promise<void>;
 	rename: (old_path: string, new_path: string) => Promise<void>;
 }
 
@@ -267,7 +269,7 @@ Stateless capabilities bundle for server code. Three-part vocabulary:
 // auth/deps.ts
 export interface AppDeps {
 	stat: (path: string) => Promise<StatResult | null>;
-	read_file: (path: string) => Promise<string>;
+	read_text_file: (path: string) => Promise<string>;
 	delete_file: (path: string) => Promise<void>;
 	keyring: Keyring;
 	password: PasswordHashDeps;
@@ -335,7 +337,7 @@ Functions with a unique combination of capabilities define their own
 export interface BootstrapAccountDeps {
 	db: Db;
 	token_path: string;
-	read_file: (path: string) => Promise<string>;
+	read_text_file: (path: string) => Promise<string>;
 	delete_file: (path: string) => Promise<void>;
 	password: Pick<PasswordHashDeps, 'hash_password'>;
 	log: Logger;
@@ -357,7 +359,7 @@ export interface ApiTokenQueryDeps extends QueryDeps {
 Use ad-hoc deps when:
 - The combination is unique to one function
 - Sharing the interface would add coupling without reuse
-- The function mixes data (`token_path`) with capabilities (`read_file`)
+- The function mixes data (`token_path`) with capabilities (`read_text_file`)
 
 ### Narrowing with `Pick<>`
 
@@ -664,7 +666,7 @@ export const create_throwing_stub = <T>(label: string): T =>
 // stub_app_deps — all fields are throwing stubs
 export const stub_app_deps: AppDeps = {
 	stat: create_throwing_stub('stat'),
-	read_file: create_throwing_stub('read_file'),
+	read_text_file: create_throwing_stub('read_text_file'),
 	delete_file: create_throwing_stub('delete_file'),
 	keyring: create_throwing_stub('keyring'),
 	password: create_throwing_stub('password'),
@@ -676,7 +678,7 @@ export const stub_app_deps: AppDeps = {
 // create_stub_app_deps — no-op stubs that silently pass
 export const create_stub_app_deps = (): AppDeps => ({
 	stat: async () => null,
-	read_file: async () => '',
+	read_text_file: async () => '',
 	delete_file: async () => {},
 	keyring: create_noop_stub('keyring'),
 	password: create_noop_stub('password'),
