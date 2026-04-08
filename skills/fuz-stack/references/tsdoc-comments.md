@@ -231,6 +231,61 @@ export interface ModuleSourceOptions {
 }
 ````
 
+#### Writing effective examples
+
+Focus on giving the reader a clear mental model of how to use the API:
+
+- Show the most common use case first — additional `@example` tags for variants
+- Use `// =>` or `// →` comments to show return values inline
+- For option objects, show the minimal required fields
+- For type narrowing helpers, show the pattern that makes the types useful
+- Constants and simple predicates don't need examples unless usage is non-obvious
+- Keep examples complete enough to understand without reading the implementation
+
+````typescript
+// Good — shows input and return value
+/**
+ * @example
+ * ```ts
+ * get_component_name('components/Button.svelte') // => 'Button'
+ * ```
+ */
+
+// Good — shows the pattern that motivates the API
+/**
+ * @example
+ * ```ts
+ * if (is_kind(declaration, 'function')) {
+ *   declaration.parameters; // narrowed to FunctionDeclarationJson
+ *   declaration.return_type; // accessible after narrowing
+ * }
+ * ```
+ */
+
+// Good — shows minimal setup and the typical workflow
+/**
+ * @example
+ * ```ts
+ * const {modules, diagnostics} = await analyze_from_files({
+ *   project_root: process.cwd(),
+ * });
+ * if (diagnostics.has_errors()) {
+ *   for (const err of diagnostics.errors()) {
+ *     console.error(format_diagnostic(err));
+ *   }
+ * }
+ * ```
+ */
+
+// Weak — doesn't show what the function does or returns
+/**
+ * @example
+ * ```ts
+ * process_data(input);
+ * ```
+ */
+````
+
 ### `@deprecated`
 
 Include migration guidance with backtick-linked replacement. Rarely used —
