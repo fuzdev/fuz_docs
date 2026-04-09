@@ -290,7 +290,7 @@
 			"published": false,
 			"module_count": 274,
 			"exported_module_count": 269,
-			"export_count": 893,
+			"export_count": 894,
 			"peer_dependencies": [],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [

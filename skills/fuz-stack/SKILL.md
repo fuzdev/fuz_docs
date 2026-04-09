@@ -360,6 +360,26 @@ conventions: ./references/tsdoc-comments.md.
 
 Backticked identifiers auto-link to API docs in TSDoc rendering.
 
+### Path references in documentation
+
+mdz auto-linkifies bare paths starting with `./`, `../`, or `/` when preceded
+by whitespace. Use this in CLAUDE.md files and other markdown docs to make
+file and directory references navigable:
+
+- **Navigational paths** — bare, no backticks: ./grimoire/lore/fuz/design/
+- **CLI commands and code** — backticked: `gro check`, `src/lib/`
+- **Template/placeholder paths** — bare, consistent even though they won't
+  resolve: ./{project}/CLAUDE.md
+
+Each file assumes the reader is in the file's parent directory. For
+`~/dev/CLAUDE.md`, all project paths are `./project/` since `~/dev/` is the
+working directory. For `~/dev/grimoire/CLAUDE.md`, sibling grimoire files use
+`./lore/` and repo references use `../fuz_util/`.
+
+Deeply nested files (e.g. `lore/fuz_app/CLAUDE.md`) would need `../../../` to
+reach repos — use `~/dev/` for those cross-tree references where the relative
+path is unwieldy.
+
 ## Testing
 
 Tests live in `src/test/` (NOT co-located). Core repos (fuz_app, fuz_ui,
