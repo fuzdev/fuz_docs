@@ -22,10 +22,8 @@
   },
   "devDependencies": {
     "@fuzdev/blake3_wasm": "^0.1.0",
-    "@fuzdev/fuz_blog": "^0.24.1",
     "@fuzdev/fuz_code": "^0.45.1",
     "@fuzdev/fuz_css": "^0.58.0",
-    "@fuzdev/fuz_mastodon": "^0.39.0",
     "@fuzdev/fuz_ui": "^0.191.4",
     "@fuzdev/fuz_util": "^0.55.0",
     "@fuzdev/gro": "^0.197.3",
@@ -38,7 +36,6 @@
     "@types/estree": "^1.0.8",
     "@types/node": "^24.10.13",
     "@webref/css": "^8.2.0",
-    "date-fns": "^4.1.0",
     "eslint": "^9.39.1",
     "eslint-plugin-svelte": "^3.13.1",
     "esm-env": "^1.2.2",

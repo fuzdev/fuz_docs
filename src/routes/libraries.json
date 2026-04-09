@@ -8572,7 +8572,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.197.2",
+			"version": "0.197.3",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -8716,7 +8716,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.197.2",
+			"version": "0.197.3",
 			"modules": [
 				{
 					"path": "args.ts",
@@ -39129,7 +39129,7 @@
 						{
 							"name": "is_null_schema",
 							"kind": "function",
-							"doc_comment": "Check if a schema is exactly `z.null()`.\n\nUses Zod 4 type introspection (`_zod.def.type`) rather than runtime parsing\nto avoid false positives from `z.nullable(z.string())` or similar schemas\nthat accept null but also accept other values.",
+							"doc_comment": "Check if a schema is exactly `z.null()`.\n\nUses `instanceof` rather than runtime parsing to avoid false positives\nfrom `z.nullable(z.string())` or similar schemas that accept null\nbut also accept other values.",
 							"source_line": 23,
 							"type_signature": "(schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): boolean",
 							"return_type": "boolean",
@@ -39158,7 +39158,7 @@
 							"name": "schema_to_surface",
 							"kind": "function",
 							"doc_comment": "Convert a Zod schema to a JSON-serializable representation for the surface.\n\nReturns `null` for null schemas, JSON Schema for object schemas.",
-							"source_line": 42,
+							"source_line": 39,
 							"type_signature": "(schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): unknown",
 							"return_type": "unknown",
 							"parameters": [
@@ -39172,7 +39172,7 @@
 							"name": "middleware_applies",
 							"kind": "function",
 							"doc_comment": "Check if a middleware path pattern applies to a route path.\n\nSupports Hono-style patterns:\n- `/api/*` matches `/api/anything`\n- `/api/tx/*` matches `/api/tx/runs` but not `/api/account/login`\n- Exact match: `/health` matches `/health`",
-							"source_line": 69,
+							"source_line": 66,
 							"type_signature": "(mw_path: string, route_path: string): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -39192,7 +39192,7 @@
 							"name": "merge_error_schemas",
 							"kind": "function",
 							"doc_comment": "Merge auto-derived, middleware, and explicit error schemas for a route spec.\n\nMerge order: derived -> middleware -> explicit route errors.\nLater layers override earlier ones for the same status code.",
-							"source_line": 89,
+							"source_line": 86,
 							"type_signature": "(spec: { auth: RouteAuth; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; params?: ZodObject<$ZodLooseShape, $strip> | undefined; query?: ZodObject<...> | undefined; rate_limit?: RateLimitKey | undefined; errors?: Partial<...> | undefined; }, middleware_errors?: Partial<...> | ... 1 more ... | undefined): Partial<...> | null",
 							"return_type": "Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>> | null",
 							"return_description": "merged error schemas, or `null` if empty",
@@ -51113,7 +51113,7 @@
 							"name": "git_push_tag",
 							"kind": "function",
 							"doc_comment": "Pushes a tag to origin and throws if anything goes wrong.",
-							"source_line": 68,
+							"source_line": 70,
 							"type_signature": "(tag_name: string, origin?: GitOrigin, options?: SpawnOptions | undefined): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -51136,7 +51136,7 @@
 						{
 							"name": "git_has_changes",
 							"kind": "function",
-							"source_line": 79,
+							"source_line": 83,
 							"type_signature": "(options?: SpawnOptions | undefined): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"parameters": [
@@ -51151,7 +51151,7 @@
 							"name": "git_get_changed_files",
 							"kind": "function",
 							"doc_comment": "Returns list of changed files compared to HEAD.",
-							"source_line": 87,
+							"source_line": 91,
 							"type_signature": "(options?: SpawnOptions | undefined): Promise<string[]>",
 							"return_type": "Promise<string[]>",
 							"parameters": [
@@ -51165,7 +51165,7 @@
 						{
 							"name": "git_has_file_changed",
 							"kind": "function",
-							"source_line": 97,
+							"source_line": 101,
 							"type_signature": "(from_commit: string, to_commit: string, file_path: string, options?: SpawnOptions | undefined): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"parameters": [
@@ -51192,7 +51192,7 @@
 							"name": "git_stash",
 							"kind": "function",
 							"doc_comment": "Stashes current changes and throws if anything goes wrong.",
-							"source_line": 114,
+							"source_line": 118,
 							"type_signature": "(message?: string | undefined, options?: SpawnOptions | undefined): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -51212,7 +51212,7 @@
 							"name": "git_stash_pop",
 							"kind": "function",
 							"doc_comment": "Applies stashed changes and throws if anything goes wrong.",
-							"source_line": 126,
+							"source_line": 130,
 							"type_signature": "(options?: SpawnOptions | undefined): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -51227,7 +51227,7 @@
 							"name": "git_switch_branch",
 							"kind": "function",
 							"doc_comment": "Switches to a branch with safety checks and throws if workspace is not clean.",
-							"source_line": 136,
+							"source_line": 142,
 							"type_signature": "(branch: GitBranch, pull?: boolean, options?: SpawnOptions | undefined): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -51251,7 +51251,7 @@
 							"name": "git_current_branch_name_required",
 							"kind": "function",
 							"doc_comment": "Wrapper for gro's `git_current_branch_name` that throws if null.",
-							"source_line": 165,
+							"source_line": 171,
 							"type_signature": "(options?: SpawnOptions | undefined): Promise<string>",
 							"return_type": "Promise<string>",
 							"parameters": [
@@ -51266,7 +51266,7 @@
 							"name": "git_current_commit_hash_required",
 							"kind": "function",
 							"doc_comment": "Wrapper for gro's `git_current_commit_hash` that throws if null.",
-							"source_line": 176,
+							"source_line": 182,
 							"type_signature": "(branch?: string | undefined, options?: SpawnOptions | undefined): Promise<string>",
 							"return_type": "Promise<string>",
 							"parameters": [
@@ -51286,7 +51286,7 @@
 							"name": "git_check_clean_workspace_as_boolean",
 							"kind": "function",
 							"doc_comment": "Wrapper for gro's `git_check_clean_workspace` that returns a boolean.",
-							"source_line": 190,
+							"source_line": 196,
 							"type_signature": "(options?: SpawnOptions | undefined): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"parameters": [
@@ -51300,7 +51300,7 @@
 						{
 							"name": "git_has_remote",
 							"kind": "function",
-							"source_line": 197,
+							"source_line": 203,
 							"type_signature": "(remote?: string, options?: SpawnOptions | undefined): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"parameters": [
@@ -52751,38 +52751,38 @@
 						{
 							"name": "default_process_operations",
 							"kind": "variable",
-							"source_line": 193,
+							"source_line": 204,
 							"type_signature": "ProcessOperations"
 						},
 						{
 							"name": "default_npm_operations",
 							"kind": "variable",
-							"source_line": 217,
+							"source_line": 228,
 							"type_signature": "NpmOperations"
 						},
 						{
 							"name": "default_preflight_operations",
 							"kind": "variable",
-							"source_line": 288,
+							"source_line": 299,
 							"type_signature": "PreflightOperations"
 						},
 						{
 							"name": "default_fs_operations",
 							"kind": "variable",
-							"source_line": 294,
+							"source_line": 305,
 							"type_signature": "FsOperations"
 						},
 						{
 							"name": "default_build_operations",
 							"kind": "variable",
-							"source_line": 315,
+							"source_line": 326,
 							"type_signature": "BuildOperations"
 						},
 						{
 							"name": "default_gitops_operations",
 							"kind": "variable",
 							"doc_comment": "Combined default operations for all gitops functionality.",
-							"source_line": 339,
+							"source_line": 350,
 							"type_signature": "GitopsOperations"
 						}
 					],
@@ -54815,10 +54815,8 @@
 			},
 			"devDependencies": {
 				"@fuzdev/blake3_wasm": "^0.1.0",
-				"@fuzdev/fuz_blog": "^0.24.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
-				"@fuzdev/fuz_mastodon": "^0.39.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
 				"@fuzdev/fuz_util": "^0.55.0",
 				"@fuzdev/gro": "^0.197.3",
@@ -54831,7 +54829,6 @@
 				"@types/estree": "^1.0.8",
 				"@types/node": "^24.10.13",
 				"@webref/css": "^8.2.0",
-				"date-fns": "^4.1.0",
 				"eslint": "^9.39.1",
 				"eslint-plugin-svelte": "^3.13.1",
 				"esm-env": "^1.2.2",
@@ -54872,20 +54869,6 @@
 			"version": "0.0.1",
 			"modules": [
 				{
-					"path": "blog.gen.ts",
-					"declarations": []
-				},
-				{
-					"path": "BlogDisclaimer.svelte",
-					"declarations": [
-						{
-							"name": "BlogDisclaimer",
-							"kind": "component",
-							"source_line": 1
-						}
-					]
-				},
-				{
 					"path": "DataInput.svelte",
 					"declarations": [
 						{
@@ -54915,14 +54898,6 @@
 							"source_line": 1
 						}
 					]
-				},
-				{
-					"path": "post.task.ts",
-					"declarations": []
-				},
-				{
-					"path": "update_post.task.ts",
-					"declarations": []
 				}
 			]
 		}

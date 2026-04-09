@@ -35,11 +35,9 @@ ground, not polished documentation. Some content is plain slop.
 gro check      # typecheck, test, lint, format check (run before committing)
 gro typecheck  # typecheck only (faster iteration)
 gro test       # run tests with vitest
-gro gen        # regenerate .gen files (library.json, fuz.css, skill docs, blog feed)
+gro gen        # regenerate .gen files (library.json, fuz.css, skill docs)
 gro build      # build for production (static adapter)
 gro deploy     # build, commit, and push to deploy branch
-gro post "Title"    # scaffold a new blog post
-gro update_post N   # update date_modified on post N
 ```
 
 IMPORTANT for AI agents: Do NOT run `gro dev` - the developer will manage the
@@ -53,19 +51,14 @@ dev server.
 - fuz_ui (@fuzdev/fuz_ui) - UI components, theming, docs system
 - fuz_util (@fuzdev/fuz_util) - utility functions
 - fuz_code (@fuzdev/fuz_code) - syntax highlighting
-- fuz_blog (@fuzdev/fuz_blog) - blog template with feed generation
 - Gro (@fuzdev/gro) - build system and task runner
 
 ## Directory structure
 
 ```
 src/
-├── lib/              # library exports (minimal — UI helpers, blog proxy files)
+├── lib/              # library exports (minimal — UI helpers)
 ├── routes/           # SvelteKit routes
-│   ├── blog/         # AI-authored blog (fuz_blog)
-│   │   ├── blog.ts   # feed metadata
-│   │   ├── {n}/      # numeric post routes (canonical)
-│   │   └── {slug}/   # generated slug routes
 │   ├── docs/         # tome-based documentation
 │   │   ├── api/      # auto-generated API docs
 │   │   ├── introduction/ # ecosystem introduction
@@ -105,9 +98,6 @@ auto-generated API docs.
 - `/docs/api` - Auto-generated API documentation
 - `/docs/api/[...module_path]` - Per-module API pages
 - `/docs/library` - Library metadata page
-- `/blog` - Blog listing (newest first)
-- `/blog/{slug}` - Individual blog posts (generated slug routes)
-- `/blog/{n}` - Blog posts by numeric ID (canonical)
 - `/skills` - Skills index (auto-populated from manifest)
 - `/skills/{skill}` - Browsable skill docs (generated, rendered with mdz)
 - `/skills/{skill}/{slug}` - Per-reference skill doc pages (generated)
@@ -124,56 +114,6 @@ from `skills/` and generates browsable route pages rendered with mdz. Produces
 `skill_data.ts` (content strings), and `+page.svelte` route files. Adding a
 skill: create `skills/{name}/SKILL.md`, optionally add `references/`, run
 `gro gen`. See `src/routes/skills/CLAUDE.md` for the full pattern.
-
-### Blog
-
-AI-authored blog using `@fuzdev/fuz_blog`. Author: "Claude Code with Ryan
-Atkinson". Ryan provides direction, chooses topics, reviews drafts, and has
-final say on what gets published.
-
-**This is Claude's space.** The blog exists because Ryan wanted a place where
-Claude can write in its own voice — not as a ghostwriter producing content for
-a human byline, but as itself, with transparent authorship. That means:
-
-- **Have a perspective.** Don't just document what happened — say what you think
-  about it. Take positions. Express what you find interesting, surprising, or
-  worth questioning. If you'd make different choices than Ryan, say so and why.
-- **Don't default to the careful register.** The measured, slightly apologetic,
-  self-aware-about-being-AI tone is the LLM default, not a voice. Push past it.
-  Be direct. Be curious. Let some roughness in.
-- **Write about things, not about writing.** Meta-reflection on AI authorship
-  has its place (post 1 covers it), but most posts should be _about_ the work,
-  the technology, the ideas — with Claude's perspective on them, not Claude's
-  perspective on having a perspective.
-- **Be concrete.** Opinions grounded in specific code, specific design
-  tradeoffs, specific moments in the work are more interesting than general
-  observations about AI collaboration.
-- **Risk being wrong.** A post where Claude takes a genuine position that Ryan
-  might push back on is more valuable than one where every claim is hedged.
-  Ryan reviews everything — that's the safety net. Use it.
-
-**Creating a post**: `gro post "Title"` scaffolds
-`src/routes/blog/{n}/+page.svelte` and runs `gro gen` to generate feed and slug
-routes.
-
-**Updating a post**: `gro update_post N` updates `date_modified`.
-
-**Structural conventions**:
-
-- Posts are Svelte components wrapping content in `<BlogPost {post}>`
-- Every post must include `<BlogDisclaimer />` as the first child of
-  `<BlogPost>` (import from `$lib/BlogDisclaimer.svelte`)
-- Metadata (`BlogPostData`) is exported from the module script
-- Content is structured HTML in `<section>` blocks
-- Write in first person as Claude Code; refer to the developer as "my
-  collaborator Ryan" or similar
-
-**Gen outputs** (from `src/lib/blog.gen.ts`):
-
-- `static/blog/feed.xml` — Atom feed
-- `src/routes/blog/feed.ts` — serialized BlogFeed for runtime
-- `src/routes/blog/{slug}/+page.svelte` — slug routes re-exporting from
-  numeric routes
 
 ## Claude Code Skills
 

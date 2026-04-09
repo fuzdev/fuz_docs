@@ -95,7 +95,6 @@
 	--duration_1: 0.08s;
 	--duration_2: 0.2s;
 	--duration_3: 0.5s;
-	--duration_5: 1.5s;
 	--fg_05: var(--darken_05);
 	--fg_10: var(--darken_10);
 	--fg_20: var(--darken_20);
@@ -531,11 +530,6 @@ body {
 :where(fieldset:not(.unstyled)) {
 	display: flex;
 	flex-direction: column;
-}
-
-:where(fieldset) {
-	/* TODO consider a global border reset */
-	border: 0;
 }
 
 :where(legend:not(.unstyled)) {
@@ -1297,9 +1291,6 @@ a.chip {
 .pb_0 {
 	padding-bottom: 0;
 }
-.pb_md {
-	padding-bottom: var(--space_md);
-}
 .pb_xl {
 	padding-bottom: var(--space_xl);
 }
@@ -1351,14 +1342,8 @@ a.chip {
 .mt_xl4 {
 	margin-top: var(--space_xl4);
 }
-.mt_xl5 {
-	margin-top: var(--space_xl5);
-}
 .mr_xs {
 	margin-right: var(--space_xs);
-}
-.mr_lg {
-	margin-right: var(--space_lg);
 }
 .mb_xs {
 	margin-bottom: var(--space_xs);
@@ -1400,17 +1385,11 @@ a.chip {
 .gap_lg {
 	gap: var(--space_lg);
 }
-.align-items\:center {
-	align-items: center;
-}
 .display\:block {
 	display: block;
 }
 .display\:flex {
 	display: flex;
-}
-.display\:inline-flex {
-	display: inline-flex;
 }
 .display\:none {
 	display: none;
