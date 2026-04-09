@@ -6,7 +6,7 @@
 		"svelte": "5.55.0",
 		"sveltekit": "2.55.0",
 		"typescript": "5.9.3",
-		"gro": "0.197.3",
+		"gro": "0.197.2",
 		"prettier": "3.7.4",
 		"vitest": "4.0.15"
 	},
@@ -36,7 +36,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.197.3",
+			"version": "0.197.2",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
@@ -86,9 +86,9 @@
 			"glyph": "🧶",
 			"homepage_url": "https://ui.fuz.dev/",
 			"published": true,
-			"module_count": 111,
-			"exported_module_count": 111,
-			"export_count": 390,
+			"module_count": 118,
+			"exported_module_count": 118,
+			"export_count": 413,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
@@ -101,7 +101,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.3.2",
+			"version": "0.3.3",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -109,7 +109,7 @@
 			"published": true,
 			"module_count": 151,
 			"exported_module_count": 150,
-			"export_count": 709,
+			"export_count": 711,
 			"peer_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -288,9 +288,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 271,
-			"exported_module_count": 266,
-			"export_count": 872,
+			"module_count": 274,
+			"exported_module_count": 269,
+			"export_count": 893,
 			"peer_dependencies": [],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
@@ -304,7 +304,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_wasm_core",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "Shared BLAKE3 WASM bindings core (wasm-bindgen exports)",
 			"crate_kind": "rlib",
@@ -315,7 +315,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_wasm",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 hashing compiled to WASM",
 			"crate_kind": "cdylib",
@@ -326,7 +326,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_wasm_small",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 hashing compiled to WASM, size-optimized build without SIMD",
 			"crate_kind": "cdylib",
@@ -337,7 +337,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_debug",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "Development utilities for blake3_wasm (comparison, test vectors)",
 			"crate_kind": "bin",
@@ -348,7 +348,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_component",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 WASI component via WIT interface",
 			"crate_kind": "cdylib",
@@ -359,7 +359,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_bench_wasmtime",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 WASI component benchmarks using Wasmtime runtime",
 			"crate_kind": "bin",

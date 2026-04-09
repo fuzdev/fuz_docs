@@ -28,45 +28,55 @@ Only use `$state` for variables that should be _reactive_ — variables that
 cause an `$effect`, `$derived`, or template expression to update. Everything
 else can be a normal variable.
 
-### `$state()` vs `$state.raw()`
+### `$state.raw()` vs `$state()` — prefer `$state.raw()`
 
-`$state()` for deep reactivity (objects are proxied — mutation triggers updates,
-but with performance overhead). `$state.raw()` for data replaced wholesale
-(no proxy, better for large objects).
+**Use `$state.raw()` by default for all types** — primitives, objects, and arrays.
+It stores values directly with no proxy overhead.
+
+**Use `$state()` only** when you need deep proxy reactivity on an array or object —
+meaning you mutate it in place with `push`, `splice`, index assignment, or nested
+property writes, and need those mutations to trigger reactivity.
+
+`$state()` wraps non-primitives in a `Proxy` on init and on every reassignment.
+This adds overhead and creates proxy objects that break `structuredClone` and
+other APIs that expect plain values. For primitives, `$state()` compiles to an
+extra `proxy()` call per set (a `typeof` check + early return, so cheap but
+non-zero). Use `$state.raw()` unless you have a specific reason not to.
 
 ```typescript
-// $state() - deep reactivity, use for UI state
-let form_data = $state({name: '', email: ''});
-form_data.name = 'Alice'; // triggers reactivity
+// $state.raw() - the default for all types
+let name = $state.raw(''); // primitive — no difference in behavior
+let ollama_response = $state.raw<OllamaShowResponse | null>(null); // object replaced wholesale
+let selections: ReadonlyArray<Item> = $state.raw([]); // array replaced wholesale
 
-// $state.raw() - shallow, use for API responses and immutable data
-let ollama_show_response = $state.raw<OllamaShowResponse | null>(null);
-let completion_request = $state.raw<CompletionRequest | null>(null);
-let completion_response = $state.raw<CompletionResponse | null>(null);
+// $state() - opt-in for arrays/objects mutated in place
+let items = $state<string[]>([]); // needs push/splice reactivity
+items.push('new'); // triggers reactivity
+let form_data = $state({name: '', email: ''});
+form_data.name = 'Alice'; // triggers reactivity via proxy
 ```
 
-**When to use `$state.raw()`:**
+**When to use `$state()`** (the exception, not the default):
 
-- API responses (replaced entirely on each fetch)
-- ReadonlyArray collections replaced via spread (`$state.raw([])`)
-- Large objects where deep tracking is wasteful
-- Immutable data structures
-- Objects from external libraries
+- Arrays mutated with `push`, `splice`, `pop`, `sort`, index assignment
+- Objects with individual property mutations that must trigger reactivity
+- Form state with field-level updates
 
-**When to use `$state()`:**
+**Everything else uses `$state.raw()`:**
 
-- Form state with individual field updates
-- UI state (toggles, selections, counters)
-- Objects you'll mutate property-by-property
+- All primitives (strings, numbers, booleans, enums)
+- API responses, external data
+- Objects/arrays replaced wholesale (filter, spread, reassignment)
+- Data passed to non-reactive APIs (`structuredClone`, `JSON.stringify`, action systems)
 
-### The `$state()!` Non-null Assertion Pattern
+### The `$state.raw()!` Non-null Assertion Pattern
 
-Class properties initialized by constructor or `init()` use `$state()!`:
+Class properties initialized by constructor or `init()` use `$state.raw()!`:
 
 ```typescript
 export class ThemeState {
-	theme: Theme = $state()!;
-	color_scheme: ColorScheme = $state()!;
+	theme: Theme = $state.raw()!;
+	color_scheme: ColorScheme = $state.raw()!;
 
 	constructor(options?: ThemeStateOptions) {
 		this.theme = options?.theme ?? default_themes[0]!;
@@ -75,28 +85,29 @@ export class ThemeState {
 }
 ```
 
-Used in fuz_ui state classes (`ThemeState`, `SelectedStyleVariable`) and zzz
-Cell subclasses. `Library` and `Module` use the variant `$state.raw()!` for
-data replaced wholesale.
+Used across fuz_ui state classes and zzz Cell subclasses. Use `$state()!` only
+for arrays/objects that are mutated in place (see above).
 
 ### Arrays and Collections
 
 ```typescript
-// Reactive array - mutations tracked
-let items = $state<string[]>([]);
-items.push('new'); // triggers reactivity
-items[0] = 'updated'; // triggers reactivity
-
-// Raw array - only replacement tracked (common for immutable lists)
+// Default: $state.raw() - only replacement tracked
 let selections: ReadonlyArray<ItemState> = $state.raw([]);
 selections = [...selections, new_item]; // triggers
 selections.push(new_item); // does NOT trigger (and type error with ReadonlyArray)
+
+// Opt-in: $state() - when you need in-place mutation reactivity
+let items = $state<string[]>([]);
+items.push('new'); // triggers reactivity
+items[0] = 'updated'; // triggers reactivity
 ```
 
 ### `$state.snapshot()`
 
-Returns a plain (non-reactive) snapshot of a `$state` proxy. Used in zzz's
-`Cell` base class for JSON serialization:
+Returns a deep-cloned plain copy of reactive state. Works on both `$state()`
+and `$state.raw()` values — it calls `toJSON()` on class instances either way,
+so it's needed whenever the value holds objects with `toJSON` methods (e.g.,
+Cell instances) regardless of proxy status.
 
 ```typescript
 // cell.svelte.ts - encode_property uses snapshot for serialization
@@ -105,9 +116,17 @@ encode_property(value: unknown, _key: string): unknown {
 }
 ```
 
-Use when you need to pass reactive state to non-reactive APIs (e.g.,
-`structuredClone`, `JSON.stringify`, or external libraries that don't
-understand Svelte proxies).
+**When you need snapshot:**
+
+- `$state()` proxy values being passed to `structuredClone` or non-reactive APIs
+- `$state.raw()` values holding class instances with `toJSON()` (snapshot calls
+  `toJSON` and recursively clones the result)
+- Any reactive value you need a plain deep copy of
+
+**When you don't need snapshot:**
+
+- `$state.raw()` values holding only plain data (primitives, plain objects/arrays)
+  — these are already non-proxied and can be used directly
 
 ## Derived Values
 
@@ -144,7 +163,9 @@ let total = $derived.by(() => {
 
 ### `$derived` in Classes
 
-Class properties use `$derived` and `$derived.by()` directly:
+Class properties use `readonly $derived` and `readonly $derived.by()`. Always
+mark `$derived` class properties as `readonly` unless you explicitly need
+reassignment (which Svelte 5 does allow):
 
 ```typescript
 // From Library class (fuz_ui/library.svelte.ts)
@@ -175,9 +196,9 @@ readonly model: Model = $derived.by(() => {
 });
 
 // From ContextmenuState - $derived for simple, $derived.by for multi-step
-can_collapse = $derived(this.selections.length > 1);
+readonly can_collapse = $derived(this.selections.length > 1);
 
-can_expand = $derived.by(() => {
+readonly can_expand = $derived.by(() => {
 	const selected = this.selections.at(-1);
 	return !!selected?.is_menu && selected.items.length > 0;
 });
@@ -213,7 +234,7 @@ export class DocsLinks {
 	readonly fragments_onscreen: SvelteSet<string> = new SvelteSet();
 
 	// $derived.by works with SvelteMap - recomputes when links change
-	docs_links = $derived.by(() => {
+	readonly docs_links = $derived.by(() => {
 		const children_map: Map<string | undefined, Array<DocsLinkInfo>> = new Map();
 		for (const link of this.links.values()) {
 			// ... build tree from SvelteMap entries
@@ -235,8 +256,8 @@ shape, the class adds reactivity and behavior. See ./zod-schemas.md.
 ```typescript
 // theme_state.svelte.ts
 export class ThemeState {
-	theme: Theme = $state()!;
-	color_scheme: ColorScheme = $state()!;
+	theme: Theme = $state.raw()!;
+	color_scheme: ColorScheme = $state.raw()!;
 
 	constructor(options?: ThemeStateOptions) {
 		this.theme = options?.theme ?? default_themes[0]!;
@@ -265,8 +286,9 @@ export const ChatJson = CellJson.extend({
 }).meta({cell_class_name: 'Chat'});
 
 export class Chat extends Cell<typeof ChatJson> {
-	// Schema fields use $state()! - set by Cell.init()
-	name: string = $state()!;
+	// $state.raw()! for fields set by Cell.init() — the default
+	name: string = $state.raw()!;
+	// $state()! only for arrays mutated in place (push/splice)
 	thread_ids: Array<Uuid> = $state()!;
 
 	// Computed values use $derived or $derived.by()
@@ -289,9 +311,9 @@ export class Chat extends Cell<typeof ChatJson> {
 **Key patterns:**
 
 - Zod schema defines the JSON shape (see ./zod-schemas.md)
-- Class properties use `$state()!` for reactivity (non-null assertion)
-- `$derived` / `$derived.by()` for computed values in classes
-- `$state.raw()` for properties replaced wholesale
+- Class properties use `$state.raw()!` by default (non-null assertion)
+- `$state()!` only for arrays/objects with in-place mutations (push, splice, etc.)
+- `readonly $derived` / `readonly $derived.by()` for computed values in classes
 - `toJSON()` or `to_json()` for serialization (zzz Cell uses a `$derived` `json`
   property)
 
@@ -1054,8 +1076,8 @@ The most common pattern for shared state:
 ```typescript
 // dimensions.svelte.ts
 export class Dimensions {
-	width: number = $state(0);
-	height: number = $state(0);
+	width: number = $state.raw(0);
+	height: number = $state.raw(0);
 }
 ```
 
@@ -1174,12 +1196,12 @@ Always use runes mode. Deprecated patterns and their replacements:
 
 | Pattern              | Use Case                                      |
 | -------------------- | --------------------------------------------- |
-| `$state()`           | Mutable UI state, form data, class properties |
-| `$state()!`          | Class properties initialized by constructor   |
-| `$state.raw()`       | API responses, ReadonlyArrays, immutable data |
+| `$state.raw()`       | Default for all reactive state                |
+| `$state.raw()!`      | Class properties initialized by constructor   |
+| `$state()`           | Arrays/objects with in-place mutations only   |
 | `$state.snapshot()`  | Plain copy of reactive state for serialization |
-| `$derived`           | Simple computed values, class properties       |
-| `$derived.by()`      | Complex logic, loops, conditionals             |
+| `readonly $derived`  | Simple computed values, class properties       |
+| `readonly $derived.by()` | Complex logic, loops, conditionals         |
 | `$effect`            | Side effects, subscriptions                    |
 | `$effect.pre()`      | Before DOM update, dev-mode validation         |
 | `effect_with_count`  | Skip initial effect run                        |

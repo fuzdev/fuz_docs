@@ -319,8 +319,9 @@ and legacy features to avoid.
 
 ### Runes API
 
-`$state()` for reactive state, `$derived` for computed values, `$effect` for
-side effects. `$state.raw()` for data replaced wholesale (API responses).
+`$state.raw()` by default for all reactive state. `$state()` only for
+arrays/objects mutated in place (push, splice, index assignment). `$derived`
+for computed values, `$effect` for side effects.
 
 ### Context Pattern
 

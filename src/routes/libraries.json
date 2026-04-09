@@ -82,11 +82,11 @@
 			},
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
-				"@fuzdev/blake3_wasm": "^0.1.0",
+				"@fuzdev/blake3_wasm": "^0.1.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.3",
-				"@fuzdev/gro": "^0.197.2",
+				"@fuzdev/gro": "^0.197.3",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
@@ -8572,7 +8572,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.197.3",
+			"version": "0.197.2",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -8716,7 +8716,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.197.3",
+			"version": "0.197.2",
 			"modules": [
 				{
 					"path": "args.ts",
@@ -22119,7 +22119,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.5.1",
-				"svelte": "^5.55.0",
+				"svelte": "^5.55.2",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -25110,7 +25110,7 @@
 						}
 					],
 					"dependencies": ["DeclarationLink.svelte", "ModuleLink.svelte", "library.svelte.ts"],
-					"dependents": ["MdzNodeView.svelte"]
+					"dependents": ["MdzNodeView.svelte", "MdzStreamNodeView.svelte"]
 				},
 				{
 					"path": "DocsList.svelte",
@@ -26752,16 +26752,16 @@
 						{
 							"name": "mdz_components_context",
 							"kind": "variable",
-							"doc_comment": "Context for providing custom mdz components.\nMust be set by the application using mdz.",
+							"doc_comment": "Context for providing custom mdz components via a getter function.\nSet to a getter (e.g., `() => components`) so changes are reflected reactively.",
 							"source_line": 27,
-							"type_signature": "{ get: (error_message?: string | undefined) => MdzComponents; get_maybe: () => MdzComponents | undefined; set: (value: MdzComponents) => MdzComponents; }"
+							"type_signature": "{ get: (error_message?: string | undefined) => () => MdzComponents | undefined; get_maybe: () => (() => MdzComponents | undefined) | undefined; set: (value: () => MdzComponents | undefined) => () => MdzComponents | undefined; }"
 						},
 						{
 							"name": "mdz_elements_context",
 							"kind": "variable",
-							"doc_comment": "Context for providing allowed HTML elements.\nMust be set by the application using mdz.\nBy default, no HTML elements are allowed.",
+							"doc_comment": "Context for providing allowed HTML elements via a getter function.\nSet to a getter (e.g., `() => elements`) so changes are reflected reactively.\nBy default, no HTML elements are allowed.",
 							"source_line": 34,
-							"type_signature": "{ get: (error_message?: string | undefined) => MdzElements; get_maybe: () => MdzElements | undefined; set: (value: MdzElements) => MdzElements; }"
+							"type_signature": "{ get: (error_message?: string | undefined) => () => MdzElements | undefined; get_maybe: () => (() => MdzElements | undefined) | undefined; set: (value: () => MdzElements | undefined) => () => MdzElements | undefined; }"
 						},
 						{
 							"name": "mdz_base_context",
@@ -26772,7 +26772,13 @@
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
-					"dependents": ["Mdz.svelte", "MdzNodeView.svelte"]
+					"dependents": [
+						"Mdz.svelte",
+						"MdzNodeView.svelte",
+						"MdzRoot.svelte",
+						"MdzStream.svelte",
+						"MdzStreamNodeView.svelte"
+					]
 				},
 				{
 					"path": "mdz_helpers.ts",
@@ -27018,10 +27024,16 @@
 							"type_signature": "7"
 						},
 						{
+							"name": "H_LOWER",
+							"kind": "variable",
+							"source_line": 57,
+							"type_signature": "104"
+						},
+						{
 							"name": "is_letter",
 							"kind": "function",
 							"doc_comment": "Check if character code is a letter (A-Z, a-z).",
-							"source_line": 61,
+							"source_line": 62,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27035,7 +27047,7 @@
 							"name": "is_tag_name_char",
 							"kind": "function",
 							"doc_comment": "Check if character code is valid for tag name (letter, number, hyphen, underscore).",
-							"source_line": 67,
+							"source_line": 68,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27048,8 +27060,8 @@
 						{
 							"name": "is_word_char",
 							"kind": "function",
-							"doc_comment": "Check if character is part of a word for word boundary detection.\nUsed to prevent intraword emphasis with `_` and `~` delimiters.\n\nFormatting delimiters (`*`, `_`, `~`) are NOT word characters - they're transparent.\nOnly alphanumeric characters (A-Z, a-z, 0-9) are considered word characters.\n\nThis prevents false positives with snake_case identifiers while allowing\nadjacent formatting like `**bold**_italic_`.",
-							"source_line": 83,
+							"doc_comment": "Check if character is part of a word for word boundary detection.\nUsed to prevent intraword emphasis with `_` and `~` delimiters.\n\nOnly alphanumeric characters (A-Z, a-z, 0-9) are word characters.\nFormatting delimiters (`*`, `_`, `~`) fall outside all three ranges,\nso they're naturally excluded without explicit checks.\n\nThis prevents false positives with snake_case identifiers while allowing\nadjacent formatting like `**bold**_italic_`.",
+							"source_line": 85,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27062,8 +27074,7 @@
 						{
 							"name": "is_valid_path_char",
 							"kind": "function",
-							"doc_comment": "Check if character code is valid in URI path per RFC 3986.\nValidates against the `pchar` production plus path/query/fragment separators.\n\nValid characters:\n- unreserved: A-Z a-z 0-9 - . _ ~\n- sub-delims: ! $ & ' ( ) * + , ; =\n- path allowed: : @\n- separators: / ? #\n- percent-encoding: %",
-							"source_line": 103,
+							"source_line": 135,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27077,7 +27088,7 @@
 							"name": "trim_trailing_punctuation",
 							"kind": "function",
 							"doc_comment": "Trim trailing punctuation from URL/path per RFC 3986 and GFM rules.\n- Trims simple trailing: .,;:!?]\n- Balanced logic for () only (valid in path components)\n- Invalid chars like [] {} are already stopped by whitelist, but ] trimmed as fallback\n\nOptimized to avoid O(n²) string slicing - tracks end index and slices once at the end.",
-							"source_line": 137,
+							"source_line": 146,
 							"type_signature": "(url: string): string",
 							"return_type": "string",
 							"parameters": [
@@ -27091,7 +27102,7 @@
 							"name": "is_at_absolute_path",
 							"kind": "function",
 							"doc_comment": "Check if position in text is the start of an absolute path (starts with `/`).\nMust be preceded by whitespace or be at the start of the string.\nRejects `//` (comments/protocol-relative) and slash followed by whitespace.",
-							"source_line": 193,
+							"source_line": 205,
 							"type_signature": "(text: string, index: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27109,7 +27120,7 @@
 							"name": "is_at_relative_path",
 							"kind": "function",
 							"doc_comment": "Check if position in text is the start of a relative path (`./` or `../`).\nMust be preceded by whitespace or be at the start of the string.\nRejects prefix followed by whitespace, slash, or end of string.",
-							"source_line": 209,
+							"source_line": 221,
 							"type_signature": "(text: string, index: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27127,7 +27138,7 @@
 							"name": "mdz_text_content",
 							"kind": "function",
 							"doc_comment": "Extracts plain text content from an array of mdz nodes, recursing into children.",
-							"source_line": 236,
+							"source_line": 248,
 							"type_signature": "(nodes: MdzNode[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -27141,7 +27152,7 @@
 							"name": "mdz_heading_id",
 							"kind": "function",
 							"doc_comment": "Generates a lowercase slug id for a heading from its child nodes.\nFollows standard markdown conventions (GitHub, etc.) where heading IDs are lowercased.\nFor case-preserving IDs (e.g. API declarations), see `docs_slugify` in `docs_helpers.svelte.ts`.",
-							"source_line": 246,
+							"source_line": 258,
 							"type_signature": "(nodes: MdzNode[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -27152,9 +27163,23 @@
 							]
 						},
 						{
+							"name": "mdz_heading_id_from_text",
+							"kind": "function",
+							"doc_comment": "Generates a lowercase slug id for a heading from plain text content.\nUsed by the streaming parser which tracks text content directly\nrather than building `MdzNode[]` trees.",
+							"source_line": 266,
+							"type_signature": "(text: string): string",
+							"return_type": "string",
+							"parameters": [
+								{
+									"name": "text",
+									"type": "string"
+								}
+							]
+						},
+						{
 							"name": "mdz_is_url",
 							"kind": "function",
-							"source_line": 255,
+							"source_line": 274,
 							"type_signature": "(s: string): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27165,10 +27190,23 @@
 							]
 						},
 						{
+							"name": "mdz_is_safe_reference",
+							"kind": "function",
+							"source_line": 282,
+							"type_signature": "(reference: string): boolean",
+							"return_type": "boolean",
+							"parameters": [
+								{
+									"name": "reference",
+									"type": "string"
+								}
+							]
+						},
+						{
 							"name": "resolve_relative_path",
 							"kind": "function",
 							"doc_comment": "Resolves a relative path (`./` or `../`) against a base path.\nThe base is treated as a directory regardless of trailing slash\n(`'/docs/mdz'` and `'/docs/mdz/'` behave identically).\nHandles embedded `.` and `..` segments within the reference\n(e.g., `'./a/../b'` → navigates up then down).\nClamps at root — excess `..` segments stop at `/` rather than escaping.",
-							"source_line": 269,
+							"source_line": 297,
 							"type_signature": "(reference: string, base: string): string",
 							"return_type": "string",
 							"return_description": "an absolute resolved path (e.g., `'/docs/mdz/grammar'`)",
@@ -27188,7 +27226,7 @@
 						{
 							"name": "extract_single_tag",
 							"kind": "function",
-							"source_line": 287,
+							"source_line": 315,
 							"type_signature": "(nodes: MdzNode[]): MdzElementNode | MdzComponentNode | null",
 							"return_type": "MdzElementNode | MdzComponentNode | null",
 							"parameters": [
@@ -27202,8 +27240,11 @@
 					"module_comment": "Shared constants and pure helper functions for mdz parsers.\n\nUsed by both the single-pass parser (`mdz.ts`) and the two-phase\nlexer+parser (`mdz_lexer.ts` + `mdz_token_parser.ts`).",
 					"dependents": [
 						"MdzNodeView.svelte",
+						"MdzStreamNodeView.svelte",
 						"mdz.ts",
 						"mdz_lexer.ts",
+						"mdz_opcodes_to_nodes.ts",
+						"mdz_stream_parser.ts",
 						"mdz_to_svelte.ts",
 						"mdz_token_parser.ts",
 						"tsdoc_mdz.ts"
@@ -27615,6 +27656,553 @@
 					"module_comment": "mdz lexer — tokenizes input into a flat `MdzToken[]` stream.\n\nPhase 1 of the two-phase lexer+parser alternative to the single-pass parser\nin `mdz.ts`. Phase 2 is in `mdz_token_parser.ts`.",
 					"dependencies": ["mdz_helpers.ts"],
 					"dependents": ["mdz_token_parser.ts"]
+				},
+				{
+					"path": "mdz_opcodes_to_nodes.ts",
+					"declarations": [
+						{
+							"name": "mdz_opcodes_to_nodes",
+							"kind": "function",
+							"doc_comment": "Convert an array of mdz opcodes to the `MdzNode[]` tree.\nProduces output identical to `mdz_parse()`.",
+							"source_line": 54,
+							"type_signature": "(opcodes: MdzOpcode[]): MdzNode[]",
+							"return_type": "MdzNode[]",
+							"parameters": [
+								{
+									"name": "opcodes",
+									"type": "MdzOpcode[]"
+								}
+							]
+						}
+					],
+					"module_comment": "Converts a stream of mdz opcodes to the `MdzNode[]` tree representation.\n\nStack-based replay: `open` pushes a frame, `close` pops and builds the node,\n`text`/`void` create leaf nodes, `append_text` extends the last text node,\n`revert` undoes an optimistic open and re-parents children.\n\nThe output is identical to `mdz_parse()` from `mdz.ts`, enabling\nvalidation of the streaming parser against the existing fixture suite.",
+					"dependencies": ["mdz_helpers.ts"]
+				},
+				{
+					"path": "mdz_opcodes.ts",
+					"declarations": [
+						{
+							"name": "MdzNodeId",
+							"kind": "type",
+							"doc_comment": "Unique monotonic identifier for each node created by the parser.\nIDs are never reused within a parser instance.",
+							"source_line": 19,
+							"type_signature": "number"
+						},
+						{
+							"name": "MdzContainerNodeType",
+							"kind": "type",
+							"doc_comment": "Node types that can be opened as containers.",
+							"source_line": 22,
+							"type_signature": "MdzContainerNodeType"
+						},
+						{
+							"name": "MdzVoidNodeType",
+							"kind": "type",
+							"doc_comment": "Node types for self-contained leaf elements.",
+							"source_line": 35,
+							"type_signature": "\"Hr\""
+						},
+						{
+							"name": "MdzTextNodeType",
+							"kind": "type",
+							"doc_comment": "Discriminant for leaf text nodes.",
+							"source_line": 38,
+							"type_signature": "MdzTextNodeType"
+						},
+						{
+							"name": "MdzOpcodeOpen",
+							"kind": "type",
+							"doc_comment": "Open a container node. The renderer starts a new element/wrapper.\nChildren are subsequent opcodes until the matching `close`.",
+							"source_line": 44,
+							"type_signature": "MdzOpcodeOpen",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'open'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "node_type",
+									"kind": "variable",
+									"type_signature": "MdzContainerNodeType"
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset in the full input where the opening delimiter begins."
+								},
+								{
+									"name": "level",
+									"kind": "variable",
+									"type_signature": "1 | 2 | 3 | 4 | 5 | 6",
+									"doc_comment": "Heading level (1-6). Present when `node_type` is `'Heading'`."
+								},
+								{
+									"name": "name",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Tag name. Present when `node_type` is `'Element'` or `'Component'`."
+								},
+								{
+									"name": "lang",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Language hint. Present when `node_type` is `'Codeblock'`."
+								}
+							]
+						},
+						{
+							"name": "MdzOpcodeClose",
+							"kind": "type",
+							"doc_comment": "Close a previously opened container node.\nCarries deferred metadata that wasn't known at open time.",
+							"source_line": 62,
+							"type_signature": "MdzOpcodeClose",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'close'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "end",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset in the full input immediately after the closing delimiter."
+								},
+								{
+									"name": "reference",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Link URL/path, resolved when `](url)` completes."
+								},
+								{
+									"name": "link_type",
+									"kind": "variable",
+									"type_signature": "'external' | 'internal'",
+									"doc_comment": "Link type, resolved alongside `reference`."
+								},
+								{
+									"name": "heading_id",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Heading slug, computed from full heading content."
+								}
+							]
+						},
+						{
+							"name": "MdzOpcodeText",
+							"kind": "type",
+							"doc_comment": "Create a leaf text or code node.\nThe parent is implicit — the innermost open container on the renderer's stack.",
+							"source_line": 79,
+							"type_signature": "MdzOpcodeText",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'text'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "content",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "text_type",
+									"kind": "variable",
+									"type_signature": "MdzTextNodeType"
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset where this node begins (for Code, the opening backtick)."
+								},
+								{
+									"name": "end",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset immediately after this node ends (for Code, after the closing backtick)."
+								}
+							]
+						},
+						{
+							"name": "MdzOpcodeAppendText",
+							"kind": "type",
+							"doc_comment": "Append content to an existing text node.\nStreaming optimization — avoids creating a new node per chunk\nduring plain text runs.",
+							"source_line": 95,
+							"type_signature": "MdzOpcodeAppendText",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'append_text'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "content",
+									"kind": "variable",
+									"type_signature": "string"
+								}
+							]
+						},
+						{
+							"name": "MdzOpcodeVoid",
+							"kind": "type",
+							"doc_comment": "Create a self-contained leaf node (e.g., horizontal rule).\nInserted as a child of the innermost open container, or at root level.",
+							"source_line": 105,
+							"type_signature": "MdzOpcodeVoid",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'void'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "node_type",
+									"kind": "variable",
+									"type_signature": "MdzVoidNodeType"
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset in the full input where this element begins."
+								},
+								{
+									"name": "end",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset immediately after this element ends."
+								}
+							]
+						},
+						{
+							"name": "MdzOpcodeRevert",
+							"kind": "type",
+							"doc_comment": "Undo an optimistic open. Removes the container wrapper,\ninserts `replacement_text` as literal text at the container's position,\nand re-parents the container's children to the grandparent.\n\nWhen `wrap_node_type` and `wrap_id` are set, the replacement text and\nre-parented children are wrapped in a new container of the given type\ninstead of being placed directly at the grandparent level. The wrapper\nis pushed onto the consumer's stack (open for future content). This is\nused for block-level reverts (e.g., codeblock → paragraph) where the\ngrandparent is root and content needs a container.",
+							"source_line": 127,
+							"type_signature": "MdzOpcodeRevert",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'revert'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "replacement_text",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "The delimiter text to emit as literal content (e.g., `\"**\"`, `\"[\"`, `\"<Tag>\"`)."
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset of the original opening delimiter in the full input."
+								},
+								{
+									"name": "wrap_node_type",
+									"kind": "variable",
+									"type_signature": "MdzContainerNodeType",
+									"doc_comment": "Wrap replacement text and re-parented children in a new container of this type."
+								},
+								{
+									"name": "wrap_id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId",
+									"doc_comment": "ID for the wrapper node. Required when `wrap_node_type` is set."
+								}
+							]
+						},
+						{
+							"name": "MdzOpcodeWrap",
+							"kind": "type",
+							"doc_comment": "Retroactively wrap an existing text node in a container.\nUsed for text-first auto-links: URL/path text streams as plain text,\nthen gets wrapped in a Link when the URL boundary is found.\n\nWhen `trim_end` is set, trailing characters (punctuation) are trimmed\nfrom the target text node and placed in a new sibling Text node after\nthe Link wrapper, identified by `trim_id`.",
+							"source_line": 149,
+							"type_signature": "MdzOpcodeWrap",
+							"properties": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "'wrap'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId",
+									"doc_comment": "ID for the new Link container node."
+								},
+								{
+									"name": "node_type",
+									"kind": "variable",
+									"type_signature": "'Link'",
+									"doc_comment": "Container type to wrap in (always `'Link'` for now)."
+								},
+								{
+									"name": "target_id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId",
+									"doc_comment": "ID of the existing text node to wrap."
+								},
+								{
+									"name": "reference",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Resolved URL or path reference."
+								},
+								{
+									"name": "link_type",
+									"kind": "variable",
+									"type_signature": "'external' | 'internal'",
+									"doc_comment": "Whether the link is external (URL) or internal (path)."
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset where the URL/path begins."
+								},
+								{
+									"name": "end",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Byte offset immediately after the URL/path (before any trimmed punctuation)."
+								},
+								{
+									"name": "trim_end",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Number of trailing chars to trim from target and place after the link."
+								},
+								{
+									"name": "trim_id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId",
+									"doc_comment": "ID for the trimmed-text sibling node. Required when `trim_end` > 0."
+								}
+							]
+						},
+						{
+							"name": "MdzNodeType",
+							"kind": "type",
+							"doc_comment": "All node types that can appear in the mdz tree.",
+							"source_line": 172,
+							"type_signature": "MdzNodeType"
+						},
+						{
+							"name": "MdzOpcode",
+							"kind": "type",
+							"doc_comment": "Discriminated union of all mdz opcodes.",
+							"source_line": 175,
+							"type_signature": "MdzOpcode"
+						}
+					],
+					"module_comment": "Opcode types for the mdz streaming parser.\n\nOpcodes are serializable rendering instructions emitted by `MdzStreamParser`.\nThey tell a renderer what to do next — open a container, append text, close it,\nor revert an optimistic assumption. Target-agnostic: works for HTML, Svelte, PDF, etc.\n\nThe parser makes optimistic assumptions about ambiguous syntax (e.g., `**` is probably bold)\nand emits `revert` opcodes to correct when wrong. This enables true streaming rendering\nwithout ever re-parsing."
+				},
+				{
+					"path": "mdz_stream_parser.ts",
+					"declarations": [
+						{
+							"name": "MdzStreamParser",
+							"kind": "class",
+							"doc_comment": "Streaming opcode parser for mdz content.\nFeed chunks via `feed()`, retrieve opcodes via `take_opcodes()`, call `finish()` at end.\n\nThe opcode sequence is not deterministic across chunk boundaries — the same input\nfed in different chunk sizes may produce different `text`/`append_text` splits and\ndifferent optimistic/revert sequences. The final tree (via `mdz_opcodes_to_nodes`)\nis always identical regardless of chunking.",
+							"source_line": 104,
+							"members": [
+								{
+									"name": "feed",
+									"kind": "function",
+									"doc_comment": "Feed a chunk of text to the parser.\nOpcodes are accumulated and retrieved via `take_opcodes()`.",
+									"type_signature": "(chunk: string): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "chunk",
+											"type": "string"
+										}
+									]
+								},
+								{
+									"name": "finish",
+									"kind": "function",
+									"doc_comment": "Signal end of input. Resolves all pending state:\ncloses open blocks, reverts unclosed optimistic opens.\n\nTrailing newline trimming uses three cooperating mechanisms:\n1. `#trim_trailing_newline()` in `#close_paragraph()` — trims from the last\n   emitted text/append_text opcode (handles mid-stream paragraph breaks)\n2. Pre-flush trim below — trims unflushed `#accumulated_text` before it becomes\n   an opcode (handles trailing `\\n` from `#process_remaining()`)\n3. The pre-flush trim runs before `#revert_all_optimistic()`, so the `\\n` is\n   removed before reverts are emitted. `#trim_trailing_newline()` in\n   `#close_paragraph()` handles any remaining cases after reverts.",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
+								},
+								{
+									"name": "take_opcodes",
+									"kind": "function",
+									"doc_comment": "Drain and return all accumulated opcodes.\nDestructive — empties the internal queue. The returned array is owned by the caller.",
+									"type_signature": "(): MdzOpcode[]",
+									"return_type": "MdzOpcode[]",
+									"parameters": []
+								}
+							]
+						}
+					],
+					"module_comment": "Streaming opcode parser for mdz.\n\nFed chunks of text (e.g., from LLM output), emits opcodes as rendering\ninstructions. Makes optimistic assumptions about ambiguous syntax and\nemits `revert` opcodes to correct when wrong. Never re-parses.\n\nThe design was independently arrived at but shares goals with\n{@link https://bsky.app/profile/pngwn.at/post/3mi527zntb22n @pngwn.at}'s\nPenguin-Flavoured Markdown (PFM): restrict the syntax so streaming is tractable,\nrender optimistically and correct when wrong, emit serializable opcodes\nto avoid re-parsing, and keep the opcodes target-agnostic so any renderer\ncan consume them. mdz diverges in one respect: the Svelte consumer\n(`MdzStreamState`) does build a reactive tree from opcodes — the platform\ndictates this — but mutations are fine-grained via `$state`, not diffed.\n\nUsage:\n```ts\nconst parser = new MdzStreamParser();\nparser.feed('hello **bold');\nconst ops1 = parser.take_opcodes(); // open Paragraph, text \"hello \", open Bold, text \"bold\"\nparser.feed('** world');\nconst ops2 = parser.take_opcodes(); // close Bold, text \" world\"\nparser.finish();\nconst ops3 = parser.take_opcodes(); // close Paragraph\n```",
+					"dependencies": ["mdz_helpers.ts"]
+				},
+				{
+					"path": "mdz_stream_state.svelte.ts",
+					"declarations": [
+						{
+							"name": "MdzStreamNode",
+							"kind": "class",
+							"doc_comment": "A reactive node in the stream renderer tree.\nFields are `$state` so Svelte re-renders only what changes.",
+							"source_line": 19,
+							"members": [
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "MdzNodeId"
+								},
+								{
+									"name": "type",
+									"kind": "variable",
+									"type_signature": "MdzNodeType"
+								},
+								{
+									"name": "content",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "children",
+									"kind": "variable",
+									"type_signature": "Array<MdzStreamNode>"
+								},
+								{
+									"name": "level",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "reference",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "link_type",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "name",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "lang",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "heading_id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "text_type",
+									"kind": "variable",
+									"type_signature": "MdzTextNodeType"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(id: number, type: MdzNodeType): MdzStreamNode",
+									"parameters": [
+										{
+											"name": "id",
+											"type": "number"
+										},
+										{
+											"name": "type",
+											"type": "MdzNodeType"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "MdzStreamState",
+							"kind": "class",
+							"doc_comment": "Reactive state manager for streaming mdz content.\nApply opcodes to incrementally build and update the render tree.",
+							"source_line": 43,
+							"members": [
+								{
+									"name": "root",
+									"kind": "variable",
+									"type_signature": "Array<MdzStreamNode>"
+								},
+								{
+									"name": "apply",
+									"kind": "function",
+									"doc_comment": "Apply a single opcode.",
+									"type_signature": "(opcode: MdzOpcode): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "opcode",
+											"type": "MdzOpcode"
+										}
+									]
+								},
+								{
+									"name": "apply_batch",
+									"kind": "function",
+									"doc_comment": "Apply a batch of opcodes.",
+									"type_signature": "(opcodes: MdzOpcode[]): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "opcodes",
+											"type": "MdzOpcode[]"
+										}
+									]
+								},
+								{
+									"name": "reset",
+									"kind": "function",
+									"doc_comment": "Reset the state (clear all nodes).",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
+								}
+							]
+						}
+					],
+					"module_comment": "Reactive state for the mdz streaming renderer.\n\nMaintains a reactive tree of `MdzStreamNode` objects that Svelte 5 can\nefficiently update. Opcodes from `MdzStreamParser` are applied via\n`apply()` or `apply_batch()`, mutating the tree in place."
 				},
 				{
 					"path": "mdz_to_svelte.ts",
@@ -28122,6 +28710,93 @@
 						}
 					],
 					"module_comment": "Wrapper for precompiled mdz content. Used by `svelte_preprocess_mdz`.\nNot intended for direct use."
+				},
+				{
+					"path": "MdzRoot.svelte",
+					"declarations": [
+						{
+							"name": "MdzRoot",
+							"kind": "component",
+							"props": [
+								{
+									"name": "base",
+									"type": "string",
+									"optional": true
+								},
+								{
+									"name": "components",
+									"type": "MdzComponents",
+									"optional": true
+								},
+								{
+									"name": "elements",
+									"type": "MdzElements",
+									"optional": true
+								},
+								{
+									"name": "children",
+									"type": "Snippet"
+								}
+							],
+							"source_line": 1
+						}
+					],
+					"dependencies": ["mdz_components.ts"]
+				},
+				{
+					"path": "MdzStream.svelte",
+					"declarations": [
+						{
+							"name": "MdzStream",
+							"kind": "component",
+							"props": [
+								{
+									"name": "state",
+									"type": "MdzStreamState"
+								},
+								{
+									"name": "inline",
+									"type": "boolean",
+									"optional": true
+								},
+								{
+									"name": "nowrap",
+									"type": "boolean",
+									"optional": true
+								},
+								{
+									"name": "base",
+									"type": "string",
+									"optional": true
+								}
+							],
+							"source_line": 1
+						}
+					],
+					"dependencies": ["MdzStreamNodeView.svelte", "mdz_components.ts"]
+				},
+				{
+					"path": "MdzStreamNodeView.svelte",
+					"declarations": [
+						{
+							"name": "MdzStreamNodeView",
+							"kind": "component",
+							"props": [
+								{
+									"name": "node",
+									"type": "MdzStreamNode"
+								}
+							],
+							"source_line": 1
+						}
+					],
+					"dependencies": [
+						"DocsLink.svelte",
+						"MdzStreamNodeView.svelte",
+						"mdz_components.ts",
+						"mdz_helpers.ts"
+					],
+					"dependents": ["MdzStream.svelte", "MdzStreamNodeView.svelte"]
 				},
 				{
 					"path": "module_contextmenu.ts",
@@ -30576,7 +31251,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.3.2",
+			"version": "0.3.3",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -30691,7 +31366,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.3.2",
+			"version": "0.3.3",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -35984,14 +36659,14 @@
 							"name": "DaemonInfo",
 							"kind": "type",
 							"doc_comment": "Daemon info schema for `~/.{name}/run/daemon.json`.",
-							"source_line": 27,
+							"source_line": 28,
 							"type_signature": "ZodObject<{ version: ZodNumber; pid: ZodNumber; port: ZodNumber; started: ZodString; app_version: ZodString; }, $strict>"
 						},
 						{
 							"name": "get_daemon_info_path",
 							"kind": "function",
 							"doc_comment": "Get the daemon info file path (`~/.{name}/run/daemon.json`).",
-							"source_line": 48,
+							"source_line": 49,
 							"type_signature": "(runtime: Pick<EnvDeps, \"env_get\">, name: string): string | null",
 							"return_type": "string | null",
 							"return_description": "path to `daemon.json`, or null if `$HOME` is not set",
@@ -36012,7 +36687,7 @@
 							"name": "write_daemon_info",
 							"kind": "function",
 							"doc_comment": "Write daemon info to the PID file, creating directories as needed.",
-							"source_line": 63,
+							"source_line": 64,
 							"type_signature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"write_text_file\" | \"rename\">, name: string, info: { version: number; pid: number; port: number; started: string; app_version: string; }): Promise<...>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -36037,7 +36712,7 @@
 							"name": "read_daemon_info",
 							"kind": "function",
 							"doc_comment": "Read and validate daemon info from the PID file.",
-							"source_line": 87,
+							"source_line": 88,
 							"type_signature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsReadDeps, \"stat\" | \"read_text_file\"> & LogDeps, name: string): Promise<{ version: number; pid: number; port: number; started: string; app_version: string; } | null>",
 							"return_type": "Promise<{ version: number; pid: number; port: number; started: string; app_version: string; } | null>",
 							"return_description": "parsed daemon info, or null if missing or invalid",
@@ -36058,7 +36733,7 @@
 							"name": "is_daemon_running",
 							"kind": "function",
 							"doc_comment": "Check if a process is running by PID.",
-							"source_line": 123,
+							"source_line": 124,
 							"type_signature": "(runtime: CommandDeps, pid: number): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"return_description": "`true` if the process is running",
@@ -36076,10 +36751,43 @@
 							]
 						},
 						{
+							"name": "check_daemon_health",
+							"kind": "function",
+							"doc_comment": "Check if a daemon is healthy by probing its `/health` endpoint.\n\nComplements `is_daemon_running` (PID check) with an HTTP liveness probe.\nRequires the daemon to register a `/health` route (e.g. via `create_health_route_spec`).",
+							"source_line": 141,
+							"type_signature": "(deps: FetchDeps, port: number, host?: string, timeout_ms?: number): Promise<boolean>",
+							"return_type": "Promise<boolean>",
+							"return_description": "`true` if the health endpoint responds with 2xx",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "FetchDeps",
+									"description": "runtime with fetch capability"
+								},
+								{
+									"name": "port",
+									"type": "number",
+									"description": "port the daemon should be listening on"
+								},
+								{
+									"name": "host",
+									"type": "string",
+									"description": "hostname (default `localhost`)",
+									"default_value": "'localhost'"
+								},
+								{
+									"name": "timeout_ms",
+									"type": "number",
+									"description": "request timeout in milliseconds (default 2000)",
+									"default_value": "2000"
+								}
+							]
+						},
+						{
 							"name": "StopDaemonResult",
 							"kind": "type",
 							"doc_comment": "Result of a `stop_daemon` operation.",
-							"source_line": 131,
+							"source_line": 163,
 							"type_signature": "StopDaemonResult",
 							"properties": [
 								{
@@ -36106,7 +36814,7 @@
 							"name": "stop_daemon",
 							"kind": "function",
 							"doc_comment": "Stop a running daemon by sending SIGTERM and cleaning up the PID file.\n\nReturns a result object instead of logging directly, separating\nlifecycle from presentation.",
-							"source_line": 150,
+							"source_line": 182,
 							"type_signature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsReadDeps, \"stat\" | \"read_text_file\"> & FsRemoveDeps & CommandDeps & LogDeps, name: string): Promise<...>",
 							"return_type": "Promise<StopDaemonResult>",
 							"return_description": "result describing the outcome",
@@ -40569,10 +41277,25 @@
 							]
 						},
 						{
+							"name": "FetchDeps",
+							"kind": "type",
+							"doc_comment": "HTTP fetch capability.",
+							"source_line": 84,
+							"type_signature": "FetchDeps",
+							"properties": [
+								{
+									"name": "fetch",
+									"kind": "variable",
+									"type_signature": "typeof globalThis.fetch",
+									"doc_comment": "Fetch a URL. Same signature as the global `fetch`."
+								}
+							]
+						},
+						{
 							"name": "LogDeps",
 							"kind": "type",
 							"doc_comment": "Warning/diagnostic output.",
-							"source_line": 84,
+							"source_line": 92,
 							"type_signature": "LogDeps",
 							"properties": [
 								{
@@ -40587,7 +41310,7 @@
 							"name": "TerminalDeps",
 							"kind": "type",
 							"doc_comment": "Terminal I/O operations.",
-							"source_line": 92,
+							"source_line": 100,
 							"type_signature": "TerminalDeps",
 							"properties": [
 								{
@@ -40608,7 +41331,7 @@
 							"name": "ProcessDeps",
 							"kind": "type",
 							"doc_comment": "Process lifecycle.",
-							"source_line": 102,
+							"source_line": 110,
 							"type_signature": "ProcessDeps",
 							"properties": [
 								{
@@ -40623,7 +41346,7 @@
 							"name": "RuntimeDeps",
 							"kind": "type",
 							"doc_comment": "Full runtime capabilities returned by `create_deno_runtime` or `create_node_runtime`.\n\nExtends all `*Deps` interfaces with additional app-level capabilities.\nFunctions should accept narrow `*Deps` interfaces, not this full type —\nthis type is for the wiring layer that creates and passes the runtime.",
-							"source_line": 114,
+							"source_line": 122,
 							"type_signature": "RuntimeDeps",
 							"extends": [
 								"EnvDeps",
@@ -40631,6 +41354,7 @@
 								"FsWriteDeps",
 								"FsRemoveDeps",
 								"CommandDeps",
+								"FetchDeps",
 								"TerminalDeps",
 								"ProcessDeps",
 								"LogDeps"
@@ -40768,6 +41492,18 @@
 									"kind": "variable",
 									"type_signature": "Uint8Array | null",
 									"doc_comment": "Stdin buffer for input simulation."
+								},
+								{
+									"name": "fetch_calls",
+									"kind": "variable",
+									"type_signature": "Array<{input: string | URL | Request; init?: RequestInit}>",
+									"doc_comment": "Fetch calls recorded."
+								},
+								{
+									"name": "mock_fetch_responses",
+									"kind": "variable",
+									"type_signature": "Map<string, Response>",
+									"doc_comment": "Mock fetch responses (URL substring -> Response)."
 								}
 							]
 						},
@@ -40778,7 +41514,7 @@
 							"examples": [
 								"```ts\nconst runtime = create_mock_runtime(['apply', 'tx.ts']);\nruntime.mock_env.set('HOME', '/home/test');\nruntime.mock_fs.set('/home/test/.app/config.json', '{}');\n\nawait some_function(runtime);\n\nassert.strictEqual(runtime.command_calls.length, 1);\nassert.deepStrictEqual(runtime.exit_calls, [0]);\n```"
 							],
-							"source_line": 59,
+							"source_line": 63,
 							"type_signature": "(args?: string[]): MockRuntime",
 							"return_type": "MockRuntime",
 							"return_description": "`MockRuntime` with controllable state",
@@ -40795,7 +41531,7 @@
 							"name": "reset_mock_runtime",
 							"kind": "function",
 							"doc_comment": "Reset a mock runtime to initial state.",
-							"source_line": 224,
+							"source_line": 242,
 							"type_signature": "(runtime: MockRuntime): void",
 							"return_type": "void",
 							"parameters": [
@@ -40810,7 +41546,7 @@
 							"name": "set_mock_stdin",
 							"kind": "function",
 							"doc_comment": "Set stdin buffer for simulating user input.",
-							"source_line": 243,
+							"source_line": 263,
 							"type_signature": "(runtime: MockRuntime, input: string): void",
 							"return_type": "void",
 							"parameters": [
@@ -40830,7 +41566,7 @@
 							"name": "MockExitError",
 							"kind": "class",
 							"doc_comment": "Error thrown when mock `runtime.exit()` is called.\n\nTests can catch this to verify exit behavior.",
-							"source_line": 252,
+							"source_line": 272,
 							"extends": ["Error"],
 							"implements": [],
 							"members": [
@@ -48197,7 +48933,7 @@
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.3",
 				"@fuzdev/fuz_util": "^0.55.0",
-				"@fuzdev/gro": "^0.197.2",
+				"@fuzdev/gro": "^0.197.3",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
@@ -48212,7 +48948,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.5.1",
-				"svelte": "^5.55.0",
+				"svelte": "^5.55.2",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -54916,7 +55652,7 @@
 			},
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
-				"@fuzdev/fuz_app": "^0.2.1",
+				"@fuzdev/fuz_app": "^0.3.3",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.3",
@@ -54950,8 +55686,8 @@
 			},
 			"dependencies": {
 				"@anthropic-ai/sdk": "^0.71.2",
-				"@fuzdev/blake3_wasm": "^0.1.0",
-				"@fuzdev/gro": "^0.197.2",
+				"@fuzdev/blake3_wasm": "^0.1.1",
+				"@fuzdev/gro": "^0.197.3",
 				"@google/generative-ai": "^0.24.1",
 				"@xterm/xterm": "^6.0.0",
 				"date-fns": "^4.1.0",
@@ -55090,40 +55826,40 @@
 							"kind": "type",
 							"doc_comment": "All method types combined.",
 							"source_line": 16,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 18 more ...; terminal_close: \"terminal_close\"; }>"
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 22 more ...; workspace_changed: \"workspace_changed\"; }>"
 						},
 						{
 							"name": "ActionSpecs",
 							"kind": "type",
 							"doc_comment": "Action specifications indexed by method name.\nThese represent the complete action spec definitions.",
-							"source_line": 49,
-							"type_signature": "{ readonly ping: { method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }; ... 23 more ...; readonly terminal_close: { ...; }..."
+							"source_line": 53,
+							"type_signature": "{ readonly ping: { method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }; ... 27 more ...; readonly workspace_changed: { ......"
 						},
 						{
 							"name": "action_specs",
 							"kind": "variable",
-							"source_line": 104,
+							"source_line": 116,
 							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async:..."
 						},
 						{
 							"name": "ActionInputs",
 							"kind": "type",
 							"doc_comment": "Action parameter schemas indexed by method name.\nThese represent the input data for each action,\ne.g. JSON-RPC request/notification params and local call arguments.",
-							"source_line": 111,
-							"type_signature": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 21 more ...; readonly terminal..."
+							"source_line": 123,
+							"type_signature": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 25 more ...; readonly workspac..."
 						},
 						{
 							"name": "ActionOutputs",
 							"kind": "type",
 							"doc_comment": "Action result schemas indexed by method name.\nThese represent the output data for each action,\ne.g. JSON-RPC response results and local call return values.",
-							"source_line": 171,
+							"source_line": 191,
 							"type_signature": "{ readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; readonly session_load: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>; provider_status: ZodAr..."
 						},
 						{
 							"name": "ActionEventDatas",
 							"kind": "type",
 							"doc_comment": "Action event data types indexed by method name.\nThese represent the full discriminated union of all possible states\nfor each action's event data, properly typed with inputs and outputs.",
-							"source_line": 231,
+							"source_line": 259,
 							"type_signature": "ActionEventDatas",
 							"properties": [
 								{
@@ -55250,6 +55986,26 @@
 									"name": "terminal_close",
 									"kind": "variable",
 									"type_signature": "ActionEventRequestResponseData<'terminal_close'>"
+								},
+								{
+									"name": "workspace_open",
+									"kind": "variable",
+									"type_signature": "ActionEventRequestResponseData<'workspace_open'>"
+								},
+								{
+									"name": "workspace_close",
+									"kind": "variable",
+									"type_signature": "ActionEventRequestResponseData<'workspace_close'>"
+								},
+								{
+									"name": "workspace_list",
+									"kind": "variable",
+									"type_signature": "ActionEventRequestResponseData<'workspace_list'>"
+								},
+								{
+									"name": "workspace_changed",
+									"kind": "variable",
+									"type_signature": "ActionEventRemoteNotificationData<'workspace_changed'>"
 								}
 							]
 						}
@@ -55531,7 +56287,7 @@
 							"name": "is_send_request_with_parsed_input",
 							"kind": "function",
 							"source_line": 95,
-							"type_signature": "<TMethod extends ActionMethod = \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\">(data: { ...; }): data is ({ ...; } & { ...; }) | ({ ...; } & { ...; })",
+							"type_signature": "<TMethod extends ActionMethod = \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\">(data: { ...; }): data is ({ ...; } & { ...; }) | ({ ...; } & { ...; })",
 							"return_type": "boolean",
 							"parameters": [
 								{
@@ -55544,7 +56300,7 @@
 							"name": "is_notification_send_with_parsed_input",
 							"kind": "function",
 							"source_line": 103,
-							"type_signature": "<TMethod extends ActionMethod = \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\">(data: { ...; }): data is ({ ...; } & { ...; }) | ({ ...; } & { ...; })",
+							"type_signature": "<TMethod extends ActionMethod = \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\">(data: { ...; }): data is ({ ...; } & { ...; }) | ({ ...; } & { ...; })",
 							"return_type": "boolean",
 							"parameters": [
 								{
@@ -55659,7 +56415,7 @@
 							"name": "create_initial_data",
 							"kind": "function",
 							"source_line": 163,
-							"type_signature": "(kind: \"request_response\" | \"remote_notification\" | \"local_call\", phase: \"send_request\" | \"execute\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\", method: \"ping\" | ... 23 more ... | \"terminal_close\", executor: \"frontend\" | \"backend\", input: unknown): { ...; }",
+							"type_signature": "(kind: \"request_response\" | \"remote_notification\" | \"local_call\", phase: \"send_request\" | \"execute\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\", method: \"ping\" | ... 27 more ... | \"workspace_changed\", executor: \"frontend\" | \"backend\", input: unknown): { ...; }",
 							"return_type": "{ kind: \"request_response\" | \"remote_notification\" | \"local_call\"; phase: \"send_request\" | \"execute\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\"; ... 9 more ...; notification: { ...; } | null; }",
 							"parameters": [
 								{
@@ -55672,7 +56428,7 @@
 								},
 								{
 									"name": "method",
-									"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+									"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 								},
 								{
 									"name": "executor",
@@ -55688,12 +56444,12 @@
 							"name": "extract_action_result",
 							"kind": "function",
 							"source_line": 184,
-							"type_signature": "(event: ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"failed\">): Result<...>",
+							"type_signature": "(event: ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"failed\">): Result<...>",
 							"return_type": "Result<{ value: unknown; }, { error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; }>",
 							"parameters": [
 								{
 									"name": "event",
-									"type": "ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"..."
+									"type": "ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... ..."
 								}
 							]
 						}
@@ -55835,7 +56591,7 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "<TMethod extends ActionMethod = \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", TEnvironment extends ActionEventEnvironment = ActionEventEnvironment, TPhase extends ActionEventPhase = \"send_request\" | ... 7 more ... | \"receive\", TStep extends ActionEventStep = \"initial\" | ... 3 more ... | \"failed\">(environment: TEnvironment, spec: { ...; } | ... 1 more ... | { ...; }, data: ActionEventDatas[TMethod]): ActionEvent<...>",
+									"type_signature": "<TMethod extends ActionMethod = \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", TEnvironment extends ActionEventEnvironment = ActionEventEnvironment, TPhase extends ActionEventPhase = \"send_request\" | ... 7 more ... | \"receive\", TStep extends ActionEventStep = \"initial\" | ... 3 more ... | \"failed\">(environment: TEnvironment, spec: { ...; } | ... 1 more ... | { ...; }, data: ActionEventDatas[TMethod]): ActionEvent<...>",
 									"parameters": [
 										{
 											"name": "environment",
@@ -56025,8 +56781,8 @@
 							"name": "parse_action_event",
 							"kind": "function",
 							"source_line": 499,
-							"type_signature": "(raw_json: unknown, environment: ActionEventEnvironment): ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | ... 18 more ... | \"terminal_close\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"failed\">",
-							"return_type": "ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"...",
+							"type_signature": "(raw_json: unknown, environment: ActionEventEnvironment): ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | ... 22 more ... | \"workspace_changed\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"failed\">",
+							"return_type": "ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... ...",
 							"parameters": [
 								{
 									"name": "raw_json",
@@ -56123,48 +56879,48 @@
 							"kind": "type",
 							"doc_comment": "All action method names. Request/response actions have two types per method.",
 							"source_line": 11,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 18 more ...; terminal_close: \"terminal_close\"; }>"
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 22 more ...; workspace_changed: \"workspace_changed\"; }>"
 						},
 						{
 							"name": "RequestResponseActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all request_response actions.",
-							"source_line": 43,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; completion_create: \"completion_create\"; ... 13 more ...; terminal_close: \"terminal_close\"; }>"
+							"source_line": 47,
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; completion_create: \"completion_create\"; ... 16 more ...; workspace_list: \"workspace_list\"; }>"
 						},
 						{
 							"name": "RemoteNotificationActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all remote_notification actions.",
-							"source_line": 70,
-							"type_signature": "ZodEnum<{ filer_change: \"filer_change\"; completion_progress: \"completion_progress\"; ollama_progress: \"ollama_progress\"; terminal_data: \"terminal_data\"; }>"
+							"source_line": 77,
+							"type_signature": "ZodEnum<{ filer_change: \"filer_change\"; completion_progress: \"completion_progress\"; ollama_progress: \"ollama_progress\"; terminal_data: \"terminal_data\"; workspace_changed: \"workspace_changed\"; }>"
 						},
 						{
 							"name": "LocalCallActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all local_call actions.",
-							"source_line": 81,
+							"source_line": 89,
 							"type_signature": "ZodEnum<{ toggle_main_menu: \"toggle_main_menu\"; }>"
 						},
 						{
 							"name": "FrontendActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all actions that may be handled on the client.",
-							"source_line": 87,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 18 more ...; terminal_close: \"terminal_close\"; }>"
+							"source_line": 95,
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 22 more ...; workspace_changed: \"workspace_changed\"; }>"
 						},
 						{
 							"name": "BackendActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all actions that may be handled on the server.",
-							"source_line": 119,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 17 more ...; terminal_close: \"terminal_close\"; }>"
+							"source_line": 131,
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 21 more ...; workspace_changed: \"workspace_changed\"; }>"
 						},
 						{
 							"name": "ActionsApi",
 							"kind": "type",
 							"doc_comment": "Interface for action dispatch functions.\nAll async methods return Result types for type-safe error handling.\nSync methods (like toggle_main_menu) return values directly.",
-							"source_line": 152,
+							"source_line": 168,
 							"type_signature": "ActionsApi",
 							"properties": [
 								{
@@ -56291,6 +57047,26 @@
 									"name": "terminal_close",
 									"kind": "variable",
 									"type_signature": "(\n\t\tinput: ActionInputs['terminal_close'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_close']}, {error: JsonrpcErrorJson}>>"
+								},
+								{
+									"name": "workspace_open",
+									"kind": "variable",
+									"type_signature": "(\n\t\tinput: ActionInputs['workspace_open'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_open']}, {error: JsonrpcErrorJson}>>"
+								},
+								{
+									"name": "workspace_close",
+									"kind": "variable",
+									"type_signature": "(\n\t\tinput: ActionInputs['workspace_close'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_close']}, {error: JsonrpcErrorJson}>>"
+								},
+								{
+									"name": "workspace_list",
+									"kind": "variable",
+									"type_signature": "(\n\t\tinput?: void,\n\t) => Promise<Result<{value: ActionOutputs['workspace_list']}, {error: JsonrpcErrorJson}>>"
+								},
+								{
+									"name": "workspace_changed",
+									"kind": "variable",
+									"type_signature": "(\n\t\tinput: ActionInputs['workspace_changed'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_changed']}, {error: JsonrpcErrorJson}>>"
 								}
 							]
 						}
@@ -56450,157 +57226,181 @@
 						{
 							"name": "ping_action_spec",
 							"kind": "variable",
-							"source_line": 34,
+							"source_line": 35,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }"
 						},
 						{
 							"name": "session_load_action_spec",
 							"kind": "variable",
-							"source_line": 48,
+							"source_line": 49,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>;..."
 						},
 						{
 							"name": "filer_change_action_spec",
 							"kind": "variable",
-							"source_line": 70,
+							"source_line": 72,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; output: ZodVoid; async: true; des..."
 						},
 						{
 							"name": "diskfile_update_action_spec",
 							"kind": "variable",
-							"source_line": 85,
+							"source_line": 87,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; content: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "diskfile_delete_action_spec",
 							"kind": "variable",
-							"source_line": 100,
+							"source_line": 102,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "directory_create_action_spec",
 							"kind": "variable",
-							"source_line": 114,
+							"source_line": 116,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "completion_create_action_spec",
 							"kind": "variable",
-							"source_line": 128,
+							"source_line": 130,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ completion_request: ZodObject<{ created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; provider_name: ZodEnum<...>; model: ZodString; prompt: ZodString; completion_messages: ZodOpti..."
 						},
 						{
 							"name": "completion_progress_action_spec",
 							"kind": "variable",
-							"source_line": 146,
+							"source_line": 148,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ chunk: ZodOptional<ZodObject<{ model: ZodOptional<ZodString>; created_at: ZodOptional<...>; done: ZodOptional<...>; message: ZodOptional<...>; }, $loose>>; _meta: ZodOptional<...>; }, $strict>; out..."
 						},
 						{
 							"name": "ollama_progress_action_spec",
 							"kind": "variable",
-							"source_line": 187,
+							"source_line": 189,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ status: ZodString; digest: ZodOptional<ZodString>; total: ZodOptional<...>; completed: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "toggle_main_menu_action_spec",
 							"kind": "variable",
-							"source_line": 204,
+							"source_line": 206,
 							"type_signature": "{ method: string; kind: \"local_call\"; initiator: \"frontend\"; auth: null; side_effects: true; input: ZodOptional<ZodObject<{ show: ZodOptional<ZodBoolean>; }, $strict>>; output: ZodObject<...>; async: false; description: string; }"
 						},
 						{
 							"name": "ollama_list_action_spec",
 							"kind": "variable",
-							"source_line": 216,
+							"source_line": 218,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<ZodObject<{ details: ZodOptional<...>; ... 4 more ...; size: ZodNumber; }, $loose>>; }, $loose>, ZodNull]>; async: true; descript..."
 						},
 						{
 							"name": "ollama_ps_action_spec",
 							"kind": "variable",
-							"source_line": 228,
+							"source_line": 230,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<ZodObject<{ details: ZodOptional<...>; ... 5 more ...; size_vram: ZodNumber; }, $loose>>; }, $loose>, ZodNull]>; async: true; des..."
 						},
 						{
 							"name": "ollama_show_action_spec",
 							"kind": "variable",
-							"source_line": 240,
+							"source_line": 242,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodObject<{ model: ZodString; system: ZodOptional<ZodString>; template: ZodOptional<...>; options: ZodOptional<...>; }, $loose>; output: ZodUnion<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_pull_action_spec",
 							"kind": "variable",
-							"source_line": 252,
+							"source_line": 254,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; insecure: ZodOptional<ZodBoolean>; stream: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_delete_action_spec",
 							"kind": "variable",
-							"source_line": 268,
+							"source_line": 270,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_copy_action_spec",
 							"kind": "variable",
-							"source_line": 280,
+							"source_line": 282,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ source: ZodString; destination: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_create_action_spec",
 							"kind": "variable",
-							"source_line": 292,
+							"source_line": 294,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; from: ZodOptional<ZodString>; ... 8 more ...; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_unload_action_spec",
 							"kind": "variable",
-							"source_line": 308,
+							"source_line": 310,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "provider_load_status_action_spec",
 							"kind": "variable",
-							"source_line": 322,
+							"source_line": 324,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; reload: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: str..."
 						},
 						{
 							"name": "provider_update_api_key_action_spec",
 							"kind": "variable",
-							"source_line": 339,
+							"source_line": 341,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; api_key: ZodString; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_create_action_spec",
 							"kind": "variable",
-							"source_line": 356,
+							"source_line": 358,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ command: ZodString; args: ZodDefault<ZodArray<ZodString>>; cwd: ZodOptional<...>; preset_id: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_data_send_action_spec",
 							"kind": "variable",
-							"source_line": 375,
+							"source_line": 377,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; data: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_data_action_spec",
 							"kind": "variable",
-							"source_line": 390,
+							"source_line": 392,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; data: ZodString; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_resize_action_spec",
 							"kind": "variable",
-							"source_line": 405,
+							"source_line": 407,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; cols: ZodNumber; rows: ZodNumber; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_close_action_spec",
 							"kind": "variable",
-							"source_line": 421,
+							"source_line": 423,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; signal: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
+						},
+						{
+							"name": "workspace_open_action_spec",
+							"kind": "variable",
+							"source_line": 440,
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodObject<...>; async: true; description: stri..."
+						},
+						{
+							"name": "workspace_close_action_spec",
+							"kind": "variable",
+							"source_line": 457,
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
+						},
+						{
+							"name": "workspace_list_action_spec",
+							"kind": "variable",
+							"source_line": 471,
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ workspaces: ZodArray<ZodObject<{ path: $ZodBranded<...>; name: ZodString; opened_at: ZodString; }, $strict>>; }, $strict>; async: true; description: string; }"
+						},
+						{
+							"name": "workspace_changed_action_spec",
+							"kind": "variable",
+							"source_line": 485,
+							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ type: ZodEnum<{ open: \"open\"; close: \"close\"; }>; workspace: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodS..."
 						},
 						{
 							"name": "all_action_specs",
 							"kind": "variable",
-							"source_line": 438,
+							"source_line": 500,
 							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async:..."
 						}
 					],
@@ -56610,6 +57410,7 @@
 						"jsonrpc.ts",
 						"ollama_helpers.ts",
 						"provider_types.ts",
+						"workspace.svelte.ts",
 						"zod_helpers.ts"
 					],
 					"dependents": [
@@ -56634,7 +57435,7 @@
 							"name": "ActionJsonInput",
 							"kind": "type",
 							"source_line": 20,
-							"type_signature": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_dat..."
+							"type_signature": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_..."
 						},
 						{
 							"name": "ActionOptions",
@@ -56720,12 +57521,12 @@
 								{
 									"name": "listen_to_action_event",
 									"kind": "function",
-									"type_signature": "(action_event: ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"failed\">): () => void",
+									"type_signature": "(action_event: ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"failed\">): () => void",
 									"return_type": "() => void",
 									"parameters": [
 										{
 											"name": "action_event",
-											"type": "ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... | \"..."
+											"type": "ActionEvent<\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", ActionEventEnvironment, \"send_request\" | ... 7 more ... | \"receive\", \"initial\" | ... 3 more ... ..."
 										}
 									]
 								},
@@ -56892,7 +57693,7 @@
 							"name": "ActionsJsonInput",
 							"kind": "type",
 							"source_line": 18,
-							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 19 more ... | \"terminal_close\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_e..."
+							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 23 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; actio..."
 						},
 						{
 							"name": "ActionsOptions",
@@ -56942,12 +57743,12 @@
 									"name": "set_json",
 									"kind": "function",
 									"doc_comment": "Override to populate the indexed collection after parsing JSON.",
-									"type_signature": "(value?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 19 more ... | \"terminal_close\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }[] | undefined; } | undefined): void",
+									"type_signature": "(value?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 23 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }[] | undefined; } | undefined): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "value",
-											"type": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 19 more ... | \"terminal_close\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_e...",
+											"type": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 23 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; actio...",
 											"optional": true
 										}
 									]
@@ -56967,12 +57768,12 @@
 								{
 									"name": "add_from_json",
 									"kind": "function",
-									"type_signature": "(action_json: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }): Action",
+									"type_signature": "(action_json: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }): Action",
 									"return_type": "Action",
 									"parameters": [
 										{
 											"name": "action_json",
-											"type": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_dat..."
+											"type": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_..."
 										}
 									]
 								}
@@ -57683,32 +58484,32 @@
 						{
 							"name": "cell_classes",
 							"kind": "variable",
-							"source_line": 32,
-							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 22 more ...; Ui: typeof Ui; }"
+							"source_line": 34,
+							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 24 more ...; Workspaces: typeof Workspaces; }"
 						},
 						{
 							"name": "CellClasses",
 							"kind": "type",
-							"source_line": 65,
-							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 22 more ...; Ui: typeof Ui; }"
+							"source_line": 69,
+							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 24 more ...; Workspaces: typeof Workspaces; }"
 						},
 						{
 							"name": "CellClassNames",
 							"kind": "type",
-							"source_line": 67,
-							"type_signature": "\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 16 more ... | \"Ui\""
+							"source_line": 71,
+							"type_signature": "\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 18 more ... | \"Workspaces\""
 						},
 						{
 							"name": "CellRegistryMap",
 							"kind": "type",
-							"source_line": 69,
+							"source_line": 73,
 							"type_signature": "CellRegistryMap"
 						},
 						{
 							"name": "is_cell_type",
 							"kind": "function",
 							"doc_comment": "Type guard to check if a cell is an instance of a specific cell class.",
-							"source_line": 76,
+							"source_line": 80,
 							"type_signature": "<K extends CellClassNames>(cell: Cell<any> | null | undefined, class_name: K): cell is CellRegistryMap[K]",
 							"return_type": "boolean",
 							"parameters": [
@@ -57726,9 +58527,9 @@
 							"name": "get_cell_class_names",
 							"kind": "function",
 							"doc_comment": "Get a list of all registered cell class names.",
-							"source_line": 84,
-							"type_signature": "(): (\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 16 more ... | \"Ui\")[]",
-							"return_type": "(\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 16 more ... | \"Ui\")[]",
+							"source_line": 88,
+							"type_signature": "(): (\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 18 more ... | \"Workspaces\")[]",
+							"return_type": "(\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 18 more ... | \"Workspaces\")[]",
 							"parameters": []
 						}
 					],
@@ -57761,7 +58562,9 @@
 						"threads.svelte.ts",
 						"time.svelte.ts",
 						"turn.svelte.ts",
-						"ui.svelte.ts"
+						"ui.svelte.ts",
+						"workspace.svelte.ts",
+						"workspaces.svelte.ts"
 					],
 					"dependents": ["app.svelte.ts", "frontend.svelte.ts"]
 				},
@@ -57885,7 +58688,8 @@
 						"spaces.svelte.ts",
 						"thread.svelte.ts",
 						"threads.svelte.ts",
-						"time_helpers.ts"
+						"time_helpers.ts",
+						"workspaces.svelte.ts"
 					]
 				},
 				{
@@ -58148,7 +58952,9 @@
 						"threads.svelte.ts",
 						"time.svelte.ts",
 						"turn_types.ts",
-						"ui.svelte.ts"
+						"ui.svelte.ts",
+						"workspace.svelte.ts",
+						"workspaces.svelte.ts"
 					]
 				},
 				{
@@ -58533,7 +59339,9 @@
 						"time.svelte.ts",
 						"turn.svelte.ts",
 						"turn_types.ts",
-						"ui.svelte.ts"
+						"ui.svelte.ts",
+						"workspace.svelte.ts",
+						"workspaces.svelte.ts"
 					]
 				},
 				{
@@ -60667,6 +61475,7 @@
 						"DiskfileInfo.svelte",
 						"diskfile_types.ts",
 						"diskfiles.svelte.ts",
+						"server/backend.ts",
 						"server/backend_action_handlers.ts",
 						"server/backend_actions_api.ts"
 					]
@@ -61239,7 +62048,9 @@
 						"part.svelte.ts",
 						"server/backend.ts",
 						"server/backend_action_handlers.ts",
-						"server/backend_actions_api.ts"
+						"server/backend_actions_api.ts",
+						"space.svelte.ts",
+						"workspace.svelte.ts"
 					]
 				},
 				{
@@ -62594,6 +63405,26 @@
 									"name": "terminal_close",
 									"kind": "variable",
 									"type_signature": "{\n\t\tsend_request?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Frontend, 'send_request', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_response?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Frontend, 'receive_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Frontend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_error?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Frontend, 'receive_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_open",
+									"kind": "variable",
+									"type_signature": "{\n\t\tsend_request?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Frontend, 'send_request', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_response?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Frontend, 'receive_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Frontend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_error?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Frontend, 'receive_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_close",
+									"kind": "variable",
+									"type_signature": "{\n\t\tsend_request?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Frontend, 'send_request', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_response?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Frontend, 'receive_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Frontend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_error?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Frontend, 'receive_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_list",
+									"kind": "variable",
+									"type_signature": "{\n\t\tsend_request?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Frontend, 'send_request', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_response?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Frontend, 'receive_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Frontend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_error?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Frontend, 'receive_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_changed",
+									"kind": "variable",
+									"type_signature": "{\n\t\treceive?: (\n\t\t\taction_event: ActionEvent<'workspace_changed', Frontend, 'receive', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
 								}
 							]
 						}
@@ -62798,25 +63629,25 @@
 						{
 							"name": "frontend_context",
 							"kind": "variable",
-							"source_line": 50,
+							"source_line": 51,
 							"type_signature": "{ get: (error_message?: string | undefined) => Frontend; get_maybe: () => Frontend | undefined; set: (value: Frontend) => Frontend; }"
 						},
 						{
 							"name": "FrontendJson",
 							"kind": "type",
-							"source_line": 52,
+							"source_line": 53,
 							"type_signature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; ui: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "FrontendJsonInput",
 							"kind": "type",
-							"source_line": 57,
+							"source_line": 58,
 							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; ui?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; show_main_dialog?: boolean | undefined; ... 6 more ...; desk_pinned?: boolean | undefined; } | undefined; }"
 						},
 						{
 							"name": "FrontendOptions",
 							"kind": "type",
-							"source_line": 59,
+							"source_line": 60,
 							"type_signature": "FrontendOptions",
 							"extends": ["OmitStrict<CellOptions<typeof FrontendJson>, 'app'>"],
 							"properties": [
@@ -62877,7 +63708,7 @@
 							"name": "Frontend",
 							"kind": "class",
 							"doc_comment": "The base frontend app, typically used by creating your own `App extends Frontend`.\nGettable with `frontend_context.get()` inside a `FrontendRoot`.",
-							"source_line": 79,
+							"source_line": 80,
 							"extends": ["Cell<typeof FrontendJson>"],
 							"implements": ["ActionEventEnvironment"],
 							"members": [
@@ -63003,6 +63834,12 @@
 									"type_signature": "Spaces"
 								},
 								{
+									"name": "workspaces",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Workspaces"
+								},
+								{
 									"name": "bots",
 									"kind": "variable",
 									"modifiers": ["readonly"],
@@ -63053,12 +63890,12 @@
 								{
 									"name": "receive_session",
 									"kind": "function",
-									"type_signature": "(data: { zzz_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; scoped_dirs: readonly (string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">)[]; files: { ...; }[]; provider_status: ({ ...; } | { ...; })[]; }): void",
+									"type_signature": "(data: { zzz_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; scoped_dirs: readonly (string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">)[]; files: { ...; }[]; provider_status: ({ ...; } | { ...; })[]; workspaces: { ...; }[]; }): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "data",
-											"type": "{ zzz_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; scoped_dirs: readonly (string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">)[]; files: { ...; }[]; provider_status: ({ ...; } | { ...; })[]; }"
+											"type": "{ zzz_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; scoped_dirs: readonly (string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">)[]; files: { ...; }[]; provider_status: ({ ...; } | { ...; })[]; workspaces: { ...; }[]; }"
 										}
 									]
 								},
@@ -63137,12 +63974,12 @@
 								{
 									"name": "lookup_action_handler",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", phase: \"send_request\" | ... 7 more ... | \"receive\"): ((event: any) => any) | undefined",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", phase: \"send_request\" | ... 7 more ... | \"receive\"): ((event: any) => any) | undefined",
 									"return_type": "((event: any) => any) | undefined",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 										},
 										{
 											"name": "phase",
@@ -63153,20 +63990,20 @@
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"): { ...; } | ... 2 more ... | undefined",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
 									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ...",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 										}
 									]
 								},
 								{
 									"name": "lookup_action_input_schema",
 									"kind": "function",
-									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; ... 22 more ...; readonly terminal_close: ZodObject<...>; }[TMethod] | undefined",
-									"return_type": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 21 more ...; readonly terminal...",
+									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; ... 26 more ...; readonly workspace_changed: ZodObject<...>; }[TMethod] | undefined",
+									"return_type": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 25 more ...; readonly workspac...",
 									"parameters": [
 										{
 											"name": "method",
@@ -63177,8 +64014,8 @@
 								{
 									"name": "lookup_action_output_schema",
 									"kind": "function",
-									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 23 more ...; readonly terminal_close: ZodObject<...>; }[TMethod] | undefined",
-									"return_type": "{ readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; readonly session_load: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<...>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>; provider_status: ZodArray<...>; }, $strict>; }, $...",
+									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 27 more ...; readonly workspace_changed: ZodVoid; }[TMethod] | undefined",
+									"return_type": "{ readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; readonly session_load: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<...>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>; provider_status: ZodArray<...>; workspaces: ZodAr...",
 									"parameters": [
 										{
 											"name": "method",
@@ -63189,12 +64026,12 @@
 								{
 									"name": "is_valid_phase_for_method",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", phase: \"send_request\" | ... 7 more ... | \"receive\"): boolean",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", phase: \"send_request\" | ... 7 more ... | \"receive\"): boolean",
 									"return_type": "boolean",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 										},
 										{
 											"name": "phase",
@@ -63234,7 +64071,8 @@
 						"spaces.svelte.ts",
 						"threads.svelte.ts",
 						"time.svelte.ts",
-						"ui.svelte.ts"
+						"ui.svelte.ts",
+						"workspaces.svelte.ts"
 					],
 					"dependents": [
 						"ActionContextmenu.svelte",
@@ -63784,88 +64622,94 @@
 							"type_signature": "\"⌨\""
 						},
 						{
-							"name": "GLYPH_IDEA",
+							"name": "GLYPH_WORKSPACE",
 							"kind": "variable",
 							"source_line": 84,
+							"type_signature": "\"⊞\""
+						},
+						{
+							"name": "GLYPH_IDEA",
+							"kind": "variable",
+							"source_line": 85,
 							"type_signature": "\"⌆\""
 						},
 						{
 							"name": "GLYPH_PING",
 							"kind": "variable",
-							"source_line": 86,
+							"source_line": 87,
 							"type_signature": "\"⥀\""
 						},
 						{
 							"name": "GLYPH_HEARTBEAT",
 							"kind": "variable",
-							"source_line": 87,
+							"source_line": 88,
 							"type_signature": "\"∽\""
 						},
 						{
 							"name": "GLYPH_RESPONSE",
 							"kind": "variable",
-							"source_line": 88,
+							"source_line": 89,
 							"type_signature": "\"⮑\""
 						},
 						{
 							"name": "GLYPH_SESSION",
 							"kind": "variable",
-							"source_line": 89,
+							"source_line": 90,
 							"type_signature": "\"⏣\""
 						},
 						{
 							"name": "GLYPH_ACTION_TYPE_LOCAL_CALL",
 							"kind": "variable",
-							"source_line": 91,
+							"source_line": 92,
 							"type_signature": "\"⤳\""
 						},
 						{
 							"name": "GLYPH_ACTION_TYPE_REMOTE_NOTIFICATION",
 							"kind": "variable",
-							"source_line": 92,
+							"source_line": 93,
 							"type_signature": "\"⥙\""
 						},
 						{
 							"name": "GLYPH_ACTION_TYPE_REQUEST_RESPONSE",
 							"kind": "variable",
-							"source_line": 93,
+							"source_line": 94,
 							"type_signature": "\"⥮\""
 						},
 						{
 							"name": "GLYPH_EXTERNAL_LINK",
 							"kind": "variable",
-							"source_line": 95,
+							"source_line": 96,
 							"type_signature": "\"🡵\""
 						},
 						{
 							"name": "GLYPH_ARROW_RIGHT",
 							"kind": "variable",
-							"source_line": 97,
+							"source_line": 98,
 							"type_signature": "\"→\""
 						},
 						{
 							"name": "GLYPH_ARROW_LEFT",
 							"kind": "variable",
-							"source_line": 98,
+							"source_line": 99,
 							"type_signature": "\"←\""
 						},
 						{
 							"name": "get_glyph_for_action_method",
 							"kind": "function",
-							"source_line": 100,
-							"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"): string",
+							"source_line": 101,
+							"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"): string",
 							"return_type": "string",
 							"parameters": [
 								{
 									"name": "method",
-									"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+									"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 								}
 							]
 						},
 						{
 							"name": "get_glyph_for_action_kind",
 							"kind": "function",
-							"source_line": 117,
+							"source_line": 118,
 							"type_signature": "(kind: \"request_response\" | \"remote_notification\" | \"local_call\"): string",
 							"return_type": "string",
 							"parameters": [
@@ -64319,7 +65163,8 @@
 						"parts.svelte.ts",
 						"prompts.svelte.ts",
 						"spaces.svelte.ts",
-						"threads.svelte.ts"
+						"threads.svelte.ts",
+						"workspaces.svelte.ts"
 					]
 				},
 				{
@@ -64816,7 +65661,8 @@
 						"prompts.svelte.ts",
 						"spaces.svelte.ts",
 						"thread.svelte.ts",
-						"threads.svelte.ts"
+						"threads.svelte.ts",
+						"workspaces.svelte.ts"
 					]
 				},
 				{
@@ -66225,7 +67071,7 @@
 						{
 							"name": "NavLinkItem",
 							"kind": "type",
-							"source_line": 20,
+							"source_line": 21,
 							"type_signature": "NavLinkItem",
 							"properties": [
 								{
@@ -66248,7 +67094,7 @@
 						{
 							"name": "NavItem",
 							"kind": "type",
-							"source_line": 27,
+							"source_line": 28,
 							"type_signature": "NavItem",
 							"properties": [
 								{
@@ -66266,7 +67112,7 @@
 						{
 							"name": "to_nav_link_href",
 							"kind": "function",
-							"source_line": 37,
+							"source_line": 38,
 							"type_signature": "(app: Frontend, label: string, href: string): string",
 							"return_type": "string",
 							"parameters": [
@@ -66287,7 +67133,7 @@
 						{
 							"name": "main_nav_items_default",
 							"kind": "variable",
-							"source_line": 55,
+							"source_line": 56,
 							"type_signature": "NavItem[]"
 						}
 					],
@@ -70451,12 +71297,12 @@
 									"name": "get_action_spec",
 									"kind": "function",
 									"doc_comment": "Get an action specification by method name.",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"): { ...; } | ... 2 more ... | undefined",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
 									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ...",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 										}
 									]
 								},
@@ -70727,6 +71573,26 @@
 									"name": "terminal_close",
 									"kind": "variable",
 									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['terminal_close'] | Promise<ActionOutputs['terminal_close']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_open",
+									"kind": "variable",
+									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['workspace_open'] | Promise<ActionOutputs['workspace_open']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_close",
+									"kind": "variable",
+									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['workspace_close'] | Promise<ActionOutputs['workspace_close']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_list",
+									"kind": "variable",
+									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['workspace_list'] | Promise<ActionOutputs['workspace_list']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "workspace_changed",
+									"kind": "variable",
+									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'workspace_changed', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
 								}
 							]
 						}
@@ -70738,7 +71604,7 @@
 						{
 							"name": "BackendActionsApi",
 							"kind": "type",
-							"source_line": 27,
+							"source_line": 28,
 							"type_signature": "BackendActionsApi",
 							"properties": [
 								{
@@ -70760,13 +71626,18 @@
 									"name": "terminal_data",
 									"kind": "variable",
 									"type_signature": "(input: ActionInputs['terminal_data']) => Promise<void>"
+								},
+								{
+									"name": "workspace_changed",
+									"kind": "variable",
+									"type_signature": "(input: ActionInputs['workspace_changed']) => Promise<void>"
 								}
 							]
 						},
 						{
 							"name": "create_backend_actions_api",
 							"kind": "function",
-							"source_line": 34,
+							"source_line": 36,
 							"type_signature": "(backend: Backend): BackendActionsApi",
 							"return_type": "BackendActionsApi",
 							"parameters": [
@@ -70780,7 +71651,7 @@
 							"name": "handle_filer_change",
 							"kind": "function",
 							"doc_comment": "Handle file system changes and notify clients.",
-							"source_line": 175,
+							"source_line": 211,
 							"type_signature": "(change: WatcherChange, disknode: Disknode, backend: Backend, dir: string, filer: Filer): void",
 							"return_type": "void",
 							"parameters": [
@@ -71845,14 +72716,14 @@
 							"name": "FilerChangeHandler",
 							"kind": "type",
 							"doc_comment": "Function type for handling file system changes.",
-							"source_line": 37,
+							"source_line": 40,
 							"type_signature": "FilerChangeHandler"
 						},
 						{
 							"name": "FilerInstance",
 							"kind": "type",
 							"doc_comment": "Structure to hold a Filer and its cleanup function.",
-							"source_line": 48,
+							"source_line": 51,
 							"type_signature": "FilerInstance",
 							"properties": [
 								{
@@ -71870,7 +72741,7 @@
 						{
 							"name": "BackendOptions",
 							"kind": "type",
-							"source_line": 53,
+							"source_line": 56,
 							"type_signature": "BackendOptions",
 							"properties": [
 								{
@@ -71921,7 +72792,7 @@
 							"name": "Backend",
 							"kind": "class",
 							"doc_comment": "Server for managing the Zzz application state and handling client messages.",
-							"source_line": 88,
+							"source_line": 91,
 							"extends": [],
 							"implements": ["ActionEventEnvironment"],
 							"members": [
@@ -72016,12 +72887,12 @@
 								{
 									"name": "lookup_action_handler",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\", phase: \"send_request\" | ... 7 more ... | \"receive\"): ((event: any) => any) | undefined",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\", phase: \"send_request\" | ... 7 more ... | \"receive\"): ((event: any) => any) | undefined",
 									"return_type": "((event: any) => any) | undefined",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 										},
 										{
 											"name": "phase",
@@ -72032,12 +72903,12 @@
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\"): { ...; } | ... 2 more ... | undefined",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
 									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ...",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 15 more ... | \"terminal_close\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 19 more ... | \"workspace_changed\""
 										}
 									]
 								},
@@ -72085,12 +72956,70 @@
 											"type": "BackendProvider<unknown>"
 										}
 									]
+								},
+								{
+									"name": "workspaces",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"doc_comment": "Tracks open workspaces by path.",
+									"type_signature": "Map<string, WorkspaceInfoJson>"
+								},
+								{
+									"name": "workspace_open",
+									"kind": "function",
+									"doc_comment": "Open a workspace directory — adds to ScopedFs, starts a Filer, and persists.",
+									"type_signature": "(path: string, opened_at?: string | undefined): Promise<{ workspace: { path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; name: string; opened_at: string; }; files: { ...; }[]; }>",
+									"return_type": "Promise<{ workspace: { path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; name: string; opened_at: string; }; files: { id: string & $brand<\"DiskfilePath\">; ... 5 more ...; dependencies: [...][]; }[]; }>",
+									"return_description": "the workspace info and initial file tree",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string",
+											"description": "absolute directory path"
+										},
+										{
+											"name": "opened_at",
+											"type": "string | undefined",
+											"optional": true,
+											"description": "optional timestamp to preserve (e.g. from persisted state)"
+										}
+									]
+								},
+								{
+									"name": "workspace_close",
+									"kind": "function",
+									"doc_comment": "Close a workspace directory — stops Filer, removes from ScopedFs, and persists.\nPreserves Filers and ScopedFs entries for initial scoped_dirs.",
+									"type_signature": "(path: string): Promise<boolean>",
+									"return_type": "Promise<boolean>",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string"
+										}
+									]
+								},
+								{
+									"name": "workspaces_ready",
+									"kind": "function",
+									"doc_comment": "Wait for persisted workspaces to finish restoring.\nCall before returning workspace data to clients.",
+									"type_signature": "(): Promise<void>",
+									"return_type": "Promise<void>",
+									"parameters": []
+								},
+								{
+									"name": "workspace_list",
+									"kind": "function",
+									"doc_comment": "List all open workspaces.",
+									"type_signature": "(): { path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; name: string; opened_at: string; }[]",
+									"return_type": "{ path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; name: string; opened_at: string; }[]",
+									"parameters": []
 								}
 							]
 						}
 					],
 					"dependencies": [
 						"action_peer.ts",
+						"diskfile_helpers.ts",
 						"diskfile_types.ts",
 						"jsonrpc_errors.ts",
 						"server/backend_actions_api.ts",
@@ -72106,13 +73035,13 @@
 							"name": "CreateZzzAppOptions",
 							"kind": "type",
 							"doc_comment": "Options for creating a zzz app.",
-							"source_line": 34,
+							"source_line": 35,
 							"type_signature": "CreateZzzAppOptions",
 							"properties": [
 								{
 									"name": "env",
 									"kind": "variable",
-									"type_signature": "ZzzServerEnv",
+									"type_signature": "ZzzServerConfig",
 									"doc_comment": "Server environment configuration."
 								}
 							]
@@ -72121,7 +73050,7 @@
 							"name": "ZzzApp",
 							"kind": "type",
 							"doc_comment": "The created zzz app and its backend.",
-							"source_line": 42,
+							"source_line": 43,
 							"type_signature": "ZzzApp",
 							"properties": [
 								{
@@ -72142,7 +73071,7 @@
 							"name": "create_zzz_app",
 							"kind": "function",
 							"doc_comment": "Create the zzz Hono app with Backend, providers, and endpoints.\n\nThis is the shared factory called by the server entry point.",
-							"source_line": 54,
+							"source_line": 55,
 							"type_signature": "(options: CreateZzzAppOptions): ZzzApp",
 							"return_type": "ZzzApp",
 							"parameters": [
@@ -72165,7 +73094,8 @@
 						"server/backend_provider_gemini.ts",
 						"server/backend_provider_ollama.ts",
 						"server/register_http_actions.ts",
-						"server/register_websocket_actions.ts"
+						"server/register_websocket_actions.ts",
+						"server/security.ts"
 					],
 					"dependents": ["server/server.ts"]
 				},
@@ -72600,14 +73530,8 @@
 							"name": "ScopedFs",
 							"kind": "class",
 							"doc_comment": "Provides a secure wrapper around filesystem operations to prevent path traversal attacks and\nunauthorized file access.\n\nSecurity features:\n- Restricts operations to specified allowed paths\n- Prevents path traversal attacks by normalizing all paths\n- Blocks access to symlinks to avoid arbitrary file access\n- Requires absolute paths to avoid relative path confusion\n- Validates the entire path hierarchy for each operation\n\n`ScopedFs` should be used whenever performing filesystem operations on\nuser-provided or untrusted input paths to ensure proper access boundaries.",
-							"source_line": 35,
+							"source_line": 36,
 							"members": [
-								{
-									"name": "allowed_paths",
-									"kind": "variable",
-									"modifiers": ["readonly"],
-									"type_signature": "ReadonlyArray<ScopedFsPath>"
-								},
 								{
 									"name": "constructor",
 									"kind": "constructor",
@@ -72618,6 +73542,51 @@
 											"name": "allowed_paths",
 											"type": "readonly string[] | string[]",
 											"description": "array of absolute paths that operations will be restricted to"
+										}
+									]
+								},
+								{
+									"name": "add_path",
+									"kind": "function",
+									"doc_comment": "Add a path to the allowed set. No-op if already present.",
+									"type_signature": "(path: string): boolean",
+									"return_type": "boolean",
+									"return_description": "true if the path was added, false if already allowed",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string",
+											"description": "absolute directory path to allow"
+										}
+									]
+								},
+								{
+									"name": "remove_path",
+									"kind": "function",
+									"doc_comment": "Remove a path from the allowed set.",
+									"type_signature": "(path: string): boolean",
+									"return_type": "boolean",
+									"return_description": "true if the path was removed, false if not found",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string",
+											"description": "absolute directory path to remove"
+										}
+									]
+								},
+								{
+									"name": "has_path",
+									"kind": "function",
+									"doc_comment": "Check if a directory path is in the allowed set.",
+									"type_signature": "(path: string): boolean",
+									"return_type": "boolean",
+									"return_description": "true if the path is an allowed root",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string",
+											"description": "absolute directory path to check"
 										}
 									]
 								},
@@ -72722,12 +73691,12 @@
 								{
 									"name": "readdir",
 									"kind": "function",
-									"type_signature": "(path: PathLike, options?: BufferEncoding | (ObjectEncodingOptions & { withFileTypes?: false | undefined; recursive?: boolean | undefined; }) | null | undefined): Promise<...>",
+									"type_signature": "(path: string, options?: BufferEncoding | (ObjectEncodingOptions & { withFileTypes?: false | undefined; recursive?: boolean | undefined; }) | null | undefined): Promise<...>",
 									"return_type": "Promise<string[]>",
 									"parameters": [
 										{
 											"name": "path",
-											"type": "PathLike"
+											"type": "string"
 										},
 										{
 											"name": "options",
@@ -72739,12 +73708,12 @@
 								{
 									"name": "readdir",
 									"kind": "function",
-									"type_signature": "(path: PathLike, options?: BufferEncoding | (ObjectEncodingOptions & { withFileTypes?: false | undefined; recursive?: boolean | undefined; }) | null | undefined): Promise<...>",
+									"type_signature": "(path: string, options?: BufferEncoding | (ObjectEncodingOptions & { withFileTypes?: false | undefined; recursive?: boolean | undefined; }) | null | undefined): Promise<...>",
 									"return_type": "Promise<string[]>",
 									"parameters": [
 										{
 											"name": "path",
-											"type": "PathLike"
+											"type": "string"
 										},
 										{
 											"name": "options",
@@ -72756,12 +73725,12 @@
 								{
 									"name": "readdir",
 									"kind": "function",
-									"type_signature": "(path: PathLike, options?: BufferEncoding | (ObjectEncodingOptions & { withFileTypes?: false | undefined; recursive?: boolean | undefined; }) | null | undefined): Promise<...>",
+									"type_signature": "(path: string, options?: BufferEncoding | (ObjectEncodingOptions & { withFileTypes?: false | undefined; recursive?: boolean | undefined; }) | null | undefined): Promise<...>",
 									"return_type": "Promise<string[]>",
 									"parameters": [
 										{
 											"name": "path",
-											"type": "PathLike"
+											"type": "string"
 										},
 										{
 											"name": "options",
@@ -72860,7 +73829,7 @@
 							"name": "PathNotAllowedError",
 							"kind": "class",
 							"doc_comment": "Error thrown when a path is not allowed",
-							"source_line": 241,
+							"source_line": 286,
 							"extends": ["Error"],
 							"implements": [],
 							"members": [
@@ -72890,7 +73859,7 @@
 							"name": "SymlinkNotAllowedError",
 							"kind": "class",
 							"doc_comment": "Error thrown when a path is a symlink",
-							"source_line": 252,
+							"source_line": 297,
 							"extends": ["Error"],
 							"implements": [],
 							"members": [
@@ -72920,14 +73889,106 @@
 					"dependents": ["server/backend.ts", "server/helpers.ts"]
 				},
 				{
+					"path": "server/security.ts",
+					"declarations": [
+						{
+							"name": "LOCAL_HOSTNAMES",
+							"kind": "variable",
+							"doc_comment": "Default set of hostnames considered safe for local-only binding.\nIncludes all common ways to address localhost.",
+							"source_line": 16,
+							"type_signature": "ReadonlySet<string>"
+						},
+						{
+							"name": "OPEN_HOST_ADDRESSES",
+							"kind": "variable",
+							"doc_comment": "Addresses that bind to all network interfaces.\nThese are dangerous without authentication because they expose the daemon to the LAN.",
+							"source_line": 27,
+							"type_signature": "ReadonlySet<string>"
+						},
+						{
+							"name": "is_open_host",
+							"kind": "function",
+							"doc_comment": "Check whether a bind address is a wildcard that exposes to the network.",
+							"source_line": 35,
+							"type_signature": "(host: string): boolean",
+							"return_type": "boolean",
+							"return_description": "true if the host binds to all interfaces",
+							"parameters": [
+								{
+									"name": "host",
+									"type": "string",
+									"description": "the bind address to check"
+								}
+							]
+						},
+						{
+							"name": "extract_hostname",
+							"kind": "function",
+							"doc_comment": "Extract the hostname portion from a Host header value.\nHandles IPv6 brackets: `[::1]:3000` → `[::1]`\nHandles regular: `localhost:3000` → `localhost`",
+							"source_line": 45,
+							"type_signature": "(host: string): string",
+							"return_type": "string",
+							"return_description": "the hostname without port",
+							"parameters": [
+								{
+									"name": "host",
+									"type": "string",
+									"description": "the raw Host header value"
+								}
+							]
+						},
+						{
+							"name": "build_allowed_hostnames",
+							"kind": "function",
+							"doc_comment": "Build the set of allowed hostnames for Host header validation\nbased on the server's bind address.\n\nWhen binding to `localhost` or `127.0.0.1`, both are allowed\n(they refer to the same interface). When binding to `0.0.0.0`,\nall local hostnames are allowed since we can't know which\ninterface the request arrived on.",
+							"source_line": 82,
+							"type_signature": "(bind_host: string): Set<string>",
+							"return_type": "Set<string>",
+							"return_description": "set of hostnames to accept in the Host header",
+							"parameters": [
+								{
+									"name": "bind_host",
+									"type": "string",
+									"description": "the address the server is binding to"
+								}
+							]
+						},
+						{
+							"name": "create_host_validation_middleware",
+							"kind": "function",
+							"doc_comment": "Create middleware that validates the Host header against an allowlist.\n\nBlocks requests whose Host header hostname doesn't match any allowed value.\nThe port portion of the Host header is stripped before comparison.\nRequests without a Host header are allowed through (non-browser clients like curl or CLI).",
+							"source_line": 120,
+							"type_signature": "(allowed_hostnames: Set<string>): Handler",
+							"return_type": "Handler",
+							"return_description": "Hono middleware handler",
+							"parameters": [
+								{
+									"name": "allowed_hostnames",
+									"type": "Set<string>",
+									"description": "set of allowed hostnames (without port)"
+								}
+							]
+						}
+					],
+					"module_comment": "Host header validation middleware for DNS rebinding defense-in-depth.\n\nValidates that the Host header matches expected local hostnames.\nRequests without a Host header are allowed (HTTP/1.0, CLI tools).",
+					"dependents": ["server/create_zzz_app.ts", "server/server.ts"]
+				},
+				{
 					"path": "server/server_env.ts",
 					"declarations": [
 						{
 							"name": "ZzzServerEnv",
 							"kind": "type",
-							"doc_comment": "Server environment values needed to create a zzz app.",
-							"source_line": 13,
-							"type_signature": "ZzzServerEnv",
+							"doc_comment": "Zod schema for zzz server environment variables.\n\nField names match the env var keys — `load_env` reads each key from the schema shape.\nDefaults are set so the daemon starts with zero configuration.",
+							"source_line": 19,
+							"type_signature": "ZodObject<{ PUBLIC_ZZZ_DIR: ZodDefault<ZodString>; PUBLIC_ZZZ_SCOPED_DIRS: ZodDefault<ZodString>; PUBLIC_SERVER_PROXIED_PORT: ZodDefault<ZodCoercedNumber<unknown>>; ... 5 more ...; SECRET_GOOGLE_API_KEY: ZodOptional<...>; }, $strict>"
+						},
+						{
+							"name": "ZzzServerConfig",
+							"kind": "type",
+							"doc_comment": "Parsed server env with derived values ready for use.\n\nSeparates raw env loading from the derived shapes callers need\n(e.g., `scoped_dirs` as an array, `port` as a number).",
+							"source_line": 62,
+							"type_signature": "ZzzServerConfig",
 							"properties": [
 								{
 									"name": "zzz_dir",
@@ -73006,26 +74067,26 @@
 						{
 							"name": "load_server_env",
 							"kind": "function",
-							"doc_comment": "Load server env from a generic env reader function.\n\nWorks with `process.env`, `Deno.env.get`, or any `(key) => string | undefined`.\nDefaults can override missing env values.",
-							"source_line": 49,
-							"type_signature": "(env_get: (key: string) => string | undefined, defaults?: Partial<ZzzServerEnv> | undefined): ZzzServerEnv",
-							"return_type": "ZzzServerEnv",
+							"doc_comment": "Load and validate server env, then derive the config callers need.\n\nUses `load_env` from fuz_app for Zod-validated loading.\nThe `overrides` parameter lets CLI flags and startup defaults\ntake precedence over env vars.",
+							"source_line": 112,
+							"type_signature": "(get_env: (key: string) => string | undefined, overrides?: Partial<ZzzServerConfig> | undefined): ZzzServerConfig",
+							"return_type": "ZzzServerConfig",
 							"parameters": [
 								{
-									"name": "env_get",
+									"name": "get_env",
 									"type": "(key: string) => string | undefined",
 									"description": "function to read environment variables"
 								},
 								{
-									"name": "defaults",
-									"type": "Partial<ZzzServerEnv> | undefined",
+									"name": "overrides",
+									"type": "Partial<ZzzServerConfig> | undefined",
 									"optional": true,
-									"description": "override defaults for any field"
+									"description": "values that take precedence over env vars"
 								}
 							]
 						}
 					],
-					"module_comment": "Server environment configuration.\n\nEnv loading for the zzz Deno server. Reads from `Deno.env.get` with\nconfigurable defaults, replacing `$env/static/*` imports.",
+					"module_comment": "Server environment configuration.\n\nZod schema for the zzz Deno server env. Uses `load_env` from fuz_app\nfor schema-validated loading with clear error messages.",
 					"dependents": ["server/server.ts"]
 				},
 				{
@@ -73057,14 +74118,19 @@
 							"name": "start_server",
 							"kind": "function",
 							"doc_comment": "Start the zzz server using Deno runtime.\n\nCreates the full backend with providers, WebSocket, and HTTP RPC\nendpoints via `create_zzz_app`, then serves with `Deno.serve`.",
-							"source_line": 32,
+							"source_line": 34,
 							"type_signature": "(): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": []
 						}
 					],
 					"module_comment": "Deno server entry point for zzz.\n\nSingle entry point for both dev mode (`gro dev` via `gro_plugin_deno_server`)\nand production (`zzz daemon start`). Uses the shared `create_zzz_app` factory\nfor the Hono app, then binds with `Deno.serve` and handles daemon lifecycle.",
-					"dependencies": ["server/create_zzz_app.ts", "server/server_env.ts", "zzz/build_info.ts"],
+					"dependencies": [
+						"server/create_zzz_app.ts",
+						"server/security.ts",
+						"server/server_env.ts",
+						"zzz/build_info.ts"
+					],
 					"dependents": ["zzz/commands/daemon.ts"]
 				},
 				{
@@ -73704,19 +74770,19 @@
 						{
 							"name": "SpaceJson",
 							"kind": "type",
-							"source_line": 6,
+							"source_line": 7,
 							"type_signature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; name: ZodDefault<...>; directory_paths: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "SpaceJsonInput",
 							"kind": "type",
-							"source_line": 11,
+							"source_line": 12,
 							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; name?: string | undefined; directory_paths?: string[] | undefined; }"
 						},
 						{
 							"name": "SpaceOptions",
 							"kind": "type",
-							"source_line": 13,
+							"source_line": 14,
 							"type_signature": "SpaceOptions",
 							"extends": ["CellOptions<typeof SpaceJson>"],
 							"properties": []
@@ -73724,7 +74790,7 @@
 						{
 							"name": "Space",
 							"kind": "class",
-							"source_line": 15,
+							"source_line": 16,
 							"extends": ["Cell<typeof SpaceJson>"],
 							"implements": [],
 							"members": [
@@ -73736,13 +74802,20 @@
 								{
 									"name": "directory_paths",
 									"kind": "variable",
-									"type_signature": "Array<string>"
+									"type_signature": "Array<DiskfileDirectoryPath>"
 								},
 								{
 									"name": "directory_count",
 									"kind": "variable",
 									"modifiers": ["readonly"],
 									"type_signature": "number"
+								},
+								{
+									"name": "active_directory_paths",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"doc_comment": "Directory paths filtered to only include those backed by an open workspace.\nStale entries (from closed workspaces) are excluded.",
+									"type_signature": "Array<DiskfileDirectoryPath>"
 								},
 								{
 									"name": "constructor",
@@ -73758,31 +74831,31 @@
 								{
 									"name": "add_directory",
 									"kind": "function",
-									"type_signature": "(path: string): void",
+									"type_signature": "(path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "path",
-											"type": "string"
+											"type": "string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">"
 										}
 									]
 								},
 								{
 									"name": "remove_directory",
 									"kind": "function",
-									"type_signature": "(path: string): void",
+									"type_signature": "(path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "path",
-											"type": "string"
+											"type": "string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">"
 										}
 									]
 								}
 							]
 						}
 					],
-					"dependencies": ["cell.svelte.ts", "cell_types.ts"],
+					"dependencies": ["cell.svelte.ts", "cell_types.ts", "diskfile_types.ts"],
 					"dependents": ["cell_classes.ts", "spaces.svelte.ts"]
 				},
 				{
@@ -75836,6 +76909,197 @@
 					"dependencies": ["zod_helpers.ts"]
 				},
 				{
+					"path": "workspace.svelte.ts",
+					"declarations": [
+						{
+							"name": "WorkspaceInfoJson",
+							"kind": "type",
+							"doc_comment": "The wire format for workspace info shared between frontend and backend.\nUsed in action spec inputs/outputs and for JSON persistence.",
+							"source_line": 16,
+							"type_signature": "ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<ZodString, \"DiskfilePath\", \"out\">>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodString; }, $strict>"
+						},
+						{
+							"name": "WorkspaceJson",
+							"kind": "type",
+							"source_line": 26,
+							"type_signature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; path: $ZodBranded<...>; name: ZodDefault<...>; opened_at: ZodDefault<...>; }, $strict>"
+						},
+						{
+							"name": "WorkspaceJsonInput",
+							"kind": "type",
+							"source_line": 32,
+							"type_signature": "{ path: string; id?: string | undefined; created?: string | undefined; updated?: string | undefined; name?: string | undefined; opened_at?: string | undefined; }"
+						},
+						{
+							"name": "WorkspaceOptions",
+							"kind": "type",
+							"source_line": 34,
+							"type_signature": "WorkspaceOptions",
+							"extends": ["CellOptions<typeof WorkspaceJson>"],
+							"properties": []
+						},
+						{
+							"name": "Workspace",
+							"kind": "class",
+							"doc_comment": "A workspace represents an open directory that zzz is watching and serving.\n\nWorkspaces are the primary unit of file access — each workspace registers\nits directory with ScopedFs and starts a Filer for file watching.",
+							"source_line": 42,
+							"extends": ["Cell<typeof WorkspaceJson>"],
+							"implements": [],
+							"members": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "DiskfileDirectoryPath"
+								},
+								{
+									"name": "name",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "opened_at",
+									"kind": "variable",
+									"type_signature": "Datetime"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(options: WorkspaceOptions): Workspace",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "WorkspaceOptions"
+										}
+									]
+								}
+							]
+						}
+					],
+					"dependencies": ["cell.svelte.ts", "cell_types.ts", "diskfile_types.ts"],
+					"dependents": ["action_specs.ts", "cell_classes.ts", "workspaces.svelte.ts"]
+				},
+				{
+					"path": "workspaces.svelte.ts",
+					"declarations": [
+						{
+							"name": "WorkspacesJson",
+							"kind": "type",
+							"source_line": 16,
+							"type_signature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; items: ZodDefault<...>; active_id: ZodDefault<...>; }, $strict>"
+						},
+						{
+							"name": "WorkspacesJsonInput",
+							"kind": "type",
+							"source_line": 21,
+							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { path: string; id?: string | undefined; created?: string | undefined; updated?: string | undefined; name?: string | undefined; opened_at?: string | undefined; }[] | undefined; active_id?: string | ... 1 more ... | undefin..."
+						},
+						{
+							"name": "WorkspacesOptions",
+							"kind": "type",
+							"source_line": 23,
+							"type_signature": "WorkspacesOptions",
+							"extends": ["CellOptions<typeof WorkspacesJson>"],
+							"properties": []
+						},
+						{
+							"name": "Workspaces",
+							"kind": "class",
+							"doc_comment": "Collection of open workspaces.\n\nManages the set of directories the daemon is watching and serving.\nEach workspace has a unique path used as the index key.",
+							"source_line": 31,
+							"extends": ["Cell<typeof WorkspacesJson>"],
+							"implements": [],
+							"members": [
+								{
+									"name": "items",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "IndexedCollection<Workspace>"
+								},
+								{
+									"name": "active_id",
+									"kind": "variable",
+									"type_signature": "Uuid | null"
+								},
+								{
+									"name": "active",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Workspace | undefined"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(options: WorkspacesOptions): Workspaces",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "WorkspacesOptions"
+										}
+									]
+								},
+								{
+									"name": "add",
+									"kind": "function",
+									"doc_comment": "Add a workspace. If a workspace with the same path already exists, returns it.",
+									"type_signature": "(json: { path: string; id?: string | undefined; created?: string | undefined; updated?: string | undefined; name?: string | undefined; opened_at?: string | undefined; }): Workspace",
+									"return_type": "Workspace",
+									"parameters": [
+										{
+											"name": "json",
+											"type": "{ path: string; id?: string | undefined; created?: string | undefined; updated?: string | undefined; name?: string | undefined; opened_at?: string | undefined; }"
+										}
+									]
+								},
+								{
+									"name": "remove",
+									"kind": "function",
+									"type_signature": "(id: string & $brand<\"Uuid\">): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "id",
+											"type": "string & $brand<\"Uuid\">"
+										}
+									]
+								},
+								{
+									"name": "get_by_path",
+									"kind": "function",
+									"type_signature": "(path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">): Workspace | undefined",
+									"return_type": "Workspace | undefined",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">"
+										}
+									]
+								},
+								{
+									"name": "activate",
+									"kind": "function",
+									"type_signature": "(id: string & $brand<\"Uuid\">): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "id",
+											"type": "string & $brand<\"Uuid\">"
+										}
+									]
+								}
+							]
+						}
+					],
+					"dependencies": [
+						"cell.svelte.ts",
+						"cell_helpers.ts",
+						"cell_types.ts",
+						"indexed_collection.svelte.ts",
+						"indexed_collection_helpers.svelte.ts",
+						"workspace.svelte.ts"
+					],
+					"dependents": ["cell_classes.ts", "frontend.svelte.ts"]
+				},
+				{
 					"path": "xml.ts",
 					"declarations": [
 						{
@@ -76256,13 +77520,13 @@
 							"kind": "function",
 							"doc_comment": "Load CLI configuration from ~/.zzz/config.json.",
 							"source_line": 65,
-							"type_signature": "(runtime: Pick<EnvDeps, \"env_get\"> & FsReadDeps): Promise<{ zzz_config_port: number; } | null>",
+							"type_signature": "(runtime: Pick<EnvDeps, \"env_get\"> & FsReadDeps & LogDeps): Promise<{ zzz_config_port: number; } | null>",
 							"return_type": "Promise<{ zzz_config_port: number; } | null>",
 							"return_description": "parsed config, or null if file doesn't exist or is invalid",
 							"parameters": [
 								{
 									"name": "runtime",
-									"type": "Pick<EnvDeps, \"env_get\"> & FsReadDeps",
+									"type": "Pick<EnvDeps, \"env_get\"> & FsReadDeps & LogDeps",
 									"description": "runtime with file read capability"
 								}
 							]
@@ -76579,7 +77843,7 @@
 							"name": "daemon_start",
 							"kind": "function",
 							"doc_comment": "Start the daemon in foreground mode.\n\nCLI flags --port and --host override config values.",
-							"source_line": 31,
+							"source_line": 32,
 							"type_signature": "(runtime: RuntimeDeps, args: { _: string[]; port?: number | undefined; host?: string | undefined; }, _flags: { help: boolean; version: boolean; }): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -76683,7 +77947,7 @@
 							"name": "open",
 							"kind": "function",
 							"doc_comment": "Open the zzz UI in a browser, auto-starting the daemon if needed.",
-							"source_line": 87,
+							"source_line": 98,
 							"type_signature": "(runtime: RuntimeDeps, args: { _: string[]; }, _flags: { help: boolean; version: boolean; }): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -76713,7 +77977,7 @@
 							"name": "status",
 							"kind": "function",
 							"doc_comment": "Show current system state.",
-							"source_line": 19,
+							"source_line": 24,
 							"type_signature": "(runtime: RuntimeDeps, args: { _: string[]; json: boolean; }, _flags: { help: boolean; version: boolean; }): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -76741,13 +78005,13 @@
 						{
 							"name": "logger",
 							"kind": "variable",
-							"source_line": 9,
-							"type_signature": "any"
+							"source_line": 10,
+							"type_signature": "Logger"
 						},
 						{
 							"name": "log",
 							"kind": "variable",
-							"source_line": 11,
+							"source_line": 12,
 							"type_signature": "CliLogger"
 						}
 					],
@@ -76804,7 +78068,7 @@
 		"package_json": {
 			"name": "@fuzdev/blake3",
 			"description": "BLAKE3 hashing compiled to WASM",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"private": true,
 			"type": "module",
 			"devDependencies": {
@@ -76814,7 +78078,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/blake3",
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"modules": []
 		}
 	}
