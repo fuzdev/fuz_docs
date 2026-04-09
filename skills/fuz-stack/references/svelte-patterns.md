@@ -46,7 +46,7 @@ non-zero). Use `$state.raw()` unless you have a specific reason not to.
 ```typescript
 // $state.raw() - the default for all types
 let name = $state.raw(''); // primitive — no difference in behavior
-let ollama_response = $state.raw<OllamaShowResponse | null>(null); // object replaced wholesale
+let api_response = $state.raw<ApiResponse | null>(null); // object replaced wholesale
 let selections: ReadonlyArray<Item> = $state.raw([]); // array replaced wholesale
 
 // $state() - opt-in for arrays/objects mutated in place

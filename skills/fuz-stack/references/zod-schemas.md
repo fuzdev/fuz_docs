@@ -23,21 +23,24 @@ defaults, metadata, CLI help text, and serialization.
 | Foundation | `@fuzdev/fuz_util/zod.ts` | Schema introspection — extract descriptions, defaults, aliases, types, properties; unwrap wrappers; check optional/nullable/default; format values for display |
 | Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | `Uuid`, `Datetime` branded types and factories; schema unwrapping; field extraction; validation error formatting |
 | CLI | `@fuzdev/fuz_app/cli/args.ts`, `help.ts` | Schema-validated CLI arg parsing; schema-driven help text generation |
-| HTTP | `@fuzdev/fuz_app/http/schema_helpers.ts` | `schema_to_surface()` exports JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces |
+| HTTP | `@fuzdev/fuz_app/http/schema_helpers.ts` | `schema_to_surface()` exports JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces; `instanceof` checks for schema type detection |
 | Testing | `@fuzdev/fuz_app/testing/schema_generators.ts` | Schema-driven test data generation — valid bodies, adversarial inputs |
 
 ## Core Conventions
 
 1. **`z.strictObject()`** — default for all object schemas, including inside
    `z.discriminatedUnion()` and `z.union()`. Rejects unknown keys.
-   **Exception**: external data (`z.looseObject()` or `z.object()` with
-   comment explaining why).
+   **Exceptions**: external data (`z.looseObject()` or `z.object()` with
+   comment explaining why); response/error schemas consumed by clients
+   (`z.looseObject()` — allows adding fields without breaking consumers).
 2. **PascalCase naming** — schema and inferred type share the same name.
 3. **`.meta({description: '...'})`** — not `.describe()`. `.meta()` supports
    additional keys (`aliases`, `sensitivity`).
 4. **`safeParse` at boundaries** — graceful errors for external input (HTTP
-   requests, API responses). `parse` for internal assertions, config loading,
-   CLI args, and factory functions where failure is fatal.
+   requests, API responses). `parse` for internal assertions, CLI args, and
+   factory functions where failure is fatal. `safeParse` + custom throw when
+   you need better error context than `parse` provides (e.g., env loading).
+   `safeParse` + return null for optional config files that may be absent.
 
 ### The Canonical Pattern
 
@@ -73,6 +76,11 @@ const PackageJson = z.looseObject({name: z.string(), version: z.string()});
 // z.object: parses external GitHub API responses
 const GithubPullRequest = z.object({number: z.number(), title: z.string()});
 
+// OK: z.looseObject for response/error schemas — clients tolerate additions
+// z.looseObject: error responses may carry extra context fields
+const ApiError = z.looseObject({error: z.string()});
+const TableListOutput = z.looseObject({tables: z.array(z.strictObject({name: z.string()}))});
+
 // WRONG: .describe() — works but not the convention
 const Bar = z.string().describe('a bar');
 
@@ -96,6 +104,10 @@ const Action = z.discriminatedUnion('type', [
 Schemas with `.default()` or `.transform()` have different input and output
 types. `z.infer<>` gives the output (post-parse) type. `z.input<>` gives the
 pre-parse type — what callers provide before defaults are applied.
+
+Export `z.input<>` when callers construct partial instances via `.parse()` —
+Cell instantiation, resource builders, config files. Skip it when the schema
+is only consumed internally (env loading, action spec `satisfies`).
 
 This is a **systematic pattern** in zzz and tx:
 
@@ -210,6 +222,18 @@ email: Email.nullish(),  // fuz_app invite creation
 // Different from .default() (missing field). For graceful degradation of
 // stored data that may have been written by an older schema version.
 before: PackageCurrent.nullable().catch(null),  // tx change schemas
+```
+
+## Field-Level Validation
+
+Use `.shape` to validate individual fields without parsing the whole object:
+
+```typescript
+// zzz — validate a single field value
+ProviderJson.shape.name.parse(value);
+
+// zzz/socket.svelte.ts — Cell field mutations via shape access
+SocketJson.shape.url.parse(new_url);
 ```
 
 ## Transform Pipelines
@@ -403,8 +427,8 @@ if (!result.success) {
 }
 c.set('validated_input', result.data);
 
-// zzz/ollama.svelte.ts — external API responses
-const parsed = OllamaListResponse.safeParse(response);
+// zzz — external API responses
+const parsed = ApiResponse.safeParse(response);
 ```
 
 Route specs declare input/output schemas for auto-generated validation
@@ -416,10 +440,29 @@ Use `parse` when invalid data means a bug or fatal misconfiguration:
 
 ```typescript
 RoleName.parse(name);                                    // internal assertion
-return TxOptions.parse(raw);                             // config loading
 const args = RunApplyArgs.parse(raw_args);               // CLI args
 return PackageResource.parse({type: 'package', ...config}); // factory function
 const parsed = this.schema.parse(v);                     // Cell field update
+```
+
+### safeParse with Custom Error Handling
+
+`safeParse` + custom throw gives better error context than bare `parse`.
+`safeParse` + return null handles optional data that may be absent or invalid:
+
+```typescript
+// fuz_app/env/load.ts — env loading: safeParse + custom error with raw values
+const result = schema.safeParse(raw);
+if (!result.success) {
+	throw new EnvValidationError(raw, result.error);
+}
+
+// fuz_app/cli/config.ts — optional config file: safeParse + return null
+const result = schema.safeParse(parsed);
+if (!result.success) {
+	runtime.warn(`Invalid config.json: ${result.error.message}`);
+	return null;
+}
 ```
 
 ### Formatting Errors
@@ -444,6 +487,7 @@ export const format_zod_validation_error = (error: z.ZodError): string =>
 |-----------|---------|-------|
 | Object schemas (internal) | `z.strictObject({...})` | `z.object({...})` |
 | Object schemas (external data) | `z.looseObject({...})` or `z.object({...})` with comment | `z.strictObject({...})` |
+| Response/error schemas | `z.looseObject({...})` — tolerates added fields | `z.strictObject({...})` |
 | Discriminated union members | `z.strictObject({type: z.literal('a'), ...})` | `z.object({type: z.literal('a'), ...})` |
 | Descriptions | `.meta({description: '...'})` | `.describe('...')` |
 | Schema naming | `const MyThing = z.strictObject(...)` | `const my_thing`, `const MyThingSchema` |
