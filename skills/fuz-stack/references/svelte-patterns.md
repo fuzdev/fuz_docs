@@ -54,13 +54,30 @@ let items = $state<string[]>([]); // needs push/splice reactivity
 items.push('new'); // triggers reactivity
 let form_data = $state({name: '', email: ''});
 form_data.name = 'Alice'; // triggers reactivity via proxy
+
+// $state() required for const objects with bind: or property writes
+const config = $state({iterations: 5, warmup: 2});
+// in template: bind:value={config.iterations} — writes a property, needs $state()
+// $state.raw() here would silently break — const prevents reassignment,
+// and raw doesn't track property writes, so nothing triggers reactivity
 ```
 
 **When to use `$state()`** (the exception, not the default):
 
 - Arrays mutated with `push`, `splice`, `pop`, `sort`, index assignment
 - Objects with individual property mutations that must trigger reactivity
-- Form state with field-level updates
+- `bind:value` or `bind:checked` on object properties (e.g., `bind:value={config.name}`)
+  — bindings write to individual properties, which requires deep proxy reactivity
+
+**Watch for `const` objects:** A `const` object declared with `$state.raw()` has
+no way to trigger reactivity — it can't be reassigned (it's `const`) and property
+mutations aren't tracked (it's `raw`). If the object's properties are mutated
+(directly or via `bind:`), use `$state()`.
+
+**Check consumer files, not just the declaring file.** A class field may be
+mutated in place by external code that accesses it — e.g., a component importing
+a state class and calling `thing.items.splice(i, 1)`. Grep the entire `src/`
+directory for mutation patterns on the field name before deciding.
 
 **Everything else uses `$state.raw()`:**
 

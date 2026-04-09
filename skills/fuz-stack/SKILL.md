@@ -374,11 +374,9 @@ file and directory references navigable:
 Each file assumes the reader is in the file's parent directory. For
 `~/dev/CLAUDE.md`, all project paths are `./project/` since `~/dev/` is the
 working directory. For `~/dev/grimoire/CLAUDE.md`, sibling grimoire files use
-`./lore/` and repo references use `../fuz_util/`.
-
-Deeply nested files (e.g. `lore/fuz_app/CLAUDE.md`) would need `../../../` to
-reach repos — use `~/dev/` for those cross-tree references where the relative
-path is unwieldy.
+`./lore/` and repo references use `../fuz_util/`. Deeply nested files use as
+many `../` segments as needed — `../../../fuz_app` is fine. Consistency
+(always relative) beats aesthetics.
 
 Note: in files rendered by mdz on a website (like this SKILL.md on fuz_docs),
 example paths must be backticked to prevent mdz from linkifying them. The bare

@@ -86,6 +86,33 @@ Key behaviors:
 - **Input styling**: Inputs, textareas, selects share consistent sizing and
   borders
 
+#### Semantic Elements for Content
+
+Use these elements to get styling for free instead of writing custom CSS:
+
+| Element        | Styling                                                              |
+| -------------- | -------------------------------------------------------------------- |
+| `<small>`      | `font-size: var(--font_size_sm)` — secondary text, metadata, labels  |
+| `<aside>`      | Left border, `--fg_10` background, padding — callouts, info boxes    |
+| `<blockquote>` | Left border (thick), padding — quotations, emphasis blocks           |
+| `<code>`       | Monospace font, subtle background, padding — inline code             |
+| `<summary>`    | Pointer cursor, hover/active backgrounds — expandable sections       |
+| `<kbd>`/`<samp>` | Monospace font — keyboard input, sample output                    |
+| `<abbr>`       | Dotted underline on titled abbreviations                             |
+
+**Prefer semantic HTML over custom CSS for text sizing.** Instead of
+`font-size: var(--font_size_sm)` in a style block, wrap the content in
+`<small>`. Combine with utility classes for color:
+
+```svelte
+<!-- Instead of custom CSS for secondary metadata -->
+<small class="text_50">{metadata}</small>
+<small class="text_70">{subtitle}</small>
+
+<!-- Instead of custom flex + font-size for a row of metadata -->
+<small class="row gap_sm">{items}</small>
+```
+
 ### `.unstyled` Class
 
 Opts out of opinionated styling (colors, borders, decorative properties) while

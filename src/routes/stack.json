@@ -86,9 +86,9 @@
 			"glyph": "🧶",
 			"homepage_url": "https://ui.fuz.dev/",
 			"published": true,
-			"module_count": 118,
-			"exported_module_count": 118,
-			"export_count": 413,
+			"module_count": 111,
+			"exported_module_count": 111,
+			"export_count": 390,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
@@ -101,7 +101,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.3.3",
+			"version": "0.4.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",

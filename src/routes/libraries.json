@@ -22119,7 +22119,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.5.1",
-				"svelte": "^5.55.2",
+				"svelte": "^5.55.0",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -25110,7 +25110,7 @@
 						}
 					],
 					"dependencies": ["DeclarationLink.svelte", "ModuleLink.svelte", "library.svelte.ts"],
-					"dependents": ["MdzNodeView.svelte", "MdzStreamNodeView.svelte"]
+					"dependents": ["MdzNodeView.svelte"]
 				},
 				{
 					"path": "DocsList.svelte",
@@ -26752,16 +26752,16 @@
 						{
 							"name": "mdz_components_context",
 							"kind": "variable",
-							"doc_comment": "Context for providing custom mdz components via a getter function.\nSet to a getter (e.g., `() => components`) so changes are reflected reactively.",
+							"doc_comment": "Context for providing custom mdz components.\nMust be set by the application using mdz.",
 							"source_line": 27,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => MdzComponents | undefined; get_maybe: () => (() => MdzComponents | undefined) | undefined; set: (value: () => MdzComponents | undefined) => () => MdzComponents | undefined; }"
+							"type_signature": "{ get: (error_message?: string | undefined) => MdzComponents; get_maybe: () => MdzComponents | undefined; set: (value: MdzComponents) => MdzComponents; }"
 						},
 						{
 							"name": "mdz_elements_context",
 							"kind": "variable",
-							"doc_comment": "Context for providing allowed HTML elements via a getter function.\nSet to a getter (e.g., `() => elements`) so changes are reflected reactively.\nBy default, no HTML elements are allowed.",
+							"doc_comment": "Context for providing allowed HTML elements.\nMust be set by the application using mdz.\nBy default, no HTML elements are allowed.",
 							"source_line": 34,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => MdzElements | undefined; get_maybe: () => (() => MdzElements | undefined) | undefined; set: (value: () => MdzElements | undefined) => () => MdzElements | undefined; }"
+							"type_signature": "{ get: (error_message?: string | undefined) => MdzElements; get_maybe: () => MdzElements | undefined; set: (value: MdzElements) => MdzElements; }"
 						},
 						{
 							"name": "mdz_base_context",
@@ -26772,13 +26772,7 @@
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
-					"dependents": [
-						"Mdz.svelte",
-						"MdzNodeView.svelte",
-						"MdzRoot.svelte",
-						"MdzStream.svelte",
-						"MdzStreamNodeView.svelte"
-					]
+					"dependents": ["Mdz.svelte", "MdzNodeView.svelte"]
 				},
 				{
 					"path": "mdz_helpers.ts",
@@ -27024,16 +27018,10 @@
 							"type_signature": "7"
 						},
 						{
-							"name": "H_LOWER",
-							"kind": "variable",
-							"source_line": 57,
-							"type_signature": "104"
-						},
-						{
 							"name": "is_letter",
 							"kind": "function",
 							"doc_comment": "Check if character code is a letter (A-Z, a-z).",
-							"source_line": 62,
+							"source_line": 61,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27047,7 +27035,7 @@
 							"name": "is_tag_name_char",
 							"kind": "function",
 							"doc_comment": "Check if character code is valid for tag name (letter, number, hyphen, underscore).",
-							"source_line": 68,
+							"source_line": 67,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27060,8 +27048,8 @@
 						{
 							"name": "is_word_char",
 							"kind": "function",
-							"doc_comment": "Check if character is part of a word for word boundary detection.\nUsed to prevent intraword emphasis with `_` and `~` delimiters.\n\nOnly alphanumeric characters (A-Z, a-z, 0-9) are word characters.\nFormatting delimiters (`*`, `_`, `~`) fall outside all three ranges,\nso they're naturally excluded without explicit checks.\n\nThis prevents false positives with snake_case identifiers while allowing\nadjacent formatting like `**bold**_italic_`.",
-							"source_line": 85,
+							"doc_comment": "Check if character is part of a word for word boundary detection.\nUsed to prevent intraword emphasis with `_` and `~` delimiters.\n\nFormatting delimiters (`*`, `_`, `~`) are NOT word characters - they're transparent.\nOnly alphanumeric characters (A-Z, a-z, 0-9) are considered word characters.\n\nThis prevents false positives with snake_case identifiers while allowing\nadjacent formatting like `**bold**_italic_`.",
+							"source_line": 83,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27074,7 +27062,8 @@
 						{
 							"name": "is_valid_path_char",
 							"kind": "function",
-							"source_line": 135,
+							"doc_comment": "Check if character code is valid in URI path per RFC 3986.\nValidates against the `pchar` production plus path/query/fragment separators.\n\nValid characters:\n- unreserved: A-Z a-z 0-9 - . _ ~\n- sub-delims: ! $ & ' ( ) * + , ; =\n- path allowed: : @\n- separators: / ? #\n- percent-encoding: %",
+							"source_line": 103,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27088,7 +27077,7 @@
 							"name": "trim_trailing_punctuation",
 							"kind": "function",
 							"doc_comment": "Trim trailing punctuation from URL/path per RFC 3986 and GFM rules.\n- Trims simple trailing: .,;:!?]\n- Balanced logic for () only (valid in path components)\n- Invalid chars like [] {} are already stopped by whitelist, but ] trimmed as fallback\n\nOptimized to avoid O(n²) string slicing - tracks end index and slices once at the end.",
-							"source_line": 146,
+							"source_line": 137,
 							"type_signature": "(url: string): string",
 							"return_type": "string",
 							"parameters": [
@@ -27102,7 +27091,7 @@
 							"name": "is_at_absolute_path",
 							"kind": "function",
 							"doc_comment": "Check if position in text is the start of an absolute path (starts with `/`).\nMust be preceded by whitespace or be at the start of the string.\nRejects `//` (comments/protocol-relative) and slash followed by whitespace.",
-							"source_line": 205,
+							"source_line": 193,
 							"type_signature": "(text: string, index: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27120,7 +27109,7 @@
 							"name": "is_at_relative_path",
 							"kind": "function",
 							"doc_comment": "Check if position in text is the start of a relative path (`./` or `../`).\nMust be preceded by whitespace or be at the start of the string.\nRejects prefix followed by whitespace, slash, or end of string.",
-							"source_line": 221,
+							"source_line": 209,
 							"type_signature": "(text: string, index: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27138,7 +27127,7 @@
 							"name": "mdz_text_content",
 							"kind": "function",
 							"doc_comment": "Extracts plain text content from an array of mdz nodes, recursing into children.",
-							"source_line": 248,
+							"source_line": 236,
 							"type_signature": "(nodes: MdzNode[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -27152,7 +27141,7 @@
 							"name": "mdz_heading_id",
 							"kind": "function",
 							"doc_comment": "Generates a lowercase slug id for a heading from its child nodes.\nFollows standard markdown conventions (GitHub, etc.) where heading IDs are lowercased.\nFor case-preserving IDs (e.g. API declarations), see `docs_slugify` in `docs_helpers.svelte.ts`.",
-							"source_line": 258,
+							"source_line": 246,
 							"type_signature": "(nodes: MdzNode[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -27163,23 +27152,9 @@
 							]
 						},
 						{
-							"name": "mdz_heading_id_from_text",
-							"kind": "function",
-							"doc_comment": "Generates a lowercase slug id for a heading from plain text content.\nUsed by the streaming parser which tracks text content directly\nrather than building `MdzNode[]` trees.",
-							"source_line": 266,
-							"type_signature": "(text: string): string",
-							"return_type": "string",
-							"parameters": [
-								{
-									"name": "text",
-									"type": "string"
-								}
-							]
-						},
-						{
 							"name": "mdz_is_url",
 							"kind": "function",
-							"source_line": 274,
+							"source_line": 255,
 							"type_signature": "(s: string): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27190,23 +27165,10 @@
 							]
 						},
 						{
-							"name": "mdz_is_safe_reference",
-							"kind": "function",
-							"source_line": 282,
-							"type_signature": "(reference: string): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "reference",
-									"type": "string"
-								}
-							]
-						},
-						{
 							"name": "resolve_relative_path",
 							"kind": "function",
 							"doc_comment": "Resolves a relative path (`./` or `../`) against a base path.\nThe base is treated as a directory regardless of trailing slash\n(`'/docs/mdz'` and `'/docs/mdz/'` behave identically).\nHandles embedded `.` and `..` segments within the reference\n(e.g., `'./a/../b'` → navigates up then down).\nClamps at root — excess `..` segments stop at `/` rather than escaping.",
-							"source_line": 297,
+							"source_line": 269,
 							"type_signature": "(reference: string, base: string): string",
 							"return_type": "string",
 							"return_description": "an absolute resolved path (e.g., `'/docs/mdz/grammar'`)",
@@ -27226,7 +27188,7 @@
 						{
 							"name": "extract_single_tag",
 							"kind": "function",
-							"source_line": 315,
+							"source_line": 287,
 							"type_signature": "(nodes: MdzNode[]): MdzElementNode | MdzComponentNode | null",
 							"return_type": "MdzElementNode | MdzComponentNode | null",
 							"parameters": [
@@ -27240,11 +27202,8 @@
 					"module_comment": "Shared constants and pure helper functions for mdz parsers.\n\nUsed by both the single-pass parser (`mdz.ts`) and the two-phase\nlexer+parser (`mdz_lexer.ts` + `mdz_token_parser.ts`).",
 					"dependents": [
 						"MdzNodeView.svelte",
-						"MdzStreamNodeView.svelte",
 						"mdz.ts",
 						"mdz_lexer.ts",
-						"mdz_opcodes_to_nodes.ts",
-						"mdz_stream_parser.ts",
 						"mdz_to_svelte.ts",
 						"mdz_token_parser.ts",
 						"tsdoc_mdz.ts"
@@ -27656,553 +27615,6 @@
 					"module_comment": "mdz lexer — tokenizes input into a flat `MdzToken[]` stream.\n\nPhase 1 of the two-phase lexer+parser alternative to the single-pass parser\nin `mdz.ts`. Phase 2 is in `mdz_token_parser.ts`.",
 					"dependencies": ["mdz_helpers.ts"],
 					"dependents": ["mdz_token_parser.ts"]
-				},
-				{
-					"path": "mdz_opcodes_to_nodes.ts",
-					"declarations": [
-						{
-							"name": "mdz_opcodes_to_nodes",
-							"kind": "function",
-							"doc_comment": "Convert an array of mdz opcodes to the `MdzNode[]` tree.\nProduces output identical to `mdz_parse()`.",
-							"source_line": 54,
-							"type_signature": "(opcodes: MdzOpcode[]): MdzNode[]",
-							"return_type": "MdzNode[]",
-							"parameters": [
-								{
-									"name": "opcodes",
-									"type": "MdzOpcode[]"
-								}
-							]
-						}
-					],
-					"module_comment": "Converts a stream of mdz opcodes to the `MdzNode[]` tree representation.\n\nStack-based replay: `open` pushes a frame, `close` pops and builds the node,\n`text`/`void` create leaf nodes, `append_text` extends the last text node,\n`revert` undoes an optimistic open and re-parents children.\n\nThe output is identical to `mdz_parse()` from `mdz.ts`, enabling\nvalidation of the streaming parser against the existing fixture suite.",
-					"dependencies": ["mdz_helpers.ts"]
-				},
-				{
-					"path": "mdz_opcodes.ts",
-					"declarations": [
-						{
-							"name": "MdzNodeId",
-							"kind": "type",
-							"doc_comment": "Unique monotonic identifier for each node created by the parser.\nIDs are never reused within a parser instance.",
-							"source_line": 19,
-							"type_signature": "number"
-						},
-						{
-							"name": "MdzContainerNodeType",
-							"kind": "type",
-							"doc_comment": "Node types that can be opened as containers.",
-							"source_line": 22,
-							"type_signature": "MdzContainerNodeType"
-						},
-						{
-							"name": "MdzVoidNodeType",
-							"kind": "type",
-							"doc_comment": "Node types for self-contained leaf elements.",
-							"source_line": 35,
-							"type_signature": "\"Hr\""
-						},
-						{
-							"name": "MdzTextNodeType",
-							"kind": "type",
-							"doc_comment": "Discriminant for leaf text nodes.",
-							"source_line": 38,
-							"type_signature": "MdzTextNodeType"
-						},
-						{
-							"name": "MdzOpcodeOpen",
-							"kind": "type",
-							"doc_comment": "Open a container node. The renderer starts a new element/wrapper.\nChildren are subsequent opcodes until the matching `close`.",
-							"source_line": 44,
-							"type_signature": "MdzOpcodeOpen",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'open'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "MdzContainerNodeType"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset in the full input where the opening delimiter begins."
-								},
-								{
-									"name": "level",
-									"kind": "variable",
-									"type_signature": "1 | 2 | 3 | 4 | 5 | 6",
-									"doc_comment": "Heading level (1-6). Present when `node_type` is `'Heading'`."
-								},
-								{
-									"name": "name",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Tag name. Present when `node_type` is `'Element'` or `'Component'`."
-								},
-								{
-									"name": "lang",
-									"kind": "variable",
-									"type_signature": "string | null",
-									"doc_comment": "Language hint. Present when `node_type` is `'Codeblock'`."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeClose",
-							"kind": "type",
-							"doc_comment": "Close a previously opened container node.\nCarries deferred metadata that wasn't known at open time.",
-							"source_line": 62,
-							"type_signature": "MdzOpcodeClose",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'close'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset in the full input immediately after the closing delimiter."
-								},
-								{
-									"name": "reference",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Link URL/path, resolved when `](url)` completes."
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "'external' | 'internal'",
-									"doc_comment": "Link type, resolved alongside `reference`."
-								},
-								{
-									"name": "heading_id",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Heading slug, computed from full heading content."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeText",
-							"kind": "type",
-							"doc_comment": "Create a leaf text or code node.\nThe parent is implicit — the innermost open container on the renderer's stack.",
-							"source_line": 79,
-							"type_signature": "MdzOpcodeText",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'text'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "text_type",
-									"kind": "variable",
-									"type_signature": "MdzTextNodeType"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset where this node begins (for Code, the opening backtick)."
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset immediately after this node ends (for Code, after the closing backtick)."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeAppendText",
-							"kind": "type",
-							"doc_comment": "Append content to an existing text node.\nStreaming optimization — avoids creating a new node per chunk\nduring plain text runs.",
-							"source_line": 95,
-							"type_signature": "MdzOpcodeAppendText",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'append_text'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"type_signature": "string"
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeVoid",
-							"kind": "type",
-							"doc_comment": "Create a self-contained leaf node (e.g., horizontal rule).\nInserted as a child of the innermost open container, or at root level.",
-							"source_line": 105,
-							"type_signature": "MdzOpcodeVoid",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'void'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "MdzVoidNodeType"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset in the full input where this element begins."
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset immediately after this element ends."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeRevert",
-							"kind": "type",
-							"doc_comment": "Undo an optimistic open. Removes the container wrapper,\ninserts `replacement_text` as literal text at the container's position,\nand re-parents the container's children to the grandparent.\n\nWhen `wrap_node_type` and `wrap_id` are set, the replacement text and\nre-parented children are wrapped in a new container of the given type\ninstead of being placed directly at the grandparent level. The wrapper\nis pushed onto the consumer's stack (open for future content). This is\nused for block-level reverts (e.g., codeblock → paragraph) where the\ngrandparent is root and content needs a container.",
-							"source_line": 127,
-							"type_signature": "MdzOpcodeRevert",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'revert'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "replacement_text",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "The delimiter text to emit as literal content (e.g., `\"**\"`, `\"[\"`, `\"<Tag>\"`)."
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset of the original opening delimiter in the full input."
-								},
-								{
-									"name": "wrap_node_type",
-									"kind": "variable",
-									"type_signature": "MdzContainerNodeType",
-									"doc_comment": "Wrap replacement text and re-parented children in a new container of this type."
-								},
-								{
-									"name": "wrap_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID for the wrapper node. Required when `wrap_node_type` is set."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeWrap",
-							"kind": "type",
-							"doc_comment": "Retroactively wrap an existing text node in a container.\nUsed for text-first auto-links: URL/path text streams as plain text,\nthen gets wrapped in a Link when the URL boundary is found.\n\nWhen `trim_end` is set, trailing characters (punctuation) are trimmed\nfrom the target text node and placed in a new sibling Text node after\nthe Link wrapper, identified by `trim_id`.",
-							"source_line": 149,
-							"type_signature": "MdzOpcodeWrap",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'wrap'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID for the new Link container node."
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "'Link'",
-									"doc_comment": "Container type to wrap in (always `'Link'` for now)."
-								},
-								{
-									"name": "target_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID of the existing text node to wrap."
-								},
-								{
-									"name": "reference",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Resolved URL or path reference."
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "'external' | 'internal'",
-									"doc_comment": "Whether the link is external (URL) or internal (path)."
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset where the URL/path begins."
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset immediately after the URL/path (before any trimmed punctuation)."
-								},
-								{
-									"name": "trim_end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Number of trailing chars to trim from target and place after the link."
-								},
-								{
-									"name": "trim_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID for the trimmed-text sibling node. Required when `trim_end` > 0."
-								}
-							]
-						},
-						{
-							"name": "MdzNodeType",
-							"kind": "type",
-							"doc_comment": "All node types that can appear in the mdz tree.",
-							"source_line": 172,
-							"type_signature": "MdzNodeType"
-						},
-						{
-							"name": "MdzOpcode",
-							"kind": "type",
-							"doc_comment": "Discriminated union of all mdz opcodes.",
-							"source_line": 175,
-							"type_signature": "MdzOpcode"
-						}
-					],
-					"module_comment": "Opcode types for the mdz streaming parser.\n\nOpcodes are serializable rendering instructions emitted by `MdzStreamParser`.\nThey tell a renderer what to do next — open a container, append text, close it,\nor revert an optimistic assumption. Target-agnostic: works for HTML, Svelte, PDF, etc.\n\nThe parser makes optimistic assumptions about ambiguous syntax (e.g., `**` is probably bold)\nand emits `revert` opcodes to correct when wrong. This enables true streaming rendering\nwithout ever re-parsing."
-				},
-				{
-					"path": "mdz_stream_parser.ts",
-					"declarations": [
-						{
-							"name": "MdzStreamParser",
-							"kind": "class",
-							"doc_comment": "Streaming opcode parser for mdz content.\nFeed chunks via `feed()`, retrieve opcodes via `take_opcodes()`, call `finish()` at end.\n\nThe opcode sequence is not deterministic across chunk boundaries — the same input\nfed in different chunk sizes may produce different `text`/`append_text` splits and\ndifferent optimistic/revert sequences. The final tree (via `mdz_opcodes_to_nodes`)\nis always identical regardless of chunking.",
-							"source_line": 104,
-							"members": [
-								{
-									"name": "feed",
-									"kind": "function",
-									"doc_comment": "Feed a chunk of text to the parser.\nOpcodes are accumulated and retrieved via `take_opcodes()`.",
-									"type_signature": "(chunk: string): void",
-									"return_type": "void",
-									"parameters": [
-										{
-											"name": "chunk",
-											"type": "string"
-										}
-									]
-								},
-								{
-									"name": "finish",
-									"kind": "function",
-									"doc_comment": "Signal end of input. Resolves all pending state:\ncloses open blocks, reverts unclosed optimistic opens.\n\nTrailing newline trimming uses three cooperating mechanisms:\n1. `#trim_trailing_newline()` in `#close_paragraph()` — trims from the last\n   emitted text/append_text opcode (handles mid-stream paragraph breaks)\n2. Pre-flush trim below — trims unflushed `#accumulated_text` before it becomes\n   an opcode (handles trailing `\\n` from `#process_remaining()`)\n3. The pre-flush trim runs before `#revert_all_optimistic()`, so the `\\n` is\n   removed before reverts are emitted. `#trim_trailing_newline()` in\n   `#close_paragraph()` handles any remaining cases after reverts.",
-									"type_signature": "(): void",
-									"return_type": "void",
-									"parameters": []
-								},
-								{
-									"name": "take_opcodes",
-									"kind": "function",
-									"doc_comment": "Drain and return all accumulated opcodes.\nDestructive — empties the internal queue. The returned array is owned by the caller.",
-									"type_signature": "(): MdzOpcode[]",
-									"return_type": "MdzOpcode[]",
-									"parameters": []
-								}
-							]
-						}
-					],
-					"module_comment": "Streaming opcode parser for mdz.\n\nFed chunks of text (e.g., from LLM output), emits opcodes as rendering\ninstructions. Makes optimistic assumptions about ambiguous syntax and\nemits `revert` opcodes to correct when wrong. Never re-parses.\n\nThe design was independently arrived at but shares goals with\n{@link https://bsky.app/profile/pngwn.at/post/3mi527zntb22n @pngwn.at}'s\nPenguin-Flavoured Markdown (PFM): restrict the syntax so streaming is tractable,\nrender optimistically and correct when wrong, emit serializable opcodes\nto avoid re-parsing, and keep the opcodes target-agnostic so any renderer\ncan consume them. mdz diverges in one respect: the Svelte consumer\n(`MdzStreamState`) does build a reactive tree from opcodes — the platform\ndictates this — but mutations are fine-grained via `$state`, not diffed.\n\nUsage:\n```ts\nconst parser = new MdzStreamParser();\nparser.feed('hello **bold');\nconst ops1 = parser.take_opcodes(); // open Paragraph, text \"hello \", open Bold, text \"bold\"\nparser.feed('** world');\nconst ops2 = parser.take_opcodes(); // close Bold, text \" world\"\nparser.finish();\nconst ops3 = parser.take_opcodes(); // close Paragraph\n```",
-					"dependencies": ["mdz_helpers.ts"]
-				},
-				{
-					"path": "mdz_stream_state.svelte.ts",
-					"declarations": [
-						{
-							"name": "MdzStreamNode",
-							"kind": "class",
-							"doc_comment": "A reactive node in the stream renderer tree.\nFields are `$state` so Svelte re-renders only what changes.",
-							"source_line": 19,
-							"members": [
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "MdzNodeType"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "children",
-									"kind": "variable",
-									"type_signature": "Array<MdzStreamNode>"
-								},
-								{
-									"name": "level",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "reference",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "name",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "lang",
-									"kind": "variable",
-									"type_signature": "string | null"
-								},
-								{
-									"name": "heading_id",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "text_type",
-									"kind": "variable",
-									"type_signature": "MdzTextNodeType"
-								},
-								{
-									"name": "constructor",
-									"kind": "constructor",
-									"type_signature": "(id: number, type: MdzNodeType): MdzStreamNode",
-									"parameters": [
-										{
-											"name": "id",
-											"type": "number"
-										},
-										{
-											"name": "type",
-											"type": "MdzNodeType"
-										}
-									]
-								}
-							]
-						},
-						{
-							"name": "MdzStreamState",
-							"kind": "class",
-							"doc_comment": "Reactive state manager for streaming mdz content.\nApply opcodes to incrementally build and update the render tree.",
-							"source_line": 43,
-							"members": [
-								{
-									"name": "root",
-									"kind": "variable",
-									"type_signature": "Array<MdzStreamNode>"
-								},
-								{
-									"name": "apply",
-									"kind": "function",
-									"doc_comment": "Apply a single opcode.",
-									"type_signature": "(opcode: MdzOpcode): void",
-									"return_type": "void",
-									"parameters": [
-										{
-											"name": "opcode",
-											"type": "MdzOpcode"
-										}
-									]
-								},
-								{
-									"name": "apply_batch",
-									"kind": "function",
-									"doc_comment": "Apply a batch of opcodes.",
-									"type_signature": "(opcodes: MdzOpcode[]): void",
-									"return_type": "void",
-									"parameters": [
-										{
-											"name": "opcodes",
-											"type": "MdzOpcode[]"
-										}
-									]
-								},
-								{
-									"name": "reset",
-									"kind": "function",
-									"doc_comment": "Reset the state (clear all nodes).",
-									"type_signature": "(): void",
-									"return_type": "void",
-									"parameters": []
-								}
-							]
-						}
-					],
-					"module_comment": "Reactive state for the mdz streaming renderer.\n\nMaintains a reactive tree of `MdzStreamNode` objects that Svelte 5 can\nefficiently update. Opcodes from `MdzStreamParser` are applied via\n`apply()` or `apply_batch()`, mutating the tree in place."
 				},
 				{
 					"path": "mdz_to_svelte.ts",
@@ -28710,93 +28122,6 @@
 						}
 					],
 					"module_comment": "Wrapper for precompiled mdz content. Used by `svelte_preprocess_mdz`.\nNot intended for direct use."
-				},
-				{
-					"path": "MdzRoot.svelte",
-					"declarations": [
-						{
-							"name": "MdzRoot",
-							"kind": "component",
-							"props": [
-								{
-									"name": "base",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "components",
-									"type": "MdzComponents",
-									"optional": true
-								},
-								{
-									"name": "elements",
-									"type": "MdzElements",
-									"optional": true
-								},
-								{
-									"name": "children",
-									"type": "Snippet"
-								}
-							],
-							"source_line": 1
-						}
-					],
-					"dependencies": ["mdz_components.ts"]
-				},
-				{
-					"path": "MdzStream.svelte",
-					"declarations": [
-						{
-							"name": "MdzStream",
-							"kind": "component",
-							"props": [
-								{
-									"name": "state",
-									"type": "MdzStreamState"
-								},
-								{
-									"name": "inline",
-									"type": "boolean",
-									"optional": true
-								},
-								{
-									"name": "nowrap",
-									"type": "boolean",
-									"optional": true
-								},
-								{
-									"name": "base",
-									"type": "string",
-									"optional": true
-								}
-							],
-							"source_line": 1
-						}
-					],
-					"dependencies": ["MdzStreamNodeView.svelte", "mdz_components.ts"]
-				},
-				{
-					"path": "MdzStreamNodeView.svelte",
-					"declarations": [
-						{
-							"name": "MdzStreamNodeView",
-							"kind": "component",
-							"props": [
-								{
-									"name": "node",
-									"type": "MdzStreamNode"
-								}
-							],
-							"source_line": 1
-						}
-					],
-					"dependencies": [
-						"DocsLink.svelte",
-						"MdzStreamNodeView.svelte",
-						"mdz_components.ts",
-						"mdz_helpers.ts"
-					],
-					"dependents": ["MdzStream.svelte", "MdzStreamNodeView.svelte"]
 				},
 				{
 					"path": "module_contextmenu.ts",
@@ -31251,7 +30576,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.3.3",
+			"version": "0.4.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -31366,7 +30691,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.3.3",
+			"version": "0.4.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -46611,7 +45936,7 @@
 							]
 						}
 					],
-					"module_comment": "Reactive form state for controlling when field errors appear and focusing invalid fields.\n\nTracks per-field `touched` state (set on blur via delegated `focusout`) and form-level\n`attempted` state (set on submit attempt). Errors show after a field is blurred or\nafter a submit attempt, avoiding premature validation while the user is still typing.\n\nThe {@link FormState.form | form} attachment also handles Enter key advancing\nbetween focusable elements.\n\nAll trackable inputs must have a `name` attribute — an error is thrown in dev\nif an input without `name` loses focus.\n\n@example\n```svelte\n<script>\n  const form_state = new FormState();\n  let username = $state('');\n  const username_valid = $derived(Username.safeParse(username).success);\n  const can_submit = $derived(username.trim() && username_valid);\n\n  const handle_submit = async () => {\n    form_state.attempt();\n    if (!can_submit) {\n      if (!username.trim() || !username_valid) form_state.focus('username');\n      return;\n    }\n    // submit...\n  };\n</script>\n\n<form {@attach form_state.form()} onsubmit={(e) => { e.preventDefault(); void handle_submit(); }}>\n  <input name=\"username\" bind:value={username} />\n  {#if form_state.show('username') && username && !username_valid}\n    <p>error message</p>\n  {/if}\n  <PendingButton onclick={handle_submit}>submit</PendingButton>\n</form>\n```",
+					"module_comment": "Reactive form state for controlling when field errors appear and focusing invalid fields.\n\nTracks per-field `touched` state (set on blur via delegated `focusout`) and form-level\n`attempted` state (set on submit attempt). Errors show after a field is blurred or\nafter a submit attempt, avoiding premature validation while the user is still typing.\n\nThe {@link FormState.form | form} attachment also handles Enter key advancing\nbetween focusable elements.\n\nAll trackable inputs must have a `name` attribute — an error is thrown in dev\nif an input without `name` loses focus.\n\n@example\n```svelte\n<script>\n  const form_state = new FormState();\n  let username = $state.raw('');\n  const username_valid = $derived(Username.safeParse(username).success);\n  const can_submit = $derived(username.trim() && username_valid);\n\n  const handle_submit = async () => {\n    form_state.attempt();\n    if (!can_submit) {\n      if (!username.trim() || !username_valid) form_state.focus('username');\n      return;\n    }\n    // submit...\n  };\n</script>\n\n<form {@attach form_state.form()} onsubmit={(e) => { e.preventDefault(); void handle_submit(); }}>\n  <input name=\"username\" bind:value={username} />\n  {#if form_state.show('username') && username && !username_valid}\n    <p>error message</p>\n  {/if}\n  <PendingButton onclick={handle_submit}>submit</PendingButton>\n</form>\n```",
 					"dependents": ["ui/BootstrapForm.svelte", "ui/LoginForm.svelte", "ui/SignupForm.svelte"]
 				},
 				{
@@ -46622,7 +45947,7 @@
 							"kind": "class",
 							"doc_comment": "Base reactive state class with loading/error management.\n\nProvides the common loading/error pattern shared by all state classes.\nSubclasses add domain-specific `$state` fields and methods that call\nthe protected `run` helper for async operations.",
 							"examples": [
-								"```ts\nclass ItemsState extends Loadable {\n\titems: Array<Item> = $state([]);\n\n\tasync fetch(): Promise<void> {\n\t\tawait this.run(async () => {\n\t\t\tconst response = await fetch('/api/items');\n\t\t\tif (!response.ok) throw new Error('failed to fetch');\n\t\t\tthis.items = await response.json();\n\t\t});\n\t}\n}\n```",
+								"```ts\nclass ItemsState extends Loadable {\n\titems: Array<Item> = $state.raw([]);\n\n\tasync fetch(): Promise<void> {\n\t\tawait this.run(async () => {\n\t\t\tconst response = await fetch('/api/items');\n\t\t\tif (!response.ok) throw new Error('failed to fetch');\n\t\t\tthis.items = await response.json();\n\t\t});\n\t}\n}\n```",
 								"```ts\n// structured errors via map_error\nclass FormState extends Loadable<{field: string; message: string}> {\n\tasync submit(data: FormData): Promise<void> {\n\t\tawait this.run(\n\t\t\t() => post_form(data),\n\t\t\t(e) => ({field: 'form', message: e instanceof Error ? e.message : 'unknown'}),\n\t\t);\n\t}\n}\n```"
 							],
 							"source_line": 39,
@@ -46679,7 +46004,7 @@
 							]
 						}
 					],
-					"module_comment": "Base reactive state class with loading/error management.\n\nProvides the common loading/error pattern shared by all state classes.\nSubclasses add domain-specific `$state` fields and methods that call\nthe protected `run` helper for async operations.\n\n@example\n```ts\nclass ItemsState extends Loadable {\n\titems: Array<Item> = $state([]);\n\n\tasync fetch(): Promise<void> {\n\t\tawait this.run(async () => {\n\t\t\tconst response = await fetch('/api/items');\n\t\t\tif (!response.ok) throw new Error('failed to fetch');\n\t\t\tthis.items = await response.json();\n\t\t});\n\t}\n}\n```\n\n@example\n```ts\n// structured errors via map_error\nclass FormState extends Loadable<{field: string; message: string}> {\n\tasync submit(data: FormData): Promise<void> {\n\t\tawait this.run(\n\t\t\t() => post_form(data),\n\t\t\t(e) => ({field: 'form', message: e instanceof Error ? e.message : 'unknown'}),\n\t\t);\n\t}\n}\n```",
+					"module_comment": "Base reactive state class with loading/error management.\n\nProvides the common loading/error pattern shared by all state classes.\nSubclasses add domain-specific `$state` fields and methods that call\nthe protected `run` helper for async operations.\n\n@example\n```ts\nclass ItemsState extends Loadable {\n\titems: Array<Item> = $state.raw([]);\n\n\tasync fetch(): Promise<void> {\n\t\tawait this.run(async () => {\n\t\t\tconst response = await fetch('/api/items');\n\t\t\tif (!response.ok) throw new Error('failed to fetch');\n\t\t\tthis.items = await response.json();\n\t\t});\n\t}\n}\n```\n\n@example\n```ts\n// structured errors via map_error\nclass FormState extends Loadable<{field: string; message: string}> {\n\tasync submit(data: FormData): Promise<void> {\n\t\tawait this.run(\n\t\t\t() => post_form(data),\n\t\t\t(e) => ({field: 'form', message: e instanceof Error ? e.message : 'unknown'}),\n\t\t);\n\t}\n}\n```",
 					"dependents": [
 						"ui/account_sessions_state.svelte.ts",
 						"ui/admin_accounts_state.svelte.ts",
@@ -47618,14 +46943,14 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@fuzdev/fuz_css": "^0.58.0",
-				"@fuzdev/fuz_ui": "^0.191.3",
+				"@fuzdev/fuz_ui": "^0.191.4",
 				"@fuzdev/fuz_util": "^0.55.0",
-				"@fuzdev/gro": "^0.197.2",
+				"@fuzdev/gro": "^0.197.3",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
 				"@sveltejs/adapter-static": "^3.0.10",
-				"@sveltejs/kit": "^2.50.1",
+				"@sveltejs/kit": "^2.57.0",
 				"@sveltejs/package": "^2.5.7",
 				"@sveltejs/vite-plugin-svelte": "^6.2.4",
 				"@types/estree": "^1.0.8",
@@ -47637,7 +46962,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.4.1",
-				"svelte": "^5.55.0",
+				"svelte": "^5.55.2",
 				"svelte-check": "^4.3.6",
 				"svelte2tsx": "^0.7.47",
 				"tslib": "^2.8.1",
