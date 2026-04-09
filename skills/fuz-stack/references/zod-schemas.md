@@ -32,7 +32,9 @@ defaults, metadata, CLI help text, and serialization.
    `z.discriminatedUnion()` and `z.union()`. Rejects unknown keys.
    **Exceptions**: external data (`z.looseObject()` or `z.object()` with
    comment explaining why); response/error schemas consumed by clients
-   (`z.looseObject()` — allows adding fields without breaking consumers).
+   (`z.looseObject()` — allows adding fields without breaking consumers);
+   protocol schemas where the other side may add fields per spec (e.g.,
+   JSON-RPC messages).
 2. **PascalCase naming** — schema and inferred type share the same name.
 3. **`.meta({description: '...'})`** — not `.describe()`. `.meta()` supports
    additional keys (`aliases`, `sensitivity`).
@@ -271,12 +273,38 @@ z.record(K, V)         // key-value maps (env vars, resource maps)
 z.custom<T>(check?)    // escape hatch for complex types without full Zod validation
 ```
 
+- `z.null()` — no request body in route specs (`input: z.null()`). Distinct
+  from `z.void()` — use `z.null()` for HTTP input (JSON `null`), `z.void()`
+  for action specs with no value
 - `z.void()` / `z.void().optional()` — action specs with no input or output
 - `z.custom<T>(check?)` — embeds complex types without full Zod validation;
   use sparingly (e.g., `z.custom<Plan>()` in tx, `z.custom<z.ZodType>(...)` in
   fuz_app action specs)
 - `z.instanceof(MyClass)` — runtime class instance check; used in zzz so
   action specs can reference Cell instances as typed values
+
+## Schema Introspection
+
+When inspecting schema types at runtime, prefer `instanceof` checks and the
+public `.def` property:
+
+```typescript
+// instanceof — type detection without internal APIs
+schema instanceof z.ZodNull
+schema instanceof z.ZodObject
+schema instanceof z.ZodArray
+
+// .def — public getter for the type definition (same as _zod.def)
+const def = schema.def;
+def.type    // 'string', 'object', 'null', etc.
+
+// WRONG: ._zod.def — internal API, same value but not public
+schema._zod.def  // works but prefer schema.def
+```
+
+See `@fuzdev/fuz_util/zod.ts` for unwrapping utilities (`zod_unwrap_def`,
+`zod_get_base_type`, `zod_to_subschema`) that handle wrappers like optional,
+nullable, default, transform, and pipe.
 
 ## Unions and Enums
 
@@ -495,7 +523,9 @@ export const format_zod_validation_error = (error: z.ZodError): string =>
 | Type inference (input) | `type MyThingInput = z.input<typeof MyThing>` | manual partial types |
 | IDs and paths | `z.string().brand('MyId')` | plain `z.string()` |
 | HTTP/API input | `schema.safeParse(data)` | `schema.parse(data)` |
-| Config/CLI/factories | `schema.parse(data)` | `schema.safeParse(data)` with unnecessary error handling |
+| CLI args/factories | `schema.parse(data)` | `schema.safeParse(data)` with unnecessary error handling |
+| Env loading | `safeParse` + custom throw (better error context) | bare `parse` (loses raw values) |
+| Optional config files | `safeParse` + return null | `parse` (crashes on missing file) |
 | No input/output | `z.void()` or `z.void().optional()` | `z.undefined()`, omitting the field |
 | Optional reference | `Uuid.nullable().default(null)` | `Uuid.optional()` (ambiguous undefined vs absent) |
 | Complex embedded types | `z.custom<MyType>()` | hand-rolled validation |
