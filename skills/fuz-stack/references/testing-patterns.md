@@ -74,7 +74,7 @@ semantic precision:
 ```typescript
 import {test, assert} from 'vitest';
 
-assert.ok(value);            // narrows away null/undefined
+assert.ok(value); // narrows away null/undefined
 assert.strictEqual(a, b);
 assert.deepStrictEqual(a, b);
 ```
@@ -120,16 +120,20 @@ assert.throws(() => fn(), TypeError);
 assert.doesNotThrow(() => fn());
 ```
 
-`assert.throws()` returns `void`. To inspect the error, use try/catch:
+`assert.throws()` returns `void`. To inspect the error, place `assert.fail`
+**after** the catch block — never inside the try block, where it would be
+caught and swallowed:
 
 ```typescript
 try {
 	fn();
-	assert.fail('Expected error');
-} catch (e: any) {
+} catch (e) {
+	assert(e instanceof Error);
 	assert.include(e.message, 'expected substring');
-	assert.strictEqual(e.code, 'EXPECTED_CODE');
+	assert.strictEqual((e as any).code, 'EXPECTED_CODE');
+	return;
 }
+assert.fail('Expected error');
 ```
 
 ### Async Rejection Testing
@@ -148,8 +152,8 @@ await assert_rejects(
 );
 
 // Pattern is optional — returns the Error for further assertions
-const err = await assert_rejects(
-	() => local_repos_load({local_repo_paths: paths, git_ops, npm_ops}),
+const err = await assert_rejects(() =>
+	local_repos_load({local_repo_paths: paths, git_ops, npm_ops}),
 );
 assert.include(err.message, 'repo-a');
 assert.include(err.message, 'repo-b');
@@ -359,28 +363,28 @@ fuz_ui's `test_helpers.ts` also provides generic fixture infrastructure
 
 `{domain}_test_helpers.ts` pattern:
 
-| File                                 | Repo     | Purpose                                  |
-| ------------------------------------ | -------- | ---------------------------------------- |
-| `csp_test_helpers.ts`               | fuz_ui   | CSP test constants and source factories  |
-| `contextmenu_test_helpers.ts`       | fuz_ui   | Contextmenu mounting and attachment setup |
-| `module_test_helpers.ts`            | fuz_ui   | Module analysis test options and program setup |
-| `deep_equal_test_helpers.ts`        | fuz_util | Bidirectional equality assertions and batch helpers |
-| `log_test_helpers.ts`               | fuz_util | Logger mock console with captured args   |
-| `random_test_helpers.ts`            | fuz_util | Custom PRNG factories for distribution testing |
-| `build_cache_test_helpers.ts`       | gro      | Build cache mock factories               |
-| `build_task_test_helpers.ts`        | gro      | Build task context and mock plugins      |
-| `deploy_task_test_helpers.ts`       | gro      | Deploy task context and git mock setup   |
-| `css_class_extractor_test_helpers.ts`| fuz_css  | Extractor assertion helpers              |
+| File                                  | Repo     | Purpose                                             |
+| ------------------------------------- | -------- | --------------------------------------------------- |
+| `csp_test_helpers.ts`                 | fuz_ui   | CSP test constants and source factories             |
+| `contextmenu_test_helpers.ts`         | fuz_ui   | Contextmenu mounting and attachment setup           |
+| `module_test_helpers.ts`              | fuz_ui   | Module analysis test options and program setup      |
+| `deep_equal_test_helpers.ts`          | fuz_util | Bidirectional equality assertions and batch helpers |
+| `log_test_helpers.ts`                 | fuz_util | Logger mock console with captured args              |
+| `random_test_helpers.ts`              | fuz_util | Custom PRNG factories for distribution testing      |
+| `build_cache_test_helpers.ts`         | gro      | Build cache mock factories                          |
+| `build_task_test_helpers.ts`          | gro      | Build task context and mock plugins                 |
+| `deploy_task_test_helpers.ts`         | gro      | Deploy task context and git mock setup              |
+| `css_class_extractor_test_helpers.ts` | fuz_css  | Extractor assertion helpers                         |
 
 Fixture-specific helpers live inside the fixture directory:
 
-| File                                                                  | Repo    | Purpose                      |
-| --------------------------------------------------------------------- | ------- | ---------------------------- |
-| `fixtures/mdz/mdz_test_helpers.ts`                                   | fuz_ui  | mdz fixture loading          |
-| `fixtures/tsdoc/tsdoc_test_helpers.ts`                               | fuz_ui  | tsdoc fixture loading        |
-| `fixtures/ts/ts_test_helpers.ts`                                     | fuz_ui  | TypeScript fixture loading   |
-| `fixtures/svelte/svelte_test_helpers.ts`                             | fuz_ui  | Svelte fixture loading       |
-| `fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts`| fuz_ui  | Preprocessor fixture loading |
+| File                                                                   | Repo   | Purpose                      |
+| ---------------------------------------------------------------------- | ------ | ---------------------------- |
+| `fixtures/mdz/mdz_test_helpers.ts`                                     | fuz_ui | mdz fixture loading          |
+| `fixtures/tsdoc/tsdoc_test_helpers.ts`                                 | fuz_ui | tsdoc fixture loading        |
+| `fixtures/ts/ts_test_helpers.ts`                                       | fuz_ui | TypeScript fixture loading   |
+| `fixtures/svelte/svelte_test_helpers.ts`                               | fuz_ui | Svelte fixture loading       |
+| `fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts` | fuz_ui | Preprocessor fixture loading |
 
 ### Svelte Component Test Helpers
 
@@ -459,8 +463,8 @@ create_shared_core_tests(
 );
 ```
 
-fuz_ui uses this for contextmenu components with 8 factory modules
-(`contextmenu_test_{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts`).
+fuz*ui uses this for contextmenu components with 8 factory modules
+(`contextmenu_test*{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts`).
 
 ## Fixture-Based Testing
 
@@ -619,8 +623,14 @@ See [dependency-injection.md](./dependency-injection.md) for the full pattern.
 // src/lib/operations.ts — interfaces for all side effects
 // each method uses options objects and returns Result
 export interface GitOperations {
-	current_branch_name: (options?: {cwd?: string}) => Promise<Result<{value: string}, {message: string}>>;
-	add_and_commit: (options: {files: string | Array<string>; message: string; cwd?: string}) => Promise<Result<object, {message: string}>>;
+	current_branch_name: (options?: {
+		cwd?: string;
+	}) => Promise<Result<{value: string}, {message: string}>>;
+	add_and_commit: (options: {
+		files: string | Array<string>;
+		message: string;
+		cwd?: string;
+	}) => Promise<Result<object, {message: string}>>;
 	// ... ~15 more methods
 }
 export interface GitopsOperations {
@@ -656,7 +666,7 @@ fuz_gitops uses **zero vi.mock()** — all tests inject mock operations via DI.
 import {stub_app_deps} from '$lib/testing/stubs.js';
 import {create_mock_runtime} from '$lib/runtime/mock.js';
 
-const deps = stub_app_deps;            // throwing stubs for auth deps
+const deps = stub_app_deps; // throwing stubs for auth deps
 const runtime = create_mock_runtime(); // MockRuntime for CLI tests
 ```
 
@@ -719,9 +729,9 @@ describe.skipIf(SKIP)('vite plugin examples', () => {
 SKIP_EXAMPLE_TESTS=1 gro test
 ```
 
-| Flag                 | Repo    | Purpose                             |
-| -------------------- | ------- | ----------------------------------- |
-| `SKIP_EXAMPLE_TESTS` | fuz_css | Skip slow Vite plugin integration tests |
+| Flag                 | Repo    | Purpose                                      |
+| -------------------- | ------- | -------------------------------------------- |
+| `SKIP_EXAMPLE_TESTS` | fuz_css | Skip slow Vite plugin integration tests      |
 | `TEST_DATABASE_URL`  | fuz_app | Enable PostgreSQL tests (PGlite always runs) |
 
 ## Test Structure
@@ -735,10 +745,13 @@ import {query_create_account} from '$lib/auth/account_queries.js';
 describe('account queries', () => {
 	test('create returns an account with generated uuid', async () => {
 		const db = get_db();
-		const account = await query_create_account({db}, {
-			username: 'alice',
-			password_hash: 'hash123',
-		});
+		const account = await query_create_account(
+			{db},
+			{
+				username: 'alice',
+				password_hash: 'hash123',
+			},
+		);
 
 		assert.ok(account.id);
 		assert.strictEqual(account.username, 'alice');
@@ -831,52 +844,52 @@ Tests with dynamic expected values or extra assertions should stay standalone.
 
 ### Composable Test Suites (fuz_app)
 
-| Suite                                          | Groups | Purpose                                  |
-| ---------------------------------------------- | ------ | ---------------------------------------- |
-| `describe_standard_attack_surface_tests`      | 5      | Snapshot, structure, adversarial auth/input/404 |
-| `describe_standard_integration_tests`         | 10     | Login, cookies, sessions, bearer, passwords |
-| `describe_standard_admin_integration_tests`   | 7      | Accounts, permits, sessions, audit log   |
-| `describe_rate_limiting_tests`                | 3      | IP, per-account, bearer rate limiting    |
-| `describe_round_trip_validation`              | varies | Schema-driven positive-path validation   |
-| `describe_data_exposure_tests`                | 6      | Schema-level + runtime field blocklists  |
-| `describe_standard_adversarial_headers`       | 7      | Header injection cases                   |
-| `describe_standard_tests`                     | -      | Convenience wrapper: integration + admin |
+| Suite                                       | Groups | Purpose                                         |
+| ------------------------------------------- | ------ | ----------------------------------------------- |
+| `describe_standard_attack_surface_tests`    | 5      | Snapshot, structure, adversarial auth/input/404 |
+| `describe_standard_integration_tests`       | 10     | Login, cookies, sessions, bearer, passwords     |
+| `describe_standard_admin_integration_tests` | 7      | Accounts, permits, sessions, audit log          |
+| `describe_rate_limiting_tests`              | 3      | IP, per-account, bearer rate limiting           |
+| `describe_round_trip_validation`            | varies | Schema-driven positive-path validation          |
+| `describe_data_exposure_tests`              | 6      | Schema-level + runtime field blocklists         |
+| `describe_standard_adversarial_headers`     | 7      | Header injection cases                          |
+| `describe_standard_tests`                   | -      | Convenience wrapper: integration + admin        |
 
 Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
 configuration with `session_options` and `create_route_specs`.
 
 ## Quick Reference
 
-| Pattern                           | Purpose                                          |
-| --------------------------------- | ------------------------------------------------ |
-| `src/test/`                       | All tests live here, not co-located              |
-| `src/test/domain/`               | Mirrors `src/lib/domain/` subdirectories         |
-| `module.aspect.test.ts`           | Split test suites by aspect                      |
-| `module.db.test.ts`               | DB test — shared WASM worker via vitest projects |
-| `module.fixtures.test.ts`         | Fixture-based test file                          |
-| `test_helpers.ts`                 | General shared test utilities (most repos)       |
-| `{domain}_test_helpers.ts`       | Domain-specific test utilities                   |
-| `{domain}_test_{aspect}.ts`      | Shared test factory modules (not test files)     |
-| `create_shared_*_tests()`        | Factory function for reusable test suites        |
-| `fixtures/feature/case/`          | Subdirectory per fixture case                    |
-| `fixtures/update.task.ts`         | Parent: runs all child update tasks              |
-| `fixtures/feature/update.task.ts` | Child: regenerates one feature                   |
-| `assert` from vitest              | Ecosystem-wide standard                                      |
-| `assert.isDefined(x); x.prop`    | Narrows to NonNullable — no `x!` needed          |
-| `assert(x instanceof T); x.prop` | Narrows union types — the key advantage over `expect`        |
-| `assert.throws(fn, /regex/)`     | Returns void; second arg: constructor/string/RegExp (not function) |
-| `assert_rejects(fn, /regex?/)`   | Shared — async rejection, optional pattern, returns Error    |
-| `create_mock_logger()`           | Shared — `vi.fn()` methods + tracking arrays                 |
-| try/catch + `assert.include`     | For inspecting thrown errors when helper isn't enough |
-| `assert_*` (not `expect_*`)      | Custom assertion helper naming convention        |
-| `describe` + `test` (not `it`)   | Default structure; 1-2 levels of `describe` typical          |
-| `// @vitest-environment jsdom`    | Pragma for UI tests needing DOM                  |
-| `vi.stubGlobal('ResizeObserver')` | Required in jsdom for components using ResizeObserver |
-| `describe_db(name, fn)`          | DB test wrapper (fuz_app)                        |
-| `create_test_app()`              | Full Hono app for integration tests (fuz_app)    |
-| `stub_app_deps`                  | Throwing stub deps for unit tests (fuz_app)      |
-| DI via `*Operations`/`*Deps`     | Preferred over vi.mock() for side effects        |
-| `create_mock_*()`                 | Factory functions for test data                  |
-| `SKIP_EXAMPLE_TESTS=1`           | Skip slow fuz_css integration tests              |
-| `TEST_DATABASE_URL`              | Enable PostgreSQL tests alongside PGlite         |
-| Never edit `expected.json`        | Always regenerate via task                       |
+| Pattern                           | Purpose                                                            |
+| --------------------------------- | ------------------------------------------------------------------ |
+| `src/test/`                       | All tests live here, not co-located                                |
+| `src/test/domain/`                | Mirrors `src/lib/domain/` subdirectories                           |
+| `module.aspect.test.ts`           | Split test suites by aspect                                        |
+| `module.db.test.ts`               | DB test — shared WASM worker via vitest projects                   |
+| `module.fixtures.test.ts`         | Fixture-based test file                                            |
+| `test_helpers.ts`                 | General shared test utilities (most repos)                         |
+| `{domain}_test_helpers.ts`        | Domain-specific test utilities                                     |
+| `{domain}_test_{aspect}.ts`       | Shared test factory modules (not test files)                       |
+| `create_shared_*_tests()`         | Factory function for reusable test suites                          |
+| `fixtures/feature/case/`          | Subdirectory per fixture case                                      |
+| `fixtures/update.task.ts`         | Parent: runs all child update tasks                                |
+| `fixtures/feature/update.task.ts` | Child: regenerates one feature                                     |
+| `assert` from vitest              | Ecosystem-wide standard                                            |
+| `assert.isDefined(x); x.prop`     | Narrows to NonNullable — no `x!` needed                            |
+| `assert(x instanceof T); x.prop`  | Narrows union types — the key advantage over `expect`              |
+| `assert.throws(fn, /regex/)`      | Returns void; second arg: constructor/string/RegExp (not function) |
+| `assert_rejects(fn, /regex?/)`    | Shared — async rejection, optional pattern, returns Error          |
+| `create_mock_logger()`            | Shared — `vi.fn()` methods + tracking arrays                       |
+| try/catch + `assert.include`      | For inspecting thrown errors when helper isn't enough              |
+| `assert_*` (not `expect_*`)       | Custom assertion helper naming convention                          |
+| `describe` + `test` (not `it`)    | Default structure; 1-2 levels of `describe` typical                |
+| `// @vitest-environment jsdom`    | Pragma for UI tests needing DOM                                    |
+| `vi.stubGlobal('ResizeObserver')` | Required in jsdom for components using ResizeObserver              |
+| `describe_db(name, fn)`           | DB test wrapper (fuz_app)                                          |
+| `create_test_app()`               | Full Hono app for integration tests (fuz_app)                      |
+| `stub_app_deps`                   | Throwing stub deps for unit tests (fuz_app)                        |
+| DI via `*Operations`/`*Deps`      | Preferred over vi.mock() for side effects                          |
+| `create_mock_*()`                 | Factory functions for test data                                    |
+| `SKIP_EXAMPLE_TESTS=1`            | Skip slow fuz_css integration tests                                |
+| `TEST_DATABASE_URL`               | Enable PostgreSQL tests alongside PGlite                           |
+| Never edit `expected.json`        | Always regenerate via task                                         |
