@@ -385,10 +385,15 @@ file's location on disk.
 
 ## Testing
 
-Tests live in `src/test/` (NOT co-located). Core repos (fuz_app, fuz_ui,
-fuz_util) prefer `assert` from vitest — choose methods for TypeScript type
-narrowing, not semantic precision. Some repos (gro, zzz, fuz_css, fuz_gitops)
-use `expect` — follow existing convention per repo.
+Tests live in `src/test/` (NOT co-located). Use `assert` from vitest —
+choose methods for TypeScript type narrowing, not semantic precision.
+`assert(x instanceof Error)` narrows the type;
+`expect(x).toBeInstanceOf(Error)` does not. Some repos have legacy `expect`
+usage — prefer `assert` in new code and migrate opportunistically. Name
+custom assertion helpers `assert_*` (not `expect_*`).
+
+Use `describe` blocks to organize tests — one or two levels deep is typical.
+Use `test()` (not `it()`).
 
 Split large suites with dot-separated aspects: `{module}.{aspect}.test.ts`
 (e.g., `csp.core.test.ts`, `csp.security.test.ts`). Database tests use

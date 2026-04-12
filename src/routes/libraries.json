@@ -30576,7 +30576,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.4.0",
+			"version": "0.7.1",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -30691,7 +30691,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.4.0",
+			"version": "0.7.1",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -30778,19 +30778,19 @@
 							"kind": "function",
 							"doc_comment": "Derive the default HTTP method from side effects.",
 							"source_line": 48,
-							"type_signature": "(side_effects: true | null): RouteMethod",
+							"type_signature": "(side_effects: boolean): RouteMethod",
 							"return_type": "RouteMethod",
 							"parameters": [
 								{
 									"name": "side_effects",
-									"type": "true | null"
+									"type": "boolean"
 								}
 							]
 						},
 						{
-							"name": "route_spec_from_action",
+							"name": "create_action_route_spec",
 							"kind": "function",
-							"doc_comment": "Derive a `RouteSpec` from an `ActionSpec` and options.\n\nOnly `request_response` actions (which require non-null `auth`) can become routes.\n`remote_notification` actions (auth null) should use `event_spec_from_action`.\n`local_call` actions are not for HTTP transport.\n\nError schemas are transport-specific (keyed by HTTP status codes) and belong\non the options, not the action spec. Action specs define the contract;\ntransport concerns like HTTP error codes are added at the bridge layer.",
+							"doc_comment": "Derive a `RouteSpec` from an `ActionSpec` and options.\n\nOnly `request_response` actions (which require non-null `auth`) can become routes.\n`remote_notification` actions (auth null) should use `create_action_event_spec`.\n`local_call` actions are not for HTTP transport.\n\nError schemas are transport-specific (keyed by HTTP status codes) and belong\non the options, not the action spec. Action specs define the contract;\ntransport concerns like HTTP error codes are added at the bridge layer.",
 							"throws": [
 								{
 									"type": "if",
@@ -30815,10 +30815,10 @@
 							]
 						},
 						{
-							"name": "event_spec_from_action",
+							"name": "create_action_event_spec",
 							"kind": "function",
 							"doc_comment": "Derive an `SseEventSpec` from an `ActionSpec`.\n\nOnly `remote_notification` actions can become SSE events.",
-							"source_line": 100,
+							"source_line": 101,
 							"type_signature": "(spec: { method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { ...; } | null; ... 4 more ...; description: string; }, options?: ActionEventOptions | undefined): SseEventSpec",
 							"return_type": "SseEventSpec",
 							"return_description": "an `SseEventSpec` ready for `create_validated_broadcaster`",
@@ -30837,7 +30837,8 @@
 							]
 						}
 					],
-					"module_comment": "Bridge functions to derive `RouteSpec` and `SseEventSpec` from `ActionSpec`.\n\nAction specs define the contract (method, input/output, auth, side effects).\nBridge functions produce transport-specific specs from them. HTTP-specific\nconcerns (path, handler) come from options."
+					"module_comment": "Bridge functions to derive `RouteSpec` and `SseEventSpec` from `ActionSpec`.\n\nAction specs define the contract (method, input/output, auth, side effects).\nBridge functions produce transport-specific specs from them. HTTP-specific\nconcerns (path, handler) come from options.",
+					"dependents": ["http/surface.ts"]
 				},
 				{
 					"path": "actions/action_codegen.ts",
@@ -30968,12 +30969,12 @@
 							"kind": "function",
 							"doc_comment": "Determines which phases an executor can handle based on the action spec.",
 							"source_line": 200,
-							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\"): (\"send_request\" | ... 7 more ... | \"execute\")[]",
+							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\"): (\"send_request\" | ... 7 more ... | \"execute\")[]",
 							"return_type": "(\"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\")[]",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
 								},
 								{
 									"name": "executor",
@@ -30986,12 +30987,12 @@
 							"kind": "function",
 							"doc_comment": "Gets the handler return type for a specific phase and spec.\nAlso adds necessary imports to the `ImportBuilder`.",
 							"source_line": 269,
-							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, phase: \"send_request\" | ... 7 more ... | \"execute\", imports: ImportBuilder, path_prefix: string): string",
+							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, phase: \"send_request\" | ... 7 more ... | \"execute\", imports: ImportBuilder, path_prefix: string): string",
 							"return_type": "string",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
 								},
 								{
 									"name": "phase",
@@ -31012,12 +31013,12 @@
 							"kind": "function",
 							"doc_comment": "Generates the phase handlers for an action spec using the unified ActionEvent type\nwith the new phase/step type parameters.",
 							"source_line": 298,
-							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\", imports: ImportBuilder): string",
+							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\", imports: ImportBuilder): string",
 							"return_type": "string",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
 								},
 								{
 									"name": "executor",
@@ -31063,11 +31064,11 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "(specs: ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; })[]): ActionRegistry",
+									"type_signature": "(specs: ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; })[]): ActionRegistry",
 									"parameters": [
 										{
 											"name": "specs",
-											"type": "({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async:..."
+											"type": "({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; ..."
 										}
 									]
 								}
@@ -31075,6 +31076,143 @@
 						}
 					],
 					"module_comment": "`ActionRegistry` — query and filter utility over `ActionSpecUnion[]`."
+				},
+				{
+					"path": "actions/action_rpc.ts",
+					"declarations": [
+						{
+							"name": "ActionContext",
+							"kind": "type",
+							"doc_comment": "Per-request context provided to RPC action handlers.\n\nExtends `RouteContext` with auth identity and logger.\n`auth` is `RequestContext | null` — handlers for authenticated\nactions can narrow via the auth middleware guarantee.",
+							"source_line": 42,
+							"type_signature": "ActionContext",
+							"properties": [
+								{
+									"name": "auth",
+									"kind": "variable",
+									"type_signature": "RequestContext | null",
+									"doc_comment": "The authenticated identity, or `null` for public routes."
+								},
+								{
+									"name": "request_id",
+									"kind": "variable",
+									"type_signature": "JsonrpcRequestId",
+									"doc_comment": "The JSON-RPC request ID from the envelope."
+								},
+								{
+									"name": "db",
+									"kind": "variable",
+									"type_signature": "Db",
+									"doc_comment": "Transaction-scoped for mutations, pool-level for reads."
+								},
+								{
+									"name": "background_db",
+									"kind": "variable",
+									"type_signature": "Db",
+									"doc_comment": "Always pool-level — for fire-and-forget effects that outlive the transaction."
+								},
+								{
+									"name": "pending_effects",
+									"kind": "variable",
+									"type_signature": "Array<Promise<void>>",
+									"doc_comment": "Fire-and-forget side effects — push here for post-response flushing."
+								},
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "Logger",
+									"doc_comment": "Logger instance."
+								}
+							]
+						},
+						{
+							"name": "ActionHandler",
+							"kind": "type",
+							"doc_comment": "Handler function for an RPC action.\n\nReceives validated input and an `ActionContext` with per-request deps.\nReturns the output value (serialized to JSON by the wrapper).",
+							"source_line": 63,
+							"type_signature": "ActionHandler<TInput, TOutput>",
+							"generic_params": [
+								{
+									"name": "TInput",
+									"default_type": "any"
+								},
+								{
+									"name": "TOutput",
+									"default_type": "any"
+								}
+							]
+						},
+						{
+							"name": "RpcAction",
+							"kind": "type",
+							"doc_comment": "An RPC action — combines an action spec with its handler.\n\nThe spec defines the contract (method, auth, schemas, side effects).\nThe handler implements the behavior.",
+							"source_line": 74,
+							"type_signature": "RpcAction",
+							"properties": [
+								{
+									"name": "spec",
+									"kind": "variable",
+									"type_signature": "RequestResponseActionSpec"
+								},
+								{
+									"name": "handler",
+									"kind": "variable",
+									"type_signature": "ActionHandler"
+								}
+							]
+						},
+						{
+							"name": "CreateRpcEndpointOptions",
+							"kind": "type",
+							"doc_comment": "Options for `create_rpc_endpoint`.",
+							"source_line": 80,
+							"type_signature": "CreateRpcEndpointOptions",
+							"properties": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Mount path for the endpoint (e.g., `/api/rpc`)."
+								},
+								{
+									"name": "actions",
+									"kind": "variable",
+									"type_signature": "Array<RpcAction>",
+									"doc_comment": "RPC actions to serve."
+								},
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "Logger",
+									"doc_comment": "Logger instance for handler context."
+								}
+							]
+						},
+						{
+							"name": "create_rpc_endpoint",
+							"kind": "function",
+							"doc_comment": "Single JSON-RPC 2.0 endpoint — the canonical RPC transport binding.\n\nReturns two `RouteSpec` entries (GET + POST on the same path) for\n`apply_route_specs`. The internal dispatcher handles:\n\n1. **Parse envelope** — POST: JSON body as `JsonrpcRequest`. GET: `method`\n   and `params` from query string.\n2. **Lookup method** — find the `RpcAction` by method name.\n3. **Auth check** — verify identity against the action's `auth` requirement.\n4. **Validate params** — parse input against the action's `input` schema.\n5. **Dispatch** — acquire DB handle (transaction for mutations, pool for reads),\n   construct `ActionContext`, call handler, return JSON-RPC response.\n\nGET is restricted to `side_effects: false` actions (cacheable reads).\nAll errors use JSON-RPC format: `{jsonrpc, id, error: {code, message, data?}}`.\n\nThe RouteSpecs use `auth: {type: 'none'}` because auth is checked per-action\ninside the dispatcher, and `transaction: false` because transaction scope\nis per-action (mutations get a transaction, reads get pool).",
+							"source_line": 161,
+							"type_signature": "(options: CreateRpcEndpointOptions): RouteSpec[]",
+							"return_type": "RouteSpec[]",
+							"return_description": "route specs (GET + POST) ready for `apply_route_specs`",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "CreateRpcEndpointOptions",
+									"description": "endpoint path, actions, and logger"
+								}
+							]
+						}
+					],
+					"module_comment": "Single JSON-RPC 2.0 endpoint from action specs.\n\n`create_rpc_endpoint` produces `RouteSpec[]` (GET + POST on one path)\nwith an internal dispatcher. Method name lives in the JSON-RPC envelope\n(POST body or GET query string), not the URL. Auth is checked per-action\ninside the dispatcher.\n\nHandler signature: `(input: TInput, ctx: ActionContext) => TOutput`\nwhere `ActionContext` provides auth identity, DB, and framework context.",
+					"dependencies": [
+						"auth/request_context.ts",
+						"hono_context.ts",
+						"http/jsonrpc.ts",
+						"http/jsonrpc_errors.ts",
+						"http/schema_helpers.ts"
+					]
 				},
 				{
 					"path": "actions/action_spec.ts",
@@ -31101,7 +31239,7 @@
 							"name": "ActionSideEffects",
 							"kind": "type",
 							"source_line": 32,
-							"type_signature": "ZodUnion<readonly [ZodLiteral<true>, ZodNull]>"
+							"type_signature": "ZodBoolean"
 						},
 						{
 							"name": "ActionSpec",
@@ -31113,7 +31251,7 @@
 							"name": "RequestResponseActionSpec",
 							"kind": "type",
 							"source_line": 48,
-							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodUnion<readonly [ZodLiteral<true>, ZodNull]>; ... 5 more ...; async: ZodDefault<...>; }, $strict>"
+							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 4 more ...; async: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "RemoteNotificationActionSpec",
@@ -31126,19 +31264,19 @@
 							"kind": "type",
 							"doc_comment": "Local calls can wrap synchronous or asynchronous actions,\nand are the escape hatch for remote APIs that do not support SAES.",
 							"source_line": 68,
-							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodUnion<readonly [ZodLiteral<true>, ZodNull]>; ... 5 more ...; auth: ZodDefault<...>; }, $strict>"
+							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 4 more ...; auth: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "ActionSpecUnion",
 							"kind": "type",
 							"source_line": 74,
-							"type_signature": "ZodUnion<readonly [ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodUnion<readonly [ZodLiteral<true>, ZodNull]>; ... 5 more ...; async: ZodDefault<...>; }, $strict>, ZodObject<...>, ZodObject<...>]>"
+							"type_signature": "ZodUnion<readonly [ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 4 more ...; async: ZodDefault<...>; }, $strict>, ZodObject<...."
 						},
 						{
 							"name": "is_action_spec",
 							"kind": "function",
 							"source_line": 81,
-							"type_signature": "(value: unknown): value is { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<...>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }",
+							"type_signature": "(value: unknown): value is { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<...>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }",
 							"return_type": "boolean",
 							"parameters": [
 								{
@@ -33013,7 +33151,7 @@
 							"name": "create_bearer_auth_middleware",
 							"kind": "function",
 							"doc_comment": "Create middleware that authenticates via bearer token.\n\nRejects bearer tokens when an `Origin` or `Referer` header is present —\nbrowsers must use cookie auth to reduce attack surface.\nAuth scheme matching is case-insensitive per RFC 7235.\nOn success, builds the request context (`{ account, actor, permits }`)\nand sets it on the Hono context. Skips if a request context is already set\n(e.g. by session middleware).",
-							"source_line": 43,
+							"source_line": 39,
 							"type_signature": "(deps: QueryDeps, ip_rate_limiter: RateLimiter | null, log: Logger): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -33602,7 +33740,7 @@
 					],
 					"module_comment": "Daemon token primitives — schema, generation, and validation.\n\nPure auth operations with no I/O or state management.\nThe middleware, rotation, and persistence logic lives in\n`daemon_token_middleware.ts`.",
 					"dependencies": ["crypto.ts"],
-					"dependents": ["auth/daemon_token_middleware.ts"]
+					"dependents": ["auth/daemon_token_middleware.ts", "testing/app_server.ts"]
 				},
 				{
 					"path": "auth/ddl.ts",
@@ -34269,7 +34407,8 @@
 						"testing/data_exposure.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
 					]
 				},
 				{
@@ -34793,6 +34932,7 @@
 						"http/error_schemas.ts"
 					],
 					"dependents": [
+						"actions/action_rpc.ts",
 						"auth/account_routes.ts",
 						"auth/admin_routes.ts",
 						"auth/app_settings_routes.ts",
@@ -34955,7 +35095,8 @@
 						"testing/app_server.ts",
 						"testing/audit_completeness.ts",
 						"testing/data_exposure.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
 					]
 				},
 				{
@@ -36945,7 +37086,8 @@
 						"testing/data_exposure.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
 					]
 				},
 				{
@@ -37984,6 +38126,7 @@
 					],
 					"module_comment": "Hono context variable augmentation for fuz_app.\n\nCross-cutting shared vocabulary — defines the Hono `ContextVariableMap`\nvariables used by auth, http, server, and testing modules.\n\nImport this module once in your app to get type-safe access to\n`auth_session_id`, `request_context`, and `credential_type` on the Hono context.\n\nIn practice, this is auto-loaded by `app_server.ts` (side-effect import)\nand transitively by auth middleware modules that import `CREDENTIAL_TYPE_KEY`.\nConsumers don't need a manual import unless bypassing the standard server assembly.",
 					"dependents": [
+						"actions/action_rpc.ts",
 						"auth/bearer_auth.ts",
 						"auth/daemon_token_middleware.ts",
 						"auth/request_context.ts",
@@ -38579,8 +38722,209 @@
 						"testing/attack_surface.ts",
 						"testing/middleware.ts",
 						"testing/rate_limiting.ts",
+						"testing/rpc_attack_surface.ts",
 						"testing/stubs.ts"
 					]
+				},
+				{
+					"path": "http/jsonrpc_errors.ts",
+					"declarations": [
+						{
+							"name": "JsonrpcErrorCode",
+							"kind": "type",
+							"doc_comment": "Branded number type for JSON-RPC error codes.",
+							"source_line": 19,
+							"type_signature": "JsonrpcErrorCode"
+						},
+						{
+							"name": "JsonrpcErrorJson",
+							"kind": "type",
+							"doc_comment": "JSON-RPC error response object — code, message, and optional data.",
+							"source_line": 22,
+							"type_signature": "JsonrpcErrorJson",
+							"properties": [
+								{
+									"name": "code",
+									"kind": "variable",
+									"type_signature": "JsonrpcErrorCode"
+								},
+								{
+									"name": "message",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "data",
+									"kind": "variable",
+									"type_signature": "unknown"
+								}
+							]
+						},
+						{
+							"name": "JsonrpcErrorName",
+							"kind": "type",
+							"doc_comment": "Names of standard and general application JSON-RPC error codes.",
+							"source_line": 29,
+							"type_signature": "JsonrpcErrorName"
+						},
+						{
+							"name": "JSONRPC_ERROR_CODES",
+							"kind": "variable",
+							"doc_comment": "Standard JSON-RPC error codes (5) plus general application codes (8).\n\nExtensible — consumers add domain-specific codes to their own objects\nby casting `as JsonrpcErrorCode`. Application codes use the -32000 to\n-32099 range reserved by the JSON-RPC spec.",
+							"source_line": 51,
+							"type_signature": "{ readonly parse_error: JsonrpcErrorCode; readonly invalid_request: JsonrpcErrorCode; readonly method_not_found: JsonrpcErrorCode; ... 9 more ...; readonly timeout: JsonrpcErrorCode; }"
+						},
+						{
+							"name": "jsonrpc_error_messages",
+							"kind": "variable",
+							"doc_comment": "Named constructors for `JsonrpcErrorJson` objects.\n\nEach function creates a JSON-RPC error response object with the correct\ncode and a sensible default message. Used by the catch layer in\n`apply_route_specs` to build response bodies.",
+							"source_line": 95,
+							"type_signature": "{ readonly parse_error: (data?: unknown) => JsonrpcErrorJson; readonly invalid_request: (data?: unknown) => JsonrpcErrorJson; readonly method_not_found: (method?: string | undefined, data?: unknown) => JsonrpcErrorJson; ... 9 more ...; readonly timeout: (message?: string, data?: unknown) => JsonrpcErrorJson; }"
+						},
+						{
+							"name": "ThrownJsonrpcError",
+							"kind": "class",
+							"doc_comment": "Error class carrying a JSON-RPC error code — thrown by handlers,\ncaught by `apply_route_specs` and mapped to HTTP status + JSON-RPC error response.\n\nNamed for what it is: an error with a JSON-RPC error code that gets thrown.",
+							"source_line": 187,
+							"extends": ["Error"],
+							"implements": [],
+							"members": [
+								{
+									"name": "code",
+									"kind": "variable",
+									"type_signature": "JsonrpcErrorCode"
+								},
+								{
+									"name": "data",
+									"kind": "variable",
+									"type_signature": "unknown"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(code: JsonrpcErrorCode, message: string, data?: unknown, options?: ErrorOptions | undefined): ThrownJsonrpcError",
+									"parameters": [
+										{
+											"name": "code",
+											"type": "JsonrpcErrorCode"
+										},
+										{
+											"name": "message",
+											"type": "string"
+										},
+										{
+											"name": "data",
+											"type": "unknown",
+											"optional": true
+										},
+										{
+											"name": "options",
+											"type": "ErrorOptions | undefined",
+											"optional": true
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "jsonrpc_errors",
+							"kind": "variable",
+							"doc_comment": "Named constructors for `ThrownJsonrpcError`.\n\nUsage: `throw jsonrpc_errors.not_found('user')` or `throw jsonrpc_errors.forbidden()`.",
+							"source_line": 212,
+							"type_signature": "{ readonly parse_error: (data?: unknown) => ThrownJsonrpcError; readonly invalid_request: (data?: unknown) => ThrownJsonrpcError; readonly method_not_found: (method?: string | undefined, data?: unknown) => ThrownJsonrpcError; ... 9 more ...; readonly timeout: (message?: string | undefined, data?: unknown) => ThrownJ..."
+						},
+						{
+							"name": "jsonrpc_error_code_to_http_status",
+							"kind": "function",
+							"doc_comment": "Map a JSON-RPC error code to an HTTP status code.\n\nReturns 500 for unrecognized codes (consumer-defined codes\nwithout a mapping default to internal server error).",
+							"source_line": 255,
+							"type_signature": "(code: JsonrpcErrorCode): number",
+							"return_type": "number",
+							"return_description": "the corresponding HTTP status code",
+							"parameters": [
+								{
+									"name": "code",
+									"type": "JsonrpcErrorCode",
+									"description": "the JSON-RPC error code"
+								}
+							]
+						}
+					],
+					"module_comment": "JSON-RPC error infrastructure for fuz_app routes.\n\nProvides error types, named constructors, and HTTP status mapping\nfor the throw/catch error pattern used by `apply_route_specs`.\nExtracted from zzz's `jsonrpc_errors.ts` — only core error codes\n(5 standard + 8 general application). Domain-specific codes stay\nin consumers. `JSONRPC_ERROR_CODES` is extensible — consumers\nadd their own codes by casting `as JsonrpcErrorCode`.\n\nComplementary to `error_schemas.ts`: that module is declarative\n(Zod schemas for surface introspection), this one is runtime\n(throw + catch + map).",
+					"dependents": [
+						"actions/action_rpc.ts",
+						"http/route_spec.ts",
+						"testing/rpc_attack_surface.ts"
+					]
+				},
+				{
+					"path": "http/jsonrpc.ts",
+					"declarations": [
+						{
+							"name": "JSONRPC_VERSION",
+							"kind": "variable",
+							"source_line": 18,
+							"type_signature": "\"2.0\""
+						},
+						{
+							"name": "JsonrpcRequestId",
+							"kind": "type",
+							"doc_comment": "A uniquely identifying id for a request in JSON-RPC. Like MCP, excludes null.",
+							"source_line": 21,
+							"type_signature": "ZodUnion<readonly [ZodString, ZodNumber]>"
+						},
+						{
+							"name": "JsonrpcMethod",
+							"kind": "type",
+							"doc_comment": "A JSON-RPC method name.",
+							"source_line": 25,
+							"type_signature": "ZodString"
+						},
+						{
+							"name": "JsonrpcRequestParams",
+							"kind": "type",
+							"doc_comment": "Request params — loose object to allow additional properties.",
+							"source_line": 29,
+							"type_signature": "ZodObject<{}, $loose>"
+						},
+						{
+							"name": "JsonrpcResult",
+							"kind": "type",
+							"doc_comment": "Result — loose object to allow additional properties.",
+							"source_line": 33,
+							"type_signature": "ZodObject<{}, $loose>"
+						},
+						{
+							"name": "JsonrpcRequest",
+							"kind": "type",
+							"doc_comment": "A request that expects a response.",
+							"source_line": 37,
+							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; method: ZodString; params: ZodOptional<ZodObject<{}, $loose>>; }, $loose>"
+						},
+						{
+							"name": "JsonrpcResponse",
+							"kind": "type",
+							"doc_comment": "A successful (non-error) response to a request.",
+							"source_line": 46,
+							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; result: ZodObject<{}, $loose>; }, $loose>"
+						},
+						{
+							"name": "JsonrpcErrorObject",
+							"kind": "type",
+							"doc_comment": "Error object within a JSON-RPC error response.",
+							"source_line": 54,
+							"type_signature": "ZodObject<{ code: ZodNumber; message: ZodString; data: ZodOptional<ZodUnknown>; }, $loose>"
+						},
+						{
+							"name": "JsonrpcErrorResponse",
+							"kind": "type",
+							"doc_comment": "A response that indicates an error occurred.",
+							"source_line": 62,
+							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodNullable<ZodUnion<readonly [ZodString, ZodNumber]>>; error: ZodObject<{ code: ZodNumber; message: ZodString; data: ZodOptional<...>; }, $loose>; }, $loose>"
+						}
+					],
+					"module_comment": "JSON-RPC 2.0 envelope schemas for the single RPC endpoint dispatcher.\n\nMinimal subset extracted from zzz's `jsonrpc.ts` — only what the\n`create_rpc_endpoint` dispatcher needs to parse incoming requests\nand format outgoing responses. Full JSON-RPC schemas (batching,\nMCP extensions, notification types) remain in zzz.\n\nFollowing MCP, params and result are object-only (no positional arrays).\n\n@source https://github.com/modelcontextprotocol/typescript-sdk\n@see https://www.jsonrpc.org/specification",
+					"dependents": ["actions/action_rpc.ts", "testing/rpc_helpers.ts"]
 				},
 				{
 					"path": "http/middleware_spec.ts",
@@ -38858,28 +39202,28 @@
 							"name": "RouteAuth",
 							"kind": "type",
 							"doc_comment": "Auth requirement for a route — `none`, `authenticated`, a specific role, or `keeper`.\n\n`{type: 'none'}` means the route is open to all clients — including non-browser\ncallers (CLI, API tokens, scripts). No session or auth middleware guards are applied.",
-							"source_line": 39,
+							"source_line": 45,
 							"type_signature": "RouteAuth"
 						},
 						{
 							"name": "AuthGuardResolver",
 							"kind": "type",
 							"doc_comment": "Resolves a `RouteAuth` to middleware guard handlers.\n\nInjected into `apply_route_specs` to decouple route registration\nfrom auth-specific middleware. See `fuz_auth_guard_resolver` in\n`auth/route_guards.ts` for the standard implementation.",
-							"source_line": 52,
+							"source_line": 58,
 							"type_signature": "AuthGuardResolver"
 						},
 						{
 							"name": "RouteMethod",
 							"kind": "type",
 							"doc_comment": "HTTP methods supported by route specs.",
-							"source_line": 55,
+							"source_line": 61,
 							"type_signature": "RouteMethod"
 						},
 						{
 							"name": "RouteContext",
 							"kind": "type",
 							"doc_comment": "Per-request deps provided by the framework to route handlers.\n\n`db` is transaction-scoped for mutation routes and pool-level for reads.\n`background_db` is always pool-level — use it for fire-and-forget effects\nthat must outlive the transaction.",
-							"source_line": 64,
+							"source_line": 70,
 							"type_signature": "RouteContext",
 							"properties": [
 								{
@@ -38906,14 +39250,14 @@
 							"name": "RouteHandler",
 							"kind": "type",
 							"doc_comment": "Route handler function — receives the Hono context and a `RouteContext`\nwith per-request deps (db, background_db, pending_effects).\n\nTypeScript allows fewer params, so handlers that don't need `route`\ncan use `(c) => ...` without changes.",
-							"source_line": 80,
+							"source_line": 86,
 							"type_signature": "RouteHandler"
 						},
 						{
 							"name": "RouteSpec",
 							"kind": "type",
 							"doc_comment": "A single route definition — the unit of the surface map.\n\n`input` and `output` schemas align with SAES `ActionSpec` naming.\nUse `z.null()` for routes with no request body (GET, DELETE without body).",
-							"source_line": 88,
+							"source_line": 94,
 							"type_signature": "RouteSpec",
 							"properties": [
 								{
@@ -38990,7 +39334,7 @@
 							"name": "get_route_input",
 							"kind": "function",
 							"doc_comment": "Get validated input from the Hono context.\n\nCall this in route handlers after the input validation middleware has run.\nThe type parameter should match the route's `input` schema.",
-							"source_line": 152,
+							"source_line": 158,
 							"type_signature": "<T>(c: Context<any, any, {}>): T",
 							"return_type": "T",
 							"return_description": "the validated request body",
@@ -39005,7 +39349,7 @@
 							"name": "get_route_params",
 							"kind": "function",
 							"doc_comment": "Get validated URL path params from the Hono context.\n\nCall this in route handlers after the params validation middleware has run.\nThe type parameter should match the route's `params` schema.\n\nTODO",
-							"source_line": 167,
+							"source_line": 173,
 							"type_signature": "<T>(c: Context<any, any, {}>): T",
 							"return_type": "T",
 							"return_description": "the validated path parameters",
@@ -39020,7 +39364,7 @@
 							"name": "get_route_query",
 							"kind": "function",
 							"doc_comment": "Get validated URL query params from the Hono context.\n\nCall this in route handlers after the query validation middleware has run.\nThe type parameter should match the route's `query` schema.",
-							"source_line": 179,
+							"source_line": 185,
 							"type_signature": "<T>(c: Context<any, any, {}>): T",
 							"return_type": "T",
 							"return_description": "the validated query parameters",
@@ -39035,7 +39379,7 @@
 							"name": "apply_middleware_specs",
 							"kind": "function",
 							"doc_comment": "Apply named middleware specs to a Hono app.",
-							"source_line": 317,
+							"source_line": 329,
 							"type_signature": "(app: Hono<BlankEnv, BlankSchema, \"/\">, specs: MiddlewareSpec[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -39054,8 +39398,8 @@
 						{
 							"name": "apply_route_specs",
 							"kind": "function",
-							"doc_comment": "Apply route specs to a Hono app.\n\nFor each spec: resolves auth to guards via the provided resolver,\nadds input validation middleware (for routes with non-null input schemas),\nwraps handler with DEV-only output and error validation, and registers the route.\n\nEach handler receives a `RouteContext` with:\n- `db`: transaction-scoped (for non-GET) or pool-level (for GET)\n- `background_db`: always pool-level\n- `pending_effects`: fire-and-forget effect queue",
-							"source_line": 342,
+							"doc_comment": "Apply route specs to a Hono app.\n\nFor each spec: resolves auth to guards via the provided resolver,\nadds input validation middleware (for routes with non-null input schemas),\nwraps handler with DEV-only output and error validation, wraps with error\ncatch layer (catches `ThrownJsonrpcError` and generic errors), and registers the route.\n\nEach handler receives a `RouteContext` with:\n- `db`: transaction-scoped (for non-GET) or pool-level (for GET)\n- `background_db`: always pool-level\n- `pending_effects`: fire-and-forget effect queue",
+							"source_line": 385,
 							"type_signature": "(app: Hono<BlankEnv, BlankSchema, \"/\">, specs: RouteSpec[], resolve_auth_guards: AuthGuardResolver, log: Logger, db: Db): void",
 							"return_type": "void",
 							"parameters": [
@@ -39090,7 +39434,7 @@
 							"name": "prefix_route_specs",
 							"kind": "function",
 							"doc_comment": "Prepend a prefix to all route spec paths.",
-							"source_line": 393,
+							"source_line": 438,
 							"type_signature": "(prefix: string, specs: RouteSpec[]): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "new array of specs with prefixed paths",
@@ -39109,7 +39453,11 @@
 						}
 					],
 					"module_comment": "Introspectable route spec system for Hono apps.\n\nRoutes are defined as data (method, path, auth, input/output schemas, handler),\nthen applied to Hono. The attack surface is generated from the specs —\nalways accurate, always complete.\n\nInput/output schemas align with SAES `ActionSpec` conventions:\n- `input`: Zod schema for the request body (`z.null()` for no body)\n- `output`: Zod schema for the success response body\n- `z.strictObject()` for inputs (reject unknown keys)",
-					"dependencies": ["http/error_schemas.ts", "http/schema_helpers.ts"],
+					"dependencies": [
+						"http/error_schemas.ts",
+						"http/jsonrpc_errors.ts",
+						"http/schema_helpers.ts"
+					],
 					"dependents": [
 						"auth/account_routes.ts",
 						"auth/admin_routes.ts",
@@ -39172,7 +39520,7 @@
 							"name": "middleware_applies",
 							"kind": "function",
 							"doc_comment": "Check if a middleware path pattern applies to a route path.\n\nSupports Hono-style patterns:\n- `/api/*` matches `/api/anything`\n- `/api/tx/*` matches `/api/tx/runs` but not `/api/account/login`\n- Exact match: `/health` matches `/health`",
-							"source_line": 66,
+							"source_line": 78,
 							"type_signature": "(mw_path: string, route_path: string): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -39192,7 +39540,7 @@
 							"name": "merge_error_schemas",
 							"kind": "function",
 							"doc_comment": "Merge auto-derived, middleware, and explicit error schemas for a route spec.\n\nMerge order: derived -> middleware -> explicit route errors.\nLater layers override earlier ones for the same status code.",
-							"source_line": 86,
+							"source_line": 98,
 							"type_signature": "(spec: { auth: RouteAuth; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; params?: ZodObject<$ZodLooseShape, $strip> | undefined; query?: ZodObject<...> | undefined; rate_limit?: RateLimitKey | undefined; errors?: Partial<...> | undefined; }, middleware_errors?: Partial<...> | ... 1 more ... | undefined): Partial<...> | null",
 							"return_type": "Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>> | null",
 							"return_description": "merged error schemas, or `null` if empty",
@@ -39214,6 +39562,7 @@
 					"module_comment": "Shared pure helpers for schema introspection and middleware matching.\n\nUsed by both `route_spec.ts` (input validation) and `surface.ts`\n(attack surface generation). Extracted to avoid circular dependencies\nbetween routes and middleware.",
 					"dependencies": ["http/error_schemas.ts"],
 					"dependents": [
+						"actions/action_rpc.ts",
 						"http/route_spec.ts",
 						"http/surface.ts",
 						"testing/adversarial_404.ts",
@@ -39465,7 +39814,7 @@
 							"name": "AppSurfaceRoute",
 							"kind": "type",
 							"doc_comment": "A route in the generated attack surface (JSON-serializable).",
-							"source_line": 29,
+							"source_line": 31,
 							"type_signature": "AppSurfaceRoute",
 							"properties": [
 								{
@@ -39547,7 +39896,7 @@
 							"name": "AppSurfaceMiddleware",
 							"kind": "type",
 							"doc_comment": "A middleware in the generated attack surface (JSON-serializable).",
-							"source_line": 54,
+							"source_line": 56,
 							"type_signature": "AppSurfaceMiddleware",
 							"properties": [
 								{
@@ -39572,7 +39921,7 @@
 							"name": "AppSurfaceEnv",
 							"kind": "type",
 							"doc_comment": "An env var in the generated attack surface (JSON-serializable).",
-							"source_line": 62,
+							"source_line": 64,
 							"type_signature": "AppSurfaceEnv",
 							"properties": [
 								{
@@ -39607,7 +39956,7 @@
 							"name": "AppSurfaceEvent",
 							"kind": "type",
 							"doc_comment": "An SSE event in the generated attack surface (JSON-serializable).",
-							"source_line": 72,
+							"source_line": 74,
 							"type_signature": "AppSurfaceEvent",
 							"properties": [
 								{
@@ -39633,10 +39982,70 @@
 							]
 						},
 						{
+							"name": "AppSurfaceRpcMethod",
+							"kind": "type",
+							"doc_comment": "A method within an RPC endpoint in the generated attack surface (JSON-serializable).",
+							"source_line": 82,
+							"type_signature": "AppSurfaceRpcMethod",
+							"properties": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "auth",
+									"kind": "variable",
+									"type_signature": "RouteAuth"
+								},
+								{
+									"name": "input_schema",
+									"kind": "variable",
+									"type_signature": "unknown",
+									"doc_comment": "JSON Schema representation of the input schema. `null` for null-input methods."
+								},
+								{
+									"name": "output_schema",
+									"kind": "variable",
+									"type_signature": "unknown",
+									"doc_comment": "JSON Schema representation of the output schema."
+								},
+								{
+									"name": "side_effects",
+									"kind": "variable",
+									"type_signature": "boolean"
+								},
+								{
+									"name": "description",
+									"kind": "variable",
+									"type_signature": "string"
+								}
+							]
+						},
+						{
+							"name": "AppSurfaceRpcEndpoint",
+							"kind": "type",
+							"doc_comment": "An RPC endpoint in the generated attack surface (JSON-serializable).",
+							"source_line": 94,
+							"type_signature": "AppSurfaceRpcEndpoint",
+							"properties": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "methods",
+									"kind": "variable",
+									"type_signature": "Array<AppSurfaceRpcMethod>"
+								}
+							]
+						},
+						{
 							"name": "AppSurfaceDiagnostic",
 							"kind": "type",
 							"doc_comment": "Assembly-time diagnostic collected during surface generation or server assembly.",
-							"source_line": 80,
+							"source_line": 100,
 							"type_signature": "AppSurfaceDiagnostic",
 							"properties": [
 								{
@@ -39665,7 +40074,7 @@
 							"name": "AppSurface",
 							"kind": "type",
 							"doc_comment": "Generated attack surface — JSON-serializable.",
-							"source_line": 88,
+							"source_line": 108,
 							"type_signature": "AppSurface",
 							"properties": [
 								{
@@ -39677,6 +40086,11 @@
 									"name": "routes",
 									"kind": "variable",
 									"type_signature": "Array<AppSurfaceRoute>"
+								},
+								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "Array<AppSurfaceRpcEndpoint>"
 								},
 								{
 									"name": "env",
@@ -39699,7 +40113,7 @@
 							"name": "AppSurfaceSpec",
 							"kind": "type",
 							"doc_comment": "The surface bundled with the source specs that produced it.\n\n`AppSurface` is JSON-serializable (snapshots, UI, startup logging).\n`AppSurfaceSpec` is runtime-only (tests, introspection, attack surface assertions).",
-							"source_line": 102,
+							"source_line": 123,
 							"type_signature": "AppSurfaceSpec",
 							"properties": [
 								{
@@ -39716,6 +40130,30 @@
 									"name": "middleware_specs",
 									"kind": "variable",
 									"type_signature": "Array<MiddlewareSpec>"
+								},
+								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "Array<RpcEndpointSpec>"
+								}
+							]
+						},
+						{
+							"name": "RpcEndpointSpec",
+							"kind": "type",
+							"doc_comment": "An RPC endpoint definition for surface generation.",
+							"source_line": 131,
+							"type_signature": "RpcEndpointSpec",
+							"properties": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "actions",
+									"kind": "variable",
+									"type_signature": "Array<RpcAction>"
 								}
 							]
 						},
@@ -39723,7 +40161,7 @@
 							"name": "GenerateAppSurfaceOptions",
 							"kind": "type",
 							"doc_comment": "Options for `generate_app_surface`.",
-							"source_line": 109,
+							"source_line": 137,
 							"type_signature": "GenerateAppSurfaceOptions",
 							"properties": [
 								{
@@ -39745,6 +40183,11 @@
 									"name": "event_specs",
 									"kind": "variable",
 									"type_signature": "Array<SseEventSpec>"
+								},
+								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "Array<RpcEndpointSpec>"
 								}
 							]
 						},
@@ -39752,7 +40195,7 @@
 							"name": "collect_middleware_errors",
 							"kind": "function",
 							"doc_comment": "Collect error schemas from all middleware that applies to a route path.",
-							"source_line": 125,
+							"source_line": 154,
 							"type_signature": "(middleware: MiddlewareSpec[], route_path: string): Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>> | null",
 							"return_type": "Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>> | null",
 							"return_description": "merged middleware error schemas, or `null` if none",
@@ -39773,7 +40216,7 @@
 							"name": "env_schema_to_surface",
 							"kind": "function",
 							"doc_comment": "Convert env schema to surface entries using `.meta()` metadata.",
-							"source_line": 144,
+							"source_line": 173,
 							"type_signature": "(schema: ZodObject<$ZodLooseShape, $strip>): AppSurfaceEnv[]",
 							"return_type": "AppSurfaceEnv[]",
 							"return_description": "array of env surface entries",
@@ -39789,7 +40232,7 @@
 							"name": "events_to_surface",
 							"kind": "function",
 							"doc_comment": "Convert SSE event specs to surface entries.",
-							"source_line": 167,
+							"source_line": 196,
 							"type_signature": "(event_specs: SseEventSpec[]): AppSurfaceEvent[]",
 							"return_type": "AppSurfaceEvent[]",
 							"return_description": "array of event surface entries",
@@ -39805,7 +40248,7 @@
 							"name": "generate_app_surface",
 							"kind": "function",
 							"doc_comment": "Generate a JSON-serializable attack surface from middleware, route specs,\nand optional env/event metadata.",
-							"source_line": 183,
+							"source_line": 212,
 							"type_signature": "(options: GenerateAppSurfaceOptions): AppSurface",
 							"return_type": "AppSurface",
 							"return_description": "the attack surface",
@@ -39821,7 +40264,7 @@
 							"name": "create_app_surface_spec",
 							"kind": "function",
 							"doc_comment": "Create an `AppSurfaceSpec` — the surface bundled with its source specs.",
-							"source_line": 266,
+							"source_line": 308,
 							"type_signature": "(options: GenerateAppSurfaceOptions): AppSurfaceSpec",
 							"return_type": "AppSurfaceSpec",
 							"return_description": "the surface spec with surface and raw specs",
@@ -39835,7 +40278,7 @@
 						}
 					],
 					"module_comment": "App surface generation — JSON-serializable attack surface from route and middleware specs.\n\nPure schema helpers (`is_null_schema`, `schema_to_surface`, `middleware_applies`,\n`merge_error_schemas`) live in `schema_helpers.ts`.",
-					"dependencies": ["http/schema_helpers.ts"],
+					"dependencies": ["actions/action_bridge.ts", "http/schema_helpers.ts"],
 					"dependents": ["server/app_server.ts", "testing/attack_surface.ts", "testing/stubs.ts"]
 				},
 				{
@@ -41103,7 +41546,7 @@
 							"name": "EffectErrorContext",
 							"kind": "type",
 							"doc_comment": "Context passed to `on_effect_error` when a pending effect rejects.",
-							"source_line": 72,
+							"source_line": 73,
 							"type_signature": "EffectErrorContext",
 							"properties": [
 								{
@@ -41124,7 +41567,7 @@
 							"name": "AppServerOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `create_app_server()`.\n\nRequires a pre-initialized `AppBackend` from `create_app_backend()`.\nTwo explicit steps: init backend then assemble server.",
-							"source_line": 85,
+							"source_line": 86,
 							"type_signature": "AppServerOptions",
 							"properties": [
 								{
@@ -41230,6 +41673,12 @@
 									"doc_comment": "SSE event specs for surface generation. Defaults to `[]` (no SSE events)."
 								},
 								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "Array<RpcEndpointSpec>",
+									"doc_comment": "RPC endpoint specs for surface generation."
+								},
+								{
 									"name": "env_schema",
 									"kind": "variable",
 									"type_signature": "z.ZodObject",
@@ -41271,7 +41720,7 @@
 							"name": "AppServerContext",
 							"kind": "type",
 							"doc_comment": "Context passed to `create_route_specs`.",
-							"source_line": 212,
+							"source_line": 216,
 							"type_signature": "AppServerContext",
 							"properties": [
 								{
@@ -41330,7 +41779,7 @@
 							"name": "AppServer",
 							"kind": "type",
 							"doc_comment": "Result of `create_app_server()`.",
-							"source_line": 230,
+							"source_line": 234,
 							"type_signature": "AppServer",
 							"properties": [
 								{
@@ -41379,14 +41828,14 @@
 							"name": "DEFAULT_MAX_BODY_SIZE",
 							"kind": "variable",
 							"doc_comment": "Default maximum request body size: 1 MiB.",
-							"source_line": 246,
+							"source_line": 250,
 							"type_signature": "number"
 						},
 						{
 							"name": "create_app_server",
 							"kind": "function",
 							"doc_comment": "Create a fully assembled Hono app with auth, middleware, and routes.\n\nHandles the full lifecycle: consumer migrations → proxy middleware →\nauth middleware → bootstrap status → route specs → surface generation →\nHono app assembly → static serving.",
-							"source_line": 258,
+							"source_line": 262,
 							"type_signature": "(options: AppServerOptions): Promise<AppServer>",
 							"return_type": "Promise<AppServer>",
 							"return_description": "assembled Hono app, backend, surface build, and bootstrap status",
@@ -41763,7 +42212,7 @@
 							"name": "AdversarialHeaderCase",
 							"kind": "type",
 							"doc_comment": "A header-level attack case for middleware stack testing.",
-							"source_line": 31,
+							"source_line": 30,
 							"type_signature": "AdversarialHeaderCase",
 							"properties": [
 								{
@@ -41804,7 +42253,7 @@
 							"name": "create_standard_adversarial_cases",
 							"kind": "function",
 							"doc_comment": "7 standard adversarial header cases applicable to any middleware stack.",
-							"source_line": 50,
+							"source_line": 49,
 							"type_signature": "(allowed_origin: string): AdversarialHeaderCase[]",
 							"return_type": "AdversarialHeaderCase[]",
 							"return_description": "the standard adversarial header cases",
@@ -41820,7 +42269,7 @@
 							"name": "describe_standard_adversarial_headers",
 							"kind": "function",
 							"doc_comment": "Create a middleware stack app with standard adversarial header tests.\n\nConvenience wrapper combining `create_test_middleware_stack_app`\nand `create_standard_adversarial_cases`.\nAsserts body content for both error and success cases, and checks\n`mock_validate` call status via per-case declarative flags.",
-							"source_line": 135,
+							"source_line": 132,
 							"type_signature": "(suite_name: string, options: TestMiddlewareStackOptions, allowed_origin: string, extra_cases?: AdversarialHeaderCase[] | undefined): void",
 							"return_type": "void",
 							"parameters": [
@@ -41925,7 +42374,7 @@
 						"testing/auth_apps.ts",
 						"testing/schema_generators.ts"
 					],
-					"dependents": ["testing/attack_surface.ts"]
+					"dependents": ["testing/attack_surface.ts", "testing/rpc_attack_surface.ts"]
 				},
 				{
 					"path": "testing/app_server.ts",
@@ -41934,21 +42383,21 @@
 							"name": "stub_password_deps",
 							"kind": "variable",
 							"doc_comment": "Fast password stub for tests that don't exercise login/password flows.\n\nHashes are deterministic (`stub_hash_<password>`) and verify correctly,\nso auth bootstrap and session creation work without Argon2 overhead.",
-							"source_line": 56,
+							"source_line": 61,
 							"type_signature": "PasswordHashDeps"
 						},
 						{
 							"name": "TEST_COOKIE_SECRET",
 							"kind": "variable",
 							"doc_comment": "64-hex-char test cookie secret — deterministic, never used in production.",
-							"source_line": 63,
+							"source_line": 68,
 							"type_signature": "string"
 						},
 						{
 							"name": "BootstrapTestAccountOptions",
 							"kind": "type",
 							"doc_comment": "Options for `bootstrap_test_account`.",
-							"source_line": 75,
+							"source_line": 80,
 							"type_signature": "BootstrapTestAccountOptions",
 							"properties": [
 								{
@@ -41992,7 +42441,7 @@
 							"name": "bootstrap_test_account",
 							"kind": "function",
 							"doc_comment": "Bootstrap a test account with credentials.\n\nCreates an account with actor, grants roles, creates an API token,\ncreates a session, and signs a session cookie. Shared by\n`create_test_app_server` and `TestApp.create_account`.",
-							"source_line": 92,
+							"source_line": 97,
 							"type_signature": "(options: BootstrapTestAccountOptions): Promise<{ account: { id: string; username: string; }; actor: { id: string; }; api_token: string; session_cookie: string; }>",
 							"return_type": "Promise<{ account: { id: string; username: string; }; actor: { id: string; }; api_token: string; session_cookie: string; }>",
 							"parameters": [
@@ -42006,7 +42455,7 @@
 							"name": "TestAppServer",
 							"kind": "type",
 							"doc_comment": "An `AppBackend` with a bootstrapped account, API token, and session cookie.",
-							"source_line": 145,
+							"source_line": 150,
 							"type_signature": "TestAppServer",
 							"extends": ["AppBackend"],
 							"properties": [
@@ -42052,7 +42501,7 @@
 							"name": "TestAppServerOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `create_test_app_server`.",
-							"source_line": 163,
+							"source_line": 168,
 							"type_signature": "TestAppServerOptions",
 							"properties": [
 								{
@@ -42102,7 +42551,7 @@
 						{
 							"name": "create_test_app_server",
 							"kind": "function",
-							"source_line": 199,
+							"source_line": 204,
 							"type_signature": "(options: TestAppServerOptions): Promise<TestAppServer>",
 							"return_type": "Promise<TestAppServer>",
 							"parameters": [
@@ -42116,7 +42565,7 @@
 							"name": "CreateTestAppOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `create_test_app`.",
-							"source_line": 292,
+							"source_line": 297,
 							"type_signature": "CreateTestAppOptions",
 							"extends": ["TestAppServerOptions"],
 							"properties": [
@@ -42138,7 +42587,7 @@
 							"name": "TestAccount",
 							"kind": "type",
 							"doc_comment": "A bootstrapped test account with credentials.",
-							"source_line": 304,
+							"source_line": 309,
 							"type_signature": "TestAccount",
 							"properties": [
 								{
@@ -42181,7 +42630,7 @@
 							"name": "TestApp",
 							"kind": "type",
 							"doc_comment": "A fully assembled test app — Hono app + backend + helpers.",
-							"source_line": 320,
+							"source_line": 325,
 							"type_signature": "TestApp",
 							"properties": [
 								{
@@ -42193,6 +42642,11 @@
 									"name": "backend",
 									"kind": "variable",
 									"type_signature": "TestAppServer"
+								},
+								{
+									"name": "surface_spec",
+									"kind": "variable",
+									"type_signature": "AppSurfaceSpec"
 								},
 								{
 									"name": "surface",
@@ -42217,6 +42671,12 @@
 									"doc_comment": "Build request headers with the bootstrapped Bearer token."
 								},
 								{
+									"name": "create_daemon_token_headers",
+									"kind": "variable",
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>",
+									"doc_comment": "Build request headers with the daemon token (keeper auth)."
+								},
+								{
 									"name": "create_account",
 									"kind": "variable",
 									"type_signature": "(options?: {\n\t\tusername?: string;\n\t\tpassword_value?: string;\n\t\troles?: Array<string>;\n\t}) => Promise<TestAccount>",
@@ -42234,7 +42694,7 @@
 							"name": "create_test_app",
 							"kind": "function",
 							"doc_comment": "Create a fully assembled test app with a Hono server, middleware, and routes.\n\nCombines `create_test_app_server` + `create_app_server` into a single call.\nDisables rate limiters and logging by default (test-friendly).\n\nA fresh Hono app is created each call — middleware closures bind to the\nserver's deps (db, keyring), so reuse across servers is unsafe.\nThe expensive resource (PGlite WASM) is cached separately in `test_db.ts`.",
-							"source_line": 352,
+							"source_line": 360,
 							"type_signature": "(options: CreateTestAppOptions): Promise<TestApp>",
 							"return_type": "Promise<TestApp>",
 							"return_description": "a `TestApp` ready for HTTP testing",
@@ -42252,6 +42712,7 @@
 						"auth/account_queries.ts",
 						"auth/api_token.ts",
 						"auth/api_token_queries.ts",
+						"auth/daemon_token.ts",
 						"auth/keyring.ts",
 						"auth/migrations.ts",
 						"auth/permit_queries.ts",
@@ -42269,7 +42730,8 @@
 						"testing/data_exposure.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
 					]
 				},
 				{
@@ -42294,6 +42756,9 @@
 						"testing/middleware.ts",
 						"testing/rate_limiting.ts",
 						"testing/round_trip.ts",
+						"testing/rpc_attack_surface.ts",
+						"testing/rpc_helpers.ts",
+						"testing/rpc_round_trip.ts",
 						"testing/schema_generators.ts",
 						"testing/standard.ts",
 						"testing/stubs.ts",
@@ -42796,7 +43261,8 @@
 					"dependents": [
 						"testing/adversarial_404.ts",
 						"testing/adversarial_input.ts",
-						"testing/attack_surface.ts"
+						"testing/attack_surface.ts",
+						"testing/rpc_attack_surface.ts"
 					]
 				},
 				{
@@ -43130,7 +43596,8 @@
 						"testing/data_exposure.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
 					]
 				},
 				{
@@ -43633,7 +44100,7 @@
 						{
 							"name": "describe_standard_integration_tests",
 							"kind": "function",
-							"doc_comment": "Standard integration test suite for fuz_app auth routes.\n\nExercises login/logout, cookie attributes, session security, session\nrevocation, password change (incl. API token revocation), origin\nverification, bearer auth (incl. browser context rejection on mutations),\ntoken revocation, cross-account isolation, expired credential rejection,\nsignup invite edge cases, and response body validation.\n\nEach test group asserts that required routes exist, failing with a descriptive\nmessage if the consumer's route specs are misconfigured.",
+							"doc_comment": "Standard integration test suite for fuz_app auth routes.\n\nExercises login/logout, cookie attributes, session security, session\nrevocation, password change (incl. API token revocation), origin\nverification, bearer auth (incl. browser context discard on mutations),\ntoken revocation, cross-account isolation, expired credential rejection,\nsignup invite edge cases, and response body validation.\n\nEach test group asserts that required routes exist, failing with a descriptive\nmessage if the consumer's route specs are misconfigured.",
 							"source_line": 95,
 							"type_signature": "(options: StandardIntegrationTestOptions): void",
 							"return_type": "void",
@@ -44119,6 +44586,249 @@
 					]
 				},
 				{
+					"path": "testing/rpc_attack_surface.ts",
+					"declarations": [
+						{
+							"name": "RpcAttackSurfaceOptions",
+							"kind": "type",
+							"doc_comment": "Options for `describe_rpc_attack_surface_tests`.",
+							"source_line": 40,
+							"type_signature": "RpcAttackSurfaceOptions",
+							"properties": [
+								{
+									"name": "build",
+									"kind": "variable",
+									"type_signature": "() => AppSurfaceSpec",
+									"doc_comment": "Build the app surface bundle (surface + route specs + middleware specs + rpc_endpoints)."
+								},
+								{
+									"name": "roles",
+									"kind": "variable",
+									"type_signature": "Array<string>",
+									"doc_comment": "All roles in the app (e.g. `['admin', 'keeper']`)."
+								}
+							]
+						},
+						{
+							"name": "describe_rpc_attack_surface_tests",
+							"kind": "function",
+							"doc_comment": "Run the standard RPC attack surface test suite.\n\nGenerates 3 test groups:\n1. Auth enforcement — per-method auth checks via JSON-RPC envelopes\n2. Adversarial envelopes — malformed JSON-RPC requests\n3. Adversarial params — schema-invalid params per method\n\nSkips silently when `surface.rpc_endpoints` is empty.",
+							"source_line": 525,
+							"type_signature": "(options: RpcAttackSurfaceOptions): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "RpcAttackSurfaceOptions",
+									"description": "the test configuration"
+								}
+							]
+						}
+					],
+					"module_comment": "Composable RPC attack surface test suite.\n\nThree test groups for JSON-RPC 2.0 endpoints:\n1. **Auth enforcement** — per-method auth inside the dispatcher\n2. **Adversarial envelopes** — malformed JSON-RPC requests\n3. **Adversarial params** — schema-invalid params per method\n\nUses the same `{build, roles}` config as `describe_adversarial_auth`\nand `describe_adversarial_input`. No DB needed — uses stub deps.",
+					"dependencies": [
+						"http/error_schemas.ts",
+						"http/jsonrpc_errors.ts",
+						"testing/adversarial_input.ts",
+						"testing/assert_dev_env.ts",
+						"testing/auth_apps.ts",
+						"testing/rpc_helpers.ts"
+					]
+				},
+				{
+					"path": "testing/rpc_helpers.ts",
+					"declarations": [
+						{
+							"name": "create_rpc_post_init",
+							"kind": "function",
+							"doc_comment": "Create a `RequestInit` for a JSON-RPC POST request.",
+							"source_line": 25,
+							"type_signature": "(method: string, params?: unknown, id?: string | number): RequestInit",
+							"return_type": "RequestInit",
+							"return_description": "a `RequestInit` with the JSON-RPC envelope as body",
+							"parameters": [
+								{
+									"name": "method",
+									"type": "string",
+									"description": "JSON-RPC method name"
+								},
+								{
+									"name": "params",
+									"type": "unknown",
+									"optional": true,
+									"description": "params object (omit for null-input methods)"
+								},
+								{
+									"name": "id",
+									"type": "string | number",
+									"description": "request id (default `'test'`)",
+									"default_value": "'test'"
+								}
+							]
+						},
+						{
+							"name": "create_rpc_get_url",
+							"kind": "function",
+							"doc_comment": "Build a GET URL with JSON-RPC query parameters.",
+							"source_line": 44,
+							"type_signature": "(endpoint_path: string, method: string, params?: unknown, id?: string | number): string",
+							"return_type": "string",
+							"return_description": "the full URL with query string",
+							"parameters": [
+								{
+									"name": "endpoint_path",
+									"type": "string",
+									"description": "the RPC endpoint path (e.g., `/api/rpc`)"
+								},
+								{
+									"name": "method",
+									"type": "string",
+									"description": "JSON-RPC method name"
+								},
+								{
+									"name": "params",
+									"type": "unknown",
+									"optional": true,
+									"description": "params object (omit for null-input methods)"
+								},
+								{
+									"name": "id",
+									"type": "string | number",
+									"description": "request id (default `'test'`)",
+									"default_value": "'test'"
+								}
+							]
+						},
+						{
+							"name": "assert_jsonrpc_error_response",
+							"kind": "function",
+							"doc_comment": "Assert that a response body is a valid JSON-RPC error response.\n\nValidates the structure matches `JsonrpcErrorResponse` and optionally\nchecks the error code.",
+							"source_line": 66,
+							"type_signature": "(body: unknown, expected_code?: JsonrpcErrorCode | undefined): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "body",
+									"type": "unknown",
+									"description": "parsed response body"
+								},
+								{
+									"name": "expected_code",
+									"type": "JsonrpcErrorCode | undefined",
+									"optional": true,
+									"description": "optional error code to assert"
+								}
+							]
+						},
+						{
+							"name": "assert_jsonrpc_success_response",
+							"kind": "function",
+							"doc_comment": "Assert that a response body is a valid JSON-RPC success response.\n\nValidates the structure matches `JsonrpcResponse`. When `output_schema`\nis provided, also validates the `result` field against the declared\noutput schema — matching the REST round-trip's `assert_response_matches_spec`.",
+							"source_line": 91,
+							"type_signature": "(body: unknown, output_schema?: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | undefined): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "body",
+									"type": "unknown",
+									"description": "parsed response body"
+								},
+								{
+									"name": "output_schema",
+									"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | undefined",
+									"optional": true,
+									"description": "optional Zod schema to validate the `result` field against"
+								}
+							]
+						}
+					],
+					"module_comment": "JSON-RPC request construction and response assertion helpers.\n\nShared by `rpc_attack_surface.ts` and `rpc_round_trip.ts`.",
+					"dependencies": ["http/jsonrpc.ts", "testing/assert_dev_env.ts"],
+					"dependents": ["testing/rpc_attack_surface.ts", "testing/rpc_round_trip.ts"]
+				},
+				{
+					"path": "testing/rpc_round_trip.ts",
+					"declarations": [
+						{
+							"name": "RpcRoundTripTestOptions",
+							"kind": "type",
+							"doc_comment": "Options for `describe_rpc_round_trip_tests`.",
+							"source_line": 35,
+							"type_signature": "RpcRoundTripTestOptions",
+							"properties": [
+								{
+									"name": "session_options",
+									"kind": "variable",
+									"type_signature": "SessionOptions<string>",
+									"doc_comment": "Session config for cookie-based auth."
+								},
+								{
+									"name": "create_route_specs",
+									"kind": "variable",
+									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
+									"doc_comment": "Route spec factory — same one used in production."
+								},
+								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "Array<RpcEndpointSpec>",
+									"doc_comment": "RPC endpoint specs — the source `RpcAction` arrays for params generation."
+								},
+								{
+									"name": "app_options",
+									"kind": "variable",
+									"type_signature": "Partial<\n\t\tOmit<AppServerOptions, 'backend' | 'session_options' | 'create_route_specs'>\n\t>",
+									"doc_comment": "Optional overrides for `AppServerOptions`."
+								},
+								{
+									"name": "db_factories",
+									"kind": "variable",
+									"type_signature": "Array<DbFactory>",
+									"doc_comment": "Database factories to run tests against. Default: pglite only."
+								},
+								{
+									"name": "skip_methods",
+									"kind": "variable",
+									"type_signature": "Array<string>",
+									"doc_comment": "Methods to skip, by name (e.g., `'tx_plan'`)."
+								},
+								{
+									"name": "input_overrides",
+									"kind": "variable",
+									"type_signature": "Map<string, Record<string, unknown>>",
+									"doc_comment": "Override generated params for specific methods (method name → params)."
+								}
+							]
+						},
+						{
+							"name": "describe_rpc_round_trip_tests",
+							"kind": "function",
+							"doc_comment": "Run schema-driven round-trip validation for RPC endpoints.\n\nFor each method:\n1. Generate valid params from the action's input schema\n2. Fire a POST request with JSON-RPC envelope\n3. For `side_effects: false` methods, also fire a GET request\n4. Validate response is well-formed JSON-RPC; successful responses are\n   also validated against the method's declared output schema\n\nError responses (from missing DB state, etc.) are expected and validated\nas well-formed JSON-RPC errors. Successful responses are validated against\n`action.spec.output`.",
+							"source_line": 95,
+							"type_signature": "(options: RpcRoundTripTestOptions): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "RpcRoundTripTestOptions",
+									"description": "round-trip test configuration"
+								}
+							]
+						}
+					],
+					"module_comment": "Schema-driven round-trip validation for RPC endpoints.\n\nFor every RPC method, generates valid params and fires JSON-RPC requests\n(POST for all methods, GET for reads), validating that responses are\nwell-formed JSON-RPC. Successful responses are validated against the\nmethod's declared output schema. DB-backed via `create_test_app`.",
+					"dependencies": [
+						"auth/migrations.ts",
+						"auth/role_schema.ts",
+						"db/migrate.ts",
+						"testing/app_server.ts",
+						"testing/assert_dev_env.ts",
+						"testing/db.ts",
+						"testing/rpc_helpers.ts",
+						"testing/schema_generators.ts"
+					]
+				},
+				{
 					"path": "testing/schema_generators.ts",
 					"declarations": [
 						{
@@ -44139,7 +44849,7 @@
 							"name": "generate_valid_value",
 							"kind": "function",
 							"doc_comment": "Generate a valid-ish value for a field based on its base type.",
-							"source_line": 55,
+							"source_line": 69,
 							"type_signature": "(field: ZodFieldInfo, field_schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): unknown",
 							"return_type": "unknown",
 							"parameters": [
@@ -44157,7 +44867,7 @@
 							"name": "resolve_valid_path",
 							"kind": "function",
 							"doc_comment": "Resolve a route path with valid-ish param values so params validation passes.\nUsed when testing input on routes that also have params.",
-							"source_line": 98,
+							"source_line": 125,
 							"type_signature": "(path: string, params_schema?: ZodObject<$ZodLooseShape, $strip> | undefined): string",
 							"return_type": "string",
 							"parameters": [
@@ -44176,7 +44886,7 @@
 							"name": "generate_valid_body",
 							"kind": "function",
 							"doc_comment": "Generate a valid request body for a route's input schema.\n\nReturns `undefined` for null schemas or schemas that can't be unwrapped to objects.\nThrows if the generated body fails validation — catches broken generation logic\nearly with a descriptive error instead of a confusing 400 in downstream tests.",
-							"source_line": 120,
+							"source_line": 147,
 							"type_signature": "(input_schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): Record<string, unknown> | undefined",
 							"return_type": "Record<string, unknown> | undefined",
 							"parameters": [
@@ -44193,7 +44903,8 @@
 						"testing/adversarial_404.ts",
 						"testing/adversarial_input.ts",
 						"testing/data_exposure.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
 					]
 				},
 				{
@@ -44274,7 +44985,7 @@
 							"name": "create_throwing_stub",
 							"kind": "function",
 							"doc_comment": "Create a Proxy that throws descriptive errors on any property access or method call.\n\nUse for deps that should never be reached during a test. If a test accidentally\ncalls through to a throwing stub, the error message identifies exactly which stub\nwas hit, catching test bugs that would silently pass with `{} as any`.",
-							"source_line": 39,
+							"source_line": 43,
 							"type_signature": "<T = any>(label: string): T",
 							"return_type": "T",
 							"parameters": [
@@ -44289,7 +45000,7 @@
 							"name": "create_noop_stub",
 							"kind": "function",
 							"doc_comment": "Create a Proxy where every method access returns a no-op async function.\n\nUse for deps that may be reached during \"correct auth passes guard\" tests\nbut whose return values don't matter. Unlike the explicit method listing,\nthis auto-updates when interfaces change.",
-							"source_line": 72,
+							"source_line": 76,
 							"type_signature": "<T = any>(_label: string, overrides?: Record<string, unknown> | undefined): T",
 							"return_type": "T",
 							"parameters": [
@@ -44309,14 +45020,14 @@
 							"name": "stub",
 							"kind": "variable",
 							"doc_comment": "Throwing stub — use for deps that should never be reached.",
-							"source_line": 82,
+							"source_line": 86,
 							"type_signature": "any"
 						},
 						{
 							"name": "create_stub_db",
 							"kind": "function",
 							"doc_comment": "Create a stub `Db` for handler tests that use `apply_route_specs` with declarative transactions.\n\nReturns a real `Db` instance with:\n- `query` returns empty rows (safety net for unmocked query functions)\n- `query_one` returns undefined\n- `transaction(fn)` calls `fn(db)` synchronously (no real transaction)",
-							"source_line": 92,
+							"source_line": 96,
 							"type_signature": "(): Db",
 							"return_type": "Db",
 							"parameters": []
@@ -44325,7 +45036,7 @@
 							"name": "stub_handler",
 							"kind": "function",
 							"doc_comment": "Stub handler that returns a 200 response.",
-							"source_line": 99,
+							"source_line": 103,
 							"type_signature": "(): Response",
 							"return_type": "Response",
 							"parameters": []
@@ -44334,7 +45045,7 @@
 							"name": "stub_mw",
 							"kind": "function",
 							"doc_comment": "Stub middleware that passes through.",
-							"source_line": 102,
+							"source_line": 106,
 							"type_signature": "(_c: any, next: any): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -44352,14 +45063,14 @@
 							"name": "stub_app_deps",
 							"kind": "variable",
 							"doc_comment": "Stub `AppDeps` for auth surface tests — throws on any method access.",
-							"source_line": 107,
+							"source_line": 111,
 							"type_signature": "AppDeps"
 						},
 						{
 							"name": "create_stub_app_deps",
 							"kind": "function",
 							"doc_comment": "Create no-op app deps for auth surface testing.",
-							"source_line": 123,
+							"source_line": 127,
 							"type_signature": "(): AppDeps",
 							"return_type": "AppDeps",
 							"return_description": "an `AppDeps`-shaped object with no-op deps",
@@ -44369,7 +45080,7 @@
 							"name": "create_stub_api_middleware",
 							"kind": "function",
 							"doc_comment": "Create the API middleware stub array matching `create_auth_middleware_specs` output.",
-							"source_line": 135,
+							"source_line": 139,
 							"type_signature": "(options?: { include_daemon_token?: boolean | undefined; } | undefined): MiddlewareSpec[]",
 							"return_type": "MiddlewareSpec[]",
 							"parameters": [
@@ -44384,7 +45095,7 @@
 							"name": "create_stub_app_server_context",
 							"kind": "function",
 							"doc_comment": "Create a stub `AppServerContext` for attack surface testing.\n\nProvides sensible defaults for all fields. Pass `session_options` since\nit varies per consumer; other fields use stubs/nulls.",
-							"source_line": 169,
+							"source_line": 173,
 							"type_signature": "(session_options: SessionOptions<string>): AppServerContext",
 							"return_type": "AppServerContext",
 							"parameters": [
@@ -44399,7 +45110,7 @@
 							"name": "CreateTestAppSurfaceSpecOptions",
 							"kind": "type",
 							"doc_comment": "Options for `create_test_app_surface_spec`.",
-							"source_line": 193,
+							"source_line": 197,
 							"type_signature": "CreateTestAppSurfaceSpecOptions",
 							"properties": [
 								{
@@ -44427,6 +45138,12 @@
 									"doc_comment": "SSE event specs for surface generation."
 								},
 								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "Array<RpcEndpointSpec>",
+									"doc_comment": "RPC endpoint specs for surface generation."
+								},
+								{
 									"name": "transform_middleware",
 									"kind": "variable",
 									"type_signature": "(specs: Array<MiddlewareSpec>) => Array<MiddlewareSpec>",
@@ -44444,7 +45161,7 @@
 							"name": "create_test_app_surface_spec",
 							"kind": "function",
 							"doc_comment": "Create an `AppSurfaceSpec` for attack surface testing.\n\nMirrors `create_app_server`'s route assembly: consumer routes +\nfactory-managed bootstrap routes + surface generation. If\n`create_app_server` changes how it wires routes, update this helper\nto stay in sync (single source of truth for all consumers).",
-							"source_line": 219,
+							"source_line": 225,
 							"type_signature": "(options: CreateTestAppSurfaceSpecOptions): AppSurfaceSpec",
 							"return_type": "AppSurfaceSpec",
 							"return_description": "the surface spec for snapshot and adversarial testing",
@@ -44752,8 +45469,8 @@
 						{
 							"name": "assert_mutation_routes_use_post",
 							"kind": "function",
-							"doc_comment": "Routes with non-null input schemas should use POST (or other mutation methods),\nnot GET.\n\nGET routes with request bodies are technically allowed by HTTP but semantically\nsuspicious — they bypass browser security assumptions about GET being idempotent.\nQuery-string-driven filtering (audit log, list endpoints) should use params schemas\nor query string parsing, not input schemas.",
-							"source_line": 451,
+							"doc_comment": "Routes with non-null input schemas should use POST (or other mutation methods),\nnot GET.\n\nGET routes with request bodies are technically allowed by HTTP but semantically\nsuspicious — they bypass browser security assumptions about GET being idempotent.\nQuery-string-driven filtering (audit log, list endpoints) should use params schemas\nor query string parsing, not input schemas.\n\nNote: RPC endpoints (`create_rpc_endpoint`) use `input: z.null()` on their\nroute specs — the dispatcher handles body/query parsing internally. Real input\nschemas live in `rpc_endpoints` surface, not on routes.",
+							"source_line": 455,
 							"type_signature": "(surface: AppSurface): void",
 							"return_type": "void",
 							"parameters": [
@@ -44767,7 +45484,7 @@
 							"name": "assert_keeper_routes_under_prefix",
 							"kind": "function",
 							"doc_comment": "Keeper-protected routes must be under expected path prefixes.\n\nCatches keeper routes accidentally placed outside the API namespace\n(e.g., a keeper route at `/health` or `/admin/` instead of `/api/...`).",
-							"source_line": 470,
+							"source_line": 474,
 							"type_signature": "(surface: AppSurface, prefixes?: string[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -44786,7 +45503,7 @@
 							"name": "ErrorSchemaTightnessOptions",
 							"kind": "type",
 							"doc_comment": "Options for `assert_error_schema_tightness`.",
-							"source_line": 494,
+							"source_line": 498,
 							"type_signature": "ErrorSchemaTightnessOptions",
 							"properties": [
 								{
@@ -44813,14 +45530,14 @@
 							"name": "DEFAULT_ERROR_SCHEMA_TIGHTNESS",
 							"kind": "variable",
 							"doc_comment": "Recommended baseline error schema tightness for consumer projects.\n\nUses `min_specificity: 'enum'` (the assertion default) with `ignore_statuses`\nfor middleware-derived status codes that are commonly generic (auth middleware\nproduces multiple error codes at 401/403, and 429 comes from rate limiters).\nConsumers can extend with project-specific `allowlist` entries.",
-							"source_line": 511,
+							"source_line": 515,
 							"type_signature": "ErrorSchemaTightnessOptions"
 						},
 						{
 							"name": "assert_error_schema_tightness",
 							"kind": "function",
 							"doc_comment": "Assert that all error schemas meet a minimum specificity threshold.\n\nCalls `audit_error_schema_tightness` and fails on any entry below\nthe configured threshold. Use `allowlist` and `ignore_statuses` to exclude\nknown exceptions during progressive tightening.",
-							"source_line": 525,
+							"source_line": 529,
 							"type_signature": "(surface: AppSurface, options?: ErrorSchemaTightnessOptions | undefined): void",
 							"return_type": "void",
 							"parameters": [
@@ -44841,7 +45558,7 @@
 							"name": "assert_surface_invariants",
 							"kind": "function",
 							"doc_comment": "Run all structural invariants. Options-free — applies universally.",
-							"source_line": 557,
+							"source_line": 561,
 							"type_signature": "(surface: AppSurface): void",
 							"return_type": "void",
 							"parameters": [
@@ -44855,7 +45572,7 @@
 							"name": "assert_surface_security_policy",
 							"kind": "function",
 							"doc_comment": "Run security policy invariants. Configurable with sensible defaults.\n\nChecks:\n- Sensitive routes are rate-limited\n- No unexpected public mutation routes\n- Input schemas use mutation methods (not GET)\n- Keeper routes under expected prefixes",
-							"source_line": 580,
+							"source_line": 584,
 							"type_signature": "(surface: AppSurface, options?: SurfaceSecurityPolicyOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -45678,6 +46395,13 @@
 						{
 							"name": "BootstrapForm",
 							"kind": "component",
+							"props": [
+								{
+									"name": "redirect_on_bootstrap",
+									"type": "string",
+									"optional": true
+								}
+							],
 							"source_line": 1
 						}
 					],
@@ -54952,16 +55676,18 @@
 			},
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
-				"@fuzdev/fuz_app": "^0.4.0",
+				"@electric-sql/pglite": "^0.3.16",
+				"@fuzdev/fuz_app": "^0.7.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
 				"@fuzdev/fuz_util": "^0.55.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
+				"@node-rs/argon2": "^2.0.2",
 				"@ryanatkn/eslint-config": "^0.10.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
 				"@sveltejs/adapter-static": "^3.0.10",
-				"@sveltejs/kit": "^2.57.0",
+				"@sveltejs/kit": "^2.57.1",
 				"@sveltejs/vite-plugin-svelte": "^6.2.4",
 				"@types/deno": "^2.5.0",
 				"@types/estree": "^1.0.8",
@@ -54972,9 +55698,10 @@
 				"jsdom": "^27.2.0",
 				"magic-string": "^0.30.21",
 				"ollama": "^0.6.3",
+				"pg": "^8.20.0",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.4.1",
-				"svelte": "^5.55.2",
+				"svelte": "^5.55.3",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -55111,7 +55838,7 @@
 						}
 					],
 					"dependencies": ["action_collections.ts"],
-					"dependents": ["action_event.ts"]
+					"dependents": ["action_event.ts", "server/backend_actions_api.ts"]
 				},
 				{
 					"path": "action_collections.gen.ts",
@@ -55133,13 +55860,13 @@
 							"kind": "type",
 							"doc_comment": "Action specifications indexed by method name.\nThese represent the complete action spec definitions.",
 							"source_line": 54,
-							"type_signature": "{ readonly ping: { method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }; ... 28 more ...; readonly workspace_changed: { ......"
+							"type_signature": "{ readonly ping: { method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }; ... 28 more ...; readonly workspace_changed: { ....."
 						},
 						{
 							"name": "action_specs",
 							"kind": "variable",
 							"source_line": 119,
-							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async:..."
+							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; ..."
 						},
 						{
 							"name": "ActionInputs",
@@ -55904,7 +56631,7 @@
 										},
 										{
 											"name": "spec",
-											"type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ..."
+											"type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
 										},
 										{
 											"name": "data",
@@ -56042,7 +56769,7 @@
 							"kind": "function",
 							"doc_comment": "Create an action event from a spec and initial input.",
 							"source_line": 458,
-							"type_signature": "<TMethod extends ActionMethod>(environment: ActionEventEnvironment, spec: { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<...>; ... 4 more ...; async: true; } | { ...; } | { ...; }, input: unknown, initial_phase?: \"send_request\" | ... 8 more ... | undefined): ActionEvent<...>",
+							"type_signature": "<TMethod extends ActionMethod>(environment: ActionEventEnvironment, spec: { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<...>>; ... 4 more ...; async: true; } | { ...; } | { ...; }, input: unknown, initial_phase?: \"send_request\" | ... 8 more ... | undefined): ActionEvent<...>",
 							"return_type": "ActionEvent<TMethod, ActionEventEnvironment, \"send_request\" | \"execute\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\", \"initial\" | ... 3 more ... | \"failed\">",
 							"parameters": [
 								{
@@ -56051,7 +56778,7 @@
 								},
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ..."
+									"type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
 								},
 								{
 									"name": "input",
@@ -56108,11 +56835,7 @@
 						"jsonrpc_helpers.ts",
 						"zod_helpers.ts"
 					],
-					"dependents": [
-						"action_peer.ts",
-						"frontend_actions_api.ts",
-						"server/backend_actions_api.ts"
-					]
+					"dependents": ["action_peer.ts", "frontend_actions_api.ts"]
 				},
 				{
 					"path": "action_helpers.ts",
@@ -56537,13 +57260,13 @@
 							"name": "ping_action_spec",
 							"kind": "variable",
 							"source_line": 35,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }"
 						},
 						{
 							"name": "session_load_action_spec",
 							"kind": "variable",
 							"source_line": 49,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>;..."
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<...>; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>; provider_status: ZodArray<...>; workspaces: ZodArray<...>; ..."
 						},
 						{
 							"name": "filer_change_action_spec",
@@ -56555,25 +57278,25 @@
 							"name": "diskfile_update_action_spec",
 							"kind": "variable",
 							"source_line": 87,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; content: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; content: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "diskfile_delete_action_spec",
 							"kind": "variable",
 							"source_line": 102,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "directory_create_action_spec",
 							"kind": "variable",
 							"source_line": 116,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodString, \"DiskfilePath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "completion_create_action_spec",
 							"kind": "variable",
 							"source_line": 130,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ completion_request: ZodObject<{ created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; provider_name: ZodEnum<...>; model: ZodString; prompt: ZodString; completion_messages: ZodOpti..."
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ completion_request: ZodObject<{ created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; provider_name: ZodEnum<...>; model: ZodString; prompt: ZodString; completion_messages: ..."
 						},
 						{
 							"name": "completion_progress_action_spec",
@@ -56597,73 +57320,73 @@
 							"name": "ollama_list_action_spec",
 							"kind": "variable",
 							"source_line": 218,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<ZodObject<{ details: ZodOptional<...>; ... 4 more ...; size: ZodNumber; }, $loose>>; }, $loose>, ZodNull]>; async: true; descript..."
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<...>; }, $loose>, ZodNull]>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_ps_action_spec",
 							"kind": "variable",
 							"source_line": 230,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<ZodObject<{ details: ZodOptional<...>; ... 5 more ...; size_vram: ZodNumber; }, $loose>>; }, $loose>, ZodNull]>; async: true; des..."
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<...>; }, $loose>, ZodNull]>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_show_action_spec",
 							"kind": "variable",
 							"source_line": 242,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodObject<{ model: ZodString; system: ZodOptional<ZodString>; template: ZodOptional<...>; options: ZodOptional<...>; }, $loose>; output: ZodUnion<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodObject<{ model: ZodString; system: ZodOptional<ZodString>; template: ZodOptional<...>; options: ZodOptional<...>; }, $loose>; output: ZodUnion<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_pull_action_spec",
 							"kind": "variable",
 							"source_line": 254,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; insecure: ZodOptional<ZodBoolean>; stream: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; insecure: ZodOptional<ZodBoolean>; stream: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_delete_action_spec",
 							"kind": "variable",
 							"source_line": 270,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_copy_action_spec",
 							"kind": "variable",
 							"source_line": 282,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ source: ZodString; destination: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ source: ZodString; destination: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_create_action_spec",
 							"kind": "variable",
 							"source_line": 294,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; from: ZodOptional<ZodString>; ... 8 more ...; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; from: ZodOptional<ZodString>; ... 8 more ...; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_unload_action_spec",
 							"kind": "variable",
 							"source_line": 310,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "provider_load_status_action_spec",
 							"kind": "variable",
 							"source_line": 324,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; reload: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: str..."
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; reload: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; descript..."
 						},
 						{
 							"name": "provider_update_api_key_action_spec",
 							"kind": "variable",
 							"source_line": 341,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; api_key: ZodString; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"keeper\"; side_effects: true; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; api_key: ZodString; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_create_action_spec",
 							"kind": "variable",
 							"source_line": 358,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ command: ZodString; args: ZodDefault<ZodArray<ZodString>>; cwd: ZodOptional<...>; preset_id: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ command: ZodString; args: ZodDefault<ZodArray<ZodString>>; cwd: ZodOptional<...>; preset_id: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_data_send_action_spec",
 							"kind": "variable",
 							"source_line": 377,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; data: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; data: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_data_action_spec",
@@ -56675,13 +57398,13 @@
 							"name": "terminal_resize_action_spec",
 							"kind": "variable",
 							"source_line": 407,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; cols: ZodNumber; rows: ZodNumber; }, $strict>; output: ZodNull; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; cols: ZodNumber; rows: ZodNumber; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_close_action_spec",
 							"kind": "variable",
 							"source_line": 423,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; signal: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; signal: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_exited_action_spec",
@@ -56693,19 +57416,19 @@
 							"name": "workspace_open_action_spec",
 							"kind": "variable",
 							"source_line": 455,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodObject<...>; async: true; description: stri..."
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodObject<...>; async: true; descriptio..."
 						},
 						{
 							"name": "workspace_close_action_spec",
 							"kind": "variable",
 							"source_line": 472,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: stri..."
 						},
 						{
 							"name": "workspace_list_action_spec",
 							"kind": "variable",
 							"source_line": 486,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"public\"; side_effects: null; input: ZodOptional<ZodVoid>; output: ZodObject<{ workspaces: ZodArray<ZodObject<{ path: $ZodBranded<...>; name: ZodString; opened_at: ZodString; }, $strict>>; }, $strict>; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ workspaces: ZodArray<...>; }, $strict>; async: true; description: string; }"
 						},
 						{
 							"name": "workspace_changed_action_spec",
@@ -56717,7 +57440,7 @@
 							"name": "all_action_specs",
 							"kind": "variable",
 							"source_line": 515,
-							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async:..."
+							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; ..."
 						}
 					],
 					"dependencies": [
@@ -56734,8 +57457,9 @@
 						"action_collections.ts",
 						"action_metatypes.gen.ts",
 						"frontend_action_types.gen.ts",
-						"server/backend_action_types.gen.ts",
-						"server/backend_actions_api.ts"
+						"server/backend_actions_api.ts",
+						"server/register_websocket_actions.ts",
+						"server/zzz_rpc_actions.ts"
 					]
 				},
 				{
@@ -60797,8 +61521,8 @@
 						"diskfile_types.ts",
 						"diskfiles.svelte.ts",
 						"server/backend.ts",
-						"server/backend_action_handlers.ts",
-						"server/backend_actions_api.ts"
+						"server/backend_actions_api.ts",
+						"server/zzz_action_handlers.ts"
 					]
 				},
 				{
@@ -61368,8 +62092,8 @@
 						"frontend.svelte.ts",
 						"part.svelte.ts",
 						"server/backend.ts",
-						"server/backend_action_handlers.ts",
 						"server/backend_actions_api.ts",
+						"server/zzz_action_handlers.ts",
 						"space.svelte.ts",
 						"workspace.svelte.ts"
 					]
@@ -62795,7 +63519,7 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "(url: string, headers?: Record<string, string> | undefined): FrontendHttpTransport",
+									"type_signature": "(url: string, headers?: Record<string, string> | undefined, has_side_effects?: ((method: string) => boolean) | undefined): FrontendHttpTransport",
 									"parameters": [
 										{
 											"name": "url",
@@ -62804,6 +63528,11 @@
 										{
 											"name": "headers",
 											"type": "Record<string, string> | undefined",
+											"optional": true
+										},
+										{
+											"name": "has_side_effects",
+											"type": "((method: string) => boolean) | undefined",
 											"optional": true
 										}
 									]
@@ -62861,9 +63590,39 @@
 					"path": "frontend_websocket_transport.ts",
 					"declarations": [
 						{
+							"name": "WebsocketConnection",
+							"kind": "type",
+							"doc_comment": "Minimal interface for a WebSocket connection, decoupled from the concrete Socket Cell.",
+							"source_line": 29,
+							"type_signature": "WebsocketConnection",
+							"properties": [
+								{
+									"name": "send",
+									"kind": "variable",
+									"type_signature": "(data: object) => boolean"
+								},
+								{
+									"name": "connected",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean"
+								},
+								{
+									"name": "add_message_handler",
+									"kind": "variable",
+									"type_signature": "(handler: (event: MessageEvent) => void) => () => void"
+								},
+								{
+									"name": "add_error_handler",
+									"kind": "variable",
+									"type_signature": "(handler: (event: Event) => void) => () => void"
+								}
+							]
+						},
+						{
 							"name": "FrontendWebsocketTransport",
 							"kind": "class",
-							"source_line": 27,
+							"source_line": 36,
 							"extends": [],
 							"implements": ["Transport"],
 							"members": [
@@ -62875,11 +63634,15 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "(socket: Socket, request_timeout_ms?: number | undefined): FrontendWebsocketTransport",
+									"type_signature": "(connection: WebsocketConnection, receive: (data: unknown) => Promise<unknown>, request_timeout_ms?: number | undefined): FrontendWebsocketTransport",
 									"parameters": [
 										{
-											"name": "socket",
-											"type": "Socket"
+											"name": "connection",
+											"type": "WebsocketConnection"
+										},
+										{
+											"name": "receive",
+											"type": "(data: unknown) => Promise<unknown>"
 										},
 										{
 											"name": "request_timeout_ms",
@@ -63324,7 +64087,7 @@
 									"name": "lookup_action_spec",
 									"kind": "function",
 									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ...",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }...",
 									"parameters": [
 										{
 											"name": "method",
@@ -65029,27 +65792,27 @@
 							"name": "JsonrpcErrorName",
 							"kind": "type",
 							"doc_comment": "Includes standard JSON-RPC error codes and application-specific errors.",
-							"source_line": 22,
+							"source_line": 25,
 							"type_signature": "JsonrpcErrorName"
 						},
 						{
 							"name": "JSONRPC_ERROR_CODES",
 							"kind": "variable",
 							"doc_comment": "Extended JSON-RPC error codes with application-specific errors.",
-							"source_line": 42,
+							"source_line": 45,
 							"type_signature": "{ readonly parse_error: -32700; readonly invalid_request: -32600; readonly method_not_found: -32601; readonly invalid_params: -32602; readonly internal_error: -32603; readonly unauthenticated: -32700 | ... 4 more ... | (number & $brand<...>); ... 7 more ...; readonly ai_provider_error: -32700 | ... 4 more ... | (num..."
 						},
 						{
 							"name": "jsonrpc_error_messages",
 							"kind": "variable",
-							"source_line": 98,
+							"source_line": 101,
 							"type_signature": "{ readonly parse_error: (data?: unknown) => { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; readonly invalid_request: (data?: unknown) => { ...; }; ... 11 more ...; readonly ai_provider_error: (provider?: stri..."
 						},
 						{
 							"name": "ThrownJsonrpcError",
 							"kind": "class",
 							"doc_comment": "Custom error class for JSON-RPC errors.",
-							"source_line": 207,
+							"source_line": 210,
 							"extends": ["Error"],
 							"implements": [],
 							"members": [
@@ -65093,7 +65856,7 @@
 						{
 							"name": "jsonrpc_errors",
 							"kind": "variable",
-							"source_line": 227,
+							"source_line": 230,
 							"type_signature": "{ readonly parse_error: (data?: unknown) => ThrownJsonrpcError; readonly invalid_request: (data?: unknown) => ThrownJsonrpcError; readonly method_not_found: (method?: string | undefined, data?: unknown) => ThrownJsonrpcError; ... 10 more ...; readonly ai_provider_error: (provider?: string | undefined, message?: stri..."
 						}
 					],
@@ -65106,11 +65869,10 @@
 						"jsonrpc_helpers.ts",
 						"request_tracker.svelte.ts",
 						"server/backend.ts",
-						"server/backend_action_handlers.ts",
 						"server/backend_provider.ts",
 						"server/backend_websocket_transport.ts",
-						"server/register_http_actions.ts",
-						"server/register_websocket_actions.ts"
+						"server/register_websocket_actions.ts",
+						"server/zzz_action_handlers.ts"
 					]
 				},
 				{
@@ -65119,7 +65881,7 @@
 						{
 							"name": "create_jsonrpc_request",
 							"kind": "function",
-							"source_line": 21,
+							"source_line": 25,
 							"type_signature": "(method: string, params: { [x: string]: unknown; _meta?: { [x: string]: unknown; progressToken?: string | number | undefined; } | undefined; } | undefined, id: string | number): { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; method: string; params?: { ...; } | undefined; }",
 							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; progressToken?: string | number | undefined; } | undefined; } | undefined; }",
 							"parameters": [
@@ -65140,7 +65902,7 @@
 						{
 							"name": "create_jsonrpc_response",
 							"kind": "function",
-							"source_line": 38,
+							"source_line": 42,
 							"type_signature": "(id: string | number, result: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; }): { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; }; }",
 							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; }; }",
 							"parameters": [
@@ -65157,7 +65919,7 @@
 						{
 							"name": "create_jsonrpc_notification",
 							"kind": "function",
-							"source_line": 47,
+							"source_line": 51,
 							"type_signature": "(method: string, params: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; } | undefined): { [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; } | undefined; }",
 							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; } | undefined; }",
 							"parameters": [
@@ -65174,7 +65936,7 @@
 						{
 							"name": "create_jsonrpc_error_message",
 							"kind": "function",
-							"source_line": 62,
+							"source_line": 66,
 							"type_signature": "(id: string | number | null, error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }): { ...; }",
 							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; }",
 							"parameters": [
@@ -65192,7 +65954,7 @@
 							"name": "create_jsonrpc_error_message_from_thrown",
 							"kind": "function",
 							"doc_comment": "Creates a JSON-RPC error response from any error.\nHandles `ThrownJsonrpcError` and regular Error objects.",
-							"source_line": 75,
+							"source_line": 79,
 							"type_signature": "(id: string | number | null, error: any): { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); message: string; data?: unknown; }; }",
 							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; }",
 							"parameters": [
@@ -65209,7 +65971,7 @@
 						{
 							"name": "to_jsonrpc_message_id",
 							"kind": "function",
-							"source_line": 107,
+							"source_line": 111,
 							"type_signature": "(message_or_id: unknown): string | number | null",
 							"return_type": "string | number | null",
 							"parameters": [
@@ -65222,7 +65984,7 @@
 						{
 							"name": "is_jsonrpc_request_id",
 							"kind": "function",
-							"source_line": 117,
+							"source_line": 121,
 							"type_signature": "(id: unknown): id is string | number",
 							"return_type": "boolean",
 							"parameters": [
@@ -65235,7 +65997,7 @@
 						{
 							"name": "is_jsonrpc_object",
 							"kind": "function",
-							"source_line": 122,
+							"source_line": 126,
 							"type_signature": "(message: unknown): message is { jsonrpc: \"2.0\"; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65248,7 +66010,7 @@
 						{
 							"name": "is_jsonrpc_message",
 							"kind": "function",
-							"source_line": 128,
+							"source_line": 132,
 							"type_signature": "(message: unknown): message is { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; progressToken?: string | number | undefined; } | undefined; } | undefined; } | { ...; } | { ...; } | { ...; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65261,7 +66023,7 @@
 						{
 							"name": "is_jsonrpc_request",
 							"kind": "function",
-							"source_line": 133,
+							"source_line": 137,
 							"type_signature": "(message: unknown): message is { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; progressToken?: string | number | undefined; } | undefined; } | undefined; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65274,7 +66036,7 @@
 						{
 							"name": "is_jsonrpc_notification",
 							"kind": "function",
-							"source_line": 136,
+							"source_line": 140,
 							"type_signature": "(message: unknown): message is { [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; } | undefined; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65287,7 +66049,7 @@
 						{
 							"name": "is_jsonrpc_response",
 							"kind": "function",
-							"source_line": 139,
+							"source_line": 143,
 							"type_signature": "(message: unknown): message is { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; }; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65300,7 +66062,7 @@
 						{
 							"name": "is_jsonrpc_error_message",
 							"kind": "function",
-							"source_line": 142,
+							"source_line": 146,
 							"type_signature": "(message: unknown): message is { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65313,7 +66075,7 @@
 						{
 							"name": "is_jsonrpc_singular_message",
 							"kind": "function",
-							"source_line": 145,
+							"source_line": 149,
 							"type_signature": "(message: unknown): message is { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; method: string; params?: { [x: string]: unknown; _meta?: { [x: string]: unknown; progressToken?: string | number | undefined; } | undefined; } | undefined; } | { ...; } | { ...; } | { ...; }",
 							"return_type": "boolean",
 							"parameters": [
@@ -65327,7 +66089,7 @@
 							"name": "to_jsonrpc_params",
 							"kind": "function",
 							"doc_comment": "Normalizes input to JSON-RPC params format.\nReturns undefined for null/undefined, wraps primitives in {value}.",
-							"source_line": 152,
+							"source_line": 156,
 							"type_signature": "(input: unknown): Record<string, any> | undefined",
 							"return_type": "Record<string, any> | undefined",
 							"parameters": [
@@ -65341,7 +66103,7 @@
 							"name": "to_jsonrpc_result",
 							"kind": "function",
 							"doc_comment": "Normalizes output to JSON-RPC result format.\nReturns empty object for null/undefined, wraps primitives in {value}.",
-							"source_line": 171,
+							"source_line": 175,
 							"type_signature": "(output: unknown): Record<string, any>",
 							"return_type": "Record<string, any>",
 							"parameters": [
@@ -65355,20 +66117,20 @@
 							"name": "JSONRPC_ERROR_CODE_TO_HTTP_STATUS",
 							"kind": "variable",
 							"doc_comment": "Maps JSON-RPC error codes to HTTP status codes.",
-							"source_line": 205,
+							"source_line": 209,
 							"type_signature": "Record<-32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">), number>"
 						},
 						{
 							"name": "HTTP_STATUS_TO_JSONRPC_ERROR_CODE",
 							"kind": "variable",
 							"doc_comment": "Maps HTTP status codes to JSON-RPC error codes.",
-							"source_line": 214,
+							"source_line": 218,
 							"type_signature": "Record<number, -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)>"
 						},
 						{
 							"name": "jsonrpc_error_code_to_http_status",
 							"kind": "function",
-							"source_line": 222,
+							"source_line": 226,
 							"type_signature": "(code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)): number",
 							"return_type": "number",
 							"parameters": [
@@ -65381,7 +66143,7 @@
 						{
 							"name": "http_status_to_jsonrpc_error_code",
 							"kind": "function",
-							"source_line": 226,
+							"source_line": 230,
 							"type_signature": "(status: number): -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)",
 							"return_type": "-32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)",
 							"parameters": [
@@ -65398,8 +66160,8 @@
 						"action_peer.ts",
 						"frontend_http_transport.ts",
 						"frontend_websocket_transport.ts",
+						"server/backend_actions_api.ts",
 						"server/backend_websocket_transport.ts",
-						"server/register_http_actions.ts",
 						"server/register_websocket_actions.ts"
 					]
 				},
@@ -65409,190 +66171,190 @@
 						{
 							"name": "JSONRPC_VERSION",
 							"kind": "variable",
-							"source_line": 49,
+							"source_line": 54,
 							"type_signature": "\"2.0\""
 						},
 						{
 							"name": "JSONRPC_LATEST_PROTOCOL_VERSION",
 							"kind": "variable",
-							"source_line": 50,
+							"source_line": 55,
 							"type_signature": "\"DRAFT-2025-v2\""
 						},
 						{
 							"name": "JsonrpcRequestId",
 							"kind": "type",
 							"doc_comment": "A uniquely identifying id for a request in JSON-RPC.\n\nLike MCP but unlike JSON-RPC, the type excludes null.",
-							"source_line": 57,
+							"source_line": 62,
 							"type_signature": "ZodUnion<readonly [ZodString, ZodNumber]>"
 						},
 						{
 							"name": "JsonrpcMethod",
 							"kind": "type",
 							"doc_comment": "A JSON-RPC method name, a string with no constraints.",
-							"source_line": 63,
+							"source_line": 68,
 							"type_signature": "ZodString"
 						},
 						{
 							"name": "JsonrpcProgressToken",
 							"kind": "type",
 							"doc_comment": "A progress token, used to associate progress notifications with the original request.",
-							"source_line": 69,
+							"source_line": 74,
 							"type_signature": "ZodUnion<readonly [ZodString, ZodNumber]>"
 						},
 						{
 							"name": "JsonrpcMcpMeta",
 							"kind": "type",
-							"source_line": 72,
+							"source_line": 77,
 							"type_signature": "ZodObject<{}, $loose>"
 						},
 						{
 							"name": "JsonrpcRequestParamsMeta",
 							"kind": "type",
-							"source_line": 75,
+							"source_line": 80,
 							"type_signature": "ZodObject<{ progressToken: ZodOptional<ZodUnion<readonly [ZodString, ZodNumber]>>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcRequestParams",
 							"kind": "type",
-							"source_line": 87,
+							"source_line": 92,
 							"type_signature": "ZodObject<{ _meta: ZodOptional<ZodObject<{ progressToken: ZodOptional<ZodUnion<readonly [ZodString, ZodNumber]>>; }, $loose>>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcNotificationParams",
 							"kind": "type",
-							"source_line": 92,
+							"source_line": 97,
 							"type_signature": "ZodObject<{ _meta: ZodOptional<ZodObject<{}, $loose>>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcParams",
 							"kind": "type",
-							"source_line": 101,
+							"source_line": 106,
 							"type_signature": "ZodUnion<readonly [ZodObject<{ _meta: ZodOptional<ZodObject<{ progressToken: ZodOptional<ZodUnion<readonly [ZodString, ZodNumber]>>; }, $loose>>; }, $loose>, ZodObject<...>]>"
 						},
 						{
 							"name": "JsonrpcResult",
 							"kind": "type",
-							"source_line": 104,
+							"source_line": 109,
 							"type_signature": "ZodObject<{ _meta: ZodOptional<ZodObject<{}, $loose>>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcRequest",
 							"kind": "type",
 							"doc_comment": "A request that expects a response.",
-							"source_line": 116,
+							"source_line": 121,
 							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; method: ZodString; params: ZodOptional<ZodObject<{ _meta: ZodOptional<ZodObject<{ progressToken: ZodOptional<...>; }, $loose>>; }, $loose>>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcNotification",
 							"kind": "type",
 							"doc_comment": "A notification which does not expect a response.",
-							"source_line": 127,
+							"source_line": 132,
 							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; method: ZodString; params: ZodOptional<ZodObject<{ _meta: ZodOptional<ZodObject<{}, $loose>>; }, $loose>>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcResponse",
 							"kind": "type",
 							"doc_comment": "A successful (non-error) response to a request.",
-							"source_line": 137,
+							"source_line": 142,
 							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; result: ZodObject<{ _meta: ZodOptional<ZodObject<{}, $loose>>; }, $loose>; }, $loose>"
 						},
 						{
 							"name": "JSONRPC_PARSE_ERROR",
 							"kind": "variable",
-							"source_line": 146,
+							"source_line": 151,
 							"type_signature": "-32700"
 						},
 						{
 							"name": "JSONRPC_INVALID_REQUEST",
 							"kind": "variable",
-							"source_line": 147,
+							"source_line": 152,
 							"type_signature": "-32600"
 						},
 						{
 							"name": "JSONRPC_METHOD_NOT_FOUND",
 							"kind": "variable",
-							"source_line": 148,
+							"source_line": 153,
 							"type_signature": "-32601"
 						},
 						{
 							"name": "JSONRPC_INVALID_PARAMS",
 							"kind": "variable",
-							"source_line": 149,
+							"source_line": 154,
 							"type_signature": "-32602"
 						},
 						{
 							"name": "JSONRPC_INTERNAL_ERROR",
 							"kind": "variable",
-							"source_line": 150,
+							"source_line": 155,
 							"type_signature": "-32603"
 						},
 						{
 							"name": "JSONRPC_SERVER_ERROR_START",
 							"kind": "variable",
-							"source_line": 151,
+							"source_line": 156,
 							"type_signature": "-32000"
 						},
 						{
 							"name": "JSONRPC_SERVER_ERROR_END",
 							"kind": "variable",
-							"source_line": 152,
+							"source_line": 157,
 							"type_signature": "-32099"
 						},
 						{
 							"name": "JsonrpcServerErrorCode",
 							"kind": "type",
-							"source_line": 155,
+							"source_line": 160,
 							"type_signature": "$ZodBranded<ZodNumber, \"JsonrpcServerErrorCode\", \"out\">"
 						},
 						{
 							"name": "JsonrpcErrorCode",
 							"kind": "type",
-							"source_line": 162,
+							"source_line": 167,
 							"type_signature": "ZodUnion<readonly [ZodLiteral<-32700>, ZodLiteral<-32600>, ZodLiteral<-32601>, ZodLiteral<-32602>, ZodLiteral<-32603>, $ZodBranded<...>]>"
 						},
 						{
 							"name": "JsonrpcErrorJson",
 							"kind": "type",
-							"source_line": 172,
+							"source_line": 177,
 							"type_signature": "ZodObject<{ code: ZodUnion<readonly [ZodLiteral<-32700>, ZodLiteral<-32600>, ZodLiteral<-32601>, ZodLiteral<-32602>, ZodLiteral<-32603>, $ZodBranded<...>]>; message: ZodString; data: ZodOptional<...>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcErrorMessage",
 							"kind": "type",
 							"doc_comment": "A response to a request that indicates an error occurred.",
-							"source_line": 192,
+							"source_line": 197,
 							"type_signature": "ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodNullable<ZodUnion<readonly [ZodString, ZodNumber]>>; error: ZodObject<{ code: ZodUnion<readonly [ZodLiteral<-32700>, ... 4 more ..., $ZodBranded<...>]>; message: ZodString; data: ZodOptional<...>; }, $loose>; }, $loose>"
 						},
 						{
 							"name": "JsonrpcResponseOrError",
 							"kind": "type",
 							"doc_comment": "Convenience helper union.",
-							"source_line": 202,
+							"source_line": 207,
 							"type_signature": "ZodUnion<readonly [ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; result: ZodObject<{ _meta: ZodOptional<ZodObject<{}, $loose>>; }, $loose>; }, $loose>, ZodObject<...>]>"
 						},
 						{
 							"name": "JsonrpcMessage",
 							"kind": "type",
 							"doc_comment": "Refers to any valid JSON-RPC object that can be decoded off the wire, or encoded to be sent.",
-							"source_line": 208,
+							"source_line": 213,
 							"type_signature": "ZodUnion<readonly [ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; method: ZodString; params: ZodOptional<ZodObject<{ _meta: ZodOptional<ZodObject<{ progressToken: ZodOptional<...>; }, $loose>>; }, $loose>>; }, $loose>, ZodObject<...>, ZodObject<...>, ZodObject<...>]>"
 						},
 						{
 							"name": "JsonrpcMessageFromClientToServer",
 							"kind": "type",
-							"source_line": 219,
+							"source_line": 224,
 							"type_signature": "ZodUnion<readonly [ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; method: ZodString; params: ZodOptional<ZodObject<{ _meta: ZodOptional<ZodObject<{ progressToken: ZodOptional<...>; }, $loose>>; }, $loose>>; }, $loose>, ZodObject<...>]>"
 						},
 						{
 							"name": "JsonrpcMessageFromServerToClient",
 							"kind": "type",
-							"source_line": 227,
+							"source_line": 232,
 							"type_signature": "ZodUnion<readonly [ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; method: ZodString; params: ZodOptional<ZodObject<{ _meta: ZodOptional<ZodObject<{}, $loose>>; }, $loose>>; }, $loose>, ZodObject<...>, ZodObject<...>]>"
 						},
 						{
 							"name": "JsonrpcSingularMessage",
 							"kind": "type",
-							"source_line": 236,
+							"source_line": 241,
 							"type_signature": "ZodUnion<readonly [ZodObject<{ jsonrpc: ZodLiteral<\"2.0\">; id: ZodUnion<readonly [ZodString, ZodNumber]>; method: ZodString; params: ZodOptional<ZodObject<{ _meta: ZodOptional<ZodObject<{ progressToken: ZodOptional<...>; }, $loose>>; }, $loose>>; }, $loose>, ZodObject<...>, ZodObject<...>, ZodObject<...>]>"
 						}
 					],
@@ -70587,7 +71349,7 @@
 									"name": "add_schema",
 									"kind": "function",
 									"doc_comment": "Add a schema to the appropriate registries.",
-									"type_signature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; ... 5 more ...; async: true; } | { ...; } | { ...; }): void",
+									"type_signature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; ... 5 more ...; async: true; } | { ...; } | { ...; }): void",
 									"return_type": "void",
 									"parameters": [
 										{
@@ -70596,7 +71358,7 @@
 										},
 										{
 											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; async: true; } | { ...; } | { ...; }"
+											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; async: true; } | { ...; } | { ...; }"
 										}
 									]
 								},
@@ -70631,7 +71393,7 @@
 									"kind": "function",
 									"doc_comment": "Get an action specification by method name.",
 									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ...",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }...",
 									"parameters": [
 										{
 											"name": "method",
@@ -70747,202 +71509,12 @@
 					"dependents": ["TerminalRunner.svelte", "TurnList.svelte"]
 				},
 				{
-					"path": "server/backend_action_handlers.ts",
-					"declarations": [
-						{
-							"name": "backend_action_handlers",
-							"kind": "variable",
-							"doc_comment": "Handle client messages and produce appropriate server responses.\nEach returns a value or throws a `ThrownJsonrpcError`.\nOrganized by method and phase for symmetric handling.",
-							"source_line": 24,
-							"type_signature": "BackendActionHandlers"
-						}
-					],
-					"dependencies": [
-						"diskfile_helpers.ts",
-						"diskfile_types.ts",
-						"jsonrpc_errors.ts",
-						"server/env_file_helpers.ts",
-						"server/helpers.ts",
-						"zod_helpers.ts"
-					],
-					"dependents": ["server/create_zzz_app.ts"]
-				},
-				{
-					"path": "server/backend_action_types.gen.ts",
-					"declarations": [],
-					"dependencies": ["action_specs.ts"]
-				},
-				{
-					"path": "server/backend_action_types.ts",
-					"declarations": [
-						{
-							"name": "BackendActionHandlers",
-							"kind": "type",
-							"doc_comment": "Backend action handlers organized by method and phase.\nGenerated using spec.initiator to determine valid phases:\n- initiator: 'backend' → send/execute phases\n- initiator: 'frontend' → receive phases\n- initiator: 'both' → all valid phases",
-							"source_line": 14,
-							"type_signature": "BackendActionHandlers",
-							"properties": [
-								{
-									"name": "ping",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend_request?: (\n\t\t\taction_event: ActionEvent<'ping', Backend, 'send_request', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_response?: (\n\t\t\taction_event: ActionEvent<'ping', Backend, 'receive_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ping', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_error?: (\n\t\t\taction_event: ActionEvent<'ping', Backend, 'receive_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ping', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ping'] | Promise<ActionOutputs['ping']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ping', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "session_load",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'session_load', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['session_load'] | Promise<ActionOutputs['session_load']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'session_load', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'session_load', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "filer_change",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'filer_change', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "diskfile_update",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'diskfile_update', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['diskfile_update'] | Promise<ActionOutputs['diskfile_update']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'diskfile_update', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'diskfile_update', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "diskfile_delete",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'diskfile_delete', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['diskfile_delete'] | Promise<ActionOutputs['diskfile_delete']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'diskfile_delete', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'diskfile_delete', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "directory_create",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'directory_create', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['directory_create'] | Promise<ActionOutputs['directory_create']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'directory_create', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'directory_create', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "completion_create",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'completion_create', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['completion_create'] | Promise<ActionOutputs['completion_create']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'completion_create', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'completion_create', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "completion_progress",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'completion_progress', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_progress",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'ollama_progress', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "toggle_main_menu",
-									"kind": "variable",
-									"type_signature": "never"
-								},
-								{
-									"name": "ollama_list",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_list', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_list'] | Promise<ActionOutputs['ollama_list']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_list', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_list', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_ps",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_ps', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_ps'] | Promise<ActionOutputs['ollama_ps']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_ps', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_ps', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_show",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_show', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_show'] | Promise<ActionOutputs['ollama_show']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_show', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_show', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_pull",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_pull', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_pull'] | Promise<ActionOutputs['ollama_pull']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_pull', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_pull', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_delete",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_delete', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_delete'] | Promise<ActionOutputs['ollama_delete']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_delete', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_delete', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_copy",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_copy', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_copy'] | Promise<ActionOutputs['ollama_copy']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_copy', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_copy', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_create",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_create', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_create'] | Promise<ActionOutputs['ollama_create']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_create', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_create', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "ollama_unload",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'ollama_unload', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['ollama_unload'] | Promise<ActionOutputs['ollama_unload']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'ollama_unload', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'ollama_unload', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "provider_load_status",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'provider_load_status', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['provider_load_status'] | Promise<ActionOutputs['provider_load_status']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'provider_load_status', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'provider_load_status', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "provider_update_api_key",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'provider_update_api_key', Backend, 'receive_request', 'handling'>,\n\t\t) =>\n\t\t\t| ActionOutputs['provider_update_api_key']\n\t\t\t| Promise<ActionOutputs['provider_update_api_key']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'provider_update_api_key', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'provider_update_api_key', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "terminal_create",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'terminal_create', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['terminal_create'] | Promise<ActionOutputs['terminal_create']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'terminal_create', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'terminal_create', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "terminal_data_send",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'terminal_data_send', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['terminal_data_send'] | Promise<ActionOutputs['terminal_data_send']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'terminal_data_send', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'terminal_data_send', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "terminal_data",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'terminal_data', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "terminal_resize",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'terminal_resize', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['terminal_resize'] | Promise<ActionOutputs['terminal_resize']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'terminal_resize', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'terminal_resize', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "terminal_close",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['terminal_close'] | Promise<ActionOutputs['terminal_close']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'terminal_close', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "terminal_exited",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'terminal_exited', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "workspace_open",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['workspace_open'] | Promise<ActionOutputs['workspace_open']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_open', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "workspace_close",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['workspace_close'] | Promise<ActionOutputs['workspace_close']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_close', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "workspace_list",
-									"kind": "variable",
-									"type_signature": "{\n\t\treceive_request?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Backend, 'receive_request', 'handling'>,\n\t\t) => ActionOutputs['workspace_list'] | Promise<ActionOutputs['workspace_list']>;\n\t\tsend_response?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Backend, 'send_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: ActionEvent<'workspace_list', Backend, 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								},
-								{
-									"name": "workspace_changed",
-									"kind": "variable",
-									"type_signature": "{\n\t\tsend?: (\n\t\t\taction_event: ActionEvent<'workspace_changed', Backend, 'send', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
-								}
-							]
-						}
-					]
-				},
-				{
 					"path": "server/backend_actions_api.ts",
 					"declarations": [
 						{
 							"name": "BackendActionsApi",
 							"kind": "type",
-							"source_line": 29,
+							"source_line": 24,
 							"type_signature": "BackendActionsApi",
 							"properties": [
 								{
@@ -70980,7 +71552,7 @@
 						{
 							"name": "create_backend_actions_api",
 							"kind": "function",
-							"source_line": 38,
+							"source_line": 74,
 							"type_signature": "(backend: Backend): BackendActionsApi",
 							"return_type": "BackendActionsApi",
 							"parameters": [
@@ -70994,7 +71566,7 @@
 							"name": "handle_filer_change",
 							"kind": "function",
 							"doc_comment": "Handle file system changes and notify clients.",
-							"source_line": 247,
+							"source_line": 90,
 							"type_signature": "(change: WatcherChange, disknode: Disknode, backend: Backend, dir: string, filer: Filer): void",
 							"return_type": "void",
 							"parameters": [
@@ -71022,10 +71594,12 @@
 						}
 					],
 					"dependencies": [
-						"action_event.ts",
+						"action_collection_helpers.ts",
 						"action_specs.ts",
 						"diskfile_helpers.ts",
-						"diskfile_types.ts"
+						"diskfile_types.ts",
+						"jsonrpc_helpers.ts",
+						"zod_helpers.ts"
 					],
 					"dependents": ["server/backend.ts", "server/create_zzz_app.ts"]
 				},
@@ -71968,7 +72542,7 @@
 						{
 							"name": "BackendWebsocketTransport",
 							"kind": "class",
-							"source_line": 24,
+							"source_line": 23,
 							"extends": [],
 							"implements": ["Transport"],
 							"members": [
@@ -71980,9 +72554,30 @@
 								{
 									"name": "add_connection",
 									"kind": "function",
-									"doc_comment": "Add a new WebSocket connection.",
-									"type_signature": "(ws: WSContext<unknown>): string & $brand<\"Uuid\">",
+									"doc_comment": "Add a new WebSocket connection with auth info.\nSession connections pass a token hash for targeted revocation.\nBearer token connections (api_token, daemon_token) pass null —\nthey're still reachable via .",
+									"type_signature": "(ws: WSContext<unknown>, token_hash: string | null, account_id: string & $brand<\"Uuid\">): string & $brand<\"Uuid\">",
 									"return_type": "string & $brand<\"Uuid\">",
+									"parameters": [
+										{
+											"name": "ws",
+											"type": "WSContext<unknown>"
+										},
+										{
+											"name": "token_hash",
+											"type": "string | null"
+										},
+										{
+											"name": "account_id",
+											"type": "string & $brand<\"Uuid\">"
+										}
+									]
+								},
+								{
+									"name": "remove_connection",
+									"kind": "function",
+									"doc_comment": "Remove a WebSocket connection and its auth tracking data.\nIdempotent — safe to call after revocation has already cleaned up.",
+									"type_signature": "(ws: WSContext<unknown>): void",
+									"return_type": "void",
 									"parameters": [
 										{
 											"name": "ws",
@@ -71991,15 +72586,30 @@
 									]
 								},
 								{
-									"name": "remove_connection",
+									"name": "close_sockets_for_session",
 									"kind": "function",
-									"doc_comment": "Remove a WebSocket connection.",
-									"type_signature": "(ws: WSContext<unknown>): void",
-									"return_type": "void",
+									"doc_comment": "Close all sockets associated with a specific session token hash.",
+									"type_signature": "(token_hash: string): number",
+									"return_type": "number",
+									"return_description": "the number of sockets closed",
 									"parameters": [
 										{
-											"name": "ws",
-											"type": "WSContext<unknown>"
+											"name": "token_hash",
+											"type": "string"
+										}
+									]
+								},
+								{
+									"name": "close_sockets_for_account",
+									"kind": "function",
+									"doc_comment": "Close all sockets associated with a specific account.",
+									"type_signature": "(account_id: string & $brand<\"Uuid\">): number",
+									"return_type": "number",
+									"return_description": "the number of sockets closed",
+									"parameters": [
+										{
+											"name": "account_id",
+											"type": "string & $brand<\"Uuid\">"
 										}
 									]
 								},
@@ -72049,8 +72659,13 @@
 							]
 						}
 					],
-					"dependencies": ["jsonrpc_errors.ts", "jsonrpc_helpers.ts", "zod_helpers.ts"],
-					"dependents": ["server/register_websocket_actions.ts"]
+					"dependencies": [
+						"jsonrpc_errors.ts",
+						"jsonrpc_helpers.ts",
+						"socket_helpers.ts",
+						"zod_helpers.ts"
+					],
+					"dependents": ["server/register_websocket_actions.ts", "server/server.ts"]
 				},
 				{
 					"path": "server/backend.ts",
@@ -72059,14 +72674,14 @@
 							"name": "FilerChangeHandler",
 							"kind": "type",
 							"doc_comment": "Function type for handling file system changes.",
-							"source_line": 40,
+							"source_line": 38,
 							"type_signature": "FilerChangeHandler"
 						},
 						{
 							"name": "FilerInstance",
 							"kind": "type",
 							"doc_comment": "Structure to hold a Filer and its cleanup function.",
-							"source_line": 51,
+							"source_line": 49,
 							"type_signature": "FilerInstance",
 							"properties": [
 								{
@@ -72084,7 +72699,7 @@
 						{
 							"name": "BackendOptions",
 							"kind": "type",
-							"source_line": 56,
+							"source_line": 54,
 							"type_signature": "BackendOptions",
 							"properties": [
 								{
@@ -72112,12 +72727,6 @@
 									"doc_comment": "Action specifications that determine what the backend can do."
 								},
 								{
-									"name": "action_handlers",
-									"kind": "variable",
-									"type_signature": "BackendActionHandlers",
-									"doc_comment": "Handler function for processing client messages."
-								},
-								{
 									"name": "handle_filer_change",
 									"kind": "variable",
 									"type_signature": "FilerChangeHandler",
@@ -72135,7 +72744,7 @@
 							"name": "Backend",
 							"kind": "class",
 							"doc_comment": "Server for managing the Zzz application state and handling client messages.",
-							"source_line": 91,
+							"source_line": 85,
 							"extends": [],
 							"implements": ["ActionEventEnvironment"],
 							"members": [
@@ -72230,24 +72839,15 @@
 								{
 									"name": "lookup_action_handler",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\", phase: \"send_request\" | ... 7 more ... | \"receive\"): ((event: any) => any) | undefined",
-									"return_type": "((event: any) => any) | undefined",
-									"parameters": [
-										{
-											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\""
-										},
-										{
-											"name": "phase",
-											"type": "\"send_request\" | \"execute\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\""
-										}
-									]
+									"type_signature": "(): undefined",
+									"return_type": "undefined",
+									"parameters": []
 								},
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
 									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: true | null; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<...>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: ...",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }...",
 									"parameters": [
 										{
 											"name": "method",
@@ -72264,19 +72864,6 @@
 										{
 											"name": "provider_name",
 											"type": "T"
-										}
-									]
-								},
-								{
-									"name": "receive",
-									"kind": "function",
-									"doc_comment": "Process a singular JSON-RPC message and return a response.\nLike MCP, Zzz breaks from JSON-RPC by not supporting batching.",
-									"type_signature": "(message: unknown): Promise<{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; }; } | { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { ...; }; } | { ...; } | null>",
-									"return_type": "Promise<{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; _meta?: { [x: string]: unknown; } | undefined; }; } | { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | ... 4 more ... | (number & $brand<...>); message...",
-									"parameters": [
-										{
-											"name": "message",
-											"type": "unknown"
 										}
 									]
 								},
@@ -72378,22 +72965,40 @@
 							"name": "CreateZzzAppOptions",
 							"kind": "type",
 							"doc_comment": "Options for creating a zzz app.",
-							"source_line": 35,
+							"source_line": 45,
 							"type_signature": "CreateZzzAppOptions",
 							"properties": [
 								{
-									"name": "env",
+									"name": "config",
 									"kind": "variable",
 									"type_signature": "ZzzServerConfig",
 									"doc_comment": "Server environment configuration."
+								},
+								{
+									"name": "password",
+									"kind": "variable",
+									"type_signature": "PasswordHashDeps",
+									"doc_comment": "Password hashing deps — `argon2_password_deps` for production, stubs for tests."
+								},
+								{
+									"name": "runtime",
+									"kind": "variable",
+									"type_signature": "{\n\t\tstat: (path: string) => Promise<StatResult | null>;\n\t\tread_text_file: (path: string) => Promise<string>;\n\t\tremove: (path: string) => Promise<void>;\n\t}",
+									"doc_comment": "Runtime filesystem operations.\nProvided by `create_deno_runtime` or `create_node_runtime`."
+								},
+								{
+									"name": "get_connection_ip",
+									"kind": "variable",
+									"type_signature": "(c: Context) => string | undefined",
+									"doc_comment": "Extract the raw TCP connection IP from the Hono context."
 								}
 							]
 						},
 						{
 							"name": "ZzzApp",
 							"kind": "type",
-							"doc_comment": "The created zzz app and its backend.",
-							"source_line": 43,
+							"doc_comment": "The created zzz app and related instances.",
+							"source_line": 66,
 							"type_signature": "ZzzApp",
 							"properties": [
 								{
@@ -72406,17 +73011,47 @@
 									"name": "backend",
 									"kind": "variable",
 									"type_signature": "Backend",
-									"doc_comment": "Backend instance for lifecycle management."
+									"doc_comment": "zzz domain Backend instance for lifecycle management."
+								},
+								{
+									"name": "app_backend",
+									"kind": "variable",
+									"type_signature": "AppBackend",
+									"doc_comment": "fuz_app backend for database and auth."
+								},
+								{
+									"name": "surface",
+									"kind": "variable",
+									"type_signature": "AppSurface",
+									"doc_comment": "Generated attack surface."
+								},
+								{
+									"name": "env",
+									"kind": "variable",
+									"type_signature": "ZzzServerEnv",
+									"doc_comment": "Validated environment."
+								},
+								{
+									"name": "allowed_origins",
+									"kind": "variable",
+									"type_signature": "Array<RegExp>",
+									"doc_comment": "Parsed allowed origin patterns (from `validate_server_env`)."
+								},
+								{
+									"name": "close",
+									"kind": "variable",
+									"type_signature": "() => Promise<void>",
+									"doc_comment": "Close database connection."
 								}
 							]
 						},
 						{
 							"name": "create_zzz_app",
 							"kind": "function",
-							"doc_comment": "Create the zzz Hono app with Backend, providers, and endpoints.\n\nThis is the shared factory called by the server entry point.",
-							"source_line": 55,
-							"type_signature": "(options: CreateZzzAppOptions): ZzzApp",
-							"return_type": "ZzzApp",
+							"doc_comment": "Create the zzz Hono app with auth, database, Backend, providers, and endpoints.\n\nThis is the shared factory called by the server entry point.\nUses `create_app_backend` for database + auth, `create_app_server` for\nmiddleware assembly, and wires zzz's domain Backend through route deps.",
+							"source_line": 90,
+							"type_signature": "(options: CreateZzzAppOptions): Promise<ZzzApp>",
+							"return_type": "Promise<ZzzApp>",
 							"parameters": [
 								{
 									"name": "options",
@@ -72425,22 +73060,44 @@
 							]
 						}
 					],
-					"module_comment": "Shared zzz app factory.\n\nCreates the Hono app with Backend, AI providers, and action endpoints.\nCalled by the server entry point (`server.ts`).",
+					"module_comment": "Runtime-agnostic zzz app factory.\n\nCreates the full application by combining fuz_app's `create_app_backend`\nand `create_app_server` with zzz's domain Backend, AI providers, and\nWebSocket endpoint. Called by the server entry point (`server.ts`).",
 					"dependencies": [
 						"action_collections.ts",
 						"config.ts",
 						"server/backend.ts",
-						"server/backend_action_handlers.ts",
 						"server/backend_actions_api.ts",
 						"server/backend_provider_chatgpt.ts",
 						"server/backend_provider_claude.ts",
 						"server/backend_provider_gemini.ts",
 						"server/backend_provider_ollama.ts",
-						"server/register_http_actions.ts",
-						"server/register_websocket_actions.ts",
-						"server/security.ts"
+						"server/db/zzz_schema.ts",
+						"server/routes/account.ts",
+						"server/security.ts",
+						"server/server_env.ts",
+						"server/zzz_route_specs.ts"
 					],
 					"dependents": ["server/server.ts"]
+				},
+				{
+					"path": "server/db/zzz_schema.ts",
+					"declarations": [
+						{
+							"name": "init_zzz_schema",
+							"kind": "function",
+							"doc_comment": "Initialize the zzz database schema.\n\nCurrently only auth tables (from `create_app_backend`).\nZzz-specific tables will be added here when persistent state is needed.",
+							"source_line": 20,
+							"type_signature": "(_db: Db): Promise<void>",
+							"return_type": "Promise<void>",
+							"parameters": [
+								{
+									"name": "_db",
+									"type": "Db"
+								}
+							]
+						}
+					],
+					"module_comment": "Database schema initialization for zzz.\n\nRuns fuz_app auth migrations. No zzz-specific DDL yet\n(all domain state is in-memory via Cells).",
+					"dependents": ["server/create_zzz_app.ts"]
 				},
 				{
 					"path": "server/env_file_helpers.ts",
@@ -72499,7 +73156,7 @@
 							]
 						}
 					],
-					"dependents": ["server/backend_action_handlers.ts"]
+					"dependents": ["server/zzz_action_handlers.ts"]
 				},
 				{
 					"path": "server/helpers.ts",
@@ -72531,7 +73188,7 @@
 						}
 					],
 					"dependencies": ["action_collections.ts", "server/scoped_fs.ts"],
-					"dependents": ["server/backend_action_handlers.ts"]
+					"dependents": ["server/zzz_action_handlers.ts"]
 				},
 				{
 					"path": "server/pty_ffi.ts",
@@ -72745,62 +73402,12 @@
 					"dependents": ["server/backend_pty_manager.ts"]
 				},
 				{
-					"path": "server/register_http_actions.ts",
-					"declarations": [
-						{
-							"name": "RegisterActionsOptions",
-							"kind": "type",
-							"source_line": 14,
-							"type_signature": "RegisterActionsOptions",
-							"properties": [
-								{
-									"name": "path",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "app",
-									"kind": "variable",
-									"type_signature": "Hono"
-								},
-								{
-									"name": "backend",
-									"kind": "variable",
-									"type_signature": "Backend"
-								},
-								{
-									"name": "artificial_delay",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Artificial response delay in ms (testing)."
-								}
-							]
-						},
-						{
-							"name": "register_http_actions",
-							"kind": "function",
-							"doc_comment": "Registers HTTP endpoints for all service actions in the schema registry.",
-							"source_line": 25,
-							"type_signature": "({ path, app, backend, artificial_delay, }: RegisterActionsOptions): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "__0",
-									"type": "RegisterActionsOptions"
-								}
-							]
-						}
-					],
-					"dependencies": ["jsonrpc_errors.ts", "jsonrpc_helpers.ts", "zod_helpers.ts"],
-					"dependents": ["server/create_zzz_app.ts"]
-				},
-				{
 					"path": "server/register_websocket_actions.ts",
 					"declarations": [
 						{
 							"name": "RegisterWebsocketActionsOptions",
 							"kind": "type",
-							"source_line": 13,
+							"source_line": 34,
 							"type_signature": "RegisterWebsocketActionsOptions",
 							"properties": [
 								{
@@ -72841,7 +73448,7 @@
 							"name": "register_websocket_actions",
 							"kind": "function",
 							"doc_comment": "Registers WebSocket endpoints for all service actions in the schema registry.",
-							"source_line": 27,
+							"source_line": 48,
 							"type_signature": "({ path, app, backend, upgradeWebSocket, artificial_delay, transport, }: RegisterWebsocketActionsOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -72852,11 +73459,27 @@
 							]
 						}
 					],
+					"module_comment": "WebSocket endpoint with direct handler dispatch.\n\nReplaces the old `backend.receive(json)` → ActionPeer → ActionEvent path\nwith: spec lookup → Zod input validation → handler call → JSON-RPC response.\nKeeps existing per-action auth checking at the transport layer.",
 					"dependencies": [
+						"action_specs.ts",
 						"jsonrpc_errors.ts",
 						"jsonrpc_helpers.ts",
-						"server/backend_websocket_transport.ts"
+						"server/backend_websocket_transport.ts",
+						"server/zzz_action_handlers.ts"
 					],
+					"dependents": ["server/server.ts"]
+				},
+				{
+					"path": "server/routes/account.ts",
+					"declarations": [
+						{
+							"name": "zzz_session_config",
+							"kind": "variable",
+							"source_line": 9,
+							"type_signature": "SessionOptions<string>"
+						}
+					],
+					"module_comment": "zzz session configuration.",
 					"dependents": ["server/create_zzz_app.ts"]
 				},
 				{
@@ -73322,17 +73945,23 @@
 						{
 							"name": "ZzzServerEnv",
 							"kind": "type",
-							"doc_comment": "Zod schema for zzz server environment variables.\n\nField names match the env var keys — `load_env` reads each key from the schema shape.\nDefaults are set so the daemon starts with zero configuration.",
-							"source_line": 19,
-							"type_signature": "ZodObject<{ PUBLIC_ZZZ_DIR: ZodDefault<ZodString>; PUBLIC_ZZZ_SCOPED_DIRS: ZodDefault<ZodString>; PUBLIC_SERVER_PROXIED_PORT: ZodDefault<ZodCoercedNumber<unknown>>; ... 5 more ...; SECRET_GOOGLE_API_KEY: ZodOptional<...>; }, $strict>"
+							"doc_comment": "Zod schema for zzz server environment variables.\n\nExtends `BaseServerEnv` with zzz-specific fields for app data,\nscoped directories, AI provider API keys, and testing configuration.",
+							"source_line": 20,
+							"type_signature": "ZodObject<{ NODE_ENV: ZodEnum<{ development: \"development\"; production: \"production\"; }>; PORT: ZodDefault<ZodCoercedNumber<unknown>>; HOST: ZodDefault<ZodString>; ... 15 more ...; SECRET_GOOGLE_API_KEY: ZodOptional<...>; }, $strict>"
 						},
 						{
 							"name": "ZzzServerConfig",
 							"kind": "type",
 							"doc_comment": "Parsed server env with derived values ready for use.\n\nSeparates raw env loading from the derived shapes callers need\n(e.g., `scoped_dirs` as an array, `port` as a number).",
-							"source_line": 62,
+							"source_line": 51,
 							"type_signature": "ZzzServerConfig",
 							"properties": [
+								{
+									"name": "env",
+									"kind": "variable",
+									"type_signature": "ZzzServerEnv",
+									"doc_comment": "Full validated env object."
+								},
 								{
 									"name": "zzz_dir",
 									"kind": "variable",
@@ -73356,12 +73985,6 @@
 									"kind": "variable",
 									"type_signature": "string",
 									"doc_comment": "Hostname for the server."
-								},
-								{
-									"name": "allowed_origins",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Comma-separated origin patterns for request verification."
 								},
 								{
 									"name": "websocket_path",
@@ -73411,7 +74034,7 @@
 							"name": "load_server_env",
 							"kind": "function",
 							"doc_comment": "Load and validate server env, then derive the config callers need.\n\nUses `load_env` from fuz_app for Zod-validated loading.\nThe `overrides` parameter lets CLI flags and startup defaults\ntake precedence over env vars.",
-							"source_line": 112,
+							"source_line": 101,
 							"type_signature": "(get_env: (key: string) => string | undefined, overrides?: Partial<ZzzServerConfig> | undefined): ZzzServerConfig",
 							"return_type": "ZzzServerConfig",
 							"parameters": [
@@ -73429,30 +74052,8 @@
 							]
 						}
 					],
-					"module_comment": "Server environment configuration.\n\nZod schema for the zzz Deno server env. Uses `load_env` from fuz_app\nfor schema-validated loading with clear error messages.",
-					"dependents": ["server/server.ts"]
-				},
-				{
-					"path": "server/server_helpers.ts",
-					"declarations": [
-						{
-							"name": "noop_middleware",
-							"kind": "function",
-							"source_line": 3,
-							"type_signature": "(c: Context<any, any, BlankInput>, next: Next): any",
-							"return_type": "any",
-							"parameters": [
-								{
-									"name": "c",
-									"type": "Context<any, any, BlankInput>"
-								},
-								{
-									"name": "next",
-									"type": "Next"
-								}
-							]
-						}
-					]
+					"module_comment": "Server environment configuration.\n\nExtends `BaseServerEnv` from fuz_app with zzz-specific fields.\nUses `load_env` from fuz_app for schema-validated loading.",
+					"dependents": ["server/create_zzz_app.ts", "server/server.ts"]
 				},
 				{
 					"path": "server/server.ts",
@@ -73460,21 +74061,185 @@
 						{
 							"name": "start_server",
 							"kind": "function",
-							"doc_comment": "Start the zzz server using Deno runtime.\n\nCreates the full backend with providers, WebSocket, and HTTP RPC\nendpoints via `create_zzz_app`, then serves with `Deno.serve`.",
-							"source_line": 34,
+							"doc_comment": "Start the zzz server using Deno runtime.\n\nCreates the full backend with auth, database, providers, WebSocket, and HTTP RPC\nendpoints via `create_zzz_app`, then serves with `Deno.serve`.",
+							"source_line": 45,
 							"type_signature": "(): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": []
 						}
 					],
-					"module_comment": "Deno server entry point for zzz.\n\nSingle entry point for both dev mode (`gro dev` via `gro_plugin_deno_server`)\nand production (`zzz daemon start`). Uses the shared `create_zzz_app` factory\nfor the Hono app, then binds with `Deno.serve` and handles daemon lifecycle.",
+					"module_comment": "Deno server entry point for zzz.\n\nSingle entry point for both dev mode (`gro dev` via `gro_plugin_deno_server`)\nand production (`zzz daemon start`). Uses the shared `create_zzz_app` factory\nfor the Hono app with fuz_app auth stack, then binds with `Deno.serve`\nand handles daemon lifecycle.",
 					"dependencies": [
+						"server/backend_websocket_transport.ts",
 						"server/create_zzz_app.ts",
+						"server/register_websocket_actions.ts",
 						"server/security.ts",
 						"server/server_env.ts",
 						"zzz/build_info.ts"
 					],
 					"dependents": ["zzz/commands/daemon.ts"]
+				},
+				{
+					"path": "server/zzz_action_handlers.ts",
+					"declarations": [
+						{
+							"name": "ZzzHandlerContext",
+							"kind": "type",
+							"doc_comment": "Per-request context passed to every handler.\nMirrors Rust's `HandlerContext` — transport constructs it, handler borrows it.",
+							"source_line": 27,
+							"type_signature": "ZzzHandlerContext",
+							"properties": [
+								{
+									"name": "backend",
+									"kind": "variable",
+									"type_signature": "Backend"
+								},
+								{
+									"name": "request_id",
+									"kind": "variable",
+									"type_signature": "string | number | null",
+									"doc_comment": "From the JSON-RPC envelope."
+								}
+							]
+						},
+						{
+							"name": "ZzzHandledMethod",
+							"kind": "type",
+							"doc_comment": "Methods handled by zzz_action_handlers (request_response only, excludes remote_notifications).",
+							"source_line": 34,
+							"type_signature": "ZzzHandledMethod"
+						},
+						{
+							"name": "ZzzActionHandlers",
+							"kind": "type",
+							"doc_comment": "Typed handler map — each handler has per-method input/output types.",
+							"source_line": 45,
+							"type_signature": "ZzzActionHandlers"
+						},
+						{
+							"name": "zzz_action_handlers",
+							"kind": "variable",
+							"doc_comment": "All 23 request_response handlers as pure functions.\n\nLogic sourced from the RPC versions (cleaner than the old WS handlers —\nno Deno-only bug in provider_update_api_key, no console.log noise).",
+							"source_line": 58,
+							"type_signature": "ZzzActionHandlers"
+						}
+					],
+					"module_comment": "Unified action handlers for zzz.\n\nSingle source of truth for all 23 request_response handlers.\nBoth HTTP RPC and WebSocket dispatch call these same functions.\nHandler signature mirrors Rust's `fn(params, ctx) -> Result<Value>`.",
+					"dependencies": [
+						"diskfile_helpers.ts",
+						"diskfile_types.ts",
+						"jsonrpc_errors.ts",
+						"server/env_file_helpers.ts",
+						"server/helpers.ts",
+						"zod_helpers.ts"
+					],
+					"dependents": ["server/register_websocket_actions.ts", "server/zzz_rpc_actions.ts"]
+				},
+				{
+					"path": "server/zzz_route_specs.ts",
+					"declarations": [
+						{
+							"name": "ZzzAppRouteDeps",
+							"kind": "type",
+							"doc_comment": "zzz-specific deps not available in AppServerContext.",
+							"source_line": 32,
+							"type_signature": "ZzzAppRouteDeps",
+							"properties": [
+								{
+									"name": "zzz",
+									"kind": "variable",
+									"type_signature": "ZzzRpcDeps"
+								},
+								{
+									"name": "version",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "get_uptime_ms",
+									"kind": "variable",
+									"type_signature": "() => number"
+								},
+								{
+									"name": "audit_sse",
+									"kind": "variable",
+									"type_signature": "AuditLogRouteOptions['stream']",
+									"doc_comment": "Audit log SSE stream config."
+								}
+							]
+						},
+						{
+							"name": "create_zzz_app_route_specs",
+							"kind": "function",
+							"doc_comment": "Build all zzz route specs.\n\nUsed by production server, integration tests, and attack surface helpers.\nDoes NOT include bootstrap routes (those are factory-managed by `create_app_server`).",
+							"source_line": 46,
+							"type_signature": "(ctx: AppServerContext, zzz_deps: ZzzAppRouteDeps): RouteSpec[]",
+							"return_type": "RouteSpec[]",
+							"parameters": [
+								{
+									"name": "ctx",
+									"type": "AppServerContext"
+								},
+								{
+									"name": "zzz_deps",
+									"type": "ZzzAppRouteDeps"
+								}
+							]
+						},
+						{
+							"name": "create_zzz_rpc_endpoint_spec",
+							"kind": "function",
+							"doc_comment": "Build the RPC endpoint spec for surface generation.",
+							"source_line": 84,
+							"type_signature": "(zzz_deps: ZzzRpcDeps): RpcEndpointSpec",
+							"return_type": "RpcEndpointSpec",
+							"parameters": [
+								{
+									"name": "zzz_deps",
+									"type": "ZzzRpcDeps"
+								}
+							]
+						}
+					],
+					"module_comment": "Shared zzz route spec factory.\n\nUsed by the production server, integration tests, and attack surface helpers.\nDoes NOT include bootstrap routes (factory-managed by `create_app_server`).",
+					"dependencies": ["server/zzz_rpc_actions.ts"],
+					"dependents": ["server/create_zzz_app.ts"]
+				},
+				{
+					"path": "server/zzz_rpc_actions.ts",
+					"declarations": [
+						{
+							"name": "ZzzRpcDeps",
+							"kind": "type",
+							"doc_comment": "Dependencies for creating zzz RPC actions.",
+							"source_line": 18,
+							"type_signature": "ZzzRpcDeps",
+							"properties": [
+								{
+									"name": "backend",
+									"kind": "variable",
+									"type_signature": "Backend"
+								}
+							]
+						},
+						{
+							"name": "create_zzz_rpc_actions",
+							"kind": "function",
+							"doc_comment": "Create all zzz RPC actions.\n\nReturns `RpcAction[]` for `create_rpc_endpoint`.\nEach handler wraps the unified handler with the fuz_app ActionContext adapter.",
+							"source_line": 28,
+							"type_signature": "(deps: ZzzRpcDeps): RpcAction[]",
+							"return_type": "RpcAction[]",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "ZzzRpcDeps"
+								}
+							]
+						}
+					],
+					"module_comment": "RPC actions for zzz — thin adapter from unified handlers to fuz_app's `RpcAction` format.\n\nMaps `(input, ActionContext) -> handler(input, {backend, request_id})`.\nAll business logic lives in `zzz_action_handlers.ts`.",
+					"dependencies": ["action_specs.ts", "server/zzz_action_handlers.ts"],
+					"dependents": ["server/zzz_route_specs.ts"]
 				},
 				{
 					"path": "Settings.svelte",
@@ -73526,9 +74291,19 @@
 							"kind": "variable",
 							"source_line": 11,
 							"type_signature": "1000"
+						},
+						{
+							"name": "WS_CLOSE_SESSION_REVOKED",
+							"kind": "variable",
+							"source_line": 12,
+							"type_signature": "4001"
 						}
 					],
-					"dependents": ["CapabilityWebsocket.svelte", "socket.svelte.ts"]
+					"dependents": [
+						"CapabilityWebsocket.svelte",
+						"server/backend_websocket_transport.ts",
+						"socket.svelte.ts"
+					]
 				},
 				{
 					"path": "socket.svelte.ts",
@@ -73536,19 +74311,19 @@
 						{
 							"name": "SocketJson",
 							"kind": "type",
-							"source_line": 22,
+							"source_line": 23,
 							"type_signature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; ... 6 more ...; auto_reconnect: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "SocketJsonInput",
 							"kind": "type",
-							"source_line": 31,
+							"source_line": 32,
 							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; url?: string | null | undefined; url_input?: string | undefined; heartbeat_interval?: number | undefined; reconnect_delay?: number | undefined; reconnect_delay_max?: number | undefined; auto_reconnect?: boolean | undefined; }"
 						},
 						{
 							"name": "SocketOptions",
 							"kind": "type",
-							"source_line": 33,
+							"source_line": 34,
 							"type_signature": "SocketOptions",
 							"extends": ["CellOptions<typeof SocketJson>"],
 							"properties": []
@@ -73556,20 +74331,20 @@
 						{
 							"name": "SocketActionHandler",
 							"kind": "type",
-							"source_line": 35,
+							"source_line": 36,
 							"type_signature": "SocketActionHandler"
 						},
 						{
 							"name": "SocketErrorHandler",
 							"kind": "type",
-							"source_line": 36,
+							"source_line": 37,
 							"type_signature": "SocketErrorHandler"
 						},
 						{
 							"name": "QueuedMessage",
 							"kind": "type",
 							"doc_comment": "Queued message that couldn't be sent immediately.",
-							"source_line": 43,
+							"source_line": 44,
 							"type_signature": "QueuedMessage",
 							"properties": [
 								{
@@ -73593,7 +74368,7 @@
 							"name": "FailedMessage",
 							"kind": "type",
 							"doc_comment": "Failed message that exceeded retry count.",
-							"source_line": 52,
+							"source_line": 53,
 							"type_signature": "FailedMessage",
 							"extends": ["QueuedMessage"],
 							"properties": [
@@ -73613,7 +74388,7 @@
 							"name": "Socket",
 							"kind": "class",
 							"doc_comment": "Socket class for WebSocket connection management with auto-reconnect and message queueing.",
-							"source_line": 60,
+							"source_line": 61,
 							"extends": ["Cell<typeof SocketJson>"],
 							"implements": [],
 							"members": [
@@ -75598,13 +76373,18 @@
 									"name": "is_ready",
 									"kind": "variable",
 									"type_signature": "() => boolean"
+								},
+								{
+									"name": "dispose",
+									"kind": "variable",
+									"type_signature": "() => void"
 								}
 							]
 						},
 						{
 							"name": "Transports",
 							"kind": "class",
-							"source_line": 29,
+							"source_line": 30,
 							"members": [
 								{
 									"name": "allow_fallback",
@@ -76785,9 +77565,9 @@
 						"prompt.svelte.ts",
 						"request_tracker.svelte.ts",
 						"response_helpers.ts",
-						"server/backend_action_handlers.ts",
+						"server/backend_actions_api.ts",
 						"server/backend_websocket_transport.ts",
-						"server/register_http_actions.ts",
+						"server/zzz_action_handlers.ts",
 						"socket.svelte.ts",
 						"terminal.svelte.ts",
 						"turn.svelte.ts",
@@ -76901,7 +77681,7 @@
 						}
 					],
 					"module_comment": "zzz CLI configuration.\n\nManages CLI-specific configuration stored at ~/.zzz/config.json.\n\nThe CLI config uses the `zzz_config_` prefix for all fields to make\nthe source self-documenting in code.",
-					"dependents": ["zzz/commands/init.ts", "zzz/commands/open.ts"]
+					"dependents": ["zzz/commands/daemon.ts", "zzz/commands/init.ts", "zzz/commands/open.ts"]
 				},
 				{
 					"path": "zzz/cli.ts",
@@ -77191,7 +77971,7 @@
 							"name": "daemon_start",
 							"kind": "function",
 							"doc_comment": "Start the daemon in foreground mode.\n\nCLI flags --port and --host override config values.",
-							"source_line": 32,
+							"source_line": 33,
 							"type_signature": "(runtime: RuntimeDeps, args: { _: string[]; port?: number | undefined; host?: string | undefined; }, _flags: { help: boolean; version: boolean; }): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -77213,7 +77993,7 @@
 							"name": "daemon_stop",
 							"kind": "function",
 							"doc_comment": "Stop the running daemon.",
-							"source_line": 47,
+							"source_line": 59,
 							"type_signature": "(runtime: RuntimeDeps, _args: { _: string[]; }, _flags: { help: boolean; version: boolean; }): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -77235,7 +78015,7 @@
 							"name": "daemon_status",
 							"kind": "function",
 							"doc_comment": "Show daemon status.",
-							"source_line": 65,
+							"source_line": 77,
 							"type_signature": "(runtime: RuntimeDeps, args: { _: string[]; json: boolean; }, _flags: { help: boolean; version: boolean; }): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -77255,7 +78035,7 @@
 						}
 					],
 					"module_comment": "zzz daemon commands (start, stop, status).\n\nThe zzz CLI runs in Deno, so daemon start uses the Deno server entry point.\n\nRouting (`zzz daemon start|stop|status`) is handled by\ncreate_subcommand_router in main.ts.",
-					"dependencies": ["server/server.ts", "zzz/log.ts"],
+					"dependencies": ["server/server.ts", "zzz/cli_config.ts", "zzz/log.ts"],
 					"dependents": ["zzz/main.ts"]
 				},
 				{

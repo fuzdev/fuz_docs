@@ -4,14 +4,14 @@ Testing conventions for the Fuz stack: vitest usage, fixtures, mocks, helpers.
 
 ## Contents
 
-- [File Organization](#file-organization) (naming, subdirectories, assertions, jsdom)
+- [File Organization](#file-organization) (naming, subdirectories, assertions, async rejection, jsdom)
 - [Database Testing](#database-testing) (PGlite, vitest projects, describe_db)
 - [Test Helpers](#test-helpers)
 - [Shared Test Factories](#shared-test-factories)
 - [Fixture-Based Testing](#fixture-based-testing)
 - [Mock Patterns](#mock-patterns)
 - [Environment Flags](#environment-flags)
-- [Test Structure](#test-structure) (basic, async, parameterized)
+- [Test Structure](#test-structure) (basic, organization, parameterized)
 - [Quick Reference](#quick-reference)
 
 ## File Organization
@@ -68,8 +68,8 @@ Real examples:
 
 ### Assertions
 
-Prefer `assert` from vitest in core repos (fuz_app, fuz_ui, fuz_util). Choose
-methods for TypeScript type narrowing, not semantic precision:
+Use `assert` from vitest. Choose methods for TypeScript type narrowing, not
+semantic precision:
 
 ```typescript
 import {test, assert} from 'vitest';
@@ -79,6 +79,20 @@ assert.strictEqual(a, b);
 assert.deepStrictEqual(a, b);
 ```
 
+**Why `assert` over `expect`:** `assert` methods narrow types for TypeScript.
+`expect` chains don't:
+
+```typescript
+// assert narrows — no type error
+const result: string | Error = await get_result();
+assert(result instanceof Error);
+result.message; // TypeScript knows this is Error
+
+// expect doesn't narrow — type error on .message
+expect(result).toBeInstanceOf(Error);
+result.message; // Property 'message' does not exist on type 'string | Error'
+```
+
 After `assert.isDefined(x)`, the type is `NonNullable<T>` — no `!` needed:
 
 ```typescript
@@ -86,16 +100,17 @@ assert.isDefined(result);
 assert.strictEqual(result.id, expected_id); // no result! needed
 ```
 
-Some repos (gro, zzz, fuz_css, fuz_gitops) use `expect` — follow existing
-convention per repo. For new projects, prefer `assert`.
+Some repos have legacy `expect` usage — prefer `assert` in new code and
+migrate opportunistically.
+
+Name custom assertion helpers `assert_*` (not `expect_*`).
+Example: `assert_result_ok()` not `expect_ok()`.
 
 For throw assertions, use `assert.throws()` with Error constructor, string,
 or RegExp. **Do not pass a function predicate** — causes
 `"errorLike is not a constructor"`:
 
 ```typescript
-import {test, assert} from 'vitest';
-
 // Good — RegExp matching
 assert.throws(() => fn(), /expected message/);
 
@@ -120,7 +135,46 @@ try {
 }
 ```
 
-Same try/catch pattern works for async rejects (with `await`).
+### Async Rejection Testing
+
+For async functions that should reject, use an `assert_rejects` helper to
+avoid repetitive try/catch boilerplate. Place `assert.fail` outside the catch
+block to prevent accidentally catching assertion errors from the test itself:
+
+```typescript
+const assert_rejects = async (fn: () => Promise<unknown>, pattern: RegExp): Promise<Error> => {
+	try {
+		await fn();
+	} catch (err) {
+		assert(err instanceof Error); // narrows type
+		assert.match(err.message, pattern);
+		return err;
+	}
+	assert.fail('Expected to throw');
+};
+```
+
+Usage:
+
+```typescript
+// Simple — just check the error pattern
+await assert_rejects(
+	() => local_repo_load({local_repo_path, git_ops, npm_ops}),
+	/Failed to pull.*unstaged changes/,
+);
+
+// With additional assertions on the returned error
+const err = await assert_rejects(
+	() => local_repos_load({local_repo_paths: paths, git_ops, npm_ops}),
+	/Failed to load 2 repos/,
+);
+assert.include(err.message, 'repo-a');
+assert.include(err.message, 'repo-b');
+```
+
+This helper is currently defined locally in test files that need it. A future
+`@fuzdev/fuz_util/testing.js` module may provide this and other shared test
+assertions (see [Quick Reference](#quick-reference)).
 
 ### jsdom Environment
 
@@ -704,6 +758,33 @@ describe('account queries', () => {
 });
 ```
 
+### Test Organization
+
+Use `describe` blocks to organize tests. One level is common; two levels
+(feature → scenario) is typical for larger modules. Use `test()` not `it()`.
+
+```typescript
+// one level — most modules
+describe('format_duration', () => {
+	test('zero returns 0s', () => { ... });
+	test('mixed units', () => { ... });
+});
+
+// two levels — larger modules with distinct behaviors
+describe('local_repo_load', () => {
+	describe('error propagation', () => {
+		test('pull failure includes message', async () => { ... });
+		test('checkout failure includes message', async () => { ... });
+	});
+	describe('skip behaviors', () => {
+		test('local-only repos skip pull', async () => { ... });
+	});
+});
+```
+
+Flat top-level `test()` calls without `describe` are fine for very small
+files, but `describe` is the default.
+
 ### Parameterized Tests
 
 Labeled tuple types for self-documenting test tables:
@@ -792,10 +873,14 @@ configuration with `session_options` and `create_route_specs`.
 | `fixtures/feature/case/`          | Subdirectory per fixture case                    |
 | `fixtures/update.task.ts`         | Parent: runs all child update tasks              |
 | `fixtures/feature/update.task.ts` | Child: regenerates one feature                   |
-| `assert` from vitest              | Preferred in core repos; follow existing convention per repo |
+| `assert` from vitest              | Target style; some repos have legacy `expect`                |
 | `assert.isDefined(x); x.prop`    | Narrows to NonNullable — no `x!` needed          |
+| `assert(x instanceof T); x.prop` | Narrows union types — the key advantage over `expect`        |
 | `assert.throws(fn, /regex/)`     | Returns void; second arg: constructor/string/RegExp (not function) |
-| try/catch + `assert.include`     | For inspecting thrown errors or async rejects    |
+| `assert_rejects(fn, /regex/)`    | Async rejection helper — returns Error for further assertions |
+| try/catch + `assert.include`     | For inspecting thrown errors when helper isn't enough |
+| `assert_*` (not `expect_*`)      | Custom assertion helper naming convention        |
+| `describe` + `test` (not `it`)   | Default structure; 1-2 levels of `describe` typical          |
 | `// @vitest-environment jsdom`    | Pragma for UI tests needing DOM                  |
 | `vi.stubGlobal('ResizeObserver')` | Required in jsdom for components using ResizeObserver |
 | `describe_db(name, fn)`          | DB test wrapper (fuz_app)                        |
