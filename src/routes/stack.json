@@ -14,15 +14,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_util",
-			"version": "0.55.0",
+			"version": "0.56.0",
 			"path": "fuz_util",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
 			"homepage_url": "https://util.fuz.dev/",
 			"published": true,
-			"module_count": 51,
-			"exported_module_count": 51,
-			"export_count": 416,
+			"module_count": 52,
+			"exported_module_count": 52,
+			"export_count": 419,
 			"peer_dependencies": ["@fuzdev/blake3_wasm"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -101,7 +101,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.7.1",
+			"version": "0.8.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",

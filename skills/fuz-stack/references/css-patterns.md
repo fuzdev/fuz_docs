@@ -433,15 +433,156 @@ are arrays of `StyleVariable` overrides. Theme CSS rendered via
 `render_theme_style()` with higher specificity (default `:root:root`) to
 override bundled theme variables regardless of CSS insertion order.
 
+## Component Styling Philosophy
+
+The fuz stack's core styling principle: **components should have minimal custom
+CSS, delegating styling to fuz_css**. Most components need zero or near-zero
+lines in their `<style>` block. The design system exists so components don't
+reinvent layout, spacing, color, or typography.
+
+### What "Minimal Styles" Looks Like
+
+Well-designed fuz components (fuz_ui, zzz, fuz_code, fuz_gitops) share these
+traits:
+
+- **Many components have no `<style>` block at all** — all styling comes from
+  utility classes and semantic HTML
+- **When `<style>` exists, it's 5-30 lines** — only component-specific layout
+  logic (positioning, complex pseudo-states, responsive breakpoints)
+- **All colors, spacing, typography come from design tokens** — never hardcoded
+  values
+- **Layout uses composites and utilities** — `box`, `row`, `column`, `panel`,
+  `p_md`, `gap_lg` instead of manual flex declarations
+
+```svelte
+<!-- GOOD: No <style> block needed — utility classes handle everything -->
+<div class="column gap_md p_lg">
+  <header class="row gap_sm">
+    <h2>{title}</h2>
+    <small class="text_50">{subtitle}</small>
+  </header>
+  <div class="panel p_md">{@render children()}</div>
+</div>
+```
+
+### Anti-Patterns
+
+These patterns indicate a component is doing too much styling work:
+
+#### Writing flex layout in `<style>` instead of using composites
+
+```svelte
+<!-- BAD: manual flex in <style> -->
+<div class="container">...</div>
+<div class="header">...</div>
+<style>
+  .container { display: flex; flex-direction: column; gap: var(--space_md); }
+  .header { display: flex; align-items: center; }
+</style>
+
+<!-- GOOD: utility classes -->
+<div class="column gap_md">...</div>
+<div class="row">...</div>
+```
+
+#### Referencing design tokens in `<style>` when a utility class exists
+
+```svelte
+<!-- BAD: token reference in <style> for something a class does -->
+<span class="subtitle">...</span>
+<style>
+  .subtitle { color: var(--text_70); font-size: var(--font_size_sm); }
+</style>
+
+<!-- GOOD: utility classes (or semantic HTML) -->
+<small class="text_70">...</small>
+```
+
+#### Repeating the same layout patterns across components
+
+If multiple components each define their own `.sidebar`, `.header`,
+`.content` classes with the same flex/padding/border patterns, those
+should be utility classes, project `style.css` classes, or composites.
+
+#### Hardcoding pixel values
+
+```svelte
+<!-- BAD: hardcoded pixels -->
+<style>
+  .sidebar { width: 220px; padding-top: 40px; }
+</style>
+
+<!-- GOOD: design tokens or CSS custom properties -->
+<style>
+  .sidebar { width: var(--sidebar_width); padding-top: var(--space_xl2); }
+</style>
+```
+
+### When Custom CSS IS Justified
+
+Custom `<style>` blocks are appropriate for:
+
+- **Complex interactive states** — multi-property hover/active/selected
+  combinations, especially with `color-mix` shadows or parent-child selectors
+  like `.parent:hover .child`. Examples: tab shadow state machines,
+  hover-to-reveal controls.
+- **Structural behavior** — `flex-direction: column-reverse` for bottom-up
+  scrolling, `position: sticky/absolute/fixed` with calculated offsets
+- **Responsive layouts** — `@media` queries for structural layout changes
+- **Animations/transitions** — `@keyframes`, `transition` definitions
+- **Rendering contexts** — canvas, 3D, or other surfaces with inherently
+  custom layout
+
+Even justified custom CSS should use design tokens (`var(--space_md)`,
+`var(--border_color)`) rather than hardcoded values.
+
+### Project `style.css` for Shared App Patterns
+
+When a pattern recurs across multiple components in one app but isn't
+general enough for fuz_css, put it in the project's `style.css` (e.g.,
+`src/routes/style.css`). This is the right place for app-scoped shared
+classes — button variants, layout columns, drag indicators, scroll
+shadows, etc.
+
+Mark patterns with `// TODO upstream` if they might belong in fuz_css.
+This keeps component `<style>` blocks focused on truly component-specific
+logic while avoiding premature generalization into the design system.
+
+### Class Naming Conventions
+
+Two naming systems coexist:
+
+- **fuz_css design tokens**: `snake_case` — `p_md`, `color_a_50`, `gap_lg`,
+  `font_size_sm`. These are the global vocabulary.
+- **Component-local classes**: `kebab-case` — `nav-separator`, `edit-sidebar`,
+  `character-entry`. Distinguishes component-scoped styles from design
+  system classes at a glance.
+
+```svelte
+<!-- snake_case = fuz_css utility, kebab-case = component-local -->
+<div class="column gap_md site-header">
+  <nav class="row gap_sm nav-links">...</nav>
+</div>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 10; }
+  .nav-links { border-bottom: var(--border_width_1) var(--border_style) var(--border_color); }
+</style>
+```
+
+This convention is aspirational — existing components use `snake_case` for
+component-local classes too. A cross-repo audit will migrate to kebab-case
+over time.
+
 ## When to Use Classes vs Styles
 
-| Need                   | Style tag | Utility class | Inline style |
-| ---------------------- | --------- | ------------- | ------------ |
-| Style own elements     | **Best**  | OK            | OK           |
-| Style child components | No        | **Yes**       | Limited      |
-| Hover/focus/responsive | Yes       | **Yes**       | No           |
-| Runtime dynamic values | No        | No            | **Yes**      |
-| IDE autocomplete       | **Yes**   | No            | Partial      |
+| Need                   | Utility class | Style tag | Inline style |
+| ---------------------- | ------------- | --------- | ------------ |
+| Style own elements     | **Preferred** | Complex cases | OK        |
+| Style child components | **Yes**       | No        | Limited      |
+| Hover/focus/responsive | **Yes**       | Yes       | No           |
+| Runtime dynamic values | No            | No        | **Yes**      |
+| IDE autocomplete       | No            | **Yes**   | Partial      |
 
 ### Rules of Thumb
 
@@ -453,8 +594,10 @@ override bundled theme variables regardless of CSS insertion order.
   and colors (`color_a_50`) maintain consistency; avoid hardcoded values
 - **Inline `style:prop` for runtime values** — dynamic widths, computed
   colors, CSS variable overrides
-- **Keep class strings manageable** — if a `<div>` accumulates 5+ utility
-  classes, consider a `<style>` rule
+- **Utility class strings are fine at length** — 6-12 classes per element is
+  common and works well. Only move to `<style>` when readability suffers
+  (complex responsive logic, multi-property pseudo-elements) not just because
+  the class list is long
 - **`<style>` for responsive layouts** — `@media` queries in component styles
   are conventional; reserve responsive modifiers for simple one-off overrides
 

@@ -1,7 +1,8 @@
 # Rust Patterns for the Fuz Ecosystem
 
 **Applies to**: `fuz` (daemon + CLI), `tsv` (parser/formatter), `blake3` (WASM
-bindings). All projects use **Rust edition 2024**, resolver 2.
+bindings), `zzz_server` (axum web server). All projects use **Rust edition
+2024**, resolver 2.
 
 Each project's `CLAUDE.md` is authoritative for project-specific conventions.
 This covers shared patterns.
@@ -355,22 +356,30 @@ without explicit request.
 
 ### Shared
 
-| Crate                 | Purpose          | Used by                            |
-| --------------------- | ---------------- | ---------------------------------- |
-| `serde`, `serde_json` | Serialization    | fuz, tsv (blake3 bench crate only) |
-| `thiserror`           | Error derivation | fuz, tsv                           |
+| Crate                              | Purpose            | Used by                            |
+| ---------------------------------- | ------------------ | ---------------------------------- |
+| `serde`, `serde_json`              | Serialization      | fuz, tsv, zzz_server (blake3 bench crate only) |
+| `thiserror`                        | Error derivation   | fuz, tsv, zzz_server               |
+| `tracing`, `tracing-subscriber`    | Structured logging | fuz, zzz_server                    |
 
 ### Domain-specific
 
-**Async / networking** (fuz):
+**Async / networking** (fuz, zzz_server):
 
 | Crate         | Purpose                        |
 | ------------- | ------------------------------ |
 | `tokio`       | Async runtime                  |
 | `axum`        | HTTP server (built on hyper)   |
-| `reqwest`     | HTTP client                    |
+| `reqwest`     | HTTP client (fuz only)         |
 | `tokio-util`  | CancellationToken, TaskTracker |
 | `parking_lot` | Faster mutex (no poisoning)    |
+
+**Database** (zzz_server):
+
+| Crate               | Purpose                        |
+| -------------------- | ------------------------------ |
+| `tokio-postgres`     | Async PostgreSQL client        |
+| `deadpool-postgres`  | Connection pooling             |
 
 **Parsing** (tsv):
 
@@ -447,10 +456,14 @@ O(log n) binary search on span positions.
 - **Secure file permissions**: `0o600` for files, `0o700` for directories
 - **Environment isolation**: Strip sensitive env vars before spawning sidecars
 
-### Logging (fuz)
+### Logging
 
-No tracing framework — `eprintln!` for daemon and CLI. Batched request logging
-for performance. `--json` for machine-readable output.
+**Servers** (zzz_server): `tracing` with `tracing-subscriber` for structured
+logging. axum integrates with `tracing` natively. Use `tracing::info!`,
+`tracing::error!`, etc.
+
+**CLIs / daemons** (fuz, tsv): `eprintln!` — simple, no framework. Batched
+request logging for performance. `--json` for machine-readable output.
 
 ## Documentation
 

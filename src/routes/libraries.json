@@ -12,7 +12,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.55.0",
+			"version": "0.56.0",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
 			"logo": "logo.svg",
@@ -147,7 +147,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.55.0",
+			"version": "0.56.0",
 			"modules": [
 				{
 					"path": "args.ts",
@@ -7531,6 +7531,51 @@
 						}
 					],
 					"module_comment": "Shared helper functions for Svelte preprocessors.\n\nProvides AST utilities for detecting static content, resolving imports,\nmanaging import statements, and escaping strings for Svelte templates.\nUsed by `svelte_preprocess_mdz` in fuz_ui, `svelte_preprocess_fuz_code`\nin fuz_code, and potentially other Svelte preprocessors.\n\nUses `import type` from `svelte/compiler` for AST types only — no runtime\nSvelte dependency. Consumers must have `svelte` installed for type resolution."
+				},
+				{
+					"path": "testing.ts",
+					"declarations": [
+						{
+							"name": "assert_rejects",
+							"kind": "function",
+							"doc_comment": "Asserts that `fn` rejects with an `Error`.\nOptionally matches the error message against `pattern`.\nReturns the caught `Error` for further assertions by the caller.\n\n`assert.fail` is placed after the catch block so that assertion failures\nfrom the test itself are not swallowed by the catch.",
+							"source_line": 27,
+							"type_signature": "(fn: () => Promise<unknown>, pattern?: RegExp | undefined): Promise<Error>",
+							"return_type": "Promise<Error>",
+							"return_description": "the caught `Error`",
+							"parameters": [
+								{
+									"name": "fn",
+									"type": "() => Promise<unknown>",
+									"description": "async function expected to reject"
+								},
+								{
+									"name": "pattern",
+									"type": "RegExp | undefined",
+									"optional": true,
+									"description": "optional regex to match against the error message"
+								}
+							]
+						},
+						{
+							"name": "MockLogger",
+							"kind": "type",
+							"doc_comment": "A mock `Logger` with `vi.fn()` methods and call tracking arrays.\nAssignable to `Logger` for use in code under test.\nEach tracking array captures the first argument of each call.\nFor full call details, use `vi.fn()` introspection on the methods directly.",
+							"source_line": 49,
+							"type_signature": "MockLogger"
+						},
+						{
+							"name": "create_mock_logger",
+							"kind": "function",
+							"doc_comment": "Creates a mock `Logger` with `vi.fn()` on each logging method\nand tracking arrays for inspecting logged messages.\nFollows the fuz-stack convention of plain object mocks over mocking libraries.",
+							"source_line": 63,
+							"type_signature": "(): MockLogger",
+							"return_type": "MockLogger",
+							"return_description": "a `MockLogger` assignable to `Logger`",
+							"parameters": []
+						}
+					],
+					"module_comment": "Shared test assertions for the `@fuzdev` ecosystem.\n\nExtends the fuz-stack testing conventions (`assert` from vitest, tests in `src/test/`,\nplain object mocks) with reusable helpers for patterns that appear across multiple repos.\nOnly depends on vitest — safe for fuz_util's zero-runtime-deps constraint."
 				},
 				{
 					"path": "throttle.ts",
@@ -14960,7 +15005,7 @@
 				"@fuzdev/blake3_wasm": "^0.1.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_ui": "^0.191.3",
-				"@fuzdev/fuz_util": "^0.55.0",
+				"@fuzdev/fuz_util": "^0.56.0",
 				"@fuzdev/gro": "^0.197.2",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.10.1",
@@ -30576,7 +30621,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.7.1",
+			"version": "0.8.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -30622,7 +30667,7 @@
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.2",
-				"@fuzdev/fuz_util": "^0.55.0",
+				"@fuzdev/fuz_util": "^0.56.0",
 				"@fuzdev/gro": "^0.197.3",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@node-rs/argon2": "^2.0.2",
@@ -30691,7 +30736,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.7.1",
+			"version": "0.8.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -33150,8 +33195,8 @@
 						{
 							"name": "create_bearer_auth_middleware",
 							"kind": "function",
-							"doc_comment": "Create middleware that authenticates via bearer token.\n\nRejects bearer tokens when an `Origin` or `Referer` header is present —\nbrowsers must use cookie auth to reduce attack surface.\nAuth scheme matching is case-insensitive per RFC 7235.\nOn success, builds the request context (`{ account, actor, permits }`)\nand sets it on the Hono context. Skips if a request context is already set\n(e.g. by session middleware).",
-							"source_line": 39,
+							"doc_comment": "Create middleware that authenticates via bearer token.\n\nSoft-fails for invalid, expired, or empty tokens — calls `next()` without\nsetting a request context, letting downstream auth enforcement (per-action\n`check_action_auth` or `require_auth`) return a consistent JSON-RPC or\nroute-level error. This avoids leaking token-specific diagnostics\n(`invalid_token`, `account_not_found`) that could aid enumeration attacks,\nand ensures public actions are not blocked by bad credentials.\n\nRejects bearer tokens when an `Origin` or `Referer` header is present —\nbrowsers must use cookie auth to reduce attack surface.\nAuth scheme matching is case-insensitive per RFC 7235.\nOn success, builds the request context (`{ account, actor, permits }`)\nand sets it on the Hono context. Skips if a request context is already set\n(e.g. by session middleware).\n\nRate limiting (429) is the only hard-fail — it's a throttling concern\nindependent of auth identity.",
+							"source_line": 48,
 							"type_signature": "(deps: QueryDeps, ip_rate_limiter: RateLimiter | null, log: Logger): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -33178,7 +33223,6 @@
 						"auth/api_token_queries.ts",
 						"auth/request_context.ts",
 						"hono_context.ts",
-						"http/error_schemas.ts",
 						"http/proxy.ts",
 						"rate_limiter.ts"
 					],
@@ -38702,7 +38746,6 @@
 						"auth/account_routes.ts",
 						"auth/admin_routes.ts",
 						"auth/audit_log_routes.ts",
-						"auth/bearer_auth.ts",
 						"auth/bootstrap_account.ts",
 						"auth/bootstrap_routes.ts",
 						"auth/daemon_token_middleware.ts",
@@ -42212,7 +42255,7 @@
 							"name": "AdversarialHeaderCase",
 							"kind": "type",
 							"doc_comment": "A header-level attack case for middleware stack testing.",
-							"source_line": 30,
+							"source_line": 25,
 							"type_signature": "AdversarialHeaderCase",
 							"properties": [
 								{
@@ -42253,7 +42296,7 @@
 							"name": "create_standard_adversarial_cases",
 							"kind": "function",
 							"doc_comment": "7 standard adversarial header cases applicable to any middleware stack.",
-							"source_line": 49,
+							"source_line": 44,
 							"type_signature": "(allowed_origin: string): AdversarialHeaderCase[]",
 							"return_type": "AdversarialHeaderCase[]",
 							"return_description": "the standard adversarial header cases",
@@ -42269,7 +42312,7 @@
 							"name": "describe_standard_adversarial_headers",
 							"kind": "function",
 							"doc_comment": "Create a middleware stack app with standard adversarial header tests.\n\nConvenience wrapper combining `create_test_middleware_stack_app`\nand `create_standard_adversarial_cases`.\nAsserts body content for both error and success cases, and checks\n`mock_validate` call status via per-case declarative flags.",
-							"source_line": 132,
+							"source_line": 126,
 							"type_signature": "(suite_name: string, options: TestMiddlewareStackOptions, allowed_origin: string, extra_cases?: AdversarialHeaderCase[] | undefined): void",
 							"return_type": "void",
 							"parameters": [
@@ -55677,11 +55720,11 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.3.16",
-				"@fuzdev/fuz_app": "^0.7.1",
+				"@fuzdev/fuz_app": "^0.8.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
-				"@fuzdev/fuz_util": "^0.55.0",
+				"@fuzdev/fuz_util": "^0.56.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@node-rs/argon2": "^2.0.2",
 				"@ryanatkn/eslint-config": "^0.10.1",
@@ -66365,7 +66408,8 @@
 						"action_specs.ts",
 						"jsonrpc_errors.ts",
 						"jsonrpc_helpers.ts",
-						"request_tracker.svelte.ts"
+						"request_tracker.svelte.ts",
+						"server/register_websocket_actions.ts"
 					]
 				},
 				{
@@ -73407,7 +73451,7 @@
 						{
 							"name": "RegisterWebsocketActionsOptions",
 							"kind": "type",
-							"source_line": 34,
+							"source_line": 33,
 							"type_signature": "RegisterWebsocketActionsOptions",
 							"properties": [
 								{
@@ -73448,7 +73492,7 @@
 							"name": "register_websocket_actions",
 							"kind": "function",
 							"doc_comment": "Registers WebSocket endpoints for all service actions in the schema registry.",
-							"source_line": 48,
+							"source_line": 47,
 							"type_signature": "({ path, app, backend, upgradeWebSocket, artificial_delay, transport, }: RegisterWebsocketActionsOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -73462,6 +73506,7 @@
 					"module_comment": "WebSocket endpoint with direct handler dispatch.\n\nReplaces the old `backend.receive(json)` → ActionPeer → ActionEvent path\nwith: spec lookup → Zod input validation → handler call → JSON-RPC response.\nKeeps existing per-action auth checking at the transport layer.",
 					"dependencies": [
 						"action_specs.ts",
+						"jsonrpc.ts",
 						"jsonrpc_errors.ts",
 						"jsonrpc_helpers.ts",
 						"server/backend_websocket_transport.ts",

@@ -100,11 +100,8 @@ assert.isDefined(result);
 assert.strictEqual(result.id, expected_id); // no result! needed
 ```
 
-Some repos have legacy `expect` usage — prefer `assert` in new code and
-migrate opportunistically.
-
 Name custom assertion helpers `assert_*` (not `expect_*`).
-Example: `assert_result_ok()` not `expect_ok()`.
+Example: `assert_css_contains()` not `expect_css_contains()`.
 
 For throw assertions, use `assert.throws()` with Error constructor, string,
 or RegExp. **Do not pass a function predicate** — causes
@@ -137,44 +134,26 @@ try {
 
 ### Async Rejection Testing
 
-For async functions that should reject, use an `assert_rejects` helper to
-avoid repetitive try/catch boilerplate. Place `assert.fail` outside the catch
+For async functions that should reject, use `assert_rejects` from
+`@fuzdev/fuz_util/testing.js`. It places `assert.fail` outside the catch
 block to prevent accidentally catching assertion errors from the test itself:
 
 ```typescript
-const assert_rejects = async (fn: () => Promise<unknown>, pattern: RegExp): Promise<Error> => {
-	try {
-		await fn();
-	} catch (err) {
-		assert(err instanceof Error); // narrows type
-		assert.match(err.message, pattern);
-		return err;
-	}
-	assert.fail('Expected to throw');
-};
-```
+import {assert_rejects} from '@fuzdev/fuz_util/testing.js';
 
-Usage:
-
-```typescript
 // Simple — just check the error pattern
 await assert_rejects(
 	() => local_repo_load({local_repo_path, git_ops, npm_ops}),
 	/Failed to pull.*unstaged changes/,
 );
 
-// With additional assertions on the returned error
+// Pattern is optional — returns the Error for further assertions
 const err = await assert_rejects(
 	() => local_repos_load({local_repo_paths: paths, git_ops, npm_ops}),
-	/Failed to load 2 repos/,
 );
 assert.include(err.message, 'repo-a');
 assert.include(err.message, 'repo-b');
 ```
-
-This helper is currently defined locally in test files that need it. A future
-`@fuzdev/fuz_util/testing.js` module may provide this and other shared test
-assertions (see [Quick Reference](#quick-reference)).
 
 ### jsdom Environment
 
@@ -338,25 +317,34 @@ WASM instance via module-level cache. Subsequent calls reset the schema
 
 ## Test Helpers
 
-### General Helpers
+### Shared Helpers (`@fuzdev/fuz_util/testing.js`)
 
-Most repos have `test_helpers.ts` (fuz_ui, fuz_css, gro, fuz_gitops).
-fuz_util uses only domain-specific helpers. fuz_app's test infrastructure
-lives in `src/lib/testing/` (library exports, not test helpers).
+Cross-repo test assertions live in `@fuzdev/fuz_util/testing.js`. Only
+depends on vitest — safe for fuz_util's zero-runtime-deps constraint.
 
 ```typescript
-// src/test/test_helpers.ts — from gro
-import type {Logger} from '@fuzdev/fuz_util/log.js';
-import {vi} from 'vitest';
+import {assert_rejects, create_mock_logger} from '@fuzdev/fuz_util/testing.js';
 
-/**
- * Creates a mock logger for testing.
- */
-export const create_mock_logger = (): Logger => ({...});
+// Async rejection — pattern is optional, returns Error
+const err = await assert_rejects(() => do_thing(), /expected pattern/);
 
-/**
- * Creates a mock TaskContext for testing.
- */
+// Mock logger — vi.fn() methods + tracking arrays
+const log = create_mock_logger();
+do_thing(log);
+assert.deepEqual(log.info_calls, ['expected message']);
+```
+
+For `Result` assertions, use `assert.ok(result.ok)` directly — `assert`
+narrows discriminated unions, so no wrapper is needed.
+
+### Repo-Local Helpers
+
+Most repos also have `test_helpers.ts` for domain-specific factories
+(fuz_ui, fuz_css, gro, fuz_gitops). fuz_app's test infrastructure lives
+in `src/lib/testing/` (library exports, not test helpers).
+
+```typescript
+// src/test/test_helpers.ts — domain-specific example from gro
 export const create_mock_task_context = <TArgs extends object = any>(
 	args: Partial<TArgs> = {},
 	config_overrides: Partial<GroConfig> = {},
@@ -873,11 +861,12 @@ configuration with `session_options` and `create_route_specs`.
 | `fixtures/feature/case/`          | Subdirectory per fixture case                    |
 | `fixtures/update.task.ts`         | Parent: runs all child update tasks              |
 | `fixtures/feature/update.task.ts` | Child: regenerates one feature                   |
-| `assert` from vitest              | Target style; some repos have legacy `expect`                |
+| `assert` from vitest              | Ecosystem-wide standard                                      |
 | `assert.isDefined(x); x.prop`    | Narrows to NonNullable — no `x!` needed          |
 | `assert(x instanceof T); x.prop` | Narrows union types — the key advantage over `expect`        |
 | `assert.throws(fn, /regex/)`     | Returns void; second arg: constructor/string/RegExp (not function) |
-| `assert_rejects(fn, /regex/)`    | Async rejection helper — returns Error for further assertions |
+| `assert_rejects(fn, /regex?/)`   | Shared — async rejection, optional pattern, returns Error    |
+| `create_mock_logger()`           | Shared — `vi.fn()` methods + tracking arrays                 |
 | try/catch + `assert.include`     | For inspecting thrown errors when helper isn't enough |
 | `assert_*` (not `expect_*`)      | Custom assertion helper naming convention        |
 | `describe` + `test` (not `it`)   | Default structure; 1-2 levels of `describe` typical          |

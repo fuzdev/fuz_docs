@@ -388,9 +388,8 @@ file's location on disk.
 Tests live in `src/test/` (NOT co-located). Use `assert` from vitest —
 choose methods for TypeScript type narrowing, not semantic precision.
 `assert(x instanceof Error)` narrows the type;
-`expect(x).toBeInstanceOf(Error)` does not. Some repos have legacy `expect`
-usage — prefer `assert` in new code and migrate opportunistically. Name
-custom assertion helpers `assert_*` (not `expect_*`).
+`expect(x).toBeInstanceOf(Error)` does not. Name custom assertion helpers
+`assert_*` (not `expect_*`).
 
 Use `describe` blocks to organize tests — one or two levels deep is typical.
 Use `test()` (not `it()`).
@@ -428,6 +427,15 @@ TaskContext, error handling, override patterns, and task composition.
 See ./references/css-patterns.md for setup, variables, composites, modifiers,
 extraction, and dynamic theming.
 
+**Minimal component styles**: Components should have minimal or zero custom CSS,
+delegating to fuz_css utilities and design tokens. Use `box`/`row`/`column`
+for layout, token classes for spacing/colors, and `<style>` only for
+component-specific logic (positioning, pseudo-states, responsive breakpoints).
+See css-patterns.md §Component Styling Philosophy for the full guide.
+
+**Class naming**: fuz_css tokens use `snake_case` (`p_md`, `gap_lg`).
+Component-local classes use `kebab-case` (`site-header`, `nav-links`).
+
 ### 3-Layer Architecture
 
 | Layer              | File        | Purpose                                                   |
@@ -449,13 +457,13 @@ extraction, and dynamic theming.
 
 ### When to Use Classes vs Styles
 
-| Need                   | Style tag | Utility class | Inline style |
-| ---------------------- | --------- | ------------- | ------------ |
-| Style own elements     | **Best**  | OK            | OK           |
-| Style child components | No        | **Yes**       | Limited      |
-| Hover/focus/responsive | Yes       | **Yes**       | No           |
-| Runtime dynamic values | No        | No            | **Yes**      |
-| IDE autocomplete       | **Yes**   | No            | Partial      |
+| Need                   | Utility class | Style tag | Inline style |
+| ---------------------- | ------------- | --------- | ------------ |
+| Style own elements     | **Preferred** | Complex cases | OK        |
+| Style child components | **Yes**       | No        | Limited      |
+| Hover/focus/responsive | **Yes**       | Yes       | No           |
+| Runtime dynamic values | No            | No        | **Yes**      |
+| IDE autocomplete       | No            | **Yes**   | Partial      |
 
 ## Dependency Injection
 

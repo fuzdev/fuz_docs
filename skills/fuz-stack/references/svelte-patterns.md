@@ -1141,6 +1141,19 @@ Avoid destructuring if you need to mutate the item (e.g.,
 
 ## CSS in Components
 
+**Goal: minimal `<style>` blocks.** Components should delegate styling to
+fuz_css utility classes and design tokens. Many well-designed components
+have no `<style>` block at all. See `css-patterns.md` §Component Styling
+Philosophy for the full rationale, anti-patterns, and examples.
+
+When a `<style>` block is needed, keep it focused on component-specific
+layout logic (positioning, complex pseudo-states, responsive breakpoints).
+All values should reference design tokens, not hardcoded pixels or colors.
+
+**Class naming**: fuz_css utilities use `snake_case` (`p_md`, `gap_lg`).
+Component-local classes use `kebab-case` (`site-header`, `nav-links`) to
+distinguish them visually.
+
 ### JS Variables in CSS
 
 Use `style:` directive to pass JS values as CSS custom properties:
