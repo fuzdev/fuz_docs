@@ -570,9 +570,8 @@ Two naming systems coexist:
 </style>
 ```
 
-This convention is aspirational — existing components use `snake_case` for
-component-local classes too. A cross-repo audit will migrate to kebab-case
-over time.
+This convention is fully adopted — all 13 repos in the ecosystem have been
+migrated from `snake_case` to `kebab-case` for component-local classes.
 
 ## When to Use Classes vs Styles
 
