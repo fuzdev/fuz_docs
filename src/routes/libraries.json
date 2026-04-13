@@ -23518,7 +23518,7 @@
 							"name": "contextmenu_attachment",
 							"kind": "function",
 							"doc_comment": "Creates an attachment that sets up contextmenu behavior on an element.",
-							"source_line": 349,
+							"source_line": 350,
 							"type_signature": "<T extends ContextmenuParams, U extends T | Array<T>>(params: U | null | undefined): Attachment<HTMLElement | SVGElement>",
 							"return_type": "Attachment<HTMLElement | SVGElement>",
 							"parameters": [
@@ -23532,7 +23532,7 @@
 						{
 							"name": "ContextmenuOpenOptions",
 							"kind": "type",
-							"source_line": 373,
+							"source_line": 374,
 							"type_signature": "ContextmenuOpenOptions",
 							"properties": [
 								{
@@ -23561,7 +23561,7 @@
 							"name": "contextmenu_open",
 							"kind": "function",
 							"doc_comment": "Opens the contextmenu, if appropriate,\nquerying the menu items from the DOM starting at the event target.",
-							"source_line": 390,
+							"source_line": 391,
 							"type_signature": "(target: HTMLElement | SVGElement, x: number, y: number, contextmenu: ContextmenuState, options?: ContextmenuOpenOptions | undefined): boolean",
 							"return_type": "boolean",
 							"return_description": "a boolean indicating if the menu was opened or not",
@@ -23597,26 +23597,26 @@
 						{
 							"name": "contextmenu_context",
 							"kind": "variable",
-							"source_line": 477,
+							"source_line": 478,
 							"type_signature": "{ get: (error_message?: string | undefined) => () => ContextmenuState; get_maybe: () => (() => ContextmenuState) | undefined; set: (value: () => ContextmenuState) => () => ContextmenuState; }"
 						},
 						{
 							"name": "contextmenu_submenu_context",
 							"kind": "variable",
-							"source_line": 479,
+							"source_line": 480,
 							"type_signature": "{ get: (error_message?: string | undefined) => SubmenuState; get_maybe: () => SubmenuState | undefined; set: (value: SubmenuState) => SubmenuState; }"
 						},
 						{
 							"name": "contextmenu_dimensions_context",
 							"kind": "variable",
-							"source_line": 481,
+							"source_line": 482,
 							"type_signature": "{ get: () => Dimensions; set: (value?: Dimensions | undefined) => Dimensions; }"
 						},
 						{
 							"name": "contextmenu_check_global_root",
 							"kind": "function",
 							"doc_comment": "Registers a contextmenu root and warns if multiple non-scoped roots are detected.\nOnly active in development mode. Automatically handles cleanup on unmount.",
-							"source_line": 492,
+							"source_line": 493,
 							"type_signature": "(get_scoped: () => boolean): void",
 							"return_type": "void",
 							"parameters": [
@@ -24081,13 +24081,13 @@
 						{
 							"name": "CspDirective",
 							"kind": "type",
-							"source_line": 175,
+							"source_line": 172,
 							"type_signature": "keyof CspDirectives"
 						},
 						{
 							"name": "parse_csp_directive",
 							"kind": "function",
-							"source_line": 177,
+							"source_line": 174,
 							"type_signature": "(directive: unknown): keyof CspDirectives | null",
 							"return_type": "keyof CspDirectives | null",
 							"parameters": [
@@ -24100,7 +24100,7 @@
 						{
 							"name": "CspDirectiveValue",
 							"kind": "type",
-							"source_line": 182,
+							"source_line": 179,
 							"type_signature": "CspDirectiveValue<T>",
 							"generic_params": [
 								{
@@ -24112,28 +24112,28 @@
 						{
 							"name": "csp_trust_levels",
 							"kind": "variable",
-							"source_line": 184,
+							"source_line": 181,
 							"type_signature": "readonly [\"low\", \"medium\", \"high\"]"
 						},
 						{
 							"name": "csp_trust_level_value",
 							"kind": "variable",
 							"doc_comment": "Numeric values for CSP trust levels. See `csp_trust_levels`.\nLower is less trusted.\nIncludes `undefined` in the type for safety.",
-							"source_line": 191,
+							"source_line": 188,
 							"type_signature": "Record<\"low\" | \"medium\" | \"high\", number | undefined>"
 						},
 						{
 							"name": "CspTrustLevel",
 							"kind": "type",
 							"doc_comment": "Trust levels for CSP sources.\n\nWith the base defaults, trust levels roughly correspond to:\n\n- `low` – Passive resources only (no script execution, no styling or UI control).\n\t\tExamples: `img-src`, `font-src`.\n- `medium` – Content that may affect layout, styling, or embed external browsing contexts,\n   but cannot directly run code in the page's JS execution environment or\n\t\tperform other high-risk actions. Examples: `style-src`, `frame-src`, `frame-ancestors`.\n- `high` – Sources that can execute code in the page's context or open powerful network\n   channels. Examples: `script-src`, `connect-src`, `child-src`.\n- `null` – No trust. This is used for directives that don't support sources.",
-							"source_line": 212,
+							"source_line": 209,
 							"type_signature": "\"low\" | \"medium\" | \"high\""
 						},
 						{
 							"name": "parse_csp_trust_level",
 							"kind": "function",
 							"doc_comment": "Validates and extracts a CSP trust level from an unknown value.",
-							"source_line": 217,
+							"source_line": 214,
 							"type_signature": "(trust: unknown): \"low\" | \"medium\" | \"high\" | null",
 							"return_type": "\"low\" | \"medium\" | \"high\" | null",
 							"parameters": [
@@ -24146,7 +24146,7 @@
 						{
 							"name": "CspSourceSpec",
 							"kind": "type",
-							"source_line": 220,
+							"source_line": 217,
 							"type_signature": "CspSourceSpec",
 							"properties": [
 								{
@@ -24169,7 +24169,7 @@
 						{
 							"name": "CspDirectiveSpec",
 							"kind": "type",
-							"source_line": 226,
+							"source_line": 223,
 							"type_signature": "CspDirectiveSpec",
 							"properties": [
 								{
@@ -24193,7 +24193,7 @@
 							"name": "is_csp_trusted",
 							"kind": "function",
 							"doc_comment": "Determines if a granted trust level is sufficient to satisfy a required trust level.\n\nTrust levels have the following hierarchy:\n- 'high' sources can be used in high, medium, and low trust directives (highest privilege)\n- 'medium' sources can be used in medium and low trust directives\n- 'low' sources can only be used in low trust directives (lowest privilege)",
-							"source_line": 240,
+							"source_line": 237,
 							"type_signature": "(required_trust: \"low\" | \"medium\" | \"high\" | null | undefined, granted_trust: \"low\" | \"medium\" | \"high\" | null | undefined): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -24210,21 +24210,21 @@
 						{
 							"name": "COLOR_SCHEME_SCRIPT_HASH",
 							"kind": "variable",
-							"source_line": 263,
+							"source_line": 260,
 							"type_signature": "\"sha256-QOxqn7EUzb3ydF9SALJoJGWSvywW9R0AfTDSenB83Z8=\""
 						},
 						{
 							"name": "csp_directive_value_defaults",
 							"kind": "variable",
 							"doc_comment": "The base CSP directive defaults.\nPrioritizes safety but loosens around media and styles, relying on defense-in-depth.\nCustomizable via `CreateCspDirectivesOptions`.",
-							"source_line": 270,
+							"source_line": 267,
 							"type_signature": "Record<keyof CspDirectives, boolean | (CspSource | CspActionSource)[] | CspSources | CspFrameSource[] | string[] | \"script\"[] | (\"allow-downloads-without-user-activation\" | ... 11 more ... | \"allow-top-navigation-by-user-activation\")[] | null>"
 						},
 						{
 							"name": "csp_directive_required_trust_defaults",
 							"kind": "variable",
 							"doc_comment": "Sources that meet this trust requirement are included for it by default.\nIf null, no trusted sources are added to the directive automatically.\nDirectives that don't support sources or default to `['none']` are null.\n\nFeedback is welcome, please see the issues - https://github.com/fuzdev/fuz_ui/issues",
-							"source_line": 307,
+							"source_line": 304,
 							"type_signature": "Record<keyof CspDirectives, \"low\" | \"medium\" | \"high\" | null>"
 						},
 						{
@@ -24234,85 +24234,85 @@
 							"see_also": [
 								"{@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy}"
 							],
-							"source_line": 343,
+							"source_line": 340,
 							"type_signature": "CspDirectiveSpec[]"
 						},
 						{
 							"name": "csp_directive_spec_by_name",
 							"kind": "variable",
-							"source_line": 481,
+							"source_line": 478,
 							"type_signature": "Map<keyof CspDirectives, CspDirectiveSpec>"
 						},
 						{
 							"name": "CspActionSource",
 							"kind": "type",
-							"source_line": 513,
+							"source_line": 510,
 							"type_signature": "CspActionSource"
 						},
 						{
 							"name": "CspBaseSource",
 							"kind": "type",
-							"source_line": 514,
+							"source_line": 511,
 							"type_signature": "CspBaseSource"
 						},
 						{
 							"name": "CspCryptoSource",
 							"kind": "type",
-							"source_line": 521,
+							"source_line": 518,
 							"type_signature": "`nonce-${string}` | `sha256-${string}` | `sha384-${string}` | `sha512-${string}`"
 						},
 						{
 							"name": "CspFrameSource",
 							"kind": "type",
-							"source_line": 522,
+							"source_line": 519,
 							"type_signature": "CspFrameSource"
 						},
 						{
 							"name": "CspHostNameScheme",
 							"kind": "type",
-							"source_line": 523,
+							"source_line": 520,
 							"type_signature": "CspHostNameScheme"
 						},
 						{
 							"name": "CspHostSource",
 							"kind": "type",
-							"source_line": 524,
+							"source_line": 521,
 							"type_signature": "`${string}.${string}` | \"localhost\" | `${string}.${string}:${number}` | `${string}.${string}:*` | `localhost:${number}` | \"localhost:*\" | `${string}://${string}.${string}` | `${string}://${string}.${string}:${number}` | `${string}://${string}.${string}:*` | `${string}://localhost` | `${string}://localhost:${number}`..."
 						},
 						{
 							"name": "CspHostProtocolSchemes",
 							"kind": "type",
-							"source_line": 525,
+							"source_line": 522,
 							"type_signature": "CspHostProtocolSchemes"
 						},
 						{
 							"name": "CspPortScheme",
 							"kind": "type",
-							"source_line": 526,
+							"source_line": 523,
 							"type_signature": "CspPortScheme"
 						},
 						{
 							"name": "CspSchemeSource",
 							"kind": "type",
-							"source_line": 527,
+							"source_line": 524,
 							"type_signature": "CspSchemeSource"
 						},
 						{
 							"name": "CspSource",
 							"kind": "type",
-							"source_line": 534,
+							"source_line": 531,
 							"type_signature": "CspSource"
 						},
 						{
 							"name": "CspSources",
 							"kind": "type",
-							"source_line": 535,
+							"source_line": 532,
 							"type_signature": "CspSources"
 						},
 						{
 							"name": "CspDirectives",
 							"kind": "type",
-							"source_line": 537,
+							"source_line": 534,
 							"type_signature": "CspDirectives",
 							"properties": [
 								{

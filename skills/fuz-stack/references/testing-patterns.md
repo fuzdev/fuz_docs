@@ -69,15 +69,23 @@ Real examples:
 ### Assertions
 
 Use `assert` from vitest. Choose methods for TypeScript type narrowing, not
-semantic precision:
+semantic precision. `assert.ok` is the standard guard for narrowing
+`T | undefined` to `T` — don't replace it with `assert.isDefined` or other
+methods unless the replacement provides better failure diagnostics without
+losing narrowing.
 
 ```typescript
 import {test, assert} from 'vitest';
 
-assert.ok(value); // narrows away null/undefined
+assert.ok(value); // narrows away null/undefined — the standard guard
 assert.strictEqual(a, b);
 assert.deepStrictEqual(a, b);
 ```
+
+Strengthen assertions when the value is **known** — use `assert.strictEqual`
+for exact expected values, `assert.include`/`assert.notInclude` for array
+membership (shows actual contents on failure). Leave `assert.ok` for guards
+where the goal is narrowing, not value checking.
 
 **Why `assert` over `expect`:** `assert` methods narrow types for TypeScript.
 `expect` chains don't:
