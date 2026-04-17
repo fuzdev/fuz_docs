@@ -23096,27 +23096,45 @@
 					"path": "contextmenu_state.svelte.ts",
 					"declarations": [
 						{
+							"name": "contextmenu_context",
+							"kind": "variable",
+							"source_line": 13,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => ContextmenuState; get_maybe: () => (() => ContextmenuState) | undefined; set: (value: () => ContextmenuState) => () => ContextmenuState; }"
+						},
+						{
+							"name": "contextmenu_submenu_context",
+							"kind": "variable",
+							"source_line": 15,
+							"type_signature": "{ get: (error_message?: string | undefined) => SubmenuState; get_maybe: () => SubmenuState | undefined; set: (value: SubmenuState) => SubmenuState; }"
+						},
+						{
+							"name": "contextmenu_dimensions_context",
+							"kind": "variable",
+							"source_line": 17,
+							"type_signature": "{ get: () => Dimensions; set: (value?: Dimensions | undefined) => Dimensions; }"
+						},
+						{
 							"name": "ContextmenuParams",
 							"kind": "type",
-							"source_line": 13,
+							"source_line": 19,
 							"type_signature": "ContextmenuParams"
 						},
 						{
 							"name": "ContextmenuActivateResult",
 							"kind": "type",
-							"source_line": 20,
+							"source_line": 26,
 							"type_signature": "ContextmenuActivateResult"
 						},
 						{
 							"name": "ItemState",
 							"kind": "type",
-							"source_line": 25,
+							"source_line": 31,
 							"type_signature": "ItemState"
 						},
 						{
 							"name": "EntryState",
 							"kind": "class",
-							"source_line": 27,
+							"source_line": 33,
 							"members": [
 								{
 									"name": "is_menu",
@@ -23186,7 +23204,7 @@
 						{
 							"name": "SubmenuState",
 							"kind": "class",
-							"source_line": 50,
+							"source_line": 56,
 							"members": [
 								{
 									"name": "is_menu",
@@ -23235,7 +23253,7 @@
 						{
 							"name": "RootMenuState",
 							"kind": "class",
-							"source_line": 64,
+							"source_line": 70,
 							"members": [
 								{
 									"name": "is_menu",
@@ -23262,13 +23280,13 @@
 						{
 							"name": "ContextmenuRun",
 							"kind": "type",
-							"source_line": 72,
+							"source_line": 78,
 							"type_signature": "ContextmenuRun"
 						},
 						{
 							"name": "ContextmenuStateOptions",
 							"kind": "type",
-							"source_line": 74,
+							"source_line": 80,
 							"type_signature": "ContextmenuStateOptions",
 							"properties": [
 								{
@@ -23285,7 +23303,7 @@
 							"see_also": [
 								"{@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event}"
 							],
-							"source_line": 84,
+							"source_line": 90,
 							"members": [
 								{
 									"name": "layout",
@@ -23512,7 +23530,7 @@
 							"name": "contextmenu_attachment",
 							"kind": "function",
 							"doc_comment": "Creates an attachment that sets up contextmenu behavior on an element.",
-							"source_line": 350,
+							"source_line": 356,
 							"type_signature": "<T extends ContextmenuParams, U extends T | Array<T>>(params: U | null | undefined): Attachment<HTMLElement | SVGElement>",
 							"return_type": "Attachment<HTMLElement | SVGElement>",
 							"parameters": [
@@ -23526,7 +23544,7 @@
 						{
 							"name": "ContextmenuOpenOptions",
 							"kind": "type",
-							"source_line": 374,
+							"source_line": 380,
 							"type_signature": "ContextmenuOpenOptions",
 							"properties": [
 								{
@@ -23555,7 +23573,7 @@
 							"name": "contextmenu_open",
 							"kind": "function",
 							"doc_comment": "Opens the contextmenu, if appropriate,\nquerying the menu items from the DOM starting at the event target.",
-							"source_line": 391,
+							"source_line": 397,
 							"type_signature": "(target: HTMLElement | SVGElement, x: number, y: number, contextmenu: ContextmenuState, options?: ContextmenuOpenOptions | undefined): boolean",
 							"return_type": "boolean",
 							"return_description": "a boolean indicating if the menu was opened or not",
@@ -23587,24 +23605,6 @@
 									"description": "optional configuration for filtering entries and haptic feedback"
 								}
 							]
-						},
-						{
-							"name": "contextmenu_context",
-							"kind": "variable",
-							"source_line": 478,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => ContextmenuState; get_maybe: () => (() => ContextmenuState) | undefined; set: (value: () => ContextmenuState) => () => ContextmenuState; }"
-						},
-						{
-							"name": "contextmenu_submenu_context",
-							"kind": "variable",
-							"source_line": 480,
-							"type_signature": "{ get: (error_message?: string | undefined) => SubmenuState; get_maybe: () => SubmenuState | undefined; set: (value: SubmenuState) => SubmenuState; }"
-						},
-						{
-							"name": "contextmenu_dimensions_context",
-							"kind": "variable",
-							"source_line": 482,
-							"type_signature": "{ get: () => Dimensions; set: (value?: Dimensions | undefined) => Dimensions; }"
 						},
 						{
 							"name": "contextmenu_check_global_root",
@@ -24778,10 +24778,16 @@
 					"path": "docs_helpers.svelte.ts",
 					"declarations": [
 						{
+							"name": "docs_links_context",
+							"kind": "variable",
+							"source_line": 7,
+							"type_signature": "{ get: (error_message?: string | undefined) => DocsLinks; get_maybe: () => DocsLinks | undefined; set: (value: DocsLinks) => DocsLinks; }"
+						},
+						{
 							"name": "docs_slugify",
 							"kind": "function",
 							"doc_comment": "Convert a string to a URL-safe fragment identifier, preserving case.\nUnlike `slugify` from `@fuzdev/fuz_util/path.js` which lowercases,\nthis keeps the original casing so API declarations like `AsyncStatus`\nand `async_status` produce distinct fragment IDs.\nUsed by the `Tome` documentation system for heading and section anchors.",
-							"source_line": 16,
+							"source_line": 18,
 							"type_signature": "(str: string): string",
 							"return_type": "string",
 							"return_description": "a URL-safe fragment identifier with case preserved",
@@ -24796,25 +24802,25 @@
 						{
 							"name": "DOCS_PATH_DEFAULT",
 							"kind": "variable",
-							"source_line": 30,
+							"source_line": 32,
 							"type_signature": "\"/docs\""
 						},
 						{
 							"name": "DOCS_PATH",
 							"kind": "variable",
-							"source_line": 31,
+							"source_line": 33,
 							"type_signature": "\"/docs\" | \"/\" | \"/about\" | \"/docs/Alert\" | \"/docs/Breadcrumb\" | \"/docs/Breadcrumb/a\" | \"/docs/Breadcrumb/a/b\" | \"/docs/Breadcrumb/a/b/c\" | \"/docs/Breadcrumb/a/b/c/d\" | \"/docs/Card\" | ... 63 more ... | `/${string}${`/docs/api/${string}` & {}}`"
 						},
 						{
 							"name": "DOCS_API_PATH",
 							"kind": "variable",
-							"source_line": 32,
+							"source_line": 34,
 							"type_signature": "string"
 						},
 						{
 							"name": "to_docs_path_info",
 							"kind": "function",
-							"source_line": 34,
+							"source_line": 36,
 							"type_signature": "(path_slug: string, pathname: string, root_path?: string): { path: string; path_is_selected: boolean; path_segment: string | undefined; }",
 							"return_type": "{ path: string; path_is_selected: boolean; path_segment: string | undefined; }",
 							"parameters": [
@@ -24832,12 +24838,6 @@
 									"default_value": "DOCS_PATH_DEFAULT"
 								}
 							]
-						},
-						{
-							"name": "docs_links_context",
-							"kind": "variable",
-							"source_line": 45,
-							"type_signature": "{ get: (error_message?: string | undefined) => DocsLinks; get_maybe: () => DocsLinks | undefined; set: (value: DocsLinks) => DocsLinks; }"
 						},
 						{
 							"name": "DocsLinkTag",
@@ -26352,10 +26352,16 @@
 					"path": "library.svelte.ts",
 					"declarations": [
 						{
+							"name": "library_context",
+							"kind": "variable",
+							"source_line": 8,
+							"type_signature": "{ get: (error_message?: string | undefined) => Library; get_maybe: () => Library | undefined; set: (value: Library) => Library; }"
+						},
+						{
 							"name": "parse_library_url_prefix",
 							"kind": "function",
 							"doc_comment": "Normalizes a URL prefix: ensures leading `/`, strips trailing `/`, returns `''` for falsy and non-string values.",
-							"source_line": 11,
+							"source_line": 13,
 							"type_signature": "(value: unknown): string",
 							"return_type": "string",
 							"parameters": [
@@ -26373,7 +26379,7 @@
 								"`module.svelte.ts` for `Module` class",
 								"`declaration.svelte.ts` for `Declaration` class"
 							],
-							"source_line": 25,
+							"source_line": 27,
 							"members": [
 								{
 									"name": "library_json",
@@ -26527,12 +26533,6 @@
 									]
 								}
 							]
-						},
-						{
-							"name": "library_context",
-							"kind": "variable",
-							"source_line": 119,
-							"type_signature": "{ get: (error_message?: string | undefined) => Library; get_maybe: () => Library | undefined; set: (value: Library) => Library; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts", "declaration.svelte.ts", "module.svelte.ts"],
@@ -26775,39 +26775,39 @@
 					"path": "mdz_components.ts",
 					"declarations": [
 						{
-							"name": "MdzComponents",
-							"kind": "type",
-							"doc_comment": "Component registry for custom Svelte components that can be used in mdz content.\n\nFor example, registering 'Alert' allows using `<Alert>...</Alert>` in mdz content.\n\nThe Map values are the Svelte component constructors.",
-							"source_line": 12,
-							"type_signature": "MdzComponents"
-						},
-						{
-							"name": "MdzElements",
-							"kind": "type",
-							"doc_comment": "Element registry for HTML elements that can be used in mdz content.\n\nFor example, registering 'div' allows using `<div>...</div>` in mdz content.\n\nThe Map values are boolean placeholders for future configuration options.",
-							"source_line": 21,
-							"type_signature": "MdzElements"
-						},
-						{
 							"name": "mdz_components_context",
 							"kind": "variable",
 							"doc_comment": "Context for providing custom mdz components.\nMust be set by the application using mdz.",
-							"source_line": 27,
+							"source_line": 9,
 							"type_signature": "{ get: (error_message?: string | undefined) => MdzComponents; get_maybe: () => MdzComponents | undefined; set: (value: MdzComponents) => MdzComponents; }"
 						},
 						{
 							"name": "mdz_elements_context",
 							"kind": "variable",
 							"doc_comment": "Context for providing allowed HTML elements.\nMust be set by the application using mdz.\nBy default, no HTML elements are allowed.",
-							"source_line": 34,
+							"source_line": 16,
 							"type_signature": "{ get: (error_message?: string | undefined) => MdzElements; get_maybe: () => MdzElements | undefined; set: (value: MdzElements) => MdzElements; }"
 						},
 						{
 							"name": "mdz_base_context",
 							"kind": "variable",
 							"doc_comment": "Context for providing a base path getter for resolving relative links in mdz content.\nSet to a getter (e.g., `() => base`) so changes to the base prop are reflected\nwithout needing an effect. When the getter returns a path like `'/docs/mdz/'`,\nrelative paths like `./grammar` resolve to `/docs/mdz/grammar` before rendering.\nWhen not set, relative paths use raw hrefs (browser resolves them).",
-							"source_line": 43,
+							"source_line": 25,
 							"type_signature": "{ get: (error_message?: string | undefined) => () => string | undefined; get_maybe: () => (() => string | undefined) | undefined; set: (value: () => string | undefined) => () => string | undefined; }"
+						},
+						{
+							"name": "MdzComponents",
+							"kind": "type",
+							"doc_comment": "Component registry for custom Svelte components that can be used in mdz content.\n\nFor example, registering 'Alert' allows using `<Alert>...</Alert>` in mdz content.\n\nThe Map values are the Svelte component constructors.",
+							"source_line": 34,
+							"type_signature": "MdzComponents"
+						},
+						{
+							"name": "MdzElements",
+							"kind": "type",
+							"doc_comment": "Element registry for HTML elements that can be used in mdz content.\n\nFor example, registering 'div' allows using `<div>...</div>` in mdz content.\n\nThe Map values are boolean placeholders for future configuration options.",
+							"source_line": 43,
+							"type_signature": "MdzElements"
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
@@ -29115,9 +29115,15 @@
 					"path": "style_variable_helpers.svelte.ts",
 					"declarations": [
 						{
+							"name": "selected_variable_context",
+							"kind": "variable",
+							"source_line": 5,
+							"type_signature": "{ get: () => SelectedStyleVariable; set: (value?: SelectedStyleVariable | undefined) => SelectedStyleVariable; }"
+						},
+						{
 							"name": "SelectedStyleVariable",
 							"kind": "class",
-							"source_line": 6,
+							"source_line": 8,
 							"members": [
 								{
 									"name": "value",
@@ -29137,12 +29143,6 @@
 									]
 								}
 							]
-						},
-						{
-							"name": "selected_variable_context",
-							"kind": "variable",
-							"source_line": 14,
-							"type_signature": "{ get: () => SelectedStyleVariable; set: (value?: SelectedStyleVariable | undefined) => SelectedStyleVariable; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
@@ -29772,16 +29772,28 @@
 					"path": "tome.ts",
 					"declarations": [
 						{
+							"name": "tomes_context",
+							"kind": "variable",
+							"source_line": 9,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => Map<string, { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }>; get_maybe: () => (() => Map<...>) | undefined; set: (value: () => Map<...>) => () => Map<...."
+						},
+						{
+							"name": "tome_context",
+							"kind": "variable",
+							"source_line": 11,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }; get_maybe: () => (() => { ...; }) | undefined; set: (value: () => { ...; }) => () => { ...; }; }"
+						},
+						{
 							"name": "Tome",
 							"kind": "type",
-							"source_line": 9,
+							"source_line": 13,
 							"type_signature": "ZodObject<{ name: ZodString; category: ZodString; Component: ZodCustom<Component<any, any, string>, Component<any, any, string>>; related_tomes: ZodArray<...>; related_modules: ZodArray<...>; related_declarations: ZodArray<...>; }, $strip>"
 						},
 						{
 							"name": "to_tome_pathname",
 							"kind": "function",
 							"doc_comment": "",
-							"source_line": 23,
+							"source_line": 27,
 							"type_signature": "(item: string | { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }, docs_path?: string, hash?: string | undefined): string",
 							"return_type": "string",
 							"parameters": [
@@ -29803,15 +29815,9 @@
 							]
 						},
 						{
-							"name": "tomes_context",
-							"kind": "variable",
-							"source_line": 33,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => Map<string, { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }>; get_maybe: () => (() => Map<...>) | undefined; set: (value: () => Map<...>) => () => Map<...."
-						},
-						{
 							"name": "get_tome_by_name",
 							"kind": "function",
-							"source_line": 35,
+							"source_line": 37,
 							"type_signature": "(name: string): { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }",
 							"return_type": "{ name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }",
 							"parameters": [
@@ -29820,12 +29826,6 @@
 									"type": "string"
 								}
 							]
-						},
-						{
-							"name": "tome_context",
-							"kind": "variable",
-							"source_line": 42,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }; get_maybe: () => (() => { ...; }) | undefined; set: (value: () => { ...; }) => () => { ...; }; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts", "docs_helpers.svelte.ts"],
@@ -33987,7 +33987,7 @@
 							"name": "AdminRouteOptions",
 							"kind": "type",
 							"doc_comment": "Options for admin route specs.",
-							"source_line": 34,
+							"source_line": 38,
 							"type_signature": "AdminRouteOptions",
 							"properties": [
 								{
@@ -34002,7 +34002,7 @@
 							"name": "create_admin_account_route_specs",
 							"kind": "function",
 							"doc_comment": "Create admin route specs for account listing and permit management.",
-							"source_line": 51,
+							"source_line": 55,
 							"type_signature": "(deps: Pick<RouteFactoryDeps, \"log\" | \"on_audit_event\">, options?: AdminRouteOptions | undefined): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "route specs for admin account management",
@@ -34654,7 +34654,7 @@
 								{
 									"name": "stream",
 									"kind": "variable",
-									"type_signature": "{\n\t\tsubscribe: (\n\t\t\tstream: SseStream<SseNotification>,\n\t\t\tchannels?: Array<string>,\n\t\t\tidentity?: string,\n\t\t) => () => void;\n\t\tlog: Logger;\n\t}",
+									"type_signature": "{\n\t\tsubscribe: (\n\t\t\tstream: SseStream<SseNotification>,\n\t\t\tchannels?: Array<string>,\n\t\t\tidentity?: string | ReadonlyArray<string>,\n\t\t) => () => void;\n\t\tlog: Logger;\n\t}",
 									"doc_comment": "When provided, includes an SSE route at `/audit-log/stream` for realtime audit events.\nThe `subscribe` function receives the stream, channels, and the subscriber's `account_id`\nas an identity key — enabling `close_by_identity()` for auth revocation."
 								}
 							]
@@ -36371,10 +36371,36 @@
 							]
 						},
 						{
+							"name": "query_permit_find_active_role_for_actor",
+							"kind": "function",
+							"doc_comment": "Look up the role of an active permit, constrained to a specific actor.\n\nUsed by admin routes to inspect the permit's role before acting\n(e.g., enforcing `web_grantable` on revoke). The actor constraint\nmirrors `query_revoke_permit` so IDOR protection is consistent:\na caller can only see permits belonging to the target actor.\n\nReturns `null` if the permit is not found, already revoked, or\nbelongs to a different actor.",
+							"source_line": 61,
+							"type_signature": "(deps: QueryDeps, permit_id: string, actor_id: string): Promise<{ role: string; } | null>",
+							"return_type": "Promise<{ role: string; } | null>",
+							"return_description": "`{role}` on a match, or `null`",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps",
+									"description": "query dependencies"
+								},
+								{
+									"name": "permit_id",
+									"type": "string",
+									"description": "the permit id to look up"
+								},
+								{
+									"name": "actor_id",
+									"type": "string",
+									"description": "the actor that must own the permit"
+								}
+							]
+						},
+						{
 							"name": "query_revoke_permit",
 							"kind": "function",
 							"doc_comment": "Revoke a permit by id, constrained to a specific actor.\n\nRequires `actor_id` to prevent cross-account revocation (IDOR guard).\nReturns `null` if the permit is not found, already revoked, or belongs\nto a different actor. Returns `{id, role}` on success for audit logging.",
-							"source_line": 57,
+							"source_line": 86,
 							"type_signature": "(deps: QueryDeps, permit_id: string, actor_id: string, revoked_by: string | null): Promise<{ id: string; role: string; } | null>",
 							"return_type": "Promise<{ id: string; role: string; } | null>",
 							"parameters": [
@@ -36404,7 +36430,7 @@
 							"name": "query_permit_find_active_for_actor",
 							"kind": "function",
 							"doc_comment": "Find all active (non-revoked, non-expired) permits for an actor.",
-							"source_line": 75,
+							"source_line": 104,
 							"type_signature": "(deps: QueryDeps, actor_id: string): Promise<Permit[]>",
 							"return_type": "Promise<Permit[]>",
 							"parameters": [
@@ -36422,7 +36448,7 @@
 							"name": "query_permit_has_role",
 							"kind": "function",
 							"doc_comment": "Check if an actor has an active permit for a given role.",
-							"source_line": 92,
+							"source_line": 121,
 							"type_signature": "(deps: QueryDeps, actor_id: string, role: string): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"parameters": [
@@ -36444,7 +36470,7 @@
 							"name": "query_permit_list_for_actor",
 							"kind": "function",
 							"doc_comment": "List all permits for an actor (including revoked/expired).",
-							"source_line": 113,
+							"source_line": 142,
 							"type_signature": "(deps: QueryDeps, actor_id: string): Promise<Permit[]>",
 							"return_type": "Promise<Permit[]>",
 							"parameters": [
@@ -36462,7 +36488,7 @@
 							"name": "query_permit_find_account_id_for_role",
 							"kind": "function",
 							"doc_comment": "Find the account ID of an account that holds an active permit for a given role.\n\nJoins permit → actor → account. Returns the first match, or `null` if none.",
-							"source_line": 132,
+							"source_line": 161,
 							"type_signature": "(deps: QueryDeps, role: string): Promise<string | null>",
 							"return_type": "Promise<string | null>",
 							"return_description": "the account ID, or `null`",
@@ -36483,7 +36509,7 @@
 							"name": "query_permit_revoke_role",
 							"kind": "function",
 							"doc_comment": "Revoke the active permit for an actor with a given role.\n\nDue to the unique partial index on `(actor_id, role) WHERE revoked_at IS NULL`,\nat most one active permit exists per actor+role combination.",
-							"source_line": 162,
+							"source_line": 191,
 							"type_signature": "(deps: QueryDeps, actor_id: string, role: string, revoked_by: string | null): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"return_description": "`true` if a permit was revoked, `false` if none was active",
@@ -36557,10 +36583,17 @@
 							"type_signature": "\"request_context\""
 						},
 						{
+							"name": "AUTH_SESSION_TOKEN_HASH_KEY",
+							"kind": "variable",
+							"doc_comment": "Hono context variable name for the authenticated session token hash.\n\nSet by `create_request_context_middleware` after a successful session lookup.\n`null` when the request is unauthenticated or authenticated via a non-session\ncredential (bearer token, daemon token). Exposed so handlers can scope\nper-session resources (e.g., SSE stream identity for targeted disconnection\non `session_revoke`) without re-hashing the token.",
+							"source_line": 52,
+							"type_signature": "\"auth_session_token_hash\""
+						},
+						{
 							"name": "get_request_context",
 							"kind": "function",
 							"doc_comment": "Get the request context from a Hono context, or `null` if unauthenticated.",
-							"source_line": 49,
+							"source_line": 60,
 							"type_signature": "(c: Context<any, any, {}>): RequestContext | null",
 							"return_type": "RequestContext | null",
 							"return_description": "the request context, or `null`",
@@ -36582,7 +36615,7 @@
 									"description": "if no request context is set (middleware misconfiguration)"
 								}
 							],
-							"source_line": 64,
+							"source_line": 75,
 							"type_signature": "(c: Context<any, any, {}>): RequestContext",
 							"return_type": "RequestContext",
 							"return_description": "the request context (never null)",
@@ -36598,7 +36631,7 @@
 							"name": "has_role",
 							"kind": "function",
 							"doc_comment": "Check if a request context has an active permit for a given role.\n\nChecks the permits already loaded in the context (no DB query).",
-							"source_line": 82,
+							"source_line": 93,
 							"type_signature": "(ctx: RequestContext, role: string, now?: Date): boolean",
 							"return_type": "boolean",
 							"return_description": "`true` if the actor has an active permit for the role",
@@ -36625,7 +36658,7 @@
 							"name": "create_request_context_middleware",
 							"kind": "function",
 							"doc_comment": "Create middleware that builds the request context from a session cookie.\n\nReads the session identity (set by session middleware), looks up\nthe `auth_session`, loads account + actor + active permits, and\nsets the `RequestContext` on the Hono context.\n\nIf the session is invalid or the account is not found, the context\nis set to `null` (unauthenticated). No 401 is returned — use\n`require_role` or `require_auth` for enforcement.",
-							"source_line": 100,
+							"source_line": 111,
 							"type_signature": "(deps: QueryDeps, log: Logger, session_context_key?: string): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -36651,7 +36684,7 @@
 							"name": "require_auth",
 							"kind": "function",
 							"doc_comment": "Middleware that requires authentication.\n\nReturns 401 if no request context is set.",
-							"source_line": 148,
+							"source_line": 163,
 							"type_signature": "(c: Context<any, string, {}>, next: Next): Promise<void | Response>",
 							"return_type": "Promise<void | Response>",
 							"parameters": [
@@ -36669,7 +36702,7 @@
 							"name": "require_role",
 							"kind": "function",
 							"doc_comment": "Create middleware that requires a specific role.\n\nReturns 401 if unauthenticated, 403 if the role is missing.",
-							"source_line": 163,
+							"source_line": 178,
 							"type_signature": "(role: string): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -36684,7 +36717,7 @@
 							"name": "refresh_permits",
 							"kind": "function",
 							"doc_comment": "Reload active permits from the database, returning a new request context.\n\nUseful for long-lived WebSocket connections where permits may change\n(grant or revoke) during the connection lifetime. Call periodically\nor after receiving a revocation signal.\n\nReturns a new `RequestContext` with updated permits — the original\ncontext is not mutated, making concurrent calls safe.",
-							"source_line": 190,
+							"source_line": 205,
 							"type_signature": "(ctx: RequestContext, deps: QueryDeps): Promise<RequestContext>",
 							"return_type": "Promise<RequestContext>",
 							"return_description": "a new `RequestContext` with fresh permits",
@@ -36705,7 +36738,7 @@
 							"name": "build_request_context",
 							"kind": "function",
 							"doc_comment": "Build a full `RequestContext` from an account id.\n\nShared helper used by session, bearer, and daemon token middleware,\nas well as WebSocket upgrade handlers. Does the account → actor → permits\nlookup pipeline and returns the composed context, or `null` if\nthe account or actor is not found.",
-							"source_line": 210,
+							"source_line": 225,
 							"type_signature": "(deps: QueryDeps, account_id: string): Promise<RequestContext | null>",
 							"return_type": "Promise<RequestContext | null>",
 							"return_description": "a request context, or `null` if account/actor not found",
@@ -42700,15 +42733,15 @@
 						{
 							"name": "DISCONNECT_EVENT_TYPES",
 							"kind": "variable",
-							"doc_comment": "Audit event types that trigger SSE stream disconnection.\n\n`permit_revoke` requires the revoked role to match the guard's `required_role`.\n`session_revoke_all` and `password_change` close unconditionally for the target account.",
-							"source_line": 30,
+							"doc_comment": "Audit event types that trigger SSE stream disconnection.\n\n`permit_revoke` requires the revoked role to match the guard's `required_role`.\n`session_revoke_all` and `password_change` close every stream for the target account.\n`session_revoke` closes only the stream tied to the specific revoked session\n(matched by the blake3 session hash in `event.metadata.session_id`) — closing\nall of a user's streams for a single-session revoke would be over-aggressive.",
+							"source_line": 33,
 							"type_signature": "ReadonlySet<string>"
 						},
 						{
 							"name": "create_sse_auth_guard",
 							"kind": "function",
 							"doc_comment": "Create an audit event handler that closes SSE streams on auth changes.\n\nCloses streams when:\n- `permit_revoke` fires for the `required_role` targeting a connected subscriber\n- `session_revoke_all` targets a connected subscriber (consistent invalidation)\n- `password_change` targets a connected subscriber (sessions revoked implicitly)\n\nThe registry must use `account_id` as the identity key when subscribing\n(passed as the third argument to `registry.subscribe()`).",
-							"source_line": 52,
+							"source_line": 56,
 							"type_signature": "<T>(registry: SubscriberRegistry<T>, required_role: string, log: Logger): (event: AuditLogEvent) => void",
 							"return_type": "(event: AuditLogEvent) => void",
 							"return_description": "an `on_audit_event` callback",
@@ -42734,13 +42767,13 @@
 							"name": "AuditLogSse",
 							"kind": "type",
 							"doc_comment": "Convenience factory result for audit log SSE.\n\nSatisfies `AuditLogRouteOptions['stream']` and provides the combined\n`on_audit_event` callback (broadcast + guard).",
-							"source_line": 85,
+							"source_line": 111,
 							"type_signature": "AuditLogSse",
 							"properties": [
 								{
 									"name": "subscribe",
 									"kind": "variable",
-									"type_signature": "(\n\t\tstream: SseStream<SseNotification>,\n\t\tchannels?: Array<string>,\n\t\tidentity?: string,\n\t) => () => void",
+									"type_signature": "(\n\t\tstream: SseStream<SseNotification>,\n\t\tchannels?: Array<string>,\n\t\tidentity?: string | ReadonlyArray<string>,\n\t) => () => void",
 									"doc_comment": "Subscribe function — pass as part of `stream` option to `create_audit_log_route_specs`."
 								},
 								{
@@ -42767,19 +42800,26 @@
 							"name": "AUDIT_LOG_EVENT_SPECS",
 							"kind": "variable",
 							"doc_comment": "SSE event specs for audit log events.\n\nOne spec per `AUDIT_EVENT_TYPES` entry, all sharing the `AuditLogEventJson` params schema.\nPass to `create_app_server`'s `event_specs` for surface generation and DEV validation.",
-							"source_line": 130,
+							"source_line": 156,
 							"type_signature": "EventSpec[]"
+						},
+						{
+							"name": "AUDIT_LOG_SSE_MAX_PER_IDENTITY",
+							"kind": "variable",
+							"doc_comment": "Default max concurrent SSE subscribers per identity for the audit log.",
+							"source_line": 166,
+							"type_signature": "5"
 						},
 						{
 							"name": "create_audit_log_sse",
 							"kind": "function",
-							"source_line": 139,
-							"type_signature": "(options: { role?: string | undefined; log: Logger; }): AuditLogSse",
+							"source_line": 168,
+							"type_signature": "(options: { role?: string | undefined; log: Logger; max_per_identity?: number | null | undefined; }): AuditLogSse",
 							"return_type": "AuditLogSse",
 							"parameters": [
 								{
 									"name": "options",
-									"type": "{ role?: string | undefined; log: Logger; }"
+									"type": "{ role?: string | undefined; log: Logger; max_per_identity?: number | null | undefined; }"
 								}
 							]
 						}
@@ -42942,7 +42982,7 @@
 						{
 							"name": "Subscriber",
 							"kind": "type",
-							"source_line": 14,
+							"source_line": 16,
 							"type_signature": "Subscriber<T>",
 							"generic_params": [
 								{
@@ -42962,22 +43002,37 @@
 									"doc_comment": "Channels this subscriber listens to. `null` means all channels."
 								},
 								{
-									"name": "identity",
+									"name": "identities",
 									"kind": "variable",
-									"type_signature": "string | null",
-									"doc_comment": "Optional identity key for targeted disconnection (e.g., account_id)."
+									"type_signature": "Set<string> | null",
+									"doc_comment": "Identity keys for targeted disconnection. `null` means no identity."
+								}
+							]
+						},
+						{
+							"name": "SubscriberRegistryOptions",
+							"kind": "type",
+							"doc_comment": "Options for `SubscriberRegistry`.",
+							"source_line": 25,
+							"type_signature": "SubscriberRegistryOptions",
+							"properties": [
+								{
+									"name": "max_per_identity",
+									"kind": "variable",
+									"type_signature": "number | null",
+									"doc_comment": "Max subscribers per identity. On subscribe, when the count of subscribers\nsharing any one of the new subscriber's identities reaches this limit,\nthe oldest matching subscriber(s) are closed before the new one is added.\n`null` (default) disables the cap."
 								}
 							]
 						},
 						{
 							"name": "SubscriberRegistry",
 							"kind": "class",
-							"doc_comment": "Generic subscriber registry with channel-based filtering and identity-keyed disconnection.\n\nSubscribers connect with optional channel filters and an optional identity key.\nBroadcasts go to a specific channel and reach only matching subscribers.\n`close_by_identity` force-closes all subscribers with a given identity —\nuse for auth revocation (close streams when a user's permissions change).",
+							"doc_comment": "Generic subscriber registry with channel-based filtering and identity-keyed disconnection.\n\nSubscribers connect with optional channel filters and optional identity keys.\nBroadcasts go to a specific channel and reach only matching subscribers.\n`close_by_identity` force-closes all subscribers whose identities contain the\ngiven key — use for auth revocation.",
 							"examples": [
 								"```ts\nconst registry = new SubscriberRegistry<SseNotification>();\n\n// subscriber connects (from SSE endpoint)\nconst unsubscribe = registry.subscribe(stream, ['runs']);\n\n// when a run changes\nregistry.broadcast('runs', {method: 'run_created', params: {run}});\n\n// subscriber disconnects\nunsubscribe();\n```",
-								"```ts\n// identity-keyed subscription for auth revocation\nconst unsubscribe = registry.subscribe(stream, ['audit_log'], account_id);\n\n// when admin revokes the user's role — close their streams\nregistry.close_by_identity(account_id);\n```"
+								"```ts\n// identity-keyed subscription with multiple scopes\nconst unsubscribe = registry.subscribe(stream, ['audit_log'], [account_id, session_hash]);\n\n// coarse — close all of a user's streams on role revocation\nregistry.close_by_identity(account_id);\n\n// fine — close just the stream tied to a specific session\nregistry.close_by_identity(session_hash);\n```"
 							],
-							"source_line": 53,
+							"source_line": 69,
 							"generic_params": [
 								{
 									"name": "T"
@@ -42985,10 +43040,22 @@
 							],
 							"members": [
 								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "<T>(options?: SubscriberRegistryOptions | undefined): SubscriberRegistry<T>",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "SubscriberRegistryOptions | undefined",
+											"optional": true
+										}
+									]
+								},
+								{
 									"name": "subscribe",
 									"kind": "function",
 									"doc_comment": "Add a subscriber.",
-									"type_signature": "(stream: SseStream<T>, channels?: string[] | undefined, identity?: string | undefined): () => void",
+									"type_signature": "(stream: SseStream<T>, channels?: string[] | undefined, identity?: string | readonly string[] | undefined): () => void",
 									"return_type": "() => void",
 									"return_description": "unsubscribe function",
 									"parameters": [
@@ -43005,9 +43072,9 @@
 										},
 										{
 											"name": "identity",
-											"type": "string | undefined",
+											"type": "string | readonly string[] | undefined",
 											"optional": true,
-											"description": "optional identity key for targeted disconnection"
+											"description": "identity key(s) for targeted disconnection. Pass a single string\nfor a single identity, or an array for multi-scope subscriptions (e.g.\n`[account_id, session_hash]`)."
 										}
 									]
 								},
@@ -43033,7 +43100,7 @@
 								{
 									"name": "close_by_identity",
 									"kind": "function",
-									"doc_comment": "Force-close all subscribers with the given identity.\n\nCloses each matching stream and removes the subscriber from the registry.\nUse for auth revocation — when a user's permissions change, close their\nSSE connections so they must reconnect and re-authenticate.",
+									"doc_comment": "Force-close all subscribers whose identities contain the given key.\n\nCloses each matching stream and removes the subscriber from the registry.\nUse for auth revocation — when a user's permissions change, close their\nSSE connections so they must reconnect and re-authenticate.",
 									"type_signature": "(identity: string): number",
 									"return_type": "number",
 									"return_description": "the number of subscribers closed",
@@ -43048,7 +43115,7 @@
 							]
 						}
 					],
-					"module_comment": "Generic subscriber registry for broadcasting to SSE clients.\n\nSupports channel-based filtering — subscribers connect with optional\nchannel filters, and broadcasts reach only matching subscribers.\nOptional identity keys enable force-closing subscribers by identity\n(e.g., close all streams for a specific account when their permissions change).",
+					"module_comment": "Generic subscriber registry for broadcasting to SSE clients.\n\nSupports channel-based filtering — subscribers connect with optional\nchannel filters, and broadcasts reach only matching subscribers.\nOptional identity keys enable force-closing subscribers by identity\n(e.g., close all streams for a specific account when their permissions change).\nSubscribers may declare multiple identities so a single stream can be\ntargeted by coarse (account_id) or fine (session hash) scopes.",
 					"dependents": ["realtime/sse_auth_guard.ts"]
 				},
 				{
@@ -44276,7 +44343,7 @@
 							"name": "validate_nginx_config",
 							"kind": "function",
 							"doc_comment": "Validate an nginx config template string for security properties.\n\nChecks for required security headers, Authorization stripping in `/api`\nblocks, and the nginx `add_header` inheritance gotcha. Designed for\nfuz_app consumer deploy configs (tx.ts `NGINX_CONFIG` constants).\n\nLimitations: string pattern matching, not a real nginx parser. Catches\ncommon omissions in fuz_app deploy configs but won't catch all possible\nmisconfigurations.",
-							"source_line": 65,
+							"source_line": 97,
 							"type_signature": "(config: string): NginxValidationResult",
 							"return_type": "NginxValidationResult",
 							"return_description": "validation result with ok status, warnings, and errors",

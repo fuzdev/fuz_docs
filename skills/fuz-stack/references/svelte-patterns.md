@@ -934,15 +934,78 @@ Svelte 5 uses standard DOM event syntax:
 
 ### Programmatic Event Listeners
 
-`on()` from `svelte/events` for programmatic listeners in attachments and
-`.svelte.ts` files. Returns cleanup:
+`on()` from `svelte/events` for programmatic listeners in attachments,
+`.svelte.ts` files, and plain `.ts` modules. Preserves correct ordering
+relative to declarative handlers that use event delegation. Always prefer
+`on()` over `addEventListener` — even in non-component code. Returns a
+cleanup function:
 
 ```typescript
 import {on} from 'svelte/events';
 
-// Inside an attachment
+// Inside an attachment or module
 const cleanup = on(element, 'scroll', onscroll);
 return () => cleanup();
+
+// With options (e.g., passive: false for wheel events)
+const cleanup = on(element, 'wheel', onwheel, {passive: false});
+```
+
+### `swallow` — Claiming Events
+
+`swallow()` from `@fuzdev/fuz_util/dom.js` combines `preventDefault()` and
+`stopImmediatePropagation()` (or `stopPropagation()` with `immediate: false`).
+
+**Design principle: handling an event = claiming it.** If you call
+`preventDefault`, you're already saying "I own this event's default behavior."
+Use `swallow` to extend that to "and no one else should react to it either."
+If a parent needs to observe events before children claim them, use the
+`capture` phase explicitly — don't rely on implicit bubbling.
+
+```typescript
+import {swallow} from '@fuzdev/fuz_util/dom.js';
+
+// swallow(event, immediate?, preventDefault?)
+swallow(e);                  // preventDefault + stopImmediatePropagation (default)
+swallow(e, false);           // preventDefault + stopPropagation (non-immediate)
+swallow(e, true, false);     // stopImmediatePropagation only (no preventDefault)
+```
+
+Use `swallow` whenever you would call `preventDefault` — the event is yours,
+stop it from propagating too. For handlers that only need `stopPropagation`
+without `preventDefault` (e.g., preventing game input from seeing keystrokes
+in a chat input), use `e.stopPropagation()` directly.
+
+```svelte
+<!-- Claiming an event in a handler -->
+<script lang="ts">
+  import {swallow} from '@fuzdev/fuz_util/dom.js';
+
+  const on_keydown = (e: KeyboardEvent): void => {
+    if (e.key === 'Enter') {
+      swallow(e);
+      send();
+    } else if (e.key === 'Escape') {
+      swallow(e);
+      close();
+    } else {
+      // only stop propagation, don't prevent default (e.g., typing characters)
+      e.stopPropagation();
+    }
+  };
+</script>
+```
+
+```typescript
+// Programmatic listener claiming context menu and wheel events
+const cleanup_contextmenu = on(canvas, 'contextmenu', (e) => {
+  swallow(e);
+});
+
+const cleanup_wheel = on(canvas, 'wheel', (e) => {
+  handle_zoom(e);
+  swallow(e);
+}, {passive: false});
 ```
 
 ## Component Composition

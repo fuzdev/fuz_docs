@@ -234,3 +234,38 @@ Used by tx for pipeline execution and resource detection.
 See ./async-patterns.md for the full DAG API (`DagOptions`, `DagResult`,
 `DagNode`) and concurrency primitives. See ./type-utilities.md for nominal
 typing and strict utility types.
+
+## DOM Helpers
+
+`@fuzdev/fuz_util/dom.js` — browser DOM utilities.
+
+### `swallow`
+
+Claims an event by preventing its default action and stopping propagation:
+
+```typescript
+import {swallow} from '@fuzdev/fuz_util/dom.js';
+
+swallow(event);                  // preventDefault + stopImmediatePropagation
+swallow(event, false);           // preventDefault + stopPropagation (non-immediate)
+swallow(event, true, false);     // stopImmediatePropagation only (no preventDefault)
+```
+
+Design principle: if you `preventDefault`, you're claiming the event — use
+`swallow` to also stop propagation. Parents that need to observe before
+children claim should use the `capture` phase. See ./svelte-patterns.md
+§Event Handling for full guidance.
+
+### `handle_target_value`
+
+Wraps an input event callback with value extraction and optional swallowing:
+
+```typescript
+import {handle_target_value} from '@fuzdev/fuz_util/dom.js';
+
+// Swallows by default (preventDefault + stopImmediatePropagation)
+<input oninput={handle_target_value((value) => { name = value; })} />
+
+// Without swallowing
+<input oninput={handle_target_value((value) => { name = value; }, false)} />
+```

@@ -146,8 +146,16 @@ All exported identifiers must have **unique names across all modules**:
 - Error shows all conflicts with module paths and kinds
 - Resolution: rename one following the domain_action pattern, or add
   `/** @nodocs */` to exclude from validation
-- Example: `DocsLink` interface -> `DocsLinkInfo` when it conflicts with
-  `DocsLink.svelte`
+- **Which side to rename** — rename the side that is *not* the primary
+  public API. `@nodocs` is the wrong tool when external consumers depend
+  on the hidden symbol (it vanishes from docs and tomes).
+  - Component is primary (class is a state/helper): suffix the class with
+    `State` / `Info`. Example: `DocsLink` interface → `DocsLinkInfo` when
+    it conflicts with `DocsLink.svelte`. Precedent: `ThemeState`,
+    `AuthState`, `SidebarState`.
+  - Class is primary (stateful with methods/lifecycle, consumers
+    instantiate it): suffix the component with `View` / `Pane`. Example:
+    `MusicPlayer` class kept, component renamed to `MusicPlayerView.svelte`.
 
 ### File Organization
 
