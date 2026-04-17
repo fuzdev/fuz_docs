@@ -1108,7 +1108,63 @@ const cleanup_wheel = on(canvas, 'wheel', (e) => {
 ## Runes in .svelte.ts Files
 
 `.svelte.ts` files use runes (`$state`, `$derived`, `$effect`) outside
-components.
+components. Prefer **classes** over module-level state — export a class,
+instantiate once at the appropriate root, and share it via context.
+
+### Avoid Module-Level Runes for Shared State
+
+Don't declare `$state` variables at module scope and expose them through
+getter/setter objects. A module-level rune is a hidden global: it can't be
+reset per test, per realm, or per session; it ties the lifetime of the
+state to the module rather than to a component; and a second instance is
+impossible when you later decide you need one.
+
+```typescript
+// Anti-pattern: module-level runes exposed through a singleton
+let show_map = $state.raw(false);
+let show_sidebar = $state.raw(true);
+
+export const world_ui = {
+	get show_map() { return show_map; },
+	set show_map(v: boolean) { show_map = v; },
+	get show_sidebar() { return show_sidebar; },
+	set show_sidebar(v: boolean) { show_sidebar = v; },
+};
+```
+
+Use a class + context instead — the class owns its state, and a root
+component sets it once:
+
+```typescript
+// world_ui_state.svelte.ts
+import {create_context} from '@fuzdev/fuz_ui/context_helpers.js';
+
+export const world_ui_context = create_context<WorldUiState>();
+
+export class WorldUiState {
+	show_map: boolean = $state.raw(false);
+	show_sidebar: boolean = $state.raw(true);
+}
+```
+
+```svelte
+<!-- +layout.svelte or similar root component -->
+<script>
+	import {WorldUiState, world_ui_context} from '$lib/world_ui_state.svelte.js';
+	world_ui_context.set(new WorldUiState());
+</script>
+```
+
+```svelte
+<!-- any descendant component -->
+<script>
+	import {world_ui_context} from '$lib/world_ui_state.svelte.js';
+	const world_ui = world_ui_context.get();
+</script>
+```
+
+**When module-level runes are fine:** inside a factory function body (see
+below) — the state is scoped to the returned object, not the module.
 
 ### Factory Functions with Getter/Setter Proxies
 
