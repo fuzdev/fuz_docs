@@ -502,10 +502,9 @@ What to wrap:
 
 ### Internal paths
 
-Paths starting with `/` after whitespace auto-link as internal navigation.
-
-**Gotcha — API route lists**: `/word` patterns get auto-linked, including HTTP
-routes. Bare paths create broken links that fail SvelteKit prerender:
+Bare paths starting with `/` (after whitespace) auto-link as internal
+navigation — including HTTP route notations, which create broken links that
+fail SvelteKit prerender:
 
 ```typescript
 // BAD — mdz auto-links /login as internal route, breaks prerender
@@ -530,13 +529,20 @@ References are case-sensitive. `` `library` `` will NOT match `Library`.
 Backticks for identifiers. `{@link}` for external URLs in `@see`:
 
 ```typescript
-// Preferred — backtick for identifier
+// Preferred — backticks for identifier references
 /** See `tsdoc_parse` for the extraction step. */
 
-// Avoid — {@link} for identifier
+// Avoid — {@link} with an identifier renders as plain text in generated docs
 /** See {@link tsdoc_parse} for the extraction step. */
 
-// Correct — {@link} for URL
+// BROKEN — {@link} with a relative path breaks prerender: the generator
+// strips the wrapper, leaving bare path text that mdz auto-links as an
+// internal route.
+/** Symmetric to {@link ../actions/action_rpc.js | create_rpc_endpoint}. */
+// Fix — backticks + prose filename:
+/** Symmetric to `create_rpc_endpoint` (from `actions/action_rpc.ts`). */
+
+// Correct — {@link} for a URL in `@see`
 /** @see {@link https://fuz.dev|Fuz documentation} */
 ```
 

@@ -21598,389 +21598,395 @@
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
-							"name": "input_height_compact",
+							"name": "input_height_sm",
 							"kind": "variable",
 							"source_line": 1420,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
+							"name": "input_height_inner",
+							"kind": "variable",
+							"source_line": 1421,
+							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
+						},
+						{
 							"name": "shadow_xs",
 							"kind": "variable",
-							"source_line": 1440,
+							"source_line": 1441,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_top_xs",
 							"kind": "variable",
-							"source_line": 1444,
+							"source_line": 1445,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_bottom_xs",
 							"kind": "variable",
-							"source_line": 1448,
+							"source_line": 1449,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_xs",
 							"kind": "variable",
-							"source_line": 1452,
+							"source_line": 1453,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_top_xs",
 							"kind": "variable",
-							"source_line": 1456,
+							"source_line": 1457,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_bottom_xs",
 							"kind": "variable",
-							"source_line": 1460,
+							"source_line": 1461,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_sm",
 							"kind": "variable",
-							"source_line": 1464,
+							"source_line": 1465,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_top_sm",
 							"kind": "variable",
-							"source_line": 1468,
+							"source_line": 1469,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_bottom_sm",
 							"kind": "variable",
-							"source_line": 1472,
+							"source_line": 1473,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_sm",
 							"kind": "variable",
-							"source_line": 1476,
+							"source_line": 1477,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_top_sm",
 							"kind": "variable",
-							"source_line": 1480,
+							"source_line": 1481,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_bottom_sm",
 							"kind": "variable",
-							"source_line": 1484,
+							"source_line": 1485,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_md",
 							"kind": "variable",
-							"source_line": 1488,
+							"source_line": 1489,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_top_md",
 							"kind": "variable",
-							"source_line": 1492,
+							"source_line": 1493,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_bottom_md",
 							"kind": "variable",
-							"source_line": 1496,
+							"source_line": 1497,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_md",
 							"kind": "variable",
-							"source_line": 1500,
+							"source_line": 1501,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_top_md",
 							"kind": "variable",
-							"source_line": 1504,
+							"source_line": 1505,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_bottom_md",
 							"kind": "variable",
-							"source_line": 1508,
+							"source_line": 1509,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_lg",
 							"kind": "variable",
-							"source_line": 1512,
+							"source_line": 1513,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_top_lg",
 							"kind": "variable",
-							"source_line": 1516,
+							"source_line": 1517,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_bottom_lg",
 							"kind": "variable",
-							"source_line": 1520,
+							"source_line": 1521,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_lg",
 							"kind": "variable",
-							"source_line": 1524,
+							"source_line": 1525,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_top_lg",
 							"kind": "variable",
-							"source_line": 1528,
+							"source_line": 1529,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_bottom_lg",
 							"kind": "variable",
-							"source_line": 1532,
+							"source_line": 1533,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_xl",
 							"kind": "variable",
-							"source_line": 1536,
+							"source_line": 1537,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_top_xl",
 							"kind": "variable",
-							"source_line": 1540,
+							"source_line": 1541,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_bottom_xl",
 							"kind": "variable",
-							"source_line": 1544,
+							"source_line": 1545,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_xl",
 							"kind": "variable",
-							"source_line": 1548,
+							"source_line": 1549,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_top_xl",
 							"kind": "variable",
-							"source_line": 1552,
+							"source_line": 1553,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_inset_bottom_xl",
 							"kind": "variable",
-							"source_line": 1556,
+							"source_line": 1557,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_color_umbra",
 							"kind": "variable",
-							"source_line": 1561,
+							"source_line": 1562,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_color_highlight",
 							"kind": "variable",
-							"source_line": 1566,
+							"source_line": 1567,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_color_glow",
 							"kind": "variable",
-							"source_line": 1571,
+							"source_line": 1572,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_color_shroud",
 							"kind": "variable",
-							"source_line": 1576,
+							"source_line": 1577,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_00",
 							"kind": "variable",
-							"source_line": 1584,
+							"source_line": 1585,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_05",
 							"kind": "variable",
-							"source_line": 1585,
+							"source_line": 1586,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_10",
 							"kind": "variable",
-							"source_line": 1586,
+							"source_line": 1587,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_20",
 							"kind": "variable",
-							"source_line": 1587,
+							"source_line": 1588,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_30",
 							"kind": "variable",
-							"source_line": 1588,
+							"source_line": 1589,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_40",
 							"kind": "variable",
-							"source_line": 1589,
+							"source_line": 1590,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_50",
 							"kind": "variable",
-							"source_line": 1590,
+							"source_line": 1591,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_60",
 							"kind": "variable",
-							"source_line": 1591,
+							"source_line": 1592,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_70",
 							"kind": "variable",
-							"source_line": 1592,
+							"source_line": 1593,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_80",
 							"kind": "variable",
-							"source_line": 1593,
+							"source_line": 1594,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_90",
 							"kind": "variable",
-							"source_line": 1594,
+							"source_line": 1595,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_95",
 							"kind": "variable",
-							"source_line": 1595,
+							"source_line": 1596,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "shadow_alpha_100",
 							"kind": "variable",
-							"source_line": 1596,
+							"source_line": 1597,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_xs",
 							"kind": "variable",
-							"source_line": 1601,
+							"source_line": 1602,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_sm",
 							"kind": "variable",
-							"source_line": 1605,
+							"source_line": 1606,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_md",
 							"kind": "variable",
-							"source_line": 1609,
+							"source_line": 1610,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_lg",
 							"kind": "variable",
-							"source_line": 1613,
+							"source_line": 1614,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_xl",
 							"kind": "variable",
-							"source_line": 1617,
+							"source_line": 1618,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_xl2",
 							"kind": "variable",
-							"source_line": 1621,
+							"source_line": 1622,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "icon_size_xl3",
 							"kind": "variable",
-							"source_line": 1625,
+							"source_line": 1626,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "duration_1",
 							"kind": "variable",
-							"source_line": 1633,
+							"source_line": 1634,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "duration_2",
 							"kind": "variable",
-							"source_line": 1634,
+							"source_line": 1635,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "duration_3",
 							"kind": "variable",
-							"source_line": 1635,
+							"source_line": 1636,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "duration_4",
 							"kind": "variable",
-							"source_line": 1636,
+							"source_line": 1637,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "duration_5",
 							"kind": "variable",
-							"source_line": 1637,
+							"source_line": 1638,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "duration_6",
 							"kind": "variable",
-							"source_line": 1638,
+							"source_line": 1639,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "disabled_opacity",
 							"kind": "variable",
-							"source_line": 1640,
+							"source_line": 1641,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }"
 						},
 						{
 							"name": "absolute_color_variables",
 							"kind": "variable",
 							"doc_comment": "Absolute color variants for all hues and intensities.\nNon-adaptive: these don't change between light and dark color schemes.",
-							"source_line": 1831,
+							"source_line": 1832,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]"
 						},
 						{
 							"name": "default_variables",
 							"kind": "variable",
 							"doc_comment": "These are implicitly the variables for the `base` theme.\nSee also the empty `variables` array of the `base` theme above.",
-							"source_line": 1837,
+							"source_line": 1838,
 							"type_signature": "{ name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]"
 						}
 					],
@@ -30615,7 +30621,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.12.0",
+			"version": "0.16.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -30730,7 +30736,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.12.0",
+			"version": "0.16.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -30837,13 +30843,13 @@
 								}
 							],
 							"source_line": 68,
-							"type_signature": "(spec: { method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { ...; } | null; ... 4 more ...; description: string; }, options: ActionRouteOptions): RouteSpec",
+							"type_signature": "(spec: { method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { ...; } | null; ... 5 more ...; streams?: string | undefined; }, options: ActionRouteOptions): RouteSpec",
 							"return_type": "RouteSpec",
 							"return_description": "a `RouteSpec` ready for `apply_route_specs`",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { role: string; } | null; ... 4 more ...; description: string; }",
+									"type": "{ method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { role: string; } | null; ... 5 more ...; streams?: string | undefined; }",
 									"description": "the action spec (must have non-null `auth`)"
 								},
 								{
@@ -30858,13 +30864,13 @@
 							"kind": "function",
 							"doc_comment": "Derive an `EventSpec` from an `ActionSpec`.\n\nOnly `remote_notification` actions can become push events.",
 							"source_line": 101,
-							"type_signature": "(spec: { method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { ...; } | null; ... 4 more ...; description: string; }, options?: ActionEventOptions | undefined): EventSpec",
+							"type_signature": "(spec: { method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { ...; } | null; ... 5 more ...; streams?: string | undefined; }, options?: ActionEventOptions | undefined): EventSpec",
 							"return_type": "EventSpec",
 							"return_description": "an `EventSpec` ready for `create_validated_broadcaster`",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { role: string; } | null; ... 4 more ...; description: string; }",
+									"type": "{ method: string; kind: \"request_response\" | \"remote_notification\" | \"local_call\"; initiator: \"frontend\" | \"backend\" | \"both\"; auth: \"public\" | \"authenticated\" | \"keeper\" | { role: string; } | null; ... 5 more ...; streams?: string | undefined; }",
 									"description": "the action spec (must have `kind: 'remote_notification'`)"
 								},
 								{
@@ -31008,12 +31014,12 @@
 							"kind": "function",
 							"doc_comment": "Determines which phases an executor can handle based on the action spec.",
 							"source_line": 204,
-							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\"): (\"send_request\" | ... 7 more ... | \"execute\")[]",
+							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\"): (\"send_request\" | ... 7 more ... | \"execute\")[]",
 							"return_type": "(\"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\")[]",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
 								},
 								{
 									"name": "executor",
@@ -31026,12 +31032,12 @@
 							"kind": "function",
 							"doc_comment": "Gets the handler return type for a specific phase and spec.\nAlso adds necessary imports to the `ImportBuilder`.",
 							"source_line": 273,
-							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, phase: \"send_request\" | ... 7 more ... | \"execute\", imports: ImportBuilder, path_prefix: string): string",
+							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }, phase: \"send_request\" | ... 7 more ... | \"execute\", imports: ImportBuilder, path_prefix: string): string",
 							"return_type": "string",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
 								},
 								{
 									"name": "phase",
@@ -31052,12 +31058,12 @@
 							"kind": "function",
 							"doc_comment": "Generates the phase handlers for an action spec using the unified ActionEvent type\nwith the new phase/step type parameters.",
 							"source_line": 305,
-							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\", imports: ImportBuilder, options?: { ...; } | undefined): string",
+							"type_signature": "(spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }, executor: \"frontend\" | \"backend\", imports: ImportBuilder, options?: { ...; } | undefined): string",
 							"return_type": "string",
 							"parameters": [
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
 								},
 								{
 									"name": "executor",
@@ -31758,7 +31764,7 @@
 										},
 										{
 											"name": "spec",
-											"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
+											"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
 										},
 										{
 											"name": "data",
@@ -31896,7 +31902,7 @@
 							"kind": "function",
 							"doc_comment": "Create an action event from a spec and initial input.",
 							"source_line": 461,
-							"type_signature": "<TMethod extends string = string>(environment: ActionEventEnvironment, spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<...>>; ... 4 more ...; async: true; } | { ...; } | { ...; }, input: unknown, initial_phase?: \"send_request\" | ... 8 more ... | undefined): ActionEvent<...>",
+							"type_signature": "<TMethod extends string = string>(environment: ActionEventEnvironment, spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<...>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; }, input: unknown, initial_phase?: \"send_request\" | ... 8 more ... | undefined): ActionEvent<...>",
 							"return_type": "ActionEvent<TMethod, \"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\", \"initial\" | \"parsed\" | \"handling\" | \"handled\" | \"failed\">",
 							"parameters": [
 								{
@@ -31905,7 +31911,7 @@
 								},
 								{
 									"name": "spec",
-									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }..."
+									"type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
 								},
 								{
 									"name": "input",
@@ -32129,11 +32135,11 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "(specs: ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; })[]): ActionRegistry",
+									"type_signature": "(specs: ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]): ActionRegistry",
 									"parameters": [
 										{
 											"name": "specs",
-											"type": "({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; ..."
+											"type": "({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
 										}
 									]
 								}
@@ -32187,6 +32193,18 @@
 									"kind": "variable",
 									"type_signature": "Logger",
 									"doc_comment": "Logger instance."
+								},
+								{
+									"name": "notify",
+									"kind": "variable",
+									"type_signature": "(method: string, params: unknown) => void",
+									"doc_comment": "Send a request-scoped JSON-RPC notification to the originator.\n\nOn streaming transports (WebSocket) this routes to the originating\nconnection only. On the HTTP RPC transport this is a no-op with a\nDEV-mode warn — non-streaming transports have no channel for mid-\nrequest notifications. The `streams` field on an `ActionSpec` names\nthe notification method this handler is expected to emit."
+								},
+								{
+									"name": "signal",
+									"kind": "variable",
+									"type_signature": "AbortSignal",
+									"doc_comment": "AbortSignal that fires when the originating request is cancelled\n(client disconnect on HTTP, socket close on WebSocket). Streaming\nhandlers should check this for early termination."
 								}
 							]
 						},
@@ -32194,7 +32212,7 @@
 							"name": "ActionHandler",
 							"kind": "type",
 							"doc_comment": "Handler function for an RPC action.\n\nReceives validated input and an `ActionContext` with per-request deps.\nReturns the output value (serialized to JSON by the wrapper).",
-							"source_line": 67,
+							"source_line": 83,
 							"type_signature": "ActionHandler<TInput, TOutput>",
 							"generic_params": [
 								{
@@ -32211,7 +32229,7 @@
 							"name": "RpcAction",
 							"kind": "type",
 							"doc_comment": "An RPC action — combines an action spec with its handler.\n\nThe spec defines the contract (method, auth, schemas, side effects).\nThe handler implements the behavior.",
-							"source_line": 78,
+							"source_line": 94,
 							"type_signature": "RpcAction",
 							"properties": [
 								{
@@ -32230,7 +32248,7 @@
 							"name": "CreateRpcEndpointOptions",
 							"kind": "type",
 							"doc_comment": "Options for `create_rpc_endpoint`.",
-							"source_line": 84,
+							"source_line": 100,
 							"type_signature": "CreateRpcEndpointOptions",
 							"properties": [
 								{
@@ -32257,7 +32275,7 @@
 							"name": "create_rpc_endpoint",
 							"kind": "function",
 							"doc_comment": "Single JSON-RPC 2.0 endpoint — the canonical RPC transport binding.\n\nReturns two `RouteSpec` entries (GET + POST on the same path) for\n`apply_route_specs`. The internal dispatcher handles:\n\n1. **Parse envelope** — POST: JSON body as `JsonrpcRequest`. GET: `method`\n   and `params` from query string.\n2. **Lookup method** — find the `RpcAction` by method name.\n3. **Auth check** — verify identity against the action's `auth` requirement.\n4. **Validate params** — parse input against the action's `input` schema.\n5. **Dispatch** — acquire DB handle (transaction for mutations, pool for reads),\n   construct `ActionContext`, call handler, return JSON-RPC response.\n\nGET is restricted to `side_effects: false` actions (cacheable reads).\nAll errors use JSON-RPC format: `{jsonrpc, id, error: {code, message, data?}}`.\n\nThe RouteSpecs use `auth: {type: 'none'}` because auth is checked per-action\ninside the dispatcher, and `transaction: false` because transaction scope\nis per-action (mutations get a transaction, reads get pool).",
-							"source_line": 165,
+							"source_line": 181,
 							"type_signature": "(options: CreateRpcEndpointOptions): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "route specs (GET + POST) ready for `apply_route_specs`",
@@ -32310,38 +32328,38 @@
 							"name": "ActionSpec",
 							"kind": "type",
 							"source_line": 35,
-							"type_signature": "ZodObject<{ method: ZodString; kind: ZodEnum<{ request_response: \"request_response\"; remote_notification: \"remote_notification\"; local_call: \"local_call\"; }>; initiator: ZodEnum<...>; ... 5 more ...; description: ZodString; }, $strict>"
+							"type_signature": "ZodObject<{ method: ZodString; kind: ZodEnum<{ request_response: \"request_response\"; remote_notification: \"remote_notification\"; local_call: \"local_call\"; }>; initiator: ZodEnum<...>; ... 6 more ...; streams: ZodOptional<...>; }, $strict>"
 						},
 						{
 							"name": "RequestResponseActionSpec",
 							"kind": "type",
-							"source_line": 48,
-							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 4 more ...; async: ZodDefault<...>; }, $strict>"
+							"source_line": 56,
+							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 5 more ...; async: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "RemoteNotificationActionSpec",
 							"kind": "type",
-							"source_line": 55,
-							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 5 more ...; async: ZodDefault<...>; }, $strict>"
+							"source_line": 63,
+							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 6 more ...; async: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "LocalCallActionSpec",
 							"kind": "type",
 							"doc_comment": "Local calls can wrap synchronous or asynchronous actions,\nand are the escape hatch for remote APIs that do not support SAES.",
-							"source_line": 68,
-							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 4 more ...; auth: ZodDefault<...>; }, $strict>"
+							"source_line": 76,
+							"type_signature": "ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 5 more ...; auth: ZodDefault<...>; }, $strict>"
 						},
 						{
 							"name": "ActionSpecUnion",
 							"kind": "type",
-							"source_line": 74,
-							"type_signature": "ZodUnion<readonly [ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 4 more ...; async: ZodDefault<...>; }, $strict>, ZodObject<...."
+							"source_line": 82,
+							"type_signature": "ZodUnion<readonly [ZodObject<{ method: ZodString; initiator: ZodEnum<{ frontend: \"frontend\"; backend: \"backend\"; both: \"both\"; }>; side_effects: ZodBoolean; input: ZodCustom<ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>, ZodType<...>>; ... 5 more ...; async: ZodDefault<...>; }, $strict>, ZodObject<...."
 						},
 						{
 							"name": "is_action_spec",
 							"kind": "function",
-							"source_line": 81,
-							"type_signature": "(value: unknown): value is { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<...>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }; async: true; } | { ...; } | { ...; }",
+							"source_line": 89,
+							"type_signature": "(value: unknown): value is { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<...>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; }",
 							"return_type": "boolean",
 							"parameters": [
 								{
@@ -32353,12 +32371,167 @@
 						{
 							"name": "ActionEventPhase",
 							"kind": "type",
-							"source_line": 88,
+							"source_line": 96,
 							"type_signature": "ZodEnum<{ send_request: \"send_request\"; receive_request: \"receive_request\"; send_response: \"send_response\"; receive_response: \"receive_response\"; send_error: \"send_error\"; receive_error: \"receive_error\"; send: \"send\"; receive: \"receive\"; execute: \"execute\"; }>"
 						}
 					],
 					"module_comment": "Action spec types — the canonical source of truth for action contracts.\n\nExtracted from zzz's action system. Action specs define method, kind,\nauth, side effects, and input/output schemas. Bridge functions in\n`action_bridge.ts` derive `RouteSpec` and `EventSpec` from them.\n\nTODO @action-system-review The action system (action_spec, action_registry,\naction_codegen, action_bridge) will evolve significantly with the saes-rpc quest.\nCurrent state: bridge is stable, registry and codegen are partially stub API.\nSearch for `@action-system-review` across the actions/ and routes/ modules.",
 					"dependents": ["actions/action_event_data.ts"]
+				},
+				{
+					"path": "actions/register_action_ws.ts",
+					"declarations": [
+						{
+							"name": "BaseHandlerContext",
+							"kind": "type",
+							"doc_comment": "Minimum per-request context every handler receives.\n\nConsumers extend this with domain-specific fields via\n`RegisterActionWsOptions.extend_context` (e.g., a `backend` singleton\nor the authenticated `RequestContext`). Keeping the base minimal matches\nthe HTTP-side `ActionContext` (from `actions/action_rpc.ts`) and mirrors\nRust's `Ctx<'a>` shape (`request_id` + `NotifyFn` + `CancellationToken`).",
+							"source_line": 58,
+							"type_signature": "BaseHandlerContext",
+							"properties": [
+								{
+									"name": "request_id",
+									"kind": "variable",
+									"type_signature": "JsonrpcRequestId",
+									"doc_comment": "JSON-RPC envelope request id — echoed back on the response."
+								},
+								{
+									"name": "notify",
+									"kind": "variable",
+									"type_signature": "(method: string, params: unknown) => void",
+									"doc_comment": "Send a request-scoped JSON-RPC notification to the originating socket.\nNot a broadcast — the message only reaches the client whose request\ntriggered this handler. Streaming handlers (e.g. `completion_progress`)\nroute chunks through this."
+								},
+								{
+									"name": "signal",
+									"kind": "variable",
+									"type_signature": "AbortSignal",
+									"doc_comment": "Fires on socket close; streaming handlers poll for early termination."
+								}
+							]
+						},
+						{
+							"name": "WsActionHandler",
+							"kind": "type",
+							"doc_comment": "Handler signature — receives validated input and per-request context.",
+							"source_line": 73,
+							"type_signature": "WsActionHandler<TCtx>",
+							"generic_params": [
+								{
+									"name": "TCtx",
+									"constraint": "BaseHandlerContext"
+								}
+							]
+						},
+						{
+							"name": "RegisterActionWsOptions",
+							"kind": "type",
+							"doc_comment": "Options for `register_action_ws`.",
+							"source_line": 79,
+							"type_signature": "RegisterActionWsOptions<TCtx>",
+							"generic_params": [
+								{
+									"name": "TCtx",
+									"constraint": "BaseHandlerContext"
+								}
+							],
+							"properties": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Mount path (e.g., `/api/ws`)."
+								},
+								{
+									"name": "app",
+									"kind": "variable",
+									"type_signature": "Hono",
+									"doc_comment": "The Hono app to mount on."
+								},
+								{
+									"name": "upgradeWebSocket",
+									"kind": "variable",
+									"type_signature": "UpgradeWebSocket",
+									"doc_comment": "Hono's `upgradeWebSocket` helper from the runtime adapter."
+								},
+								{
+									"name": "specs",
+									"kind": "variable",
+									"type_signature": "ReadonlyArray<ActionSpecUnion>",
+									"doc_comment": "Action specs — drives method lookup, per-action auth, and input/output validation."
+								},
+								{
+									"name": "handlers",
+									"kind": "variable",
+									"type_signature": "Record<string, WsActionHandler<TCtx>>",
+									"doc_comment": "Handler map keyed by `spec.method`."
+								},
+								{
+									"name": "extend_context",
+									"kind": "variable",
+									"type_signature": "(base: BaseHandlerContext, c: Context) => TCtx",
+									"doc_comment": "Build the per-request context from the base and the upgrade-time Hono\ncontext. Called once per incoming message. Consumers use this to attach\ndomain singletons (`backend`) or per-socket auth (`auth`,\n`credential_type`) without re-reading them from `c` inside every handler."
+								},
+								{
+									"name": "transport",
+									"kind": "variable",
+									"type_signature": "BackendWebsocketTransport",
+									"doc_comment": "Existing transport to register connections with. When omitted, a fresh\none is created and returned in the result. Pass your own to keep a\nhandle for `create_ws_auth_guard` and `send_to`/`broadcast`."
+								},
+								{
+									"name": "artificial_delay",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Optional per-message delay for testing loading states. Ignored when `0`."
+								},
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "LoggerType",
+									"doc_comment": "Optional logger; defaults to `[ws]` namespace."
+								}
+							]
+						},
+						{
+							"name": "RegisterActionWsResult",
+							"kind": "type",
+							"doc_comment": "Result of `register_action_ws`.",
+							"source_line": 110,
+							"type_signature": "RegisterActionWsResult",
+							"properties": [
+								{
+									"name": "transport",
+									"kind": "variable",
+									"type_signature": "BackendWebsocketTransport",
+									"doc_comment": "The transport bound to the endpoint — supplied or freshly created."
+								}
+							]
+						},
+						{
+							"name": "register_action_ws",
+							"kind": "function",
+							"doc_comment": "Mount a JSON-RPC WebSocket endpoint that dispatches to the supplied handler\nmap. Per-request context is built from the base + consumer-provided\n`RegisterActionWsOptions.extend_context`.\n\nWire behavior:\n- Batch JSON-RPC is rejected (single-message only).\n- Notifications (method + no id) are silently dropped per JSON-RPC spec.\n- Per-action auth: `public` / `authenticated` pass through (upgrade auth\n  already verified identity); `keeper` requires `daemon_token` credential\n  type *and* the keeper role; role-based `{role}` is currently rejected as\n  not-yet-supported.\n- DEV mode validates handler output against the spec's `output` schema and\n  warns on mismatches.",
+							"source_line": 133,
+							"type_signature": "<TCtx extends BaseHandlerContext>(options: RegisterActionWsOptions<TCtx>): RegisterActionWsResult",
+							"return_type": "RegisterActionWsResult",
+							"return_description": "the transport (supplied or freshly created) — retain it to wire\n`create_ws_auth_guard` or broadcast on audit events.",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "RegisterActionWsOptions<TCtx>"
+								}
+							]
+						}
+					],
+					"module_comment": "WebSocket JSON-RPC dispatch — the canonical WS transport binding.\n\nSymmetric to `create_rpc_endpoint` (from `actions/action_rpc.ts`):\nconsumer supplies action specs + a handler map, the dispatcher parses the\nenvelope, checks per-action auth, validates input, invokes the handler with\na per-request context, and writes the response.\n\nExtracted from zzz's `register_websocket_actions` to converge pattern drift\nacross consumers (zzz, tx, undying). Broadcast-style notifications remain\ndomain-shaped today — this module only covers per-request dispatch + the\nsocket-scoped `ctx.notify` + per-socket `ctx.signal`. See\n`BackendWebsocketTransport.send` for broadcast.\n\n## Auth expectations\n\nThe consumer is responsible for rejecting unauthenticated upgrades *before*\nrouting to this handler (fuz_app's `require_auth` middleware). Inside the\ndispatcher, `get_request_context(c)` is treated as guaranteed non-null and\nper-action auth is enforced on each message.",
+					"dependencies": [
+						"actions/transports_ws_backend.ts",
+						"auth/request_context.ts",
+						"auth/role_schema.ts",
+						"auth/session_queries.ts",
+						"hono_context.ts",
+						"http/jsonrpc.ts",
+						"http/jsonrpc_errors.ts",
+						"http/jsonrpc_helpers.ts"
+					]
 				},
 				{
 					"path": "actions/request_tracker.svelte.ts",
@@ -32706,12 +32879,73 @@
 					"dependencies": ["http/jsonrpc_errors.ts", "http/jsonrpc_helpers.ts"]
 				},
 				{
+					"path": "actions/transports_ws_auth_guard.ts",
+					"declarations": [
+						{
+							"name": "WS_DISCONNECT_EVENT_TYPES",
+							"kind": "variable",
+							"doc_comment": "Audit event types that trigger WebSocket socket closure.\n\n- `session_revoke` — close only the socket tied to the revoked session hash.\n- `token_revoke` — close only the socket(s) authenticated with the revoked `api_token.id`.\n- `session_revoke_all` / `token_revoke_all` / `password_change` — close every socket\n  for the affected account (all credentials invalidated).\n\n`permit_revoke` is intentionally omitted: the WS transport does not track\nper-connection role requirements, so role-scoped disconnection would\nrequire either closing all sockets (too aggressive) or new tracking\n(out of scope). Consumers that need it compose their own callback.",
+							"source_line": 33,
+							"type_signature": "ReadonlySet<string>"
+						},
+						{
+							"name": "create_ws_auth_guard",
+							"kind": "function",
+							"doc_comment": "Create an audit event handler that closes WebSocket connections on auth changes.\n\nIgnores `outcome === 'failure'` events — they carry attacker-controlled\nidentifiers (e.g. a `session_revoke` that the DB rejected still records\nthe submitted session_id), so reacting to them would let any authenticated\nuser close another user's socket by guessing a session hash or token id.",
+							"source_line": 53,
+							"type_signature": "(transport: BackendWebsocketTransport, log: Logger): (event: AuditLogEvent) => void",
+							"return_type": "(event: AuditLogEvent) => void",
+							"return_description": "an `on_audit_event` callback suitable for `CreateAppBackendOptions`",
+							"parameters": [
+								{
+									"name": "transport",
+									"type": "BackendWebsocketTransport",
+									"description": "the backend WebSocket transport to guard"
+								},
+								{
+									"name": "log",
+									"type": "Logger",
+									"description": "logger for disconnect events (info level on non-zero closures)"
+								}
+							]
+						}
+					],
+					"module_comment": "WebSocket auth guard — bridges audit events to `BackendWebsocketTransport`.\n\nMirror of `realtime/sse_auth_guard.ts` for the backend WebSocket transport.\nDispatches audit events to the right `close_sockets_for_*` method so\nconsumers do not re-implement the switch themselves.\n\nConsumers wire it as `on_audit_event` on their `AppBackend` (or compose\nit with other callbacks via `create_app_server`'s `audit_log_sse` path)."
+				},
+				{
 					"path": "actions/transports_ws_backend.ts",
 					"declarations": [
 						{
+							"name": "ConnectionIdentity",
+							"kind": "type",
+							"doc_comment": "Auth identity attached to a single WebSocket connection.\n\nOne record per connection. `token_hash` is set for cookie-session\nconnections, `api_token_id` for bearer (`api_token`) connections, and\nboth are null for daemon-token connections (reachable only via\n`BackendWebsocketTransport.close_sockets_for_account`).",
+							"source_line": 37,
+							"type_signature": "ConnectionIdentity",
+							"properties": [
+								{
+									"name": "token_hash",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Blake3 session token hash, or null for non-session credentials."
+								},
+								{
+									"name": "account_id",
+									"kind": "variable",
+									"type_signature": "Uuid",
+									"doc_comment": "Authenticated account id. Always set."
+								},
+								{
+									"name": "api_token_id",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "`api_token.id` for bearer-authenticated connections, else null."
+								}
+							]
+						},
+						{
 							"name": "BackendWebsocketTransport",
 							"kind": "class",
-							"source_line": 29,
+							"source_line": 46,
 							"extends": [],
 							"implements": ["Transport"],
 							"members": [
@@ -32723,8 +32957,8 @@
 								{
 									"name": "add_connection",
 									"kind": "function",
-									"doc_comment": "Add a new WebSocket connection with auth info.\nSession connections pass a token hash for targeted revocation.\nBearer token connections (api_token, daemon_token) pass null —\nthey're still reachable via .",
-									"type_signature": "(ws: WSContext<unknown>, token_hash: string | null, account_id: string & $brand<\"Uuid\">): string & $brand<\"Uuid\">",
+									"doc_comment": "Add a new WebSocket connection with auth info.\nSession connections pass a token hash for targeted revocation.\nBearer token connections (api_token) pass the `api_token.id` so the\nsocket can be closed when that specific token is revoked without\ntearing down the account's other sockets. Daemon-token connections\npass `null` for both — they're only reachable via\n`close_sockets_for_account`.",
+									"type_signature": "(ws: WSContext<unknown>, token_hash: string | null, account_id: string & $brand<\"Uuid\">, api_token_id?: string | null): string & $brand<\"Uuid\">",
 									"return_type": "string & $brand<\"Uuid\">",
 									"parameters": [
 										{
@@ -32738,6 +32972,11 @@
 										{
 											"name": "account_id",
 											"type": "string & $brand<\"Uuid\">"
+										},
+										{
+											"name": "api_token_id",
+											"type": "string | null",
+											"default_value": "null"
 										}
 									]
 								},
@@ -32779,6 +33018,20 @@
 										{
 											"name": "account_id",
 											"type": "string & $brand<\"Uuid\">"
+										}
+									]
+								},
+								{
+									"name": "close_sockets_for_token",
+									"kind": "function",
+									"doc_comment": "Close all sockets associated with a specific API token.\n\nUsed on `token_revoke` audit events so revoking one token doesn't\ntear down the account's session-authenticated sockets or other\ntokens' sockets.",
+									"type_signature": "(api_token_id: string): number",
+									"return_type": "number",
+									"return_description": "the number of sockets closed",
+									"parameters": [
+										{
+											"name": "api_token_id",
+											"type": "string"
 										}
 									]
 								},
@@ -32834,7 +33087,8 @@
 						"http/jsonrpc_errors.ts",
 						"http/jsonrpc_helpers.ts",
 						"uuid.ts"
-					]
+					],
+					"dependents": ["actions/register_action_ws.ts"]
 				},
 				{
 					"path": "actions/transports_ws.ts",
@@ -33422,10 +33676,24 @@
 							"type_signature": "10"
 						},
 						{
+							"name": "DEFAULT_LOGIN_FAIL_FLOOR_MS",
+							"kind": "variable",
+							"doc_comment": "Default minimum wall-clock time (ms) for a login failure (401) response.\n\nPicked to exceed the p99 of every 401 code path (Argon2id dominates at\n~100ms, plus DB + overhead). The handler races failure work against\n`sleep(floor + jitter)` via `await`, so observed response time = max(work,\ndelay). Found-vs-not-found and rate-limit-skipped-vs-not paths converge.\nOnly 401 is padded — 429 stays fast by design to keep rate-limit DoS\nhandling cheap.",
+							"source_line": 130,
+							"type_signature": "250"
+						},
+						{
+							"name": "DEFAULT_LOGIN_FAIL_JITTER_MS",
+							"kind": "variable",
+							"doc_comment": "Default uniform jitter window (±ms) layered on the floor.\n\nRandom jitter prevents a stable clamp point from leaking whenever a path\noccasionally exceeds the floor. `Math.random` is sufficient — we only need\nunpredictability of the exact delay, not cryptographic guarantees.",
+							"source_line": 139,
+							"type_signature": "25"
+						},
+						{
 							"name": "AuthSessionRouteOptions",
 							"kind": "type",
 							"doc_comment": "Shared options for route factories that create sessions and rate-limit by IP.\n\nExtended by `AccountRouteOptions` and `SignupRouteOptions`.\nConsumers can destructure these from `AppServerContext` once and spread into multiple factories.",
-							"source_line": 126,
+							"source_line": 153,
 							"type_signature": "AuthSessionRouteOptions",
 							"properties": [
 								{
@@ -33445,7 +33713,7 @@
 							"name": "AccountRouteOptions",
 							"kind": "type",
 							"doc_comment": "Per-factory configuration for account route specs.",
-							"source_line": 135,
+							"source_line": 162,
 							"type_signature": "AccountRouteOptions",
 							"extends": ["AuthSessionRouteOptions"],
 							"properties": [
@@ -33466,6 +33734,18 @@
 									"kind": "variable",
 									"type_signature": "number | null",
 									"doc_comment": "Max API tokens per account. Evicts oldest on creation. Default 10, `null` disables."
+								},
+								{
+									"name": "login_fail_floor_ms",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Minimum wall-clock time (ms) for login 401 responses. Set to `0` or a\nnegative number to disable (e.g., in tests). Default\n`DEFAULT_LOGIN_FAIL_FLOOR_MS`."
+								},
+								{
+									"name": "login_fail_jitter_ms",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Uniform jitter window (±ms) layered on the floor. Set to `0` to disable\njitter while keeping the floor. Default `DEFAULT_LOGIN_FAIL_JITTER_MS`."
 								}
 							]
 						},
@@ -33473,7 +33753,7 @@
 							"name": "create_account_route_specs",
 							"kind": "function",
 							"doc_comment": "Create account route specs for session-based auth.\n\nAll session/token revocation is account-scoped to prevent cross-account attacks.",
-							"source_line": 153,
+							"source_line": 191,
 							"type_signature": "(deps: RouteFactoryDeps, options: AccountRouteOptions): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "route specs (not yet applied to Hono)",
@@ -34642,7 +34922,7 @@
 							"name": "AuditLogRouteOptions",
 							"kind": "type",
 							"doc_comment": "Options for audit log route specs.",
-							"source_line": 38,
+							"source_line": 39,
 							"type_signature": "AuditLogRouteOptions",
 							"properties": [
 								{
@@ -34654,7 +34934,7 @@
 								{
 									"name": "stream",
 									"kind": "variable",
-									"type_signature": "{\n\t\tsubscribe: (\n\t\t\tstream: SseStream<SseNotification>,\n\t\t\tchannels?: Array<string>,\n\t\t\tidentity?: string | ReadonlyArray<string>,\n\t\t) => () => void;\n\t\tlog: Logger;\n\t}",
+									"type_signature": "{\n\t\tsubscribe: (stream: SseStream<SseNotification>, options?: SubscribeOptions) => () => void;\n\t\tlog: Logger;\n\t}",
 									"doc_comment": "When provided, includes an SSE route at `/audit-log/stream` for realtime audit events.\nThe `subscribe` function receives the stream, channels, and the subscriber's `account_id`\nas an identity key — enabling `close_by_identity()` for auth revocation."
 								}
 							]
@@ -34663,7 +34943,7 @@
 							"name": "create_audit_log_route_specs",
 							"kind": "function",
 							"doc_comment": "Create audit log and admin observability route specs.",
-							"source_line": 62,
+							"source_line": 59,
 							"type_signature": "(options?: AuditLogRouteOptions | undefined): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "route specs for audit log and admin session management",
@@ -34722,14 +35002,14 @@
 							"name": "AuditMetadataMap",
 							"kind": "type",
 							"doc_comment": "Mapped type of metadata shapes per event type, derived from Zod schemas.",
-							"source_line": 79,
+							"source_line": 81,
 							"type_signature": "AuditMetadataMap"
 						},
 						{
 							"name": "AuditLogEvent",
 							"kind": "type",
 							"doc_comment": "Audit log row from the database.",
-							"source_line": 84,
+							"source_line": 86,
 							"type_signature": "AuditLogEvent",
 							"properties": [
 								{
@@ -34788,7 +35068,7 @@
 							"name": "get_audit_metadata",
 							"kind": "function",
 							"doc_comment": "Narrow metadata type for a known event type.\n\nUse after checking `event_type` to get typed metadata access.",
-							"source_line": 102,
+							"source_line": 104,
 							"type_signature": "<T extends AuditEventType>(event: AuditLogEvent & { event_type: T; }): AuditMetadataMap[T] | null",
 							"return_type": "AuditMetadataMap[T] | null",
 							"parameters": [
@@ -34802,7 +35082,7 @@
 							"name": "AuditLogInput",
 							"kind": "type",
 							"doc_comment": "Input for creating an audit log entry.",
-							"source_line": 109,
+							"source_line": 111,
 							"type_signature": "AuditLogInput<T>",
 							"generic_params": [
 								{
@@ -34853,7 +35133,7 @@
 							"name": "AuditLogListOptions",
 							"kind": "type",
 							"doc_comment": "Options for listing audit log entries.",
-							"source_line": 120,
+							"source_line": 122,
 							"type_signature": "AuditLogListOptions",
 							"properties": [
 								{
@@ -34898,40 +35178,40 @@
 							"name": "AuditLogEventJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for client-safe audit log event.",
-							"source_line": 132,
+							"source_line": 134,
 							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 8 more ...; app_settings_update: \"app_settings_update\"; }>; ... 6 more ...; metadata: ZodNullable<...>..."
 						},
 						{
 							"name": "AuditLogEventWithUsernamesJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for audit log events with resolved usernames.",
-							"source_line": 147,
+							"source_line": 149,
 							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 8 more ...; app_settings_update: \"app_settings_update\"; }>; ... 8 more ...; target_username: ZodNullab..."
 						},
 						{
 							"name": "PermitHistoryEventJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for permit history events with resolved usernames.",
-							"source_line": 154,
+							"source_line": 156,
 							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 8 more ...; app_settings_update: \"app_settings_update\"; }>; ... 8 more ...; target_username: ZodNullab..."
 						},
 						{
 							"name": "AdminSessionJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for admin session listing (session + username).",
-							"source_line": 161,
+							"source_line": 163,
 							"type_signature": "ZodObject<{ id: ZodString; account_id: ZodString; created_at: ZodString; expires_at: ZodString; last_seen_at: ZodString; username: ZodString; }, $strict>"
 						},
 						{
 							"name": "AUDIT_LOG_SCHEMA",
 							"kind": "variable",
-							"source_line": 168,
+							"source_line": 170,
 							"type_signature": "\"\\nCREATE TABLE IF NOT EXISTS audit_log (\\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\\n  seq SERIAL NOT NULL,\\n  event_type TEXT NOT NULL,\\n  outcome TEXT NOT NULL DEFAULT 'success',\\n  actor_id UUID REFERENCES actor(id) ON DELETE SET NULL,\\n  account_id UUID REFERENCES account(id) ON DELETE SET NULL,\\n  targe..."
 						},
 						{
 							"name": "AUDIT_LOG_INDEXES",
 							"kind": "variable",
-							"source_line": 182,
+							"source_line": 184,
 							"type_signature": "string[]"
 						}
 					],
@@ -36059,7 +36339,7 @@
 						{
 							"name": "validate_keyring",
 							"kind": "function",
-							"doc_comment": "Validate key ring configuration.\n\nReturns an error when no keys are configured (undefined, empty string,\nor all-separator input like `'____'`), and for each key shorter than\n characters.",
+							"doc_comment": "Validate key ring configuration.\n\nReturns an error when no keys are configured (undefined, empty string,\nor all-separator input like `'____'`), and for each key shorter than\n`MIN_KEY_LENGTH` characters.",
 							"source_line": 109,
 							"type_signature": "(env_value: string | undefined): string[]",
 							"return_type": "string[]",
@@ -36209,7 +36489,8 @@
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
 						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts"
+						"testing/rpc_round_trip.ts",
+						"testing/sse_round_trip.ts"
 					]
 				},
 				{
@@ -36684,7 +36965,7 @@
 							"name": "require_auth",
 							"kind": "function",
 							"doc_comment": "Middleware that requires authentication.\n\nReturns 401 if no request context is set.",
-							"source_line": 163,
+							"source_line": 167,
 							"type_signature": "(c: Context<any, string, {}>, next: Next): Promise<void | Response>",
 							"return_type": "Promise<void | Response>",
 							"parameters": [
@@ -36702,7 +36983,7 @@
 							"name": "require_role",
 							"kind": "function",
 							"doc_comment": "Create middleware that requires a specific role.\n\nReturns 401 if unauthenticated, 403 if the role is missing.",
-							"source_line": 178,
+							"source_line": 182,
 							"type_signature": "(role: string): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -36717,7 +36998,7 @@
 							"name": "refresh_permits",
 							"kind": "function",
 							"doc_comment": "Reload active permits from the database, returning a new request context.\n\nUseful for long-lived WebSocket connections where permits may change\n(grant or revoke) during the connection lifetime. Call periodically\nor after receiving a revocation signal.\n\nReturns a new `RequestContext` with updated permits — the original\ncontext is not mutated, making concurrent calls safe.",
-							"source_line": 205,
+							"source_line": 209,
 							"type_signature": "(ctx: RequestContext, deps: QueryDeps): Promise<RequestContext>",
 							"return_type": "Promise<RequestContext>",
 							"return_description": "a new `RequestContext` with fresh permits",
@@ -36738,7 +37019,7 @@
 							"name": "build_request_context",
 							"kind": "function",
 							"doc_comment": "Build a full `RequestContext` from an account id.\n\nShared helper used by session, bearer, and daemon token middleware,\nas well as WebSocket upgrade handlers. Does the account → actor → permits\nlookup pipeline and returns the composed context, or `null` if\nthe account or actor is not found.",
-							"source_line": 225,
+							"source_line": 229,
 							"type_signature": "(deps: QueryDeps, account_id: string): Promise<RequestContext | null>",
 							"return_type": "Promise<RequestContext | null>",
 							"return_description": "a request context, or `null` if account/actor not found",
@@ -36767,6 +37048,7 @@
 					],
 					"dependents": [
 						"actions/action_rpc.ts",
+						"actions/register_action_ws.ts",
 						"auth/account_routes.ts",
 						"auth/admin_routes.ts",
 						"auth/app_settings_routes.ts",
@@ -36921,6 +37203,7 @@
 					],
 					"module_comment": "Role system — builtin roles, role options, and extensible role schema factory.\n\nDefines the authorization policy vocabulary: which roles exist, what\ncapabilities they require (daemon token, web grantability), and a factory\nfor extending with app-defined roles.",
 					"dependents": [
+						"actions/register_action_ws.ts",
 						"auth/admin_routes.ts",
 						"auth/bootstrap_account.ts",
 						"auth/daemon_token_middleware.ts",
@@ -36929,8 +37212,10 @@
 						"testing/app_server.ts",
 						"testing/audit_completeness.ts",
 						"testing/data_exposure.ts",
+						"testing/integration_helpers.ts",
 						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts"
+						"testing/rpc_round_trip.ts",
+						"testing/sse_round_trip.ts"
 					]
 				},
 				{
@@ -37717,6 +38002,7 @@
 					"module_comment": "Auth session database queries.\n\nServer-side sessions keyed by blake3 hash of the session token.\nThe cookie contains the raw token; the database stores only the hash.",
 					"dependencies": ["crypto.ts"],
 					"dependents": [
+						"actions/register_action_ws.ts",
 						"auth/account_routes.ts",
 						"auth/admin_routes.ts",
 						"auth/audit_log_routes.ts",
@@ -38921,7 +39207,8 @@
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
 						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts"
+						"testing/rpc_round_trip.ts",
+						"testing/sse_round_trip.ts"
 					]
 				},
 				{
@@ -39956,11 +40243,19 @@
 							"doc_comment": "Hono context variable name for the credential type.",
 							"source_line": 29,
 							"type_signature": "\"credential_type\""
+						},
+						{
+							"name": "AUTH_API_TOKEN_ID_KEY",
+							"kind": "variable",
+							"doc_comment": "Hono context variable name for the authenticated API token id.",
+							"source_line": 32,
+							"type_signature": "\"auth_api_token_id\""
 						}
 					],
 					"module_comment": "Hono context variable augmentation for fuz_app.\n\nCross-cutting shared vocabulary — defines the Hono `ContextVariableMap`\nvariables used by auth, http, server, and testing modules.\n\nImport this module once in your app to get type-safe access to\n`auth_session_id`, `request_context`, and `credential_type` on the Hono context.\n\nIn practice, this is auto-loaded by `app_server.ts` (side-effect import)\nand transitively by auth middleware modules that import `CREDENTIAL_TYPE_KEY`.\nConsumers don't need a manual import unless bypassing the standard server assembly.",
 					"dependents": [
 						"actions/action_rpc.ts",
+						"actions/register_action_ws.ts",
 						"auth/bearer_auth.ts",
 						"auth/daemon_token_middleware.ts",
 						"auth/request_context.ts",
@@ -40695,6 +40990,7 @@
 						"actions/action_event.ts",
 						"actions/action_peer.ts",
 						"actions/action_rpc.ts",
+						"actions/register_action_ws.ts",
 						"actions/request_tracker.svelte.ts",
 						"actions/transports_http.ts",
 						"actions/transports_ws.ts",
@@ -40947,6 +41243,7 @@
 					"dependents": [
 						"actions/action_event.ts",
 						"actions/action_peer.ts",
+						"actions/register_action_ws.ts",
 						"actions/transports_http.ts",
 						"actions/transports_ws.ts",
 						"actions/transports_ws_backend.ts"
@@ -41144,6 +41441,7 @@
 						"actions/action_event_data.ts",
 						"actions/action_peer.ts",
 						"actions/action_rpc.ts",
+						"actions/register_action_ws.ts",
 						"actions/request_tracker.svelte.ts",
 						"http/jsonrpc_errors.ts",
 						"http/jsonrpc_helpers.ts",
@@ -42733,16 +43031,16 @@
 						{
 							"name": "DISCONNECT_EVENT_TYPES",
 							"kind": "variable",
-							"doc_comment": "Audit event types that trigger SSE stream disconnection.\n\n`permit_revoke` requires the revoked role to match the guard's `required_role`.\n`session_revoke_all` and `password_change` close every stream for the target account.\n`session_revoke` closes only the stream tied to the specific revoked session\n(matched by the blake3 session hash in `event.metadata.session_id`) — closing\nall of a user's streams for a single-session revoke would be over-aggressive.",
-							"source_line": 33,
+							"doc_comment": "Audit event types that trigger SSE stream disconnection.\n\n`permit_revoke` requires the revoked role to match the guard's `required_role`\n(or is skipped entirely when `required_role` is `null` — useful for streams\nnot gated by any specific permit).\n`session_revoke_all` and `password_change` close every stream for the target account.\n`session_revoke` closes only the stream tied to the specific revoked session\n(matched by the blake3 session hash in `event.metadata.session_id`) — closing\nall of a user's streams for a single-session revoke would be over-aggressive.",
+							"source_line": 35,
 							"type_signature": "ReadonlySet<string>"
 						},
 						{
 							"name": "create_sse_auth_guard",
 							"kind": "function",
 							"doc_comment": "Create an audit event handler that closes SSE streams on auth changes.\n\nCloses streams when:\n- `permit_revoke` fires for the `required_role` targeting a connected subscriber\n- `session_revoke_all` targets a connected subscriber (consistent invalidation)\n- `password_change` targets a connected subscriber (sessions revoked implicitly)\n\nThe registry must use `account_id` as the identity key when subscribing\n(passed as the third argument to `registry.subscribe()`).",
-							"source_line": 56,
-							"type_signature": "<T>(registry: SubscriberRegistry<T>, required_role: string, log: Logger): (event: AuditLogEvent) => void",
+							"source_line": 60,
+							"type_signature": "<T>(registry: SubscriberRegistry<T>, required_role: string | null, log: Logger): (event: AuditLogEvent) => void",
 							"return_type": "(event: AuditLogEvent) => void",
 							"return_description": "an `on_audit_event` callback",
 							"parameters": [
@@ -42753,8 +43051,8 @@
 								},
 								{
 									"name": "required_role",
-									"type": "string",
-									"description": "the role that grants access to the SSE endpoint"
+									"type": "string | null",
+									"description": "the role that grants access to the SSE endpoint,\nor `null` to skip `permit_revoke` handling entirely (for streams not gated\nby a specific permit)"
 								},
 								{
 									"name": "log",
@@ -42767,13 +43065,13 @@
 							"name": "AuditLogSse",
 							"kind": "type",
 							"doc_comment": "Convenience factory result for audit log SSE.\n\nSatisfies `AuditLogRouteOptions['stream']` and provides the combined\n`on_audit_event` callback (broadcast + guard).",
-							"source_line": 111,
+							"source_line": 117,
 							"type_signature": "AuditLogSse",
 							"properties": [
 								{
 									"name": "subscribe",
 									"kind": "variable",
-									"type_signature": "(\n\t\tstream: SseStream<SseNotification>,\n\t\tchannels?: Array<string>,\n\t\tidentity?: string | ReadonlyArray<string>,\n\t) => () => void",
+									"type_signature": "(stream: SseStream<SseNotification>, options?: SubscribeOptions) => () => void",
 									"doc_comment": "Subscribe function — pass as part of `stream` option to `create_audit_log_route_specs`."
 								},
 								{
@@ -42800,26 +43098,26 @@
 							"name": "AUDIT_LOG_EVENT_SPECS",
 							"kind": "variable",
 							"doc_comment": "SSE event specs for audit log events.\n\nOne spec per `AUDIT_EVENT_TYPES` entry, all sharing the `AuditLogEventJson` params schema.\nPass to `create_app_server`'s `event_specs` for surface generation and DEV validation.",
-							"source_line": 156,
+							"source_line": 158,
 							"type_signature": "EventSpec[]"
 						},
 						{
-							"name": "AUDIT_LOG_SSE_MAX_PER_IDENTITY",
+							"name": "AUDIT_LOG_SSE_MAX_PER_SCOPE",
 							"kind": "variable",
-							"doc_comment": "Default max concurrent SSE subscribers per identity for the audit log.",
-							"source_line": 166,
-							"type_signature": "5"
+							"doc_comment": "Default max concurrent SSE subscribers per session scope for the audit log.\n\nThe audit log SSE subscribes with `scope = session_hash` and\n`groups = [account_id]`. Only `scope` is capped — so this limits tabs\nper session. An account's total streams across all sessions is bounded\ntransitively by `max_sessions × AUDIT_LOG_SSE_MAX_PER_SCOPE`. 10 tabs\nper session is a comfortable ceiling for normal use; consumers raising\nit above ~50 should consider server-side connection limits.",
+							"source_line": 177,
+							"type_signature": "10"
 						},
 						{
 							"name": "create_audit_log_sse",
 							"kind": "function",
-							"source_line": 168,
-							"type_signature": "(options: { role?: string | undefined; log: Logger; max_per_identity?: number | null | undefined; }): AuditLogSse",
+							"source_line": 179,
+							"type_signature": "(options: { role?: string | undefined; log: Logger; max_per_scope?: number | null | undefined; }): AuditLogSse",
 							"return_type": "AuditLogSse",
 							"parameters": [
 								{
 									"name": "options",
-									"type": "{ role?: string | undefined; log: Logger; max_per_identity?: number | null | undefined; }"
+									"type": "{ role?: string | undefined; log: Logger; max_per_scope?: number | null | undefined; }"
 								}
 							]
 						}
@@ -42974,7 +43272,7 @@
 						}
 					],
 					"module_comment": "SSE (Server-Sent Events) streaming utilities for Hono.\n\nProvides generic helpers for creating SSE response streams\nand a notification type aligned with JSON-RPC 2.0.",
-					"dependents": ["auth/audit_log_routes.ts"]
+					"dependents": ["auth/audit_log_routes.ts", "testing/sse_round_trip.ts"]
 				},
 				{
 					"path": "realtime/subscriber_registry.ts",
@@ -42982,7 +43280,7 @@
 						{
 							"name": "Subscriber",
 							"kind": "type",
-							"source_line": 16,
+							"source_line": 25,
 							"type_signature": "Subscriber<T>",
 							"generic_params": [
 								{
@@ -43002,10 +43300,16 @@
 									"doc_comment": "Channels this subscriber listens to. `null` means all channels."
 								},
 								{
-									"name": "identities",
+									"name": "scope",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Primary (capped) identity. `null` when none."
+								},
+								{
+									"name": "groups",
 									"kind": "variable",
 									"type_signature": "Set<string> | null",
-									"doc_comment": "Identity keys for targeted disconnection. `null` means no identity."
+									"doc_comment": "Grouping identities for `close_by_identity`. `null` when none."
 								}
 							]
 						},
@@ -43013,26 +43317,53 @@
 							"name": "SubscriberRegistryOptions",
 							"kind": "type",
 							"doc_comment": "Options for `SubscriberRegistry`.",
-							"source_line": 25,
+							"source_line": 36,
 							"type_signature": "SubscriberRegistryOptions",
 							"properties": [
 								{
-									"name": "max_per_identity",
+									"name": "max_per_scope",
 									"kind": "variable",
 									"type_signature": "number | null",
-									"doc_comment": "Max subscribers per identity. On subscribe, when the count of subscribers\nsharing any one of the new subscriber's identities reaches this limit,\nthe oldest matching subscriber(s) are closed before the new one is added.\n`null` (default) disables the cap."
+									"doc_comment": "Max subscribers sharing a single `scope`. On subscribe, when the count\nof subscribers with the same `scope` reaches this limit, the oldest\nmatching subscriber(s) are closed before the new one is added.\n`null` (default) disables the cap. `groups` identities are never capped."
+								}
+							]
+						},
+						{
+							"name": "SubscribeOptions",
+							"kind": "type",
+							"doc_comment": "Options for `SubscriberRegistry.subscribe`.",
+							"source_line": 47,
+							"type_signature": "SubscribeOptions",
+							"properties": [
+								{
+									"name": "channels",
+									"kind": "variable",
+									"type_signature": "ReadonlyArray<string>",
+									"doc_comment": "Channels to subscribe to. Empty/absent = all channels."
+								},
+								{
+									"name": "scope",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Primary (capped) identity — e.g., session hash. Subject to\n`max_per_scope` and matched by `close_by_identity`."
+								},
+								{
+									"name": "groups",
+									"kind": "variable",
+									"type_signature": "ReadonlyArray<string>",
+									"doc_comment": "Grouping identities — e.g., account id. Matched by `close_by_identity`\nbut NOT subject to the cap. Use for coarse-targeted close."
 								}
 							]
 						},
 						{
 							"name": "SubscriberRegistry",
 							"kind": "class",
-							"doc_comment": "Generic subscriber registry with channel-based filtering and identity-keyed disconnection.\n\nSubscribers connect with optional channel filters and optional identity keys.\nBroadcasts go to a specific channel and reach only matching subscribers.\n`close_by_identity` force-closes all subscribers whose identities contain the\ngiven key — use for auth revocation.",
+							"doc_comment": "Generic subscriber registry with channel-based filtering and identity-keyed disconnection.\n\nSubscribers connect with optional channel filters, a capped `scope`, and\nuncapped `groups`. Broadcasts go to a specific channel and reach only\nmatching subscribers. `close_by_identity` force-closes all subscribers\nwhose `scope` or `groups` contain the given key — use for auth revocation.",
 							"examples": [
-								"```ts\nconst registry = new SubscriberRegistry<SseNotification>();\n\n// subscriber connects (from SSE endpoint)\nconst unsubscribe = registry.subscribe(stream, ['runs']);\n\n// when a run changes\nregistry.broadcast('runs', {method: 'run_created', params: {run}});\n\n// subscriber disconnects\nunsubscribe();\n```",
-								"```ts\n// identity-keyed subscription with multiple scopes\nconst unsubscribe = registry.subscribe(stream, ['audit_log'], [account_id, session_hash]);\n\n// coarse — close all of a user's streams on role revocation\nregistry.close_by_identity(account_id);\n\n// fine — close just the stream tied to a specific session\nregistry.close_by_identity(session_hash);\n```"
+								"```ts\nconst registry = new SubscriberRegistry<SseNotification>();\n\n// subscriber connects (from SSE endpoint)\nconst unsubscribe = registry.subscribe(stream, {channels: ['runs']});\n\n// when a run changes\nregistry.broadcast('runs', {method: 'run_created', params: {run}});\n\n// subscriber disconnects\nunsubscribe();\n```",
+								"```ts\n// scope = session hash (capped), groups = [account id] (close-only)\nconst unsubscribe = registry.subscribe(stream, {\n  channels: ['audit_log'],\n  scope: session_hash,\n  groups: [account_id],\n});\n\n// coarse — close all of a user's streams on role revocation\nregistry.close_by_identity(account_id);\n\n// fine — close just the stream(s) tied to a specific session\nregistry.close_by_identity(session_hash);\n```"
 							],
-							"source_line": 69,
+							"source_line": 100,
 							"generic_params": [
 								{
 									"name": "T"
@@ -43055,7 +43386,7 @@
 									"name": "subscribe",
 									"kind": "function",
 									"doc_comment": "Add a subscriber.",
-									"type_signature": "(stream: SseStream<T>, channels?: string[] | undefined, identity?: string | readonly string[] | undefined): () => void",
+									"type_signature": "(stream: SseStream<T>, options?: SubscribeOptions | undefined): () => void",
 									"return_type": "() => void",
 									"return_description": "unsubscribe function",
 									"parameters": [
@@ -43065,16 +43396,10 @@
 											"description": "SSE stream to send data to"
 										},
 										{
-											"name": "channels",
-											"type": "string[] | undefined",
+											"name": "options",
+											"type": "SubscribeOptions | undefined",
 											"optional": true,
-											"description": "channels to subscribe to (`undefined` or empty = all channels)"
-										},
-										{
-											"name": "identity",
-											"type": "string | readonly string[] | undefined",
-											"optional": true,
-											"description": "identity key(s) for targeted disconnection. Pass a single string\nfor a single identity, or an array for multi-scope subscriptions (e.g.\n`[account_id, session_hash]`)."
+											"description": "channel filter and identity slots (scope + groups)"
 										}
 									]
 								},
@@ -43100,7 +43425,7 @@
 								{
 									"name": "close_by_identity",
 									"kind": "function",
-									"doc_comment": "Force-close all subscribers whose identities contain the given key.\n\nCloses each matching stream and removes the subscriber from the registry.\nUse for auth revocation — when a user's permissions change, close their\nSSE connections so they must reconnect and re-authenticate.",
+									"doc_comment": "Force-close all subscribers whose `scope` or `groups` match the given key.\n\nCloses each matching stream and removes the subscriber from the registry.\nUse for auth revocation — when a user's permissions change, close their\nSSE connections so they must reconnect and re-authenticate.",
 									"type_signature": "(identity: string): number",
 									"return_type": "number",
 									"return_description": "the number of subscribers closed",
@@ -43108,14 +43433,14 @@
 										{
 											"name": "identity",
 											"type": "string",
-											"description": "the identity key to match"
+											"description": "the identity key to match (checked against scope and groups)"
 										}
 									]
 								}
 							]
 						}
 					],
-					"module_comment": "Generic subscriber registry for broadcasting to SSE clients.\n\nSupports channel-based filtering — subscribers connect with optional\nchannel filters, and broadcasts reach only matching subscribers.\nOptional identity keys enable force-closing subscribers by identity\n(e.g., close all streams for a specific account when their permissions change).\nSubscribers may declare multiple identities so a single stream can be\ntargeted by coarse (account_id) or fine (session hash) scopes.",
+					"module_comment": "Generic subscriber registry for broadcasting to SSE clients.\n\nSupports channel-based filtering — subscribers connect with optional\nchannel filters, and broadcasts reach only matching subscribers.\n\nTwo identity slots enable both targeted disconnection and per-scope cap\nenforcement:\n- `scope` — a single capped identity (e.g., session hash). Subject to\n  the per-scope cap and matched by `close_by_identity`. Use for the\n  narrowest identity the subscriber belongs to.\n- `groups` — any number of uncapped identities (e.g., account id).\n  Matched by `close_by_identity` but not subject to any cap. Use for\n  coarser scopes a stream should be reachable by.\n\nThe split keeps \"tabs-per-session\" cap semantics sane when a stream also\ncarries a broader identity for coarse close — the broader identity\ndoesn't cap across sessions.",
 					"dependents": ["realtime/sse_auth_guard.ts"]
 				},
 				{
@@ -44343,7 +44668,7 @@
 							"name": "validate_nginx_config",
 							"kind": "function",
 							"doc_comment": "Validate an nginx config template string for security properties.\n\nChecks for required security headers, Authorization stripping in `/api`\nblocks, and the nginx `add_header` inheritance gotcha. Designed for\nfuz_app consumer deploy configs (tx.ts `NGINX_CONFIG` constants).\n\nLimitations: string pattern matching, not a real nginx parser. Catches\ncommon omissions in fuz_app deploy configs but won't catch all possible\nmisconfigurations.",
-							"source_line": 97,
+							"source_line": 129,
 							"type_signature": "(config: string): NginxValidationResult",
 							"return_type": "NginxValidationResult",
 							"return_description": "validation result with ok status, warnings, and errors",
@@ -44641,21 +44966,21 @@
 							"name": "stub_password_deps",
 							"kind": "variable",
 							"doc_comment": "Fast password stub for tests that don't exercise login/password flows.\n\nHashes are deterministic (`stub_hash_<password>`) and verify correctly,\nso auth bootstrap and session creation work without Argon2 overhead.",
-							"source_line": 61,
+							"source_line": 62,
 							"type_signature": "PasswordHashDeps"
 						},
 						{
 							"name": "TEST_COOKIE_SECRET",
 							"kind": "variable",
 							"doc_comment": "64-hex-char test cookie secret — deterministic, never used in production.",
-							"source_line": 68,
+							"source_line": 69,
 							"type_signature": "string"
 						},
 						{
 							"name": "BootstrapTestAccountOptions",
 							"kind": "type",
 							"doc_comment": "Options for `bootstrap_test_account`.",
-							"source_line": 80,
+							"source_line": 81,
 							"type_signature": "BootstrapTestAccountOptions",
 							"properties": [
 								{
@@ -44699,7 +45024,7 @@
 							"name": "bootstrap_test_account",
 							"kind": "function",
 							"doc_comment": "Bootstrap a test account with credentials.\n\nCreates an account with actor, grants roles, creates an API token,\ncreates a session, and signs a session cookie. Shared by\n`create_test_app_server` and `TestApp.create_account`.",
-							"source_line": 97,
+							"source_line": 98,
 							"type_signature": "(options: BootstrapTestAccountOptions): Promise<{ account: { id: string; username: string; }; actor: { id: string; }; api_token: string; session_cookie: string; }>",
 							"return_type": "Promise<{ account: { id: string; username: string; }; actor: { id: string; }; api_token: string; session_cookie: string; }>",
 							"parameters": [
@@ -44713,7 +45038,7 @@
 							"name": "TestAppServer",
 							"kind": "type",
 							"doc_comment": "An `AppBackend` with a bootstrapped account, API token, and session cookie.",
-							"source_line": 150,
+							"source_line": 151,
 							"type_signature": "TestAppServer",
 							"extends": ["AppBackend"],
 							"properties": [
@@ -44759,7 +45084,7 @@
 							"name": "TestAppServerOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `create_test_app_server`.",
-							"source_line": 168,
+							"source_line": 169,
 							"type_signature": "TestAppServerOptions",
 							"properties": [
 								{
@@ -44803,13 +45128,19 @@
 									"kind": "variable",
 									"type_signature": "Array<string>",
 									"doc_comment": "Roles to grant. Default: `[ROLE_KEEPER]`."
+								},
+								{
+									"name": "on_audit_event",
+									"kind": "variable",
+									"type_signature": "(event: AuditLogEvent) => void",
+									"doc_comment": "Backend audit event callback — wired into `backend.deps.on_audit_event`.\nWhen `audit_log_sse: true` is passed to `create_app_server`, this runs\nafter the audit SSE broadcast (composed downstream by app_server).\nUse to wire consumer SSE auth guards in tests.\nDefault: no-op."
 								}
 							]
 						},
 						{
 							"name": "create_test_app_server",
 							"kind": "function",
-							"source_line": 204,
+							"source_line": 213,
 							"type_signature": "(options: TestAppServerOptions): Promise<TestAppServer>",
 							"return_type": "Promise<TestAppServer>",
 							"parameters": [
@@ -44823,7 +45154,7 @@
 							"name": "CreateTestAppOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `create_test_app`.",
-							"source_line": 297,
+							"source_line": 307,
 							"type_signature": "CreateTestAppOptions",
 							"extends": ["TestAppServerOptions"],
 							"properties": [
@@ -44845,7 +45176,7 @@
 							"name": "TestAccount",
 							"kind": "type",
 							"doc_comment": "A bootstrapped test account with credentials.",
-							"source_line": 309,
+							"source_line": 319,
 							"type_signature": "TestAccount",
 							"properties": [
 								{
@@ -44888,7 +45219,7 @@
 							"name": "TestApp",
 							"kind": "type",
 							"doc_comment": "A fully assembled test app — Hono app + backend + helpers.",
-							"source_line": 325,
+							"source_line": 335,
 							"type_signature": "TestApp",
 							"properties": [
 								{
@@ -44952,7 +45283,7 @@
 							"name": "create_test_app",
 							"kind": "function",
 							"doc_comment": "Create a fully assembled test app with a Hono server, middleware, and routes.\n\nCombines `create_test_app_server` + `create_app_server` into a single call.\nDisables rate limiters and logging by default (test-friendly).\n\nA fresh Hono app is created each call — middleware closures bind to the\nserver's deps (db, keyring), so reuse across servers is unsafe.\nThe expensive resource (PGlite WASM) is cached separately in `test_db.ts`.",
-							"source_line": 360,
+							"source_line": 370,
 							"type_signature": "(options: CreateTestAppOptions): Promise<TestApp>",
 							"return_type": "Promise<TestApp>",
 							"return_description": "a `TestApp` ready for HTTP testing",
@@ -44989,7 +45320,8 @@
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
 						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts"
+						"testing/rpc_round_trip.ts",
+						"testing/sse_round_trip.ts"
 					]
 				},
 				{
@@ -45018,6 +45350,7 @@
 						"testing/rpc_helpers.ts",
 						"testing/rpc_round_trip.ts",
 						"testing/schema_generators.ts",
+						"testing/sse_round_trip.ts",
 						"testing/standard.ts",
 						"testing/stubs.ts",
 						"testing/surface_invariants.ts"
@@ -45530,7 +45863,7 @@
 							"name": "collect_json_schema_property_names",
 							"kind": "function",
 							"doc_comment": "Recursively collect all property names from a JSON Schema.\n\nWalks `properties`, `items`, `allOf`/`anyOf`/`oneOf`, and\n`additionalProperties` to find every declared field name at any depth.",
-							"source_line": 46,
+							"source_line": 47,
 							"type_signature": "(schema: unknown): Set<string>",
 							"return_type": "Set<string>",
 							"return_description": "set of all property names found",
@@ -45546,7 +45879,7 @@
 							"name": "assert_output_schemas_no_sensitive_fields",
 							"kind": "function",
 							"doc_comment": "Assert that no output schema in the surface contains sensitive field names.",
-							"source_line": 79,
+							"source_line": 80,
 							"type_signature": "(surface: AppSurface, sensitive_fields?: readonly string[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -45567,7 +45900,7 @@
 							"name": "assert_non_admin_schemas_no_admin_fields",
 							"kind": "function",
 							"doc_comment": "Assert that non-admin route output schemas don't contain admin-only fields.",
-							"source_line": 101,
+							"source_line": 102,
 							"type_signature": "(surface: AppSurface, admin_only_fields?: readonly string[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -45588,7 +45921,7 @@
 							"name": "DataExposureTestOptions",
 							"kind": "type",
 							"doc_comment": "Options for `describe_data_exposure_tests`.",
-							"source_line": 123,
+							"source_line": 124,
 							"type_signature": "DataExposureTestOptions",
 							"properties": [
 								{
@@ -45645,7 +45978,7 @@
 							"name": "describe_data_exposure_tests",
 							"kind": "function",
 							"doc_comment": "Composable data exposure test suite.\n\nThree test groups:\n1. Schema-level — walk JSON Schema output/error schemas for sensitive field names\n2. Runtime — fire real requests and check response bodies against blocklists\n3. Cross-privilege — admin routes return 403 for non-admin, error responses\n   contain no sensitive fields",
-							"source_line": 155,
+							"source_line": 156,
 							"type_signature": "(options: DataExposureTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -45855,7 +46188,8 @@
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
 						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts"
+						"testing/rpc_round_trip.ts",
+						"testing/sse_round_trip.ts"
 					]
 				},
 				{
@@ -45929,23 +46263,88 @@
 					"path": "testing/error_coverage.ts",
 					"declarations": [
 						{
+							"name": "extract_declared_error_codes",
+							"kind": "function",
+							"doc_comment": "Extract declared error code values from an error response schema.\n\nRecognizes schemas shaped like `z.object({error: z.literal(...)})` or\n`z.object({error: z.enum([...])})` (incl. `looseObject`/`strictObject`).\nReturns the set of declared code values, or `null` if the schema doesn't\nexpose a literal/enum `error` field (e.g., bare `ApiError` with `z.string()`).\n\nUsed by coverage reporting to split a single declared status into per-code\nrows when the route's error schema names specific codes.",
+							"source_line": 34,
+							"type_signature": "(schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): string[] | null",
+							"return_type": "string[] | null",
+							"parameters": [
+								{
+									"name": "schema",
+									"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>"
+								}
+							]
+						},
+						{
+							"name": "UncoveredEntry",
+							"kind": "type",
+							"doc_comment": "Uncovered entry — either a status-level row (no `code`) or a specific-code row.",
+							"source_line": 48,
+							"type_signature": "UncoveredEntry",
+							"properties": [
+								{
+									"name": "method",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "status",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "code",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Declared code value missing, when the status's error schema names specific codes."
+								}
+							]
+						},
+						{
+							"name": "CoverageFilterOptions",
+							"kind": "type",
+							"doc_comment": "Options controlling which routes/statuses are considered for coverage.",
+							"source_line": 57,
+							"type_signature": "CoverageFilterOptions",
+							"properties": [
+								{
+									"name": "ignore_routes",
+									"kind": "variable",
+									"type_signature": "Array<string>",
+									"doc_comment": "Routes to skip, in `'METHOD /path'` format."
+								},
+								{
+									"name": "ignore_statuses",
+									"kind": "variable",
+									"type_signature": "Array<number>",
+									"doc_comment": "HTTP status codes to skip."
+								}
+							]
+						},
+						{
 							"name": "ErrorCoverageCollector",
 							"kind": "class",
-							"doc_comment": "Tracks which route × status combinations have been exercised in tests.\n\nUse `record()` to log an observed status, or `assert_and_record()` to\ncombine response validation with tracking. After all tests, call\n`uncovered()` to find declared error statuses never exercised.",
-							"source_line": 27,
+							"doc_comment": "Tracks which route × status (and route × status × code) combinations have\nbeen exercised in tests.\n\nUse `record()` to log an observed status (optionally with the body's `error`\ncode), or `assert_and_record()` to combine response validation with tracking\n(auto-extracts `body.error` from the response when present).\nAfter all tests, call `uncovered()` to find declared error paths never\nexercised.\n\nAn observation recorded without a code still satisfies \"any-code\" coverage\nrequirements for the same status — i.e., if a caller records just the status,\nall declared codes for that status are considered covered. Per-code tracking\nis additive: callers who know the body's `error` value should pass it to get\nprecise per-code gap reporting on routes with literal/enum error schemas.",
+							"source_line": 131,
 							"members": [
 								{
 									"name": "observed",
 									"kind": "variable",
 									"modifiers": ["readonly"],
-									"doc_comment": "Observed route × status keys: `\"METHOD /spec-path:STATUS\"`.",
+									"doc_comment": "Observed keys: `\"METHOD /spec-path:STATUS\"` or `\"METHOD /spec-path:STATUS:CODE\"`.\n\nBoth shapes coexist — the code-less key marks the status as covered at any\ncode; a code-bearing key adds per-code precision.",
 									"type_signature": "Set<string>"
 								},
 								{
 									"name": "record",
 									"kind": "function",
-									"doc_comment": "Record an observed error status for a route.\n\nResolves the concrete request path back to the spec template path\n(e.g., `/api/accounts/abc` → `/api/accounts/:id`).",
-									"type_signature": "(route_specs: RouteSpec[], method: string, path: string, status: number): void",
+									"doc_comment": "Record an observed error status (optionally with the body's `error` code) for a route.\n\nResolves the concrete request path back to the spec template path\n(e.g., `/api/accounts/abc` → `/api/accounts/:id`). When `code` is provided,\nit is stored alongside the status for per-code coverage tracking.",
+									"type_signature": "(route_specs: RouteSpec[], method: string, path: string, status: number, code?: string | undefined): void",
 									"return_type": "void",
 									"parameters": [
 										{
@@ -45967,14 +46366,20 @@
 											"name": "status",
 											"type": "number",
 											"description": "observed HTTP status code"
+										},
+										{
+											"name": "code",
+											"type": "string | undefined",
+											"optional": true,
+											"description": "observed body `error` code (pass when the route's error\nschema declares specific codes via `z.literal` or `z.enum`)"
 										}
 									]
 								},
 								{
 									"name": "assert_and_record",
 									"kind": "function",
-									"doc_comment": "Validate a response against its route spec and record the status.\n\nWraps `assert_response_matches_spec` and records the status code.",
-									"type_signature": "(route_specs: RouteSpec[], method: string, path: string, response: Response): Promise<void>",
+									"doc_comment": "Validate a response against its route spec and record the status.\n\nWraps `assert_response_matches_spec` and records the status code. For\nerror responses, auto-extracts `body.error` from the JSON body (via a\ncloned response, so the original stream stays usable) and records it\nfor per-code coverage. Pass an explicit `code` to override the\nauto-extracted value or when the body was already consumed.",
+									"type_signature": "(route_specs: RouteSpec[], method: string, path: string, response: Response, code?: string | undefined): Promise<void>",
 									"return_type": "Promise<void>",
 									"parameters": [
 										{
@@ -45996,21 +46401,33 @@
 											"name": "response",
 											"type": "Response",
 											"description": "the Response to validate and record"
+										},
+										{
+											"name": "code",
+											"type": "string | undefined",
+											"optional": true,
+											"description": "observed body `error` code (override; if omitted and the\nresponse body is a JSON object with a string `error` field, that value\nis auto-extracted)"
 										}
 									]
 								},
 								{
 									"name": "uncovered",
 									"kind": "function",
-									"doc_comment": "Find declared error statuses that were never observed.\n\nComputes the declared set from `merge_error_schemas` for each route spec,\nthen subtracts observed keys.",
-									"type_signature": "(route_specs: RouteSpec[]): { method: string; path: string; status: number; }[]",
-									"return_type": "{ method: string; path: string; status: number; }[]",
-									"return_description": "uncovered entries with method, path, and status",
+									"doc_comment": "Find declared error paths that were never observed.\n\nComputes the declared set from `merge_error_schemas` for each route spec.\nFor statuses whose error schema names specific codes (via `z.literal` or\n`z.enum`), reports per-code rows; otherwise reports one row per status.\nA status-only observation (no code) satisfies all declared codes for that\nstatus — the \"any-code\" rule.",
+									"type_signature": "(route_specs: RouteSpec[], options?: CoverageFilterOptions | undefined): UncoveredEntry[]",
+									"return_type": "UncoveredEntry[]",
+									"return_description": "uncovered entries with method, path, status, and optional code",
 									"parameters": [
 										{
 											"name": "route_specs",
 											"type": "RouteSpec[]",
 											"description": "route specs to check coverage against"
+										},
+										{
+											"name": "options",
+											"type": "CoverageFilterOptions | undefined",
+											"optional": true,
+											"description": "exclusion configuration (skip routes or statuses)"
 										}
 									]
 								}
@@ -46020,41 +46437,30 @@
 							"name": "DEFAULT_INTEGRATION_ERROR_COVERAGE",
 							"kind": "variable",
 							"doc_comment": "Default minimum error coverage threshold for the standard integration\nand admin test suites. Conservative — not all error paths are exercisable\nin the composable suites. Consumers should increase as their test suites mature.",
-							"source_line": 99,
+							"source_line": 234,
 							"type_signature": "0.2"
 						},
 						{
 							"name": "ErrorCoverageOptions",
 							"kind": "type",
 							"doc_comment": "Options for `assert_error_coverage`.",
-							"source_line": 102,
+							"source_line": 237,
 							"type_signature": "ErrorCoverageOptions",
+							"extends": ["CoverageFilterOptions"],
 							"properties": [
 								{
 									"name": "min_coverage",
 									"kind": "variable",
 									"type_signature": "number",
 									"doc_comment": "Minimum coverage ratio (0–1). Default `0` (informational only)."
-								},
-								{
-									"name": "ignore_routes",
-									"kind": "variable",
-									"type_signature": "Array<string>",
-									"doc_comment": "Routes to skip, in `'METHOD /path'` format."
-								},
-								{
-									"name": "ignore_statuses",
-									"kind": "variable",
-									"type_signature": "Array<number>",
-									"doc_comment": "HTTP status codes to skip."
 								}
 							]
 						},
 						{
 							"name": "assert_error_coverage",
 							"kind": "function",
-							"doc_comment": "Assert error coverage meets a minimum threshold.\n\nComputes the ratio of exercised error statuses to total declared error\nstatuses. When `min_coverage` is 0 (default), logs coverage info without\nfailing. When > 0, fails if coverage is below the threshold.",
-							"source_line": 122,
+							"doc_comment": "Assert error coverage meets a minimum threshold.\n\nComputes the ratio of exercised error paths to total declared error paths.\nFor routes whose status error schema names specific codes (`z.literal` or\n`z.enum`), each declared code counts as one coverage path; for schemas\nwithout declared codes (`ApiError`/`z.string()`), the status counts as one\npath. A status-only observation covers all declared codes for that status\n(the \"any-code\" rule).\n\nWhen `min_coverage` is 0 (default), logs coverage info without failing.\nWhen > 0, fails if coverage is below the threshold.",
+							"source_line": 270,
 							"type_signature": "(collector: ErrorCoverageCollector, route_specs: RouteSpec[], options?: ErrorCoverageOptions | undefined): void",
 							"return_type": "void",
 							"parameters": [
@@ -46077,7 +46483,7 @@
 							]
 						}
 					],
-					"module_comment": "Error reachability coverage tracking.\n\nTracks which declared error statuses are actually exercised in tests.\n`ErrorCoverageCollector` records status codes observed during test runs,\nthen `assert_error_coverage` compares against declared error schemas\nto find uncovered error paths.",
+					"module_comment": "Error reachability coverage tracking.\n\nTracks which declared error statuses (and specific error codes) are\nactually exercised in tests. `ErrorCoverageCollector` records status\ncodes (optionally with body `error` codes) observed during test runs,\nthen `assert_error_coverage` compares against declared error schemas\nto find uncovered error paths — reporting per-code when the declared\nschema is a literal or enum, per-status otherwise.",
 					"dependencies": [
 						"http/schema_helpers.ts",
 						"testing/assert_dev_env.ts",
@@ -46092,7 +46498,7 @@
 							"name": "find_route_spec",
 							"kind": "function",
 							"doc_comment": "Find a route spec matching the given method and path.\n\nSupports both exact matches and parameterized paths (`:param` segments).",
-							"source_line": 26,
+							"source_line": 28,
 							"type_signature": "(specs: RouteSpec[], method: string, path: string): RouteSpec | undefined",
 							"return_type": "RouteSpec | undefined",
 							"return_description": "matching route spec, or `undefined`",
@@ -46118,7 +46524,7 @@
 							"name": "find_auth_route",
 							"kind": "function",
 							"doc_comment": "Find an auth route by suffix and method.\n\nUseful for discovering login/logout/verify/revoke paths regardless\nof consumer prefix (`/api/account/login`, `/api/auth/login`, etc.).",
-							"source_line": 56,
+							"source_line": 58,
 							"type_signature": "(specs: RouteSpec[], suffix: string, method: RouteMethod): RouteSpec | undefined",
 							"return_type": "RouteSpec | undefined",
 							"return_description": "matching route spec, or `undefined`",
@@ -46144,7 +46550,7 @@
 							"name": "assert_response_matches_spec",
 							"kind": "function",
 							"doc_comment": "Validate a response body against the route spec's declared schemas.\n\nFor 2xx responses, validates against `spec.output`.\nFor error responses, validates against the merged error schema for that status code.\nThrows with details on mismatch.",
-							"source_line": 76,
+							"source_line": 78,
 							"type_signature": "(route_specs: RouteSpec[], method: string, path: string, response: Response): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -46174,7 +46580,7 @@
 							"name": "create_expired_test_cookie",
 							"kind": "function",
 							"doc_comment": "Create an expired test cookie — validly signed but with an expiry timestamp in 1970.",
-							"source_line": 141,
+							"source_line": 143,
 							"type_signature": "(keyring: Keyring, session_options: SessionOptions<string>): Promise<string>",
 							"return_type": "Promise<string>",
 							"return_description": "signed cookie value with long-past expiry",
@@ -46195,7 +46601,7 @@
 							"name": "check_error_response_fields",
 							"kind": "function",
 							"doc_comment": "Assert that an error response body contains no unexpected fields.\n\nError schemas use `z.looseObject` (intentional — multiple producers), but\ntest responses should be checked for fields that could leak information.\nFlags any field not in the known-safe set.",
-							"source_line": 197,
+							"source_line": 199,
 							"type_signature": "(body: Record<string, unknown>): string[]",
 							"return_type": "string[]",
 							"return_description": "array of unexpected field names (empty = clean)",
@@ -46211,7 +46617,7 @@
 							"name": "assert_no_error_info_leakage",
 							"kind": "function",
 							"doc_comment": "Assert that an error response contains no leaky field values.\n\nChecks both field names and string values for patterns indicating\nstack traces, SQL, or internal paths.",
-							"source_line": 216,
+							"source_line": 218,
 							"type_signature": "(body: Record<string, unknown>, context: string): void",
 							"return_type": "void",
 							"parameters": [
@@ -46231,7 +46637,7 @@
 							"name": "assert_rate_limit_retry_after_header",
 							"kind": "function",
 							"doc_comment": "Assert that a 429 response includes a valid `Retry-After` header\nmatching the JSON body's `retry_after` field.",
-							"source_line": 246,
+							"source_line": 248,
 							"type_signature": "(response: Response, body: { retry_after: number; }): void",
 							"return_type": "void",
 							"parameters": [
@@ -46251,21 +46657,21 @@
 							"name": "SENSITIVE_FIELD_BLOCKLIST",
 							"kind": "variable",
 							"doc_comment": "Field names that must never appear in any HTTP response body.",
-							"source_line": 264,
+							"source_line": 266,
 							"type_signature": "readonly string[]"
 						},
 						{
 							"name": "ADMIN_ONLY_FIELD_BLOCKLIST",
 							"kind": "variable",
 							"doc_comment": "Field names that must not appear in non-admin HTTP response bodies.",
-							"source_line": 267,
+							"source_line": 269,
 							"type_signature": "readonly string[]"
 						},
 						{
 							"name": "collect_json_keys_recursive",
 							"kind": "function",
 							"doc_comment": "Recursively collect all key names from a parsed JSON value.\n\nWalks objects and arrays to find every property name at any nesting depth.",
-							"source_line": 277,
+							"source_line": 279,
 							"type_signature": "(value: unknown): Set<string>",
 							"return_type": "Set<string>",
 							"return_description": "set of all key names found",
@@ -46281,7 +46687,7 @@
 							"name": "assert_no_sensitive_fields_in_json",
 							"kind": "function",
 							"doc_comment": "Assert that a parsed JSON body contains no fields from the given blocklist.",
-							"source_line": 301,
+							"source_line": 303,
 							"type_signature": "(body: unknown, blocklist: readonly string[], context: string): void",
 							"return_type": "void",
 							"parameters": [
@@ -46301,10 +46707,41 @@
 									"description": "description for error messages"
 								}
 							]
+						},
+						{
+							"name": "pick_auth_headers",
+							"kind": "function",
+							"doc_comment": "Pick request headers matching a route spec's auth requirement.\n\nMaps `RouteAuth` onto a test account's credentials:\n- `none` — origin headers only\n- `authenticated` — the authed account's session cookie\n- `role: admin` — the admin account's session cookie\n- `role: <other>` — the test app's bootstrapped keeper session\n- `keeper` — the test app's daemon token",
+							"source_line": 329,
+							"type_signature": "(spec: RouteSpec, test_app: TestApp, authed_account: TestAccount, admin_account: TestAccount): Record<string, string>",
+							"return_type": "Record<string, string>",
+							"parameters": [
+								{
+									"name": "spec",
+									"type": "RouteSpec",
+									"description": "route spec to inspect"
+								},
+								{
+									"name": "test_app",
+									"type": "TestApp",
+									"description": "the assembled test app (for bootstrapped credentials)"
+								},
+								{
+									"name": "authed_account",
+									"type": "TestAccount",
+									"description": "an account with no roles (for `authenticated` auth)"
+								},
+								{
+									"name": "admin_account",
+									"type": "TestAccount",
+									"description": "an account with `admin` role (for role-gated routes)"
+								}
+							]
 						}
 					],
 					"module_comment": "Integration test helpers — route lookup, response validation, and cookie utilities.",
 					"dependencies": [
+						"auth/role_schema.ts",
 						"auth/session_cookie.ts",
 						"http/schema_helpers.ts",
 						"testing/assert_dev_env.ts"
@@ -46316,7 +46753,8 @@
 						"testing/error_coverage.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts"
+						"testing/round_trip.ts",
+						"testing/sse_round_trip.ts"
 					]
 				},
 				{
@@ -46477,6 +46915,12 @@
 									"doc_comment": "If true, assert `REQUEST_CONTEXT_KEY` and `CREDENTIAL_TYPE_KEY` were set to api_token values."
 								},
 								{
+									"name": "expected_api_token_id",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "If set, assert `AUTH_API_TOKEN_ID_KEY` was set to this value after a successful bearer auth."
+								},
+								{
 									"name": "assert_context_preserved",
 									"kind": "variable",
 									"type_signature": "boolean",
@@ -46494,7 +46938,7 @@
 							"name": "BearerAuthMocks",
 							"kind": "type",
 							"doc_comment": "Mocks bundle returned by `create_bearer_auth_mocks`.",
-							"source_line": 86,
+							"source_line": 88,
 							"type_signature": "BearerAuthMocks",
 							"properties": [
 								{
@@ -46523,7 +46967,7 @@
 							"name": "create_bearer_auth_mocks",
 							"kind": "function",
 							"doc_comment": "Create mock dependencies for `create_bearer_auth_middleware`, configured per test case.\n\nConfigures the module-level mocks for `query_validate_api_token`,\n`query_account_by_id`, `query_actor_by_account`, and `query_permit_find_active_for_actor`\nso each test case controls return values independently.",
-							"source_line": 106,
+							"source_line": 108,
 							"type_signature": "(tc: BearerAuthTestOptions): BearerAuthMocks",
 							"return_type": "BearerAuthMocks",
 							"return_description": "mocks bundle with spy references",
@@ -46539,14 +46983,14 @@
 							"name": "TEST_CLIENT_IP",
 							"kind": "variable",
 							"doc_comment": "Default client IP set by the proxy stub in test apps.",
-							"source_line": 129,
+							"source_line": 131,
 							"type_signature": "\"127.0.0.1\""
 						},
 						{
 							"name": "create_bearer_auth_test_app",
 							"kind": "function",
 							"doc_comment": "Create a Hono app wired with `create_bearer_auth_middleware` using mocked deps.\n\nThe route handler at `/api/test` returns the resolved context in the response body,\nenabling assertions on `REQUEST_CONTEXT_KEY` and `CREDENTIAL_TYPE_KEY`.",
-							"source_line": 141,
+							"source_line": 143,
 							"type_signature": "(tc: BearerAuthTestOptions, ip_rate_limiter?: RateLimiter | null): { app: Hono<BlankEnv, BlankSchema, \"/\">; mocks: BearerAuthMocks; }",
 							"return_type": "{ app: Hono<BlankEnv, BlankSchema, \"/\">; mocks: BearerAuthMocks; }",
 							"return_description": "the app and mocks bundle",
@@ -46568,7 +47012,7 @@
 							"name": "describe_bearer_auth_cases",
 							"kind": "function",
 							"doc_comment": "Run a table of bearer auth middleware test cases.\n\nGenerates one `test()` per case inside a `describe()` block.",
-							"source_line": 200,
+							"source_line": 204,
 							"type_signature": "(suite_name: string, cases: BearerAuthTestCase[], ip_rate_limiter?: RateLimiter | null): void",
 							"return_type": "void",
 							"parameters": [
@@ -46594,14 +47038,14 @@
 							"name": "TEST_MIDDLEWARE_PATH",
 							"kind": "variable",
 							"doc_comment": "Path used by the echo route in `create_test_middleware_stack_app`.",
-							"source_line": 267,
+							"source_line": 279,
 							"type_signature": "\"/api/test\""
 						},
 						{
 							"name": "TestMiddlewareStackOptions",
 							"kind": "type",
 							"doc_comment": "Options for `create_test_middleware_stack_app`.",
-							"source_line": 270,
+							"source_line": 282,
 							"type_signature": "TestMiddlewareStackOptions",
 							"properties": [
 								{
@@ -46634,7 +47078,7 @@
 							"name": "TestMiddlewareStackApp",
 							"kind": "type",
 							"doc_comment": "Return type of `create_test_middleware_stack_app`.",
-							"source_line": 282,
+							"source_line": 294,
 							"type_signature": "TestMiddlewareStackApp",
 							"properties": [
 								{
@@ -46668,7 +47112,7 @@
 							"name": "create_test_middleware_stack_app",
 							"kind": "function",
 							"doc_comment": "Create a Hono app with real proxy + origin + bearer middleware for integration testing.\n\nAll DB queries return undefined (no real database needed).\nThe echo route at `TEST_MIDDLEWARE_PATH` returns `{ok, client_ip, has_context}`.",
-							"source_line": 299,
+							"source_line": 311,
 							"type_signature": "(options?: TestMiddlewareStackOptions | undefined): TestMiddlewareStackApp",
 							"return_type": "TestMiddlewareStackApp",
 							"return_description": "the app and mock spies (reconfigure via `mockImplementation` for valid-token paths)",
@@ -46774,7 +47218,7 @@
 							"name": "RoundTripTestOptions",
 							"kind": "type",
 							"doc_comment": "Options for `describe_round_trip_validation`.",
-							"source_line": 28,
+							"source_line": 29,
 							"type_signature": "RoundTripTestOptions",
 							"properties": [
 								{
@@ -46819,7 +47263,7 @@
 							"name": "describe_round_trip_validation",
 							"kind": "function",
 							"doc_comment": "Run schema-driven round-trip validation tests.\n\nFor each route:\n1. Resolve URL with valid params\n2. Generate a valid request body (or use override)\n3. Pick auth headers matching the route's auth requirement\n4. Fire the request and validate the response against declared schemas\n\nSSE routes are skipped (Content-Type `text/event-stream`).\nRoutes returning non-2xx with valid input are still validated against\ntheir declared error schemas.",
-							"source_line": 60,
+							"source_line": 61,
 							"type_signature": "(options: RoundTripTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -46840,7 +47284,8 @@
 						"testing/assert_dev_env.ts",
 						"testing/db.ts",
 						"testing/integration_helpers.ts",
-						"testing/schema_generators.ts"
+						"testing/schema_generators.ts",
+						"testing/stubs.ts"
 					]
 				},
 				{
@@ -47166,6 +47611,115 @@
 					]
 				},
 				{
+					"path": "testing/sse_round_trip.ts",
+					"declarations": [
+						{
+							"name": "SseRouteTestSpec",
+							"kind": "type",
+							"doc_comment": "Config for a single SSE route under test.",
+							"source_line": 34,
+							"type_signature": "SseRouteTestSpec",
+							"properties": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Full HTTP path of the SSE endpoint (e.g., `'/api/tx/subscribe'`)."
+								},
+								{
+									"name": "trigger",
+									"kind": "variable",
+									"type_signature": "(ctx: {test_app: TestApp; account: TestAccount}) => Promise<void>",
+									"doc_comment": "Fire an event matching one of the declared `event_specs` that should\nreach the open stream. Called after the `: connected` comment is observed.\nThe triggered frame must be a JSON-serializable `{method, params}` payload."
+								},
+								{
+									"name": "event_specs",
+									"kind": "variable",
+									"type_signature": "Array<EventSpec>",
+									"doc_comment": "Event specs to validate the triggered payload against. When omitted,\nthe payload is only asserted to be well-formed `{method, params}`."
+								},
+								{
+									"name": "assert_closes_on_revoke",
+									"kind": "variable",
+									"type_signature": "boolean",
+									"doc_comment": "Whether to assert the stream closes after `session_revoke_all`.\nDefault `true`. Set `false` for endpoints that don't wire a close-on-revoke\nguard (leaves a TODO to fix, rather than silently passing)."
+								}
+							]
+						},
+						{
+							"name": "SseRouteTestOptions",
+							"kind": "type",
+							"doc_comment": "Options for `describe_sse_route_tests`.",
+							"source_line": 57,
+							"type_signature": "SseRouteTestOptions",
+							"properties": [
+								{
+									"name": "session_options",
+									"kind": "variable",
+									"type_signature": "SessionOptions<string>",
+									"doc_comment": "Session config for cookie-based auth."
+								},
+								{
+									"name": "create_route_specs",
+									"kind": "variable",
+									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
+									"doc_comment": "Route spec factory — same shape as production."
+								},
+								{
+									"name": "app_options",
+									"kind": "variable",
+									"type_signature": "Partial<\n\t\tOmit<AppServerOptions, 'backend' | 'session_options' | 'create_route_specs'>\n\t>",
+									"doc_comment": "Optional overrides for `AppServerOptions`."
+								},
+								{
+									"name": "db_factories",
+									"kind": "variable",
+									"type_signature": "Array<DbFactory>",
+									"doc_comment": "Database factories to run tests against. Default: pglite only."
+								},
+								{
+									"name": "on_audit_event",
+									"kind": "variable",
+									"type_signature": "(event: AuditLogEvent) => void",
+									"doc_comment": "Backend audit event callback — threaded to `create_test_app_server`.\nUse to wire a close-on-revoke guard for consumer SSE registries\n(e.g., via `create_sse_auth_guard`) so `session_revoke_all` actually\ncloses the tested streams."
+								},
+								{
+									"name": "routes",
+									"kind": "variable",
+									"type_signature": "Array<SseRouteTestSpec>",
+									"doc_comment": "SSE routes to exercise."
+								}
+							]
+						},
+						{
+							"name": "describe_sse_route_tests",
+							"kind": "function",
+							"doc_comment": "Run SSE route validation tests.\n\nFor each route: opens an authenticated SSE connection, asserts the\nconnected comment, fires the trigger, validates the resulting payload,\nthen asserts close-on-revoke (unless opted out).",
+							"source_line": 208,
+							"type_signature": "(options: SseRouteTestOptions): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "SseRouteTestOptions",
+									"description": "SSE test configuration"
+								}
+							]
+						}
+					],
+					"module_comment": "Schema-driven SSE route validation test suite.\n\nComplements `describe_round_trip_validation` (which skips SSE routes).\nFor each configured SSE route:\n1. Open the stream with matching auth.\n2. Assert the `: connected` comment is emitted.\n3. Fire `trigger()` — expect one `data: {...}` frame.\n4. Validate the payload as `{method, params}` against declared `EventSpec`s.\n5. Fire `session_revoke_all` for the account and assert the stream closes\n   (when `assert_closes_on_revoke !== false`).",
+					"dependencies": [
+						"auth/migrations.ts",
+						"auth/role_schema.ts",
+						"db/migrate.ts",
+						"realtime/sse.ts",
+						"testing/app_server.ts",
+						"testing/assert_dev_env.ts",
+						"testing/db.ts",
+						"testing/integration_helpers.ts"
+					]
+				},
+				{
 					"path": "testing/standard.ts",
 					"declarations": [
 						{
@@ -47442,7 +47996,7 @@
 						"server/env.ts",
 						"testing/assert_dev_env.ts"
 					],
-					"dependents": ["testing/auth_apps.ts"]
+					"dependents": ["testing/auth_apps.ts", "testing/round_trip.ts"]
 				},
 				{
 					"path": "testing/surface_invariants.ts",
@@ -48918,7 +49472,7 @@
 							]
 						}
 					],
-					"module_comment": "Reactive form state for controlling when field errors appear and focusing invalid fields.\n\nTracks per-field `touched` state (set on blur via delegated `focusout`) and form-level\n`attempted` state (set on submit attempt). Errors show after a field is blurred or\nafter a submit attempt, avoiding premature validation while the user is still typing.\n\nThe {@link FormState.form | form} attachment also handles Enter key advancing\nbetween focusable elements.\n\nAll trackable inputs must have a `name` attribute — an error is thrown in dev\nif an input without `name` loses focus.\n\n@example\n```svelte\n<script>\n  const form_state = new FormState();\n  let username = $state.raw('');\n  const username_valid = $derived(Username.safeParse(username).success);\n  const can_submit = $derived(username.trim() && username_valid);\n\n  const handle_submit = async () => {\n    form_state.attempt();\n    if (!can_submit) {\n      if (!username.trim() || !username_valid) form_state.focus('username');\n      return;\n    }\n    // submit...\n  };\n</script>\n\n<form {@attach form_state.form()} onsubmit={(e) => { e.preventDefault(); void handle_submit(); }}>\n  <input name=\"username\" bind:value={username} />\n  {#if form_state.show('username') && username && !username_valid}\n    <p>error message</p>\n  {/if}\n  <PendingButton onclick={handle_submit}>submit</PendingButton>\n</form>\n```",
+					"module_comment": "Reactive form state for controlling when field errors appear and focusing invalid fields.\n\nTracks per-field `touched` state (set on blur via delegated `focusout`) and form-level\n`attempted` state (set on submit attempt). Errors show after a field is blurred or\nafter a submit attempt, avoiding premature validation while the user is still typing.\n\nThe `FormState.form` attachment also handles Enter key advancing\nbetween focusable elements.\n\nAll trackable inputs must have a `name` attribute — an error is thrown in dev\nif an input without `name` loses focus.\n\n@example\n```svelte\n<script>\n  const form_state = new FormState();\n  let username = $state.raw('');\n  const username_valid = $derived(Username.safeParse(username).success);\n  const can_submit = $derived(username.trim() && username_valid);\n\n  const handle_submit = async () => {\n    form_state.attempt();\n    if (!can_submit) {\n      if (!username.trim() || !username_valid) form_state.focus('username');\n      return;\n    }\n    // submit...\n  };\n</script>\n\n<form {@attach form_state.form()} onsubmit={(e) => { e.preventDefault(); void handle_submit(); }}>\n  <input name=\"username\" bind:value={username} />\n  {#if form_state.show('username') && username && !username_valid}\n    <p>error message</p>\n  {/if}\n  <PendingButton onclick={handle_submit}>submit</PendingButton>\n</form>\n```",
 					"dependents": ["ui/BootstrapForm.svelte", "ui/LoginForm.svelte", "ui/SignupForm.svelte"]
 				},
 				{
@@ -57962,7 +58516,7 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.3.16",
-				"@fuzdev/fuz_app": "^0.12.0",
+				"@fuzdev/fuz_app": "^0.15.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
@@ -58059,40 +58613,40 @@
 							"kind": "type",
 							"doc_comment": "All method types combined.",
 							"source_line": 16,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 23 more ...; workspace_changed: \"workspace_changed\"; }>"
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 25 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "ActionSpecs",
 							"kind": "type",
 							"doc_comment": "Action specifications indexed by method name.\nThese represent the complete action spec definitions.",
-							"source_line": 54,
-							"type_signature": "{ readonly ping: { method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }; ... 28 more ...; readonly workspace_changed: { ....."
+							"source_line": 56,
+							"type_signature": "{ readonly ping: { method: string; kind: \"request_response\"; initiator: \"both\"; auth: \"public\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; async: true; description: string; }; ... 30 more ...; readonly _test_notification: { ...."
 						},
 						{
 							"name": "action_specs",
 							"kind": "variable",
-							"source_line": 119,
-							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; ..."
+							"source_line": 125,
+							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
 						},
 						{
 							"name": "ActionInputs",
 							"kind": "type",
 							"doc_comment": "Action parameter schemas indexed by method name.\nThese represent the input data for each action,\ne.g. JSON-RPC request/notification params and local call arguments.",
-							"source_line": 126,
-							"type_signature": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 26 more ...; readonly workspac..."
+							"source_line": 132,
+							"type_signature": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 28 more ...; readonly _test_no..."
 						},
 						{
 							"name": "ActionOutputs",
 							"kind": "type",
 							"doc_comment": "Action result schemas indexed by method name.\nThese represent the output data for each action,\ne.g. JSON-RPC response results and local call return values.",
-							"source_line": 196,
+							"source_line": 206,
 							"type_signature": "{ readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; readonly session_load: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>; provider_status: ZodAr..."
 						},
 						{
 							"name": "ActionEventDatas",
 							"kind": "type",
 							"doc_comment": "Action event data types indexed by method name.\nThese represent the full discriminated union of all possible states\nfor each action's event data, properly typed with inputs and outputs.",
-							"source_line": 266,
+							"source_line": 280,
 							"type_signature": "ActionEventDatas",
 							"properties": [
 								{
@@ -58244,6 +58798,16 @@
 									"name": "workspace_changed",
 									"kind": "variable",
 									"type_signature": "ActionEventRemoteNotificationData<\n\t\t'workspace_changed',\n\t\tActionInputs['workspace_changed']\n\t>"
+								},
+								{
+									"name": "_test_emit_notifications",
+									"kind": "variable",
+									"type_signature": "ActionEventRequestResponseData<\n\t\t'_test_emit_notifications',\n\t\tActionInputs['_test_emit_notifications'],\n\t\tActionOutputs['_test_emit_notifications']\n\t>"
+								},
+								{
+									"name": "_test_notification",
+									"kind": "variable",
+									"type_signature": "ActionEventRemoteNotificationData<\n\t\t'_test_notification',\n\t\tActionInputs['_test_notification']\n\t>"
 								}
 							]
 						}
@@ -58270,48 +58834,48 @@
 							"kind": "type",
 							"doc_comment": "All action method names. Request/response actions have two types per method.",
 							"source_line": 11,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 23 more ...; workspace_changed: \"workspace_changed\"; }>"
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 25 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "RequestResponseActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all request_response actions.",
-							"source_line": 48,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; completion_create: \"completion_create\"; ... 16 more ...; workspace_list: \"workspace_list\"; }>"
+							"source_line": 50,
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; completion_create: \"completion_create\"; ... 17 more ...; _test_emit_notifications: \"_test_emit_notifications\"; }>"
 						},
 						{
 							"name": "RemoteNotificationActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all remote_notification actions.",
-							"source_line": 78,
-							"type_signature": "ZodEnum<{ filer_change: \"filer_change\"; completion_progress: \"completion_progress\"; ollama_progress: \"ollama_progress\"; terminal_data: \"terminal_data\"; terminal_exited: \"terminal_exited\"; workspace_changed: \"workspace_changed\"; }>"
+							"source_line": 81,
+							"type_signature": "ZodEnum<{ filer_change: \"filer_change\"; completion_progress: \"completion_progress\"; ollama_progress: \"ollama_progress\"; terminal_data: \"terminal_data\"; terminal_exited: \"terminal_exited\"; workspace_changed: \"workspace_changed\"; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "LocalCallActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all local_call actions.",
-							"source_line": 91,
+							"source_line": 95,
 							"type_signature": "ZodEnum<{ toggle_main_menu: \"toggle_main_menu\"; }>"
 						},
 						{
 							"name": "FrontendActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all actions that may be handled on the client.",
-							"source_line": 97,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 23 more ...; workspace_changed: \"workspace_changed\"; }>"
+							"source_line": 101,
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 25 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "BackendActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all actions that may be handled on the server.",
-							"source_line": 134,
-							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 22 more ...; workspace_changed: \"workspace_changed\"; }>"
+							"source_line": 140,
+							"type_signature": "ZodEnum<{ ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 24 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "ActionsApi",
 							"kind": "type",
 							"doc_comment": "Interface for action dispatch functions.\nAll async methods return Result types for type-safe error handling.\nSync methods (like toggle_main_menu) return values directly.",
-							"source_line": 172,
+							"source_line": 180,
 							"type_signature": "ActionsApi",
 							"properties": [
 								{
@@ -58463,6 +59027,16 @@
 									"name": "workspace_changed",
 									"kind": "variable",
 									"type_signature": "(\n\t\tinput: ActionInputs['workspace_changed'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_changed']}, {error: JsonrpcErrorObject}>>"
+								},
+								{
+									"name": "_test_emit_notifications",
+									"kind": "variable",
+									"type_signature": "(\n\t\tinput: ActionInputs['_test_emit_notifications'],\n\t) => Promise<\n\t\tResult<{value: ActionOutputs['_test_emit_notifications']}, {error: JsonrpcErrorObject}>\n\t>"
+								},
+								{
+									"name": "_test_notification",
+									"kind": "variable",
+									"type_signature": "(\n\t\tinput: ActionInputs['_test_notification'],\n\t) => Promise<Result<{value: ActionOutputs['_test_notification']}, {error: JsonrpcErrorObject}>>"
 								}
 							]
 						}
@@ -58517,146 +59091,158 @@
 						{
 							"name": "completion_progress_action_spec",
 							"kind": "variable",
-							"source_line": 148,
+							"source_line": 149,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ chunk: ZodOptional<ZodObject<{ model: ZodOptional<ZodString>; created_at: ZodOptional<...>; done: ZodOptional<...>; message: ZodOptional<...>; }, $loose>>; _meta: ZodOptional<...>; }, $strict>; out..."
 						},
 						{
 							"name": "ollama_progress_action_spec",
 							"kind": "variable",
-							"source_line": 189,
+							"source_line": 190,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ status: ZodString; digest: ZodOptional<ZodString>; total: ZodOptional<...>; completed: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "toggle_main_menu_action_spec",
 							"kind": "variable",
-							"source_line": 206,
+							"source_line": 207,
 							"type_signature": "{ method: string; kind: \"local_call\"; initiator: \"frontend\"; auth: null; side_effects: true; input: ZodOptional<ZodObject<{ show: ZodOptional<ZodBoolean>; }, $strict>>; output: ZodObject<...>; async: false; description: string; }"
 						},
 						{
 							"name": "ollama_list_action_spec",
 							"kind": "variable",
-							"source_line": 218,
+							"source_line": 219,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<...>; }, $loose>, ZodNull]>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_ps_action_spec",
 							"kind": "variable",
-							"source_line": 230,
+							"source_line": 231,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodUnion<readonly [ZodObject<{ models: ZodArray<...>; }, $loose>, ZodNull]>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_show_action_spec",
 							"kind": "variable",
-							"source_line": 242,
+							"source_line": 243,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodObject<{ model: ZodString; system: ZodOptional<ZodString>; template: ZodOptional<...>; options: ZodOptional<...>; }, $loose>; output: ZodUnion<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_pull_action_spec",
 							"kind": "variable",
-							"source_line": 254,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; insecure: ZodOptional<ZodBoolean>; stream: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
+							"source_line": 255,
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; insecure: ZodOptional<ZodBoolean>; stream: ZodOptional<...>; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; streams: string; description: st..."
 						},
 						{
 							"name": "ollama_delete_action_spec",
 							"kind": "variable",
-							"source_line": 270,
+							"source_line": 272,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_copy_action_spec",
 							"kind": "variable",
-							"source_line": 282,
+							"source_line": 284,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ source: ZodString; destination: ZodString; }, $loose>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "ollama_create_action_spec",
 							"kind": "variable",
-							"source_line": 294,
-							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; from: ZodOptional<ZodString>; ... 8 more ...; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
+							"source_line": 296,
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; from: ZodOptional<ZodString>; ... 8 more ...; _meta: ZodOptional<...>; }, $strict>; output: ZodOptional<...>; async: true; streams: string; description: string; }"
 						},
 						{
 							"name": "ollama_unload_action_spec",
 							"kind": "variable",
-							"source_line": 310,
+							"source_line": 313,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ model: ZodString; }, $strict>; output: ZodOptional<...>; async: true; description: string; }"
 						},
 						{
 							"name": "provider_load_status_action_spec",
 							"kind": "variable",
-							"source_line": 324,
+							"source_line": 327,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; reload: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; descript..."
 						},
 						{
 							"name": "provider_update_api_key_action_spec",
 							"kind": "variable",
-							"source_line": 341,
+							"source_line": 344,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"keeper\"; side_effects: true; input: ZodObject<{ provider_name: ZodEnum<{ ollama: \"ollama\"; claude: \"claude\"; chatgpt: \"chatgpt\"; gemini: \"gemini\"; }>; api_key: ZodString; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_create_action_spec",
 							"kind": "variable",
-							"source_line": 358,
+							"source_line": 361,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ command: ZodString; args: ZodDefault<ZodArray<ZodString>>; cwd: ZodOptional<...>; preset_id: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_data_send_action_spec",
 							"kind": "variable",
-							"source_line": 377,
+							"source_line": 380,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; data: ZodString; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_data_action_spec",
 							"kind": "variable",
-							"source_line": 392,
+							"source_line": 395,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; data: ZodString; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_resize_action_spec",
 							"kind": "variable",
-							"source_line": 407,
+							"source_line": 410,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; cols: ZodNumber; rows: ZodNumber; }, $strict>; output: ZodNull; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_close_action_spec",
 							"kind": "variable",
-							"source_line": 423,
+							"source_line": 426,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; signal: ZodOptional<...>; }, $strict>; output: ZodObject<...>; async: true; description: string; }"
 						},
 						{
 							"name": "terminal_exited_action_spec",
 							"kind": "variable",
-							"source_line": 440,
+							"source_line": 443,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ terminal_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; exit_code: ZodNullable<...>; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "workspace_open_action_spec",
 							"kind": "variable",
-							"source_line": 455,
+							"source_line": 458,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodObject<...>; async: true; descriptio..."
 						},
 						{
 							"name": "workspace_close_action_spec",
 							"kind": "variable",
-							"source_line": 472,
+							"source_line": 475,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: true; input: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; }, $strict>; output: ZodNull; async: true; description: stri..."
 						},
 						{
 							"name": "workspace_list_action_spec",
 							"kind": "variable",
-							"source_line": 486,
+							"source_line": 489,
 							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodOptional<ZodVoid>; output: ZodObject<{ workspaces: ZodArray<...>; }, $strict>; async: true; description: string; }"
 						},
 						{
 							"name": "workspace_changed_action_spec",
 							"kind": "variable",
-							"source_line": 500,
+							"source_line": 503,
 							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ type: ZodEnum<{ open: \"open\"; close: \"close\"; }>; workspace: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodS..."
+						},
+						{
+							"name": "_test_emit_notifications_action_spec",
+							"kind": "variable",
+							"source_line": 523,
+							"type_signature": "{ method: string; kind: \"request_response\"; initiator: \"frontend\"; auth: \"authenticated\"; side_effects: false; input: ZodObject<{ count: ZodNumber; }, $strict>; output: ZodObject<...>; async: true; streams: string; description: string; }"
+						},
+						{
+							"name": "_test_notification_action_spec",
+							"kind": "variable",
+							"source_line": 541,
+							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: false; input: ZodObject<{ index: ZodNumber; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "all_action_specs",
 							"kind": "variable",
-							"source_line": 515,
-							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; ..."
+							"source_line": 556,
+							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
 						}
 					],
 					"dependencies": [
@@ -58690,7 +59276,7 @@
 							"name": "ActionJsonInput",
 							"kind": "type",
 							"source_line": 20,
-							"type_signature": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_..."
+							"type_signature": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event..."
 						},
 						{
 							"name": "ActionOptions",
@@ -58946,7 +59532,7 @@
 							"name": "ActionsJsonInput",
 							"kind": "type",
 							"source_line": 18,
-							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 24 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; actio..."
+							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 26 more ... | \"_test_notification\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; acti..."
 						},
 						{
 							"name": "ActionsOptions",
@@ -58996,12 +59582,12 @@
 									"name": "set_json",
 									"kind": "function",
 									"doc_comment": "Override to populate the indexed collection after parsing JSON.",
-									"type_signature": "(value?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 24 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }[] | undefined; } | undefined): void",
+									"type_signature": "(value?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 26 more ... | \"_test_notification\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }[] | undefined; } | undefined): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "value",
-											"type": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 24 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; actio...",
+											"type": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | ... 26 more ... | \"_test_notification\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; acti...",
 											"optional": true
 										}
 									]
@@ -59021,12 +59607,12 @@
 								{
 									"name": "add_from_json",
 									"kind": "function",
-									"type_signature": "(action_json: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }): Action",
+									"type_signature": "(action_json: { method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_data?: { ...; } | undefined; }): Action",
 									"return_type": "Action",
 									"parameters": [
 										{
 											"name": "action_json",
-											"type": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event_..."
+											"type": "{ method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; action_event..."
 										}
 									]
 								}
@@ -64680,6 +65266,16 @@
 									"name": "workspace_changed",
 									"kind": "variable",
 									"type_signature": "{\n\t\treceive?: (\n\t\t\taction_event: TypedActionEvent<'workspace_changed', 'receive', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "_test_emit_notifications",
+									"kind": "variable",
+									"type_signature": "{\n\t\tsend_request?: (\n\t\t\taction_event: TypedActionEvent<'_test_emit_notifications', 'send_request', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_response?: (\n\t\t\taction_event: TypedActionEvent<'_test_emit_notifications', 'receive_response', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\tsend_error?: (\n\t\t\taction_event: TypedActionEvent<'_test_emit_notifications', 'send_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t\treceive_error?: (\n\t\t\taction_event: TypedActionEvent<'_test_emit_notifications', 'receive_error', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
+								},
+								{
+									"name": "_test_notification",
+									"kind": "variable",
+									"type_signature": "{\n\t\treceive?: (\n\t\t\taction_event: TypedActionEvent<'_test_notification', 'receive', 'handling'>,\n\t\t) => void | Promise<void>;\n\t}"
 								}
 							]
 						}
@@ -65059,8 +65655,8 @@
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
-									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; async: true; } | { ...; } | { ...; } | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }...",
+									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
 									"parameters": [
 										{
 											"name": "method",
@@ -65071,8 +65667,8 @@
 								{
 									"name": "lookup_action_input_schema",
 									"kind": "function",
-									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; ... 27 more ...; readonly workspace_changed: ZodObject<...>; }[TMethod] | undefined",
-									"return_type": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 26 more ...; readonly workspac...",
+									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; ... 29 more ...; readonly _test_notification: ZodObject<...>; }[TMethod] | undefined",
+									"return_type": "{ readonly ping: ZodOptional<ZodVoid>; readonly session_load: ZodOptional<ZodVoid>; readonly filer_change: ZodObject<{ change: ZodObject<{ type: ZodEnum<{ add: \"add\"; change: \"change\"; delete: \"delete\"; }>; path: $ZodBranded<...>; }, $strict>; disknode: ZodObject<...>; }, $strict>; ... 28 more ...; readonly _test_no...",
 									"parameters": [
 										{
 											"name": "method",
@@ -65083,7 +65679,7 @@
 								{
 									"name": "lookup_action_output_schema",
 									"kind": "function",
-									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 28 more ...; readonly workspace_changed: ZodVoid; }[TMethod] | undefined",
+									"type_signature": "<TMethod extends ActionMethod>(method: TMethod): { readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 30 more ...; readonly _test_notification: ZodVoid; }[TMethod] | undefined",
 									"return_type": "{ readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; readonly session_load: ZodObject<{ data: ZodObject<{ zzz_dir: $ZodBranded<ZodPipe<...>, \"DiskfileDirectoryPath\", \"out\">; scoped_dirs: ZodReadonly<...>; files: ZodArray<...>; provider_status: ZodArray<...>; workspaces: ZodAr...",
 									"parameters": [
 										{
@@ -65095,12 +65691,12 @@
 								{
 									"name": "is_valid_phase_for_method",
 									"kind": "function",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\", phase: \"send_request\" | ... 7 more ... | \"execute\"): boolean",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\", phase: \"send_request\" | ... 7 more ... | \"execute\"): boolean",
 									"return_type": "boolean",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\""
 										},
 										{
 											"name": "phase",
@@ -65762,12 +66358,12 @@
 							"name": "get_glyph_for_action_method",
 							"kind": "function",
 							"source_line": 101,
-							"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"): string",
+							"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\"): string",
 							"return_type": "string",
 							"parameters": [
 								{
 									"name": "method",
-									"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\""
+									"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\""
 								}
 							]
 						},
@@ -71538,7 +72134,7 @@
 									"name": "add_schema",
 									"kind": "function",
 									"doc_comment": "Add a schema to the appropriate registries.",
-									"type_signature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; ... 5 more ...; async: true; } | { ...; } | { ...; }): void",
+									"type_signature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; ... 6 more ...; streams?: string | undefined; } | { ...; } | { ...; }): void",
 									"return_type": "void",
 									"parameters": [
 										{
@@ -71547,7 +72143,7 @@
 										},
 										{
 											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; async: true; } | { ...; } | { ...; }"
+											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
 										}
 									]
 								},
@@ -71581,12 +72177,12 @@
 									"name": "get_action_spec",
 									"kind": "function",
 									"doc_comment": "Get an action specification by method name.",
-									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }...",
+									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\"): { ...; } | ... 2 more ... | undefined",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
 									"parameters": [
 										{
 											"name": "method",
-											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 20 more ... | \"workspace_changed\""
+											"type": "\"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 22 more ... | \"_test_notification\""
 										}
 									]
 								},
@@ -71703,23 +72299,14 @@
 						{
 							"name": "BackendActionsApi",
 							"kind": "type",
-							"source_line": 25,
+							"doc_comment": "Broadcast-style notifications from the backend to all connected clients.\nRequest-scoped streaming (completion_progress, ollama_progress) goes through\n`ctx.notify` instead — it's socket-scoped, not a broadcast.",
+							"source_line": 28,
 							"type_signature": "BackendActionsApi",
 							"properties": [
 								{
 									"name": "filer_change",
 									"kind": "variable",
 									"type_signature": "(input: ActionInputs['filer_change']) => Promise<void>"
-								},
-								{
-									"name": "completion_progress",
-									"kind": "variable",
-									"type_signature": "(input: ActionInputs['completion_progress']) => Promise<void>"
-								},
-								{
-									"name": "ollama_progress",
-									"kind": "variable",
-									"type_signature": "(input: ActionInputs['ollama_progress']) => Promise<void>"
 								},
 								{
 									"name": "terminal_data",
@@ -71741,7 +72328,7 @@
 						{
 							"name": "create_backend_actions_api",
 							"kind": "function",
-							"source_line": 75,
+							"source_line": 76,
 							"type_signature": "(backend: Backend): BackendActionsApi",
 							"return_type": "BackendActionsApi",
 							"parameters": [
@@ -71755,7 +72342,7 @@
 							"name": "handle_filer_change",
 							"kind": "function",
 							"doc_comment": "Handle file system changes and notify clients.",
-							"source_line": 91,
+							"source_line": 89,
 							"type_signature": "(change: WatcherChange, disknode: Disknode, backend: Backend, dir: string, filer: Filer): void",
 							"return_type": "void",
 							"parameters": [
@@ -72113,26 +72700,27 @@
 									"kind": "variable",
 									"type_signature": "Uuid",
 									"doc_comment": "Opts into streaming notifications when provided."
+								},
+								{
+									"name": "on_progress",
+									"kind": "variable",
+									"type_signature": "OnCompletionProgress",
+									"doc_comment": "Routes progress chunks to the originating WS socket via ctx.notify.\nRequired for streaming handlers; ignored by non-streaming handlers."
 								}
 							]
 						},
 						{
 							"name": "OnCompletionProgress",
 							"kind": "type",
-							"source_line": 42,
+							"source_line": 47,
 							"type_signature": "OnCompletionProgress"
 						},
 						{
-							"name": "BackendProviderOptions",
+							"name": "BackendProviderRemoteOptions",
 							"kind": "type",
-							"source_line": 44,
-							"type_signature": "BackendProviderOptions",
+							"source_line": 49,
+							"type_signature": "BackendProviderRemoteOptions",
 							"properties": [
-								{
-									"name": "on_completion_progress",
-									"kind": "variable",
-									"type_signature": "OnCompletionProgress"
-								},
 								{
 									"name": "api_key",
 									"kind": "variable",
@@ -72144,7 +72732,7 @@
 							"name": "BackendProvider",
 							"kind": "class",
 							"doc_comment": "Base class for all backend AI providers.\nProvides shared functionality for completion handlers and logging.",
-							"source_line": 53,
+							"source_line": 57,
 							"generic_params": [
 								{
 									"name": "TClient",
@@ -72169,23 +72757,6 @@
 									"kind": "variable",
 									"modifiers": ["protected"],
 									"type_signature": "ProviderStatus | null"
-								},
-								{
-									"name": "on_completion_progress",
-									"kind": "variable",
-									"modifiers": ["protected", "readonly"],
-									"type_signature": "OnCompletionProgress"
-								},
-								{
-									"name": "constructor",
-									"kind": "constructor",
-									"type_signature": "<TClient = unknown>(options: BackendProviderOptions): BackendProvider<TClient>",
-									"parameters": [
-										{
-											"name": "options",
-											"type": "BackendProviderOptions"
-										}
-									]
 								},
 								{
 									"name": "handle_streaming_completion",
@@ -72284,8 +72855,8 @@
 									"name": "send_streaming_progress",
 									"kind": "function",
 									"modifiers": ["protected"],
-									"doc_comment": "Sends streaming progress notification to frontend.",
-									"type_signature": "(progress_token: string & $brand<\"Uuid\">, chunk: { [x: string]: unknown; model?: string | undefined; created_at?: string | undefined; done?: boolean | undefined; message?: { [x: string]: unknown; role: string; content: string; } | undefined; } | undefined): Promise<...>",
+									"doc_comment": "Sends a streaming progress notification to the originating socket.",
+									"type_signature": "(progress_token: string & $brand<\"Uuid\">, chunk: { [x: string]: unknown; model?: string | undefined; created_at?: string | undefined; done?: boolean | undefined; message?: { [x: string]: unknown; role: string; content: string; } | undefined; } | undefined, on_progress: OnCompletionProgress): Promise<...>",
 									"return_type": "Promise<void>",
 									"parameters": [
 										{
@@ -72295,6 +72866,10 @@
 										{
 											"name": "chunk",
 											"type": "{ [x: string]: unknown; model?: string | undefined; created_at?: string | undefined; done?: boolean | undefined; message?: { [x: string]: unknown; role: string; content: string; } | undefined; } | undefined"
+										},
+										{
+											"name": "on_progress",
+											"type": "OnCompletionProgress"
 										}
 									]
 								},
@@ -72360,7 +72935,7 @@
 							"name": "BackendProviderRemote",
 							"kind": "class",
 							"doc_comment": "Base class for remote API-based providers (Claude, ChatGPT, Gemini).\nHandles API key management and provides default error handling for missing keys.",
-							"source_line": 137,
+							"source_line": 136,
 							"extends": ["BackendProvider<TClient>"],
 							"implements": [],
 							"generic_params": [
@@ -72379,11 +72954,11 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "<TClient = unknown>(options: BackendProviderOptions): BackendProviderRemote<TClient>",
+									"type_signature": "<TClient = unknown>(options: BackendProviderRemoteOptions): BackendProviderRemote<TClient>",
 									"parameters": [
 										{
 											"name": "options",
-											"type": "BackendProviderOptions"
+											"type": "BackendProviderRemoteOptions"
 										}
 									]
 								},
@@ -72426,7 +73001,7 @@
 							"name": "BackendProviderLocal",
 							"kind": "class",
 							"doc_comment": "Base class for locally-installed providers (Ollama).\nHandles installation checking and provides default error handling for missing installations.",
-							"source_line": 183,
+							"source_line": 182,
 							"extends": ["BackendProvider<TClient>"],
 							"implements": [],
 							"generic_params": [
@@ -72439,13 +73014,8 @@
 								{
 									"name": "constructor",
 									"kind": "constructor",
-									"type_signature": "<TClient = unknown>(options: BackendProviderOptions): BackendProviderLocal<TClient>",
-									"parameters": [
-										{
-											"name": "options",
-											"type": "BackendProviderOptions"
-										}
-									]
+									"type_signature": "<TClient = unknown>(): BackendProviderLocal<TClient>",
+									"parameters": []
 								},
 								{
 									"name": "get_client",
@@ -72902,8 +73472,8 @@
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
-									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; async: true; } | { ...; } | { ...; } | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"request_response\"; auth: \"public\" | ... 2 more ... | { ...; }...",
+									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
 									"parameters": [
 										{
 											"name": "method",
@@ -73019,7 +73589,7 @@
 							"name": "CreateZzzAppOptions",
 							"kind": "type",
 							"doc_comment": "Options for creating a zzz app.",
-							"source_line": 45,
+							"source_line": 44,
 							"type_signature": "CreateZzzAppOptions",
 							"properties": [
 								{
@@ -73052,7 +73622,7 @@
 							"name": "ZzzApp",
 							"kind": "type",
 							"doc_comment": "The created zzz app and related instances.",
-							"source_line": 66,
+							"source_line": 65,
 							"type_signature": "ZzzApp",
 							"properties": [
 								{
@@ -73103,7 +73673,7 @@
 							"name": "create_zzz_app",
 							"kind": "function",
 							"doc_comment": "Create the zzz Hono app with auth, database, Backend, providers, and endpoints.\n\nThis is the shared factory called by the server entry point.\nUses `create_app_backend` for database + auth, `create_app_server` for\nmiddleware assembly, and wires zzz's domain Backend through route deps.",
-							"source_line": 90,
+							"source_line": 89,
 							"type_signature": "(options: CreateZzzAppOptions): Promise<ZzzApp>",
 							"return_type": "Promise<ZzzApp>",
 							"parameters": [
@@ -73461,7 +74031,7 @@
 						{
 							"name": "RegisterWebsocketActionsOptions",
 							"kind": "type",
-							"source_line": 33,
+							"source_line": 35,
 							"type_signature": "RegisterWebsocketActionsOptions",
 							"properties": [
 								{
@@ -73502,7 +74072,7 @@
 							"name": "register_websocket_actions",
 							"kind": "function",
 							"doc_comment": "Registers WebSocket endpoints for all service actions in the schema registry.",
-							"source_line": 47,
+							"source_line": 49,
 							"type_signature": "({ path, app, backend, upgradeWebSocket, artificial_delay, transport, }: RegisterWebsocketActionsOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -74110,7 +74680,7 @@
 							"name": "start_server",
 							"kind": "function",
 							"doc_comment": "Start the zzz server using Deno runtime.\n\nCreates the full backend with auth, database, providers, WebSocket, and HTTP RPC\nendpoints via `create_zzz_app`, then serves with `Deno.serve`.",
-							"source_line": 45,
+							"source_line": 46,
 							"type_signature": "(): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": []
@@ -74146,6 +74716,18 @@
 									"kind": "variable",
 									"type_signature": "string | number | null",
 									"doc_comment": "From the JSON-RPC envelope."
+								},
+								{
+									"name": "notify",
+									"kind": "variable",
+									"type_signature": "(method: string, params: unknown) => void",
+									"doc_comment": "Send a request-scoped JSON-RPC notification to the originator.\nWS routes to the originating socket; HTTP no-ops with a DEV warn."
+								},
+								{
+									"name": "signal",
+									"kind": "variable",
+									"type_signature": "AbortSignal",
+									"doc_comment": "Fires on request cancellation (HTTP disconnect or WS close)."
 								}
 							]
 						},
@@ -74153,21 +74735,21 @@
 							"name": "ZzzHandledMethod",
 							"kind": "type",
 							"doc_comment": "Methods handled by zzz_action_handlers (request_response only, excludes remote_notifications).",
-							"source_line": 36,
+							"source_line": 43,
 							"type_signature": "ZzzHandledMethod"
 						},
 						{
 							"name": "ZzzActionHandlers",
 							"kind": "type",
 							"doc_comment": "Typed handler map — each handler has per-method input/output types.",
-							"source_line": 47,
+							"source_line": 55,
 							"type_signature": "ZzzActionHandlers"
 						},
 						{
 							"name": "zzz_action_handlers",
 							"kind": "variable",
 							"doc_comment": "All 23 request_response handlers as pure functions.\n\nLogic sourced from the RPC versions (cleaner than the old WS handlers —\nno Deno-only bug in provider_update_api_key, no console.log noise).",
-							"source_line": 60,
+							"source_line": 68,
 							"type_signature": "ZzzActionHandlers"
 						}
 					],
