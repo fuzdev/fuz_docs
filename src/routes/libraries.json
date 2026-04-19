@@ -23102,45 +23102,27 @@
 					"path": "contextmenu_state.svelte.ts",
 					"declarations": [
 						{
-							"name": "contextmenu_context",
-							"kind": "variable",
-							"source_line": 13,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => ContextmenuState; get_maybe: () => (() => ContextmenuState) | undefined; set: (value: () => ContextmenuState) => () => ContextmenuState; }"
-						},
-						{
-							"name": "contextmenu_submenu_context",
-							"kind": "variable",
-							"source_line": 15,
-							"type_signature": "{ get: (error_message?: string | undefined) => SubmenuState; get_maybe: () => SubmenuState | undefined; set: (value: SubmenuState) => SubmenuState; }"
-						},
-						{
-							"name": "contextmenu_dimensions_context",
-							"kind": "variable",
-							"source_line": 17,
-							"type_signature": "{ get: () => Dimensions; set: (value?: Dimensions | undefined) => Dimensions; }"
-						},
-						{
 							"name": "ContextmenuParams",
 							"kind": "type",
-							"source_line": 19,
+							"source_line": 13,
 							"type_signature": "ContextmenuParams"
 						},
 						{
 							"name": "ContextmenuActivateResult",
 							"kind": "type",
-							"source_line": 26,
+							"source_line": 20,
 							"type_signature": "ContextmenuActivateResult"
 						},
 						{
 							"name": "ItemState",
 							"kind": "type",
-							"source_line": 31,
+							"source_line": 25,
 							"type_signature": "ItemState"
 						},
 						{
 							"name": "EntryState",
 							"kind": "class",
-							"source_line": 33,
+							"source_line": 27,
 							"members": [
 								{
 									"name": "is_menu",
@@ -23210,7 +23192,7 @@
 						{
 							"name": "SubmenuState",
 							"kind": "class",
-							"source_line": 56,
+							"source_line": 50,
 							"members": [
 								{
 									"name": "is_menu",
@@ -23259,7 +23241,7 @@
 						{
 							"name": "RootMenuState",
 							"kind": "class",
-							"source_line": 70,
+							"source_line": 64,
 							"members": [
 								{
 									"name": "is_menu",
@@ -23286,13 +23268,13 @@
 						{
 							"name": "ContextmenuRun",
 							"kind": "type",
-							"source_line": 78,
+							"source_line": 72,
 							"type_signature": "ContextmenuRun"
 						},
 						{
 							"name": "ContextmenuStateOptions",
 							"kind": "type",
-							"source_line": 80,
+							"source_line": 74,
 							"type_signature": "ContextmenuStateOptions",
 							"properties": [
 								{
@@ -23309,7 +23291,7 @@
 							"see_also": [
 								"{@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event}"
 							],
-							"source_line": 90,
+							"source_line": 84,
 							"members": [
 								{
 									"name": "layout",
@@ -23536,7 +23518,7 @@
 							"name": "contextmenu_attachment",
 							"kind": "function",
 							"doc_comment": "Creates an attachment that sets up contextmenu behavior on an element.",
-							"source_line": 356,
+							"source_line": 350,
 							"type_signature": "<T extends ContextmenuParams, U extends T | Array<T>>(params: U | null | undefined): Attachment<HTMLElement | SVGElement>",
 							"return_type": "Attachment<HTMLElement | SVGElement>",
 							"parameters": [
@@ -23550,7 +23532,7 @@
 						{
 							"name": "ContextmenuOpenOptions",
 							"kind": "type",
-							"source_line": 380,
+							"source_line": 374,
 							"type_signature": "ContextmenuOpenOptions",
 							"properties": [
 								{
@@ -23579,7 +23561,7 @@
 							"name": "contextmenu_open",
 							"kind": "function",
 							"doc_comment": "Opens the contextmenu, if appropriate,\nquerying the menu items from the DOM starting at the event target.",
-							"source_line": 397,
+							"source_line": 391,
 							"type_signature": "(target: HTMLElement | SVGElement, x: number, y: number, contextmenu: ContextmenuState, options?: ContextmenuOpenOptions | undefined): boolean",
 							"return_type": "boolean",
 							"return_description": "a boolean indicating if the menu was opened or not",
@@ -23611,6 +23593,24 @@
 									"description": "optional configuration for filtering entries and haptic feedback"
 								}
 							]
+						},
+						{
+							"name": "contextmenu_context",
+							"kind": "variable",
+							"source_line": 478,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => ContextmenuState; get_maybe: () => (() => ContextmenuState) | undefined; set: (value: () => ContextmenuState) => () => ContextmenuState; }"
+						},
+						{
+							"name": "contextmenu_submenu_context",
+							"kind": "variable",
+							"source_line": 480,
+							"type_signature": "{ get: (error_message?: string | undefined) => SubmenuState; get_maybe: () => SubmenuState | undefined; set: (value: SubmenuState) => SubmenuState; }"
+						},
+						{
+							"name": "contextmenu_dimensions_context",
+							"kind": "variable",
+							"source_line": 482,
+							"type_signature": "{ get: () => Dimensions; set: (value?: Dimensions | undefined) => Dimensions; }"
 						},
 						{
 							"name": "contextmenu_check_global_root",
@@ -24784,16 +24784,10 @@
 					"path": "docs_helpers.svelte.ts",
 					"declarations": [
 						{
-							"name": "docs_links_context",
-							"kind": "variable",
-							"source_line": 7,
-							"type_signature": "{ get: (error_message?: string | undefined) => DocsLinks; get_maybe: () => DocsLinks | undefined; set: (value: DocsLinks) => DocsLinks; }"
-						},
-						{
 							"name": "docs_slugify",
 							"kind": "function",
 							"doc_comment": "Convert a string to a URL-safe fragment identifier, preserving case.\nUnlike `slugify` from `@fuzdev/fuz_util/path.js` which lowercases,\nthis keeps the original casing so API declarations like `AsyncStatus`\nand `async_status` produce distinct fragment IDs.\nUsed by the `Tome` documentation system for heading and section anchors.",
-							"source_line": 18,
+							"source_line": 16,
 							"type_signature": "(str: string): string",
 							"return_type": "string",
 							"return_description": "a URL-safe fragment identifier with case preserved",
@@ -24808,25 +24802,25 @@
 						{
 							"name": "DOCS_PATH_DEFAULT",
 							"kind": "variable",
-							"source_line": 32,
+							"source_line": 30,
 							"type_signature": "\"/docs\""
 						},
 						{
 							"name": "DOCS_PATH",
 							"kind": "variable",
-							"source_line": 33,
+							"source_line": 31,
 							"type_signature": "\"/docs\" | \"/\" | \"/about\" | \"/docs/Alert\" | \"/docs/Breadcrumb\" | \"/docs/Breadcrumb/a\" | \"/docs/Breadcrumb/a/b\" | \"/docs/Breadcrumb/a/b/c\" | \"/docs/Breadcrumb/a/b/c/d\" | \"/docs/Card\" | ... 63 more ... | `/${string}${`/docs/api/${string}` & {}}`"
 						},
 						{
 							"name": "DOCS_API_PATH",
 							"kind": "variable",
-							"source_line": 34,
+							"source_line": 32,
 							"type_signature": "string"
 						},
 						{
 							"name": "to_docs_path_info",
 							"kind": "function",
-							"source_line": 36,
+							"source_line": 34,
 							"type_signature": "(path_slug: string, pathname: string, root_path?: string): { path: string; path_is_selected: boolean; path_segment: string | undefined; }",
 							"return_type": "{ path: string; path_is_selected: boolean; path_segment: string | undefined; }",
 							"parameters": [
@@ -24844,6 +24838,12 @@
 									"default_value": "DOCS_PATH_DEFAULT"
 								}
 							]
+						},
+						{
+							"name": "docs_links_context",
+							"kind": "variable",
+							"source_line": 45,
+							"type_signature": "{ get: (error_message?: string | undefined) => DocsLinks; get_maybe: () => DocsLinks | undefined; set: (value: DocsLinks) => DocsLinks; }"
 						},
 						{
 							"name": "DocsLinkTag",
@@ -26358,16 +26358,10 @@
 					"path": "library.svelte.ts",
 					"declarations": [
 						{
-							"name": "library_context",
-							"kind": "variable",
-							"source_line": 8,
-							"type_signature": "{ get: (error_message?: string | undefined) => Library; get_maybe: () => Library | undefined; set: (value: Library) => Library; }"
-						},
-						{
 							"name": "parse_library_url_prefix",
 							"kind": "function",
 							"doc_comment": "Normalizes a URL prefix: ensures leading `/`, strips trailing `/`, returns `''` for falsy and non-string values.",
-							"source_line": 13,
+							"source_line": 11,
 							"type_signature": "(value: unknown): string",
 							"return_type": "string",
 							"parameters": [
@@ -26385,7 +26379,7 @@
 								"`module.svelte.ts` for `Module` class",
 								"`declaration.svelte.ts` for `Declaration` class"
 							],
-							"source_line": 27,
+							"source_line": 25,
 							"members": [
 								{
 									"name": "library_json",
@@ -26539,6 +26533,12 @@
 									]
 								}
 							]
+						},
+						{
+							"name": "library_context",
+							"kind": "variable",
+							"source_line": 119,
+							"type_signature": "{ get: (error_message?: string | undefined) => Library; get_maybe: () => Library | undefined; set: (value: Library) => Library; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts", "declaration.svelte.ts", "module.svelte.ts"],
@@ -26781,39 +26781,39 @@
 					"path": "mdz_components.ts",
 					"declarations": [
 						{
-							"name": "mdz_components_context",
-							"kind": "variable",
-							"doc_comment": "Context for providing custom mdz components.\nMust be set by the application using mdz.",
-							"source_line": 9,
-							"type_signature": "{ get: (error_message?: string | undefined) => MdzComponents; get_maybe: () => MdzComponents | undefined; set: (value: MdzComponents) => MdzComponents; }"
-						},
-						{
-							"name": "mdz_elements_context",
-							"kind": "variable",
-							"doc_comment": "Context for providing allowed HTML elements.\nMust be set by the application using mdz.\nBy default, no HTML elements are allowed.",
-							"source_line": 16,
-							"type_signature": "{ get: (error_message?: string | undefined) => MdzElements; get_maybe: () => MdzElements | undefined; set: (value: MdzElements) => MdzElements; }"
-						},
-						{
-							"name": "mdz_base_context",
-							"kind": "variable",
-							"doc_comment": "Context for providing a base path getter for resolving relative links in mdz content.\nSet to a getter (e.g., `() => base`) so changes to the base prop are reflected\nwithout needing an effect. When the getter returns a path like `'/docs/mdz/'`,\nrelative paths like `./grammar` resolve to `/docs/mdz/grammar` before rendering.\nWhen not set, relative paths use raw hrefs (browser resolves them).",
-							"source_line": 25,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => string | undefined; get_maybe: () => (() => string | undefined) | undefined; set: (value: () => string | undefined) => () => string | undefined; }"
-						},
-						{
 							"name": "MdzComponents",
 							"kind": "type",
 							"doc_comment": "Component registry for custom Svelte components that can be used in mdz content.\n\nFor example, registering 'Alert' allows using `<Alert>...</Alert>` in mdz content.\n\nThe Map values are the Svelte component constructors.",
-							"source_line": 34,
+							"source_line": 12,
 							"type_signature": "MdzComponents"
 						},
 						{
 							"name": "MdzElements",
 							"kind": "type",
 							"doc_comment": "Element registry for HTML elements that can be used in mdz content.\n\nFor example, registering 'div' allows using `<div>...</div>` in mdz content.\n\nThe Map values are boolean placeholders for future configuration options.",
-							"source_line": 43,
+							"source_line": 21,
 							"type_signature": "MdzElements"
+						},
+						{
+							"name": "mdz_components_context",
+							"kind": "variable",
+							"doc_comment": "Context for providing custom mdz components.\nMust be set by the application using mdz.",
+							"source_line": 27,
+							"type_signature": "{ get: (error_message?: string | undefined) => MdzComponents; get_maybe: () => MdzComponents | undefined; set: (value: MdzComponents) => MdzComponents; }"
+						},
+						{
+							"name": "mdz_elements_context",
+							"kind": "variable",
+							"doc_comment": "Context for providing allowed HTML elements.\nMust be set by the application using mdz.\nBy default, no HTML elements are allowed.",
+							"source_line": 34,
+							"type_signature": "{ get: (error_message?: string | undefined) => MdzElements; get_maybe: () => MdzElements | undefined; set: (value: MdzElements) => MdzElements; }"
+						},
+						{
+							"name": "mdz_base_context",
+							"kind": "variable",
+							"doc_comment": "Context for providing a base path getter for resolving relative links in mdz content.\nSet to a getter (e.g., `() => base`) so changes to the base prop are reflected\nwithout needing an effect. When the getter returns a path like `'/docs/mdz/'`,\nrelative paths like `./grammar` resolve to `/docs/mdz/grammar` before rendering.\nWhen not set, relative paths use raw hrefs (browser resolves them).",
+							"source_line": 43,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => string | undefined; get_maybe: () => (() => string | undefined) | undefined; set: (value: () => string | undefined) => () => string | undefined; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
@@ -29121,15 +29121,9 @@
 					"path": "style_variable_helpers.svelte.ts",
 					"declarations": [
 						{
-							"name": "selected_variable_context",
-							"kind": "variable",
-							"source_line": 5,
-							"type_signature": "{ get: () => SelectedStyleVariable; set: (value?: SelectedStyleVariable | undefined) => SelectedStyleVariable; }"
-						},
-						{
 							"name": "SelectedStyleVariable",
 							"kind": "class",
-							"source_line": 8,
+							"source_line": 6,
 							"members": [
 								{
 									"name": "value",
@@ -29149,6 +29143,12 @@
 									]
 								}
 							]
+						},
+						{
+							"name": "selected_variable_context",
+							"kind": "variable",
+							"source_line": 14,
+							"type_signature": "{ get: () => SelectedStyleVariable; set: (value?: SelectedStyleVariable | undefined) => SelectedStyleVariable; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
@@ -29778,28 +29778,16 @@
 					"path": "tome.ts",
 					"declarations": [
 						{
-							"name": "tomes_context",
-							"kind": "variable",
-							"source_line": 9,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => Map<string, { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }>; get_maybe: () => (() => Map<...>) | undefined; set: (value: () => Map<...>) => () => Map<...."
-						},
-						{
-							"name": "tome_context",
-							"kind": "variable",
-							"source_line": 11,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }; get_maybe: () => (() => { ...; }) | undefined; set: (value: () => { ...; }) => () => { ...; }; }"
-						},
-						{
 							"name": "Tome",
 							"kind": "type",
-							"source_line": 13,
+							"source_line": 9,
 							"type_signature": "ZodObject<{ name: ZodString; category: ZodString; Component: ZodCustom<Component<any, any, string>, Component<any, any, string>>; related_tomes: ZodArray<...>; related_modules: ZodArray<...>; related_declarations: ZodArray<...>; }, $strip>"
 						},
 						{
 							"name": "to_tome_pathname",
 							"kind": "function",
 							"doc_comment": "",
-							"source_line": 27,
+							"source_line": 23,
 							"type_signature": "(item: string | { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }, docs_path?: string, hash?: string | undefined): string",
 							"return_type": "string",
 							"parameters": [
@@ -29821,9 +29809,15 @@
 							]
 						},
 						{
+							"name": "tomes_context",
+							"kind": "variable",
+							"source_line": 33,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => Map<string, { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }>; get_maybe: () => (() => Map<...>) | undefined; set: (value: () => Map<...>) => () => Map<...."
+						},
+						{
 							"name": "get_tome_by_name",
 							"kind": "function",
-							"source_line": 37,
+							"source_line": 35,
 							"type_signature": "(name: string): { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }",
 							"return_type": "{ name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }",
 							"parameters": [
@@ -29832,6 +29826,12 @@
 									"type": "string"
 								}
 							]
+						},
+						{
+							"name": "tome_context",
+							"kind": "variable",
+							"source_line": 42,
+							"type_signature": "{ get: (error_message?: string | undefined) => () => { name: string; category: string; Component: Component<any, any, string>; related_tomes: string[]; related_modules: string[]; related_declarations: string[]; }; get_maybe: () => (() => { ...; }) | undefined; set: (value: () => { ...; }) => () => { ...; }; }"
 						}
 					],
 					"dependencies": ["context_helpers.ts", "docs_helpers.svelte.ts"],
@@ -30621,7 +30621,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.16.0",
+			"version": "0.22.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -30736,7 +30736,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.16.0",
+			"version": "0.22.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -31708,7 +31708,7 @@
 						{
 							"name": "ActionEventChangeObserver",
 							"kind": "type",
-							"source_line": 54,
+							"source_line": 45,
 							"type_signature": "ActionEventChangeObserver<TMethod>",
 							"generic_params": [
 								{
@@ -31722,7 +31722,7 @@
 							"name": "ActionEvent",
 							"kind": "class",
 							"doc_comment": "Action event that manages the lifecycle of an action through its state machine.",
-							"source_line": 63,
+							"source_line": 54,
 							"generic_params": [
 								{
 									"name": "TMethod",
@@ -31901,7 +31901,7 @@
 							"name": "create_action_event",
 							"kind": "function",
 							"doc_comment": "Create an action event from a spec and initial input.",
-							"source_line": 461,
+							"source_line": 452,
 							"type_signature": "<TMethod extends string = string>(environment: ActionEventEnvironment, spec: { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<...>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; }, input: unknown, initial_phase?: \"send_request\" | ... 8 more ... | undefined): ActionEvent<...>",
 							"return_type": "ActionEvent<TMethod, \"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\", \"initial\" | \"parsed\" | \"handling\" | \"handled\" | \"failed\">",
 							"parameters": [
@@ -31928,7 +31928,7 @@
 							"name": "create_action_event_from_json",
 							"kind": "function",
 							"doc_comment": "Reconstruct an action event from serialized JSON data.",
-							"source_line": 488,
+							"source_line": 479,
 							"type_signature": "<TMethod extends string = string>(json: ActionEventDataUnion<TMethod>, environment: ActionEventEnvironment): ActionEvent<TMethod, \"send_request\" | ... 7 more ... | \"execute\", \"initial\" | ... 3 more ... | \"failed\">",
 							"return_type": "ActionEvent<TMethod, \"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\", \"initial\" | \"parsed\" | \"handling\" | \"handled\" | \"failed\">",
 							"parameters": [
@@ -31945,7 +31945,7 @@
 						{
 							"name": "parse_action_event",
 							"kind": "function",
-							"source_line": 502,
+							"source_line": 493,
 							"type_signature": "(raw_json: unknown, environment: ActionEventEnvironment): ActionEvent<string, \"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\", \"initial\" | ... 3 more ... | \"failed\">",
 							"return_type": "ActionEvent<string, \"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"send\" | \"receive\" | \"execute\", \"initial\" | \"parsed\" | \"handling\" | \"handled\" | \"failed\">",
 							"parameters": [
@@ -32115,7 +32115,8 @@
 						"http/jsonrpc.ts",
 						"http/jsonrpc_errors.ts",
 						"http/jsonrpc_helpers.ts"
-					]
+					],
+					"dependents": ["testing/ws_round_trip.ts"]
 				},
 				{
 					"path": "actions/action_registry.ts",
@@ -32375,8 +32376,77 @@
 							"type_signature": "ZodEnum<{ send_request: \"send_request\"; receive_request: \"receive_request\"; send_response: \"send_response\"; receive_response: \"receive_response\"; send_error: \"send_error\"; receive_error: \"receive_error\"; send: \"send\"; receive: \"receive\"; execute: \"execute\"; }>"
 						}
 					],
-					"module_comment": "Action spec types — the canonical source of truth for action contracts.\n\nExtracted from zzz's action system. Action specs define method, kind,\nauth, side effects, and input/output schemas. Bridge functions in\n`action_bridge.ts` derive `RouteSpec` and `EventSpec` from them.\n\nTODO @action-system-review The action system (action_spec, action_registry,\naction_codegen, action_bridge) will evolve significantly with the saes-rpc quest.\nCurrent state: bridge is stable, registry and codegen are partially stub API.\nSearch for `@action-system-review` across the actions/ and routes/ modules.",
+					"module_comment": "Action spec types — the canonical source of truth for action contracts.\n\nExtracted from zzz's action system. Action specs define method, kind,\nauth, side effects, and input/output schemas. Bridge functions in\n`action_bridge.ts` derive `RouteSpec` and `EventSpec` from them.\n\nTODO @action-system-review The action system (action_spec, action_registry,\naction_codegen, action_bridge) will evolve significantly as RPC patterns settle.\nCurrent state: bridge is stable, registry and codegen are partially stub API.\nSearch for `@action-system-review` across the actions/ and routes/ modules.",
 					"dependents": ["actions/action_event_data.ts"]
+				},
+				{
+					"path": "actions/broadcast_api.ts",
+					"declarations": [
+						{
+							"name": "ShouldDeliverFn",
+							"kind": "type",
+							"doc_comment": "Per-connection delivery predicate for subscription ACLs.\n\nCalled once per connection for every broadcast send. Returning `false`\nskips that connection. Keep it fast — this runs in the broadcast hot path.\n\n`input` is the already-validated payload (matches the spec's input schema);\n`method` is the action method name.",
+							"source_line": 40,
+							"type_signature": "ShouldDeliverFn"
+						},
+						{
+							"name": "CreateBroadcastApiOptions",
+							"kind": "type",
+							"doc_comment": "Options for `create_broadcast_api`.",
+							"source_line": 47,
+							"type_signature": "CreateBroadcastApiOptions",
+							"properties": [
+								{
+									"name": "peer",
+									"kind": "variable",
+									"type_signature": "ActionPeer",
+									"doc_comment": "The peer holding the transport registry used for sends."
+								},
+								{
+									"name": "specs",
+									"kind": "variable",
+									"type_signature": "ReadonlyArray<ActionSpecUnion>",
+									"doc_comment": "Notification specs to expose as broadcast methods. Typically the\n`remote_notification` specs whose initiator is `backend` (or `both`).\nOther kinds are accepted — the helper only uses `spec.method` and\n`spec.input` — but the typical use is notifications."
+								},
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "LoggerType | null",
+									"doc_comment": "Logger for validation/send errors. Defaults to a `[broadcast]` namespace."
+								},
+								{
+									"name": "should_deliver",
+									"kind": "variable",
+									"type_signature": "ShouldDeliverFn",
+									"doc_comment": "Optional per-connection ACL predicate. When set, the broadcast fans out\nvia the transport's `broadcast_filtered` (feature-detected) — each\nconnection's identity is checked before the message is sent. When\nunset, the transport broadcasts unfiltered via `transport.send`.\n\nRequires a transport that implements `FilterableBroadcastTransport`\n(today: only `BackendWebsocketTransport`). If set and the active\ntransport is not filterable, the send is skipped and an error logged."
+								}
+							]
+						},
+						{
+							"name": "BroadcastApi",
+							"kind": "type",
+							"doc_comment": "Loose base shape for a broadcast API. Consumers typically declare a\nstricter per-method interface (e.g. `BackendActionsApi`) and pin it via\nthe type parameter on `create_broadcast_api`.",
+							"source_line": 77,
+							"type_signature": "BroadcastApi"
+						},
+						{
+							"name": "create_broadcast_api",
+							"kind": "function",
+							"doc_comment": "Builds a typed broadcast API from a set of action specs.\n\nFor each spec, adds a method keyed by `spec.method` that:\n- Validates `input` against the spec's Zod schema (logs and returns on failure)\n- Creates a JSON-RPC notification from the validated input\n- Broadcasts via the peer (filtered by `should_deliver` when supplied)\n\nSilently returns when no transport is ready (e.g. before any clients\nconnect). Errors during send are logged but never thrown — broadcasts are\nfire-and-forget from the handler's perspective.\n\n## Typed consumer surface\n\nConsumers declare an explicit interface and pin it via the type parameter:\n\n```ts\nexport interface BackendActionsApi {\n  filer_change: (input: ActionInputs['filer_change']) => Promise<void>;\n  workspace_changed: (input: ActionInputs['workspace_changed']) => Promise<void>;\n}\n\nconst api = create_broadcast_api<BackendActionsApi>({\n  peer: backend.peer,\n  specs: [filer_change_action_spec, workspace_changed_action_spec],\n});\n```\n\nThe cast is unchecked — callers must keep the interface and the `specs`\narray in sync. Codegen (`action_collections.gen.ts`) is a natural fit\nif the consumer already generates per-method type maps.",
+							"source_line": 111,
+							"type_signature": "<TApi = BroadcastApi>(options: CreateBroadcastApiOptions): TApi",
+							"return_type": "TApi",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "CreateBroadcastApiOptions"
+								}
+							]
+						}
+					],
+					"module_comment": "Backend-initiated broadcast notification plumbing — generic across consumers.\n\nBuilds a typed `{method_name: (input) => Promise<void>}` object from a list\nof action specs. Each call validates input against the spec, wraps it in a\nJSON-RPC notification, and either broadcasts to every connection or\nfans out with a per-connection ACL predicate.\n\nCounterpart to `register_action_ws`: that handles request-scoped dispatch\n(frontend-initiated), this handles broadcast (backend-initiated). Together\nthey cover the two primitives fuz_app consumers share. Request-scoped\nstreaming (`completion_progress`, `tx_apply` events) stays on\n`ctx.notify` inside a handler — it's socket-scoped, not broadcast.\n\nExtracted from zzz's `backend_actions_api.ts` to stop the pattern from\ndrifting across zzz, tx, and undying.",
+					"dependencies": ["actions/transports_ws_backend.ts", "http/jsonrpc_helpers.ts"],
+					"dependents": ["testing/ws_round_trip.ts"]
 				},
 				{
 					"path": "actions/register_action_ws.ts",
@@ -32422,10 +32492,76 @@
 							]
 						},
 						{
+							"name": "SocketOpenContext",
+							"kind": "type",
+							"doc_comment": "Context passed to the `on_socket_open` hook.\n\nFires after the transport has registered the new connection (so\n`connection_id` is valid) but before any client message can dispatch.\nConsumers use this to bootstrap per-socket domain state — e.g. undying\nspawns the per-account spirit unit and pushes an initial state snapshot.",
+							"source_line": 86,
+							"type_signature": "SocketOpenContext",
+							"properties": [
+								{
+									"name": "ws",
+									"kind": "variable",
+									"type_signature": "WSContext",
+									"doc_comment": "The raw WebSocket context — exposed for edge cases; prefer `notify` for sends."
+								},
+								{
+									"name": "connection_id",
+									"kind": "variable",
+									"type_signature": "Uuid",
+									"doc_comment": "Connection id assigned by `BackendWebsocketTransport.add_connection`."
+								},
+								{
+									"name": "identity",
+									"kind": "variable",
+									"type_signature": "ConnectionIdentity",
+									"doc_comment": "Auth identity registered for this connection."
+								},
+								{
+									"name": "notify",
+									"kind": "variable",
+									"type_signature": "(method: string, params: unknown) => void",
+									"doc_comment": "Send a JSON-RPC notification to just this socket. Mirrors `ctx.notify`\non per-message handler contexts — same socket-scoped semantics."
+								},
+								{
+									"name": "signal",
+									"kind": "variable",
+									"type_signature": "AbortSignal",
+									"doc_comment": "Fires when this socket closes — threaded through to every handler's `ctx.signal`."
+								}
+							]
+						},
+						{
+							"name": "SocketCloseContext",
+							"kind": "type",
+							"doc_comment": "Context passed to the `on_socket_close` hook.\n\nFires before `transport.remove_connection` runs, so consumer cleanup can\nstill read identity before it's torn down. Fires for both client-initiated\ncloses (Hono onClose) and server-initiated closes via audit revocation\n(the audit guard calls `ws.close()`, which triggers Hono's onClose).",
+							"source_line": 110,
+							"type_signature": "SocketCloseContext",
+							"properties": [
+								{
+									"name": "ws",
+									"kind": "variable",
+									"type_signature": "WSContext",
+									"doc_comment": "The raw WebSocket context at close time."
+								},
+								{
+									"name": "connection_id",
+									"kind": "variable",
+									"type_signature": "Uuid",
+									"doc_comment": "Connection id captured at open time."
+								},
+								{
+									"name": "identity",
+									"kind": "variable",
+									"type_signature": "ConnectionIdentity",
+									"doc_comment": "Auth identity captured at open time — still valid even if the transport already cleaned up."
+								}
+							]
+						},
+						{
 							"name": "RegisterActionWsOptions",
 							"kind": "type",
 							"doc_comment": "Options for `register_action_ws`.",
-							"source_line": 79,
+							"source_line": 120,
 							"type_signature": "RegisterActionWsOptions<TCtx>",
 							"generic_params": [
 								{
@@ -32487,6 +32623,18 @@
 									"kind": "variable",
 									"type_signature": "LoggerType",
 									"doc_comment": "Optional logger; defaults to `[ws]` namespace."
+								},
+								{
+									"name": "on_socket_open",
+									"kind": "variable",
+									"type_signature": "(ctx: SocketOpenContext) => void | Promise<void>",
+									"doc_comment": "Called once per socket, after the transport registers the connection.\nAwaited before any message is dispatched. Throwing logs an error and\ncloses the socket with an `internal_error` frame — a failing bootstrap\nshould not leave a partially-initialized socket alive."
+								},
+								{
+									"name": "on_socket_close",
+									"kind": "variable",
+									"type_signature": "(ctx: SocketCloseContext) => void | Promise<void>",
+									"doc_comment": "Called once per socket on close, *before* the transport removes the\nconnection. Receives `connection_id` and `identity` captured at open\ntime, so it is safe to read even when the audit guard has already torn\ndown the transport's internal state. Errors are logged and swallowed."
 								}
 							]
 						},
@@ -32494,7 +32642,7 @@
 							"name": "RegisterActionWsResult",
 							"kind": "type",
 							"doc_comment": "Result of `register_action_ws`.",
-							"source_line": 110,
+							"source_line": 165,
 							"type_signature": "RegisterActionWsResult",
 							"properties": [
 								{
@@ -32508,8 +32656,8 @@
 						{
 							"name": "register_action_ws",
 							"kind": "function",
-							"doc_comment": "Mount a JSON-RPC WebSocket endpoint that dispatches to the supplied handler\nmap. Per-request context is built from the base + consumer-provided\n`RegisterActionWsOptions.extend_context`.\n\nWire behavior:\n- Batch JSON-RPC is rejected (single-message only).\n- Notifications (method + no id) are silently dropped per JSON-RPC spec.\n- Per-action auth: `public` / `authenticated` pass through (upgrade auth\n  already verified identity); `keeper` requires `daemon_token` credential\n  type *and* the keeper role; role-based `{role}` is currently rejected as\n  not-yet-supported.\n- DEV mode validates handler output against the spec's `output` schema and\n  warns on mismatches.",
-							"source_line": 133,
+							"doc_comment": "Mount a JSON-RPC WebSocket endpoint that dispatches to the supplied handler\nmap. Per-request context is built from the base + consumer-provided\n`RegisterActionWsOptions.extend_context`.\n\nWire behavior:\n- Batch JSON-RPC is rejected (single-message only).\n- Notifications (method + no id) are silently dropped per JSON-RPC spec.\n- Per-action auth: `public` / `authenticated` pass through (upgrade auth\n  already verified identity); `keeper` requires `daemon_token` credential\n  type *and* the keeper role; role-based `{role}` requires the named role\n  via `has_role`, matching the HTTP path in `action_rpc.ts`.\n- DEV mode validates handler output against the spec's `output` schema and\n  warns on mismatches.",
+							"source_line": 188,
 							"type_signature": "<TCtx extends BaseHandlerContext>(options: RegisterActionWsOptions<TCtx>): RegisterActionWsResult",
 							"return_type": "RegisterActionWsResult",
 							"return_description": "the transport (supplied or freshly created) — retain it to wire\n`create_ws_auth_guard` or broadcast on audit events.",
@@ -32531,7 +32679,8 @@
 						"http/jsonrpc.ts",
 						"http/jsonrpc_errors.ts",
 						"http/jsonrpc_helpers.ts"
-					]
+					],
+					"dependents": ["testing/ws_round_trip.ts"]
 				},
 				{
 					"path": "actions/request_tracker.svelte.ts",
@@ -32735,10 +32884,17 @@
 					"path": "actions/rpc_client.ts",
 					"declarations": [
 						{
+							"name": "TransportForMethod",
+							"kind": "type",
+							"doc_comment": "Optional per-method transport selector. Return the transport to use for a\ngiven method, or `undefined` to let the peer pick via its fallback rules.\n\nUseful when methods are registered on different backend dispatchers — e.g.\na streaming action mounted on the WebSocket endpoint while the rest of the\nRPC surface lives on HTTP.",
+							"source_line": 38,
+							"type_signature": "TransportForMethod"
+						},
+						{
 							"name": "RpcClientActionHistory",
 							"kind": "type",
 							"doc_comment": "Duck-typed action history — consumers pass their concrete Actions cell.",
-							"source_line": 34,
+							"source_line": 45,
 							"type_signature": "RpcClientActionHistory",
 							"properties": [
 								{
@@ -32752,7 +32908,7 @@
 							"name": "CreateRpcClientOptions",
 							"kind": "type",
 							"doc_comment": "Options for `create_rpc_client`.",
-							"source_line": 43,
+							"source_line": 54,
 							"type_signature": "CreateRpcClientOptions",
 							"properties": [
 								{
@@ -32770,6 +32926,12 @@
 									"kind": "variable",
 									"type_signature": "RpcClientActionHistory",
 									"doc_comment": "Optional action history tracking (duck-typed Actions cell)."
+								},
+								{
+									"name": "transport_for_method",
+									"kind": "variable",
+									"type_signature": "TransportForMethod",
+									"doc_comment": "Optional per-method transport selector. When provided, the client calls\n`peer.send(msg, {transport_name})` with the returned transport for each\n`request_response` / `remote_notification` dispatch. Returning `undefined`\nfalls back to the peer's default selection."
 								}
 							]
 						},
@@ -32777,7 +32939,7 @@
 							"name": "create_rpc_client",
 							"kind": "function",
 							"doc_comment": "Creates a Proxy-based API from action specs.\n\nMethod calls are dynamically dispatched based on the action spec's kind:\n- `request_response` → send request, await response, return Result\n- `remote_notification` → send notification, return Result\n- `local_call` → execute locally (sync or async), return Result or throw",
-							"source_line": 61,
+							"source_line": 79,
 							"type_signature": "(options: CreateRpcClientOptions): Record<string, (...args: any[]) => any>",
 							"return_type": "Record<string, (...args: any[]) => any>",
 							"return_description": "a Proxy that responds to any method name found in the environment's specs",
@@ -32792,6 +32954,268 @@
 					],
 					"module_comment": "Typed RPC client — creates a Proxy-based API from action specs.\n\nTwo tiers of usage:\n- **Tier 1** (simple, for tx): transport send/receive, Result return. No `environment`.\n- **Tier 2** (full, for zzz): ActionEvent lifecycle with `environment`.\n\nConsumers cast the return to their generated `ActionsApi` interface for full type safety.",
 					"dependencies": ["actions/action_event.ts", "actions/action_event_helpers.ts"]
+				},
+				{
+					"path": "actions/socket.svelte.ts",
+					"declarations": [
+						{
+							"name": "DEFAULT_CLOSE_CODE",
+							"kind": "variable",
+							"doc_comment": "Default WebSocket close code (normal closure).",
+							"source_line": 24,
+							"type_signature": "1000"
+						},
+						{
+							"name": "DEFAULT_RECONNECT_DELAY",
+							"kind": "variable",
+							"doc_comment": "Base reconnect delay in ms.",
+							"source_line": 26,
+							"type_signature": "1000"
+						},
+						{
+							"name": "DEFAULT_RECONNECT_DELAY_MAX",
+							"kind": "variable",
+							"doc_comment": "Max reconnect delay in ms (cap on exponential backoff).",
+							"source_line": 28,
+							"type_signature": "10000"
+						},
+						{
+							"name": "DEFAULT_BACKOFF_FACTOR",
+							"kind": "variable",
+							"doc_comment": "Exponential backoff factor: delay = base * factor^(attempt-1).",
+							"source_line": 30,
+							"type_signature": "1.5"
+						},
+						{
+							"name": "SocketStatus",
+							"kind": "type",
+							"doc_comment": "Client-side WebSocket status.\n\n- `initial` — never connected; `connect()` has not been called.\n- `connecting` — WebSocket `readyState === CONNECTING`.\n- `connected` — WebSocket `readyState === OPEN`.\n- `reconnecting` — close fired; waiting out backoff before next attempt.\n- `closed` — socket is not open. Terminal only when `revoked` is `true`\n  or auto-reconnect is disabled; otherwise `connect()` reopens.",
+							"source_line": 42,
+							"type_signature": "SocketStatus"
+						},
+						{
+							"name": "SocketMessageHandler",
+							"kind": "type",
+							"source_line": 44,
+							"type_signature": "SocketMessageHandler"
+						},
+						{
+							"name": "SocketErrorHandler",
+							"kind": "type",
+							"source_line": 45,
+							"type_signature": "SocketErrorHandler"
+						},
+						{
+							"name": "FrontendWebsocketReconnectOptions",
+							"kind": "type",
+							"source_line": 47,
+							"type_signature": "FrontendWebsocketReconnectOptions",
+							"properties": [
+								{
+									"name": "delay",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Base reconnect delay in ms. Defaults to 1000."
+								},
+								{
+									"name": "delay_max",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Max reconnect delay in ms (cap on exponential backoff). Defaults to 10000."
+								},
+								{
+									"name": "factor",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Exponential backoff factor. Defaults to 1.5."
+								}
+							]
+						},
+						{
+							"name": "FrontendWebsocketClientOptions",
+							"kind": "type",
+							"source_line": 56,
+							"type_signature": "FrontendWebsocketClientOptions",
+							"properties": [
+								{
+									"name": "reconnect",
+									"kind": "variable",
+									"type_signature": "boolean | FrontendWebsocketReconnectOptions | null",
+									"doc_comment": "Auto-reconnect policy. `false` disables reconnect entirely; `true` or\nomit for default timing; pass an object to customize."
+								},
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "Logger | null",
+									"doc_comment": "Optional logger for diagnostic messages."
+								}
+							]
+						},
+						{
+							"name": "FrontendWebsocketClient",
+							"kind": "class",
+							"doc_comment": "Reactive WebSocket client implementing `WebsocketConnection`.\n\nConstruct with a URL and optional config; call `connect()` to open the\nsocket and begin auto-reconnect. Register message/error handlers via\n`add_message_handler` / `add_error_handler` — both return unsubscribe\nfunctions. `FrontendWebsocketTransport` consumes this as its connection.\n\nSession-revocation close codes (`WS_CLOSE_SESSION_REVOKED`) put the client\nin a permanently-closed state; reconnecting would just loop on 401.",
+							"source_line": 77,
+							"extends": [],
+							"implements": ["WebsocketConnection", "Disposable"],
+							"members": [
+								{
+									"name": "ws",
+									"kind": "variable",
+									"type_signature": "WebSocket | null"
+								},
+								{
+									"name": "status",
+									"kind": "variable",
+									"type_signature": "SocketStatus"
+								},
+								{
+									"name": "reconnect_count",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "current_reconnect_delay",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "last_connect_time",
+									"kind": "variable",
+									"doc_comment": "Epoch ms of the most recent successful open. Never cleared on close.",
+									"type_signature": "number | null"
+								},
+								{
+									"name": "last_close_time",
+									"kind": "variable",
+									"doc_comment": "Epoch ms of the most recent close event or client-initiated close.",
+									"type_signature": "number | null"
+								},
+								{
+									"name": "last_close_code",
+									"kind": "variable",
+									"doc_comment": "Close code from the most recent close. Initial `null` means \"never closed.\"",
+									"type_signature": "number | null"
+								},
+								{
+									"name": "last_close_reason",
+									"kind": "variable",
+									"doc_comment": "Reason string from the most recent close event (may be empty).",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "last_send_error",
+									"kind": "variable",
+									"doc_comment": "The error thrown by the most recent attempted `send()`, or `null` if the\nmost recent attempt succeeded or none has been attempted yet. Populated\nwhen the underlying `ws.send` throws (e.g., buffer full, serialization\nerror); reset to `null` on the next successful send. Not touched when\n`send()` short-circuits because the socket is not connected — consult\n for that case. Wrappers surfacing per-message failure\nreasons can read this after a `false` return from `send()`.",
+									"type_signature": "Error | null"
+								},
+								{
+									"name": "connected",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(url: string, options?: FrontendWebsocketClientOptions): FrontendWebsocketClient",
+									"parameters": [
+										{
+											"name": "url",
+											"type": "string"
+										},
+										{
+											"name": "options",
+											"type": "FrontendWebsocketClientOptions",
+											"default_value": "{}"
+										}
+									]
+								},
+								{
+									"name": "set_reconnect",
+									"kind": "function",
+									"doc_comment": "Swap the auto-reconnect policy in place. Accepts the same shape as the\nconstructor's `reconnect` option: `false` disables reconnect, `true` or\n`null`/omitted restores the defaults, or a config object customizes\nspecific fields (missing fields fall back to defaults, not \"keep\ncurrent\" — each call defines the whole policy atomically, same as the\nconstructor).\n\nIn-flight reconnect schedules are **monotonically shortened**: the\neffective total wait from arm-time never exceeds what the new policy\nprescribes. If the new target is already past the time already\nelapsed, the reconnect fires immediately (on the next tick). The wait\nis never extended.\n\nTurning reconnect off while a reconnect timer is pending cancels that\ntimer and transitions status to `closed` (since the lie of\n`'reconnecting'` would be visible to UI indicators). Turning it back on\ndoes not synthesize a reconnect — wait for the next close.",
+									"type_signature": "(reconnect?: boolean | FrontendWebsocketReconnectOptions | null): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "reconnect",
+											"type": "boolean | FrontendWebsocketReconnectOptions | null",
+											"default_value": "null"
+										}
+									]
+								},
+								{
+									"name": "connect",
+									"kind": "function",
+									"doc_comment": "Open the WebSocket. No-op on SSR, or if the session has been revoked.\nCancels any pending reconnect and tears down any existing connection first;\nan open prior socket is closed with a normal-closure code.",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
+								},
+								{
+									"name": "disconnect",
+									"kind": "function",
+									"doc_comment": "Close the WebSocket, cancel any pending reconnect, and reset the reconnect\nbackoff counters. Puts the client in `closed` status; call `connect()` to\nreopen. Safe to call more than once.",
+									"type_signature": "(code?: number): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "code",
+											"type": "number",
+											"default_value": "DEFAULT_CLOSE_CODE"
+										}
+									]
+								},
+								{
+									"name": "[Symbol.dispose]",
+									"kind": "function",
+									"doc_comment": "Explicit-resource-management hook — supports `using client = new FrontendWebsocketClient(url)`.",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
+								},
+								{
+									"name": "send",
+									"kind": "function",
+									"type_signature": "(data: object): boolean",
+									"return_type": "boolean",
+									"parameters": [
+										{
+											"name": "data",
+											"type": "object"
+										}
+									]
+								},
+								{
+									"name": "add_message_handler",
+									"kind": "function",
+									"type_signature": "(handler: SocketMessageHandler): () => void",
+									"return_type": "() => void",
+									"parameters": [
+										{
+											"name": "handler",
+											"type": "SocketMessageHandler"
+										}
+									]
+								},
+								{
+									"name": "add_error_handler",
+									"kind": "function",
+									"type_signature": "(handler: SocketErrorHandler): () => void",
+									"return_type": "() => void",
+									"parameters": [
+										{
+											"name": "handler",
+											"type": "SocketErrorHandler"
+										}
+									]
+								}
+							]
+						}
+					],
+					"module_comment": "Frontend WebSocket client — portable, Svelte-reactive, implements `WebsocketConnection`.\n\nPlain class with `$state` runes (no Cell inheritance, no app coupling).\nDrop into any SvelteKit frontend as the underlying connection for\n`FrontendWebsocketTransport`. Handles auto-reconnect with exponential\nbackoff, respects `WS_CLOSE_SESSION_REVOKED` (no reconnect loop after the\nserver revokes auth), and exposes reactive status for UI indicators.\n\nFirst cut: no message queue, no heartbeat. Those live in consumer-specific\nwrappers today (see zzz's `Socket` Cell); extract into fuz_app when two\nindependent consumers motivate the shape.",
+					"dependencies": ["actions/transports.ts"]
 				},
 				{
 					"path": "actions/transports_http.ts",
@@ -32943,11 +33367,40 @@
 							]
 						},
 						{
+							"name": "FilterableBroadcastTransport",
+							"kind": "type",
+							"doc_comment": "Structural capability for transports that can broadcast with a\nper-connection ACL predicate. Named separately from `Transport` so the\nbroadcast API can feature-detect without importing a concrete class.\n\n`ConnectionIdentity` is the auth-gated identity shape used today. When a\nsecond implementation (e.g. SSE backend transport) lands with a\ndifferent identity, consider parameterizing on `TIdentity`.",
+							"source_line": 55,
+							"type_signature": "FilterableBroadcastTransport",
+							"extends": ["Transport"],
+							"properties": [
+								{
+									"name": "broadcast_filtered",
+									"kind": "variable",
+									"type_signature": "(\n\t\tmessage: JsonrpcMessageFromServerToClient,\n\t\tpredicate: (identity: ConnectionIdentity) => boolean,\n\t) => number"
+								}
+							]
+						},
+						{
+							"name": "is_filterable_broadcast_transport",
+							"kind": "function",
+							"doc_comment": "Type guard for `FilterableBroadcastTransport`.",
+							"source_line": 63,
+							"type_signature": "(transport: Transport): transport is FilterableBroadcastTransport",
+							"return_type": "boolean",
+							"parameters": [
+								{
+									"name": "transport",
+									"type": "Transport"
+								}
+							]
+						},
+						{
 							"name": "BackendWebsocketTransport",
 							"kind": "class",
-							"source_line": 46,
+							"source_line": 69,
 							"extends": [],
-							"implements": ["Transport"],
+							"implements": ["FilterableBroadcastTransport"],
 							"members": [
 								{
 									"name": "transport_name",
@@ -33072,6 +33525,24 @@
 									]
 								},
 								{
+									"name": "broadcast_filtered",
+									"kind": "function",
+									"doc_comment": "Broadcast to connections whose identity satisfies a predicate.\n\nUsed by the broadcast API when a consumer supplies a subscription ACL hook\n(e.g. tx's `tx_run_created` only reaches the account that owns the run).\nWhen no ACL is needed, callers should prefer `send(message)` / `#broadcast`\nto skip the per-connection predicate overhead.",
+									"type_signature": "(message: { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; }; } | { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); message: string; data?: unknown; }; } | { ...; }, predicate: (identity: ConnectionIdentity) => boolean): number",
+									"return_type": "number",
+									"return_description": "the number of sockets the message was sent to",
+									"parameters": [
+										{
+											"name": "message",
+											"type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; }; } | { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); message: string; data?: unknown; }; } | { ...."
+										},
+										{
+											"name": "predicate",
+											"type": "(identity: ConnectionIdentity) => boolean"
+										}
+									]
+								},
+								{
 									"name": "is_ready",
 									"kind": "function",
 									"type_signature": "(): boolean",
@@ -33088,7 +33559,11 @@
 						"http/jsonrpc_helpers.ts",
 						"uuid.ts"
 					],
-					"dependents": ["actions/register_action_ws.ts"]
+					"dependents": [
+						"actions/broadcast_api.ts",
+						"actions/register_action_ws.ts",
+						"testing/ws_round_trip.ts"
+					]
 				},
 				{
 					"path": "actions/transports_ws.ts",
@@ -33348,7 +33823,11 @@
 						}
 					],
 					"module_comment": "Transport abstraction for action communication.\n\nProvides the `Transport` interface and `Transports` registry for managing\nmultiple transports with fallback behavior.",
-					"dependents": ["actions/action_peer.ts", "actions/transports_ws_backend.ts"]
+					"dependents": [
+						"actions/action_peer.ts",
+						"actions/socket.svelte.ts",
+						"actions/transports_ws_backend.ts"
+					]
 				},
 				{
 					"path": "auth/account_queries.ts",
@@ -37060,7 +37539,8 @@
 						"auth/require_keeper.ts",
 						"auth/route_guards.ts",
 						"testing/auth_apps.ts",
-						"testing/middleware.ts"
+						"testing/middleware.ts",
+						"testing/ws_round_trip.ts"
 					]
 				},
 				{
@@ -37215,7 +37695,8 @@
 						"testing/integration_helpers.ts",
 						"testing/round_trip.ts",
 						"testing/rpc_round_trip.ts",
-						"testing/sse_round_trip.ts"
+						"testing/sse_round_trip.ts",
+						"testing/ws_round_trip.ts"
 					]
 				},
 				{
@@ -39825,8 +40306,8 @@
 						{
 							"name": "parse_dotenv",
 							"kind": "function",
-							"doc_comment": "Parse a dotenv-format string into a record.",
-							"source_line": 18,
+							"doc_comment": "Parse a dotenv-format string into a record.\n\nValues wrapped in `\"...\"` have `\\\\` → `\\`, `\\\"` → `\"`, `\\n` → newline,\nand `\\r` → carriage-return decoded (symmetric with the writer in\n`update_env_variable`). Values wrapped in `'...'` are taken literally —\nno escape processing. Unquoted values are unchanged.\n\nInline comments are stripped after a closing quote (e.g. `KEY=\"v\" # c` → `v`)\nand after whitespace on unquoted values (e.g. `KEY=v # c` → `v`). Unquoted\nvalues keep `#` literal when no whitespace precedes it so URL fragments\nlike `KEY=https://x.com#frag` round-trip unchanged.\n\nTrailing whitespace on unquoted values is lost (the raw value is trimmed);\nwrap the value in `\"...\"` or `'...'` to preserve surrounding spacing.",
+							"source_line": 33,
 							"type_signature": "(content: string): Record<string, string>",
 							"return_type": "Record<string, string>",
 							"return_description": "parsed key-value pairs",
@@ -39841,8 +40322,8 @@
 						{
 							"name": "load_env_file",
 							"kind": "function",
-							"doc_comment": "Load and parse an env file.",
-							"source_line": 48,
+							"doc_comment": "Load and parse an env file.\n\nReturns null only when the file does not exist. Other read errors\n(permission denied, I/O failure, etc.) are re-thrown so callers can\ndistinguish \"no file\" from \"couldn't read\".",
+							"source_line": 143,
 							"type_signature": "(runtime: Pick<FsReadDeps, \"read_text_file\">, path: string): Promise<Record<string, string> | null>",
 							"return_type": "Promise<Record<string, string> | null>",
 							"return_description": "parsed env record, or null if file doesn't exist",
@@ -40221,6 +40702,64 @@
 					"module_comment": "Environment variable `$$VAR$$` resolution suite.\n\nResolves `$$VAR$$` references in strings and object trees,\nscans configs for references, and validates/formats missing vars.\n\nThe double-dollar bookending syntax is:\n- Visually distinct from shell `$VAR` syntax\n- Unambiguous about variable boundaries\n- Easy to grep: `grep '\\$\\$'`\n- Fails loud if accidentally shell-processed (`$$`=PID in shell)"
 				},
 				{
+					"path": "env/update_env_variable.ts",
+					"declarations": [
+						{
+							"name": "UpdateEnvVariableOptions",
+							"kind": "type",
+							"doc_comment": "Options for updating environment variables in a .env file.",
+							"source_line": 13,
+							"type_signature": "UpdateEnvVariableOptions",
+							"properties": [
+								{
+									"name": "env_file_path",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Path to the .env file."
+								},
+								{
+									"name": "read_file",
+									"kind": "variable",
+									"type_signature": "(path: string, encoding: string) => Promise<string>",
+									"doc_comment": "Function to read file contents (defaults to `node:fs/promises` `readFile`)."
+								},
+								{
+									"name": "write_file",
+									"kind": "variable",
+									"type_signature": "(path: string, content: string, encoding: string) => Promise<void>",
+									"doc_comment": "Function to write file contents (defaults to `node:fs/promises` `writeFile`)."
+								}
+							]
+						},
+						{
+							"name": "update_env_variable",
+							"kind": "function",
+							"doc_comment": "Updates or adds an environment variable in the .env file.\nPreserves existing formatting, comments, and other variables.\n\nBehavior:\n- **Duplicate keys**: updates the LAST occurrence (matches dotenv behavior)\n- **Inline comments**: preserved after the value (e.g., `KEY=value # comment`)\n- **Quote style**: preserved from original (quoted/unquoted)",
+							"source_line": 40,
+							"type_signature": "(key: string, value: string, options: UpdateEnvVariableOptions): Promise<void>",
+							"return_type": "Promise<void>",
+							"parameters": [
+								{
+									"name": "key",
+									"type": "string",
+									"description": "the environment variable name (e.g., `'SOME_CONFIGURATION_KEY'`)"
+								},
+								{
+									"name": "value",
+									"type": "string",
+									"description": "the new value for the environment variable"
+								},
+								{
+									"name": "options",
+									"type": "UpdateEnvVariableOptions",
+									"description": "file path and optional read/write overrides"
+								}
+							]
+						}
+					],
+					"module_comment": "Write updates to `.env` files while preserving formatting."
+				},
+				{
 					"path": "hono_context.ts",
 					"declarations": [
 						{
@@ -40262,7 +40801,8 @@
 						"auth/require_keeper.ts",
 						"server/app_server.ts",
 						"testing/auth_apps.ts",
-						"testing/middleware.ts"
+						"testing/middleware.ts",
+						"testing/ws_round_trip.ts"
 					]
 				},
 				{
@@ -41243,10 +41783,12 @@
 					"dependents": [
 						"actions/action_event.ts",
 						"actions/action_peer.ts",
+						"actions/broadcast_api.ts",
 						"actions/register_action_ws.ts",
 						"actions/transports_http.ts",
 						"actions/transports_ws.ts",
-						"actions/transports_ws_backend.ts"
+						"actions/transports_ws_backend.ts",
+						"testing/ws_round_trip.ts"
 					]
 				},
 				{
@@ -41445,7 +41987,8 @@
 						"actions/request_tracker.svelte.ts",
 						"http/jsonrpc_errors.ts",
 						"http/jsonrpc_helpers.ts",
-						"testing/rpc_helpers.ts"
+						"testing/rpc_helpers.ts",
+						"testing/ws_round_trip.ts"
 					]
 				},
 				{
@@ -47142,6 +47685,52 @@
 					"dependents": ["testing/adversarial_headers.ts"]
 				},
 				{
+					"path": "testing/mock_fs.ts",
+					"declarations": [
+						{
+							"name": "MockFs",
+							"kind": "type",
+							"doc_comment": "In-memory file system mock for tests that use dependency-injected\n`read_file` and `write_file` callbacks. Avoids module-level mocking.",
+							"source_line": 8,
+							"type_signature": "MockFs",
+							"properties": [
+								{
+									"name": "read_file",
+									"kind": "variable",
+									"type_signature": "(path: string, encoding: string) => Promise<string>"
+								},
+								{
+									"name": "write_file",
+									"kind": "variable",
+									"type_signature": "(path: string, content: string, encoding: string) => Promise<void>"
+								},
+								{
+									"name": "get_file",
+									"kind": "variable",
+									"type_signature": "(path: string) => string | undefined"
+								}
+							]
+						},
+						{
+							"name": "create_mock_fs",
+							"kind": "function",
+							"doc_comment": "Creates an in-memory file system for tests.\n\n`read_file` throws an `ENOENT`-tagged error for missing paths so callers\ncan exercise the same \"file doesn't exist\" code path as `node:fs`.",
+							"source_line": 22,
+							"type_signature": "(initial_files?: Record<string, string>): MockFs",
+							"return_type": "MockFs",
+							"parameters": [
+								{
+									"name": "initial_files",
+									"type": "Record<string, string>",
+									"description": "starting contents keyed by absolute path",
+									"default_value": "{}"
+								}
+							]
+						}
+					],
+					"module_comment": "In-memory file system mock for tests that use dependency-injected\n`read_file` and `write_file` callbacks. Avoids module-level mocking."
+				},
+				{
 					"path": "testing/rate_limiting.ts",
 					"declarations": [
 						{
@@ -48407,6 +48996,525 @@
 						"testing/assert_dev_env.ts"
 					],
 					"dependents": ["testing/attack_surface.ts"]
+				},
+				{
+					"path": "testing/ws_round_trip.ts",
+					"declarations": [
+						{
+							"name": "FakeWs",
+							"kind": "type",
+							"doc_comment": "A `WSContext` paired with capture arrays. Use `sends` to assert on\noutgoing frames; use `closes` to assert on revocation / close.",
+							"source_line": 81,
+							"type_signature": "FakeWs",
+							"properties": [
+								{
+									"name": "ws",
+									"kind": "variable",
+									"type_signature": "WSContext"
+								},
+								{
+									"name": "sends",
+									"kind": "variable",
+									"type_signature": "Array<string>"
+								},
+								{
+									"name": "closes",
+									"kind": "variable",
+									"type_signature": "Array<{code?: number; reason?: string}>"
+								}
+							]
+						},
+						{
+							"name": "create_fake_ws",
+							"kind": "function",
+							"doc_comment": "Build a real `WSContext` backed by in-memory `send`/`close` capture.\nParsing of outgoing frames is left to the caller — `sends` holds the\nraw strings as the dispatcher wrote them.",
+							"source_line": 92,
+							"type_signature": "(): FakeWs",
+							"return_type": "FakeWs",
+							"parameters": []
+						},
+						{
+							"name": "FakeHonoContextOptions",
+							"kind": "type",
+							"doc_comment": "Options for `create_fake_hono_context`.",
+							"source_line": 108,
+							"type_signature": "FakeHonoContextOptions",
+							"properties": [
+								{
+									"name": "credential_type",
+									"kind": "variable",
+									"type_signature": "CredentialType"
+								},
+								{
+									"name": "role",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "A single role to grant via `create_test_request_context`."
+								},
+								{
+									"name": "auth_session_id",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "api_token_id",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "request_context",
+									"kind": "variable",
+									"type_signature": "RequestContext",
+									"doc_comment": "Override the `RequestContext` outright (for multi-role or custom\naccount/actor fixtures). Takes precedence over `role`."
+								}
+							]
+						},
+						{
+							"name": "create_fake_hono_context",
+							"kind": "function",
+							"doc_comment": "Build a fake Hono `Context` exposing the auth keys the dispatcher\nreads via `c.get(...)`. Only `.get()` is populated — no other Hono\ncontext surface is simulated.",
+							"source_line": 126,
+							"type_signature": "(opts: FakeHonoContextOptions): Context<any, any, {}>",
+							"return_type": "Context<any, any, {}>",
+							"parameters": [
+								{
+									"name": "opts",
+									"type": "FakeHonoContextOptions"
+								}
+							]
+						},
+						{
+							"name": "StubUpgrade",
+							"kind": "type",
+							"doc_comment": "The return of `create_stub_upgrade` — fake `upgradeWebSocket` + factory capture.",
+							"source_line": 140,
+							"type_signature": "StubUpgrade",
+							"properties": [
+								{
+									"name": "upgradeWebSocket",
+									"kind": "variable",
+									"type_signature": "UpgradeWebSocket"
+								},
+								{
+									"name": "get_create_events",
+									"kind": "variable",
+									"type_signature": "() => (c: Context) => WSEvents | Promise<WSEvents>"
+								}
+							]
+						},
+						{
+							"name": "create_stub_upgrade",
+							"kind": "function",
+							"doc_comment": "Build a fake `upgradeWebSocket` that captures the `createEvents`\ncallback. The returned middleware is inert — tests drive\n`createEvents` directly.",
+							"source_line": 150,
+							"type_signature": "(): StubUpgrade",
+							"return_type": "StubUpgrade",
+							"parameters": []
+						},
+						{
+							"name": "MinimalActionEnvironment",
+							"kind": "class",
+							"doc_comment": "Minimal `ActionEventEnvironment` for tests that instantiate an\n`ActionPeer` without pulling in the full runtime. Pre-loads a\nspec map from the supplied list.",
+							"source_line": 170,
+							"extends": [],
+							"implements": ["ActionEventEnvironment"],
+							"members": [
+								{
+									"name": "executor",
+									"kind": "variable",
+									"type_signature": "'frontend' | 'backend'"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(specs: readonly ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]): MinimalActionEnvironment",
+									"parameters": [
+										{
+											"name": "specs",
+											"type": "readonly ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
+										}
+									]
+								},
+								{
+									"name": "lookup_action_handler",
+									"kind": "function",
+									"type_signature": "(): undefined",
+									"return_type": "undefined",
+									"parameters": []
+								},
+								{
+									"name": "lookup_action_spec",
+									"kind": "function",
+									"type_signature": "(method: string): { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"return_type": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"parameters": [
+										{
+											"name": "method",
+											"type": "string"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "dispatch_ws_message",
+							"kind": "function",
+							"doc_comment": "Hono types `WSEvents.onMessage` as `() => void | Promise<void>`.\nAwaits only the Promise branch so tests observe full dispatch\n(auth, validation, handler, send).",
+							"source_line": 189,
+							"type_signature": "(on_message: (evt: MessageEvent<WSMessageReceive>, ws: WSContext<unknown>) => void, event: MessageEvent<any>, ws: WSContext<unknown>): Promise<...>",
+							"return_type": "Promise<void>",
+							"parameters": [
+								{
+									"name": "on_message",
+									"type": "(evt: MessageEvent<WSMessageReceive>, ws: WSContext<unknown>) => void"
+								},
+								{
+									"name": "event",
+									"type": "MessageEvent<any>"
+								},
+								{
+									"name": "ws",
+									"type": "WSContext<unknown>"
+								}
+							]
+						},
+						{
+							"name": "WsConnectIdentity",
+							"kind": "type",
+							"doc_comment": "Auth identity for a mock connection.",
+							"source_line": 204,
+							"type_signature": "WsConnectIdentity",
+							"properties": [
+								{
+									"name": "account_id",
+									"kind": "variable",
+									"type_signature": "Uuid",
+									"doc_comment": "Account id for the connection. Defaults to a fresh uuid per call."
+								},
+								{
+									"name": "credential_type",
+									"kind": "variable",
+									"type_signature": "CredentialType",
+									"doc_comment": "Credential type. Defaults to `'session'`. Keeper actions require `'daemon_token'`."
+								},
+								{
+									"name": "session_id",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Session id (any string). Defaults to a fresh uuid. Hashed by the dispatcher."
+								},
+								{
+									"name": "api_token_id",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Api token id; set for bearer connections, null otherwise."
+								},
+								{
+									"name": "roles",
+									"kind": "variable",
+									"type_signature": "Array<string>",
+									"doc_comment": "Roles to grant via active permits. Pass `[ROLE_KEEPER]` for keeper actions."
+								}
+							]
+						},
+						{
+							"name": "MockWsClient",
+							"kind": "type",
+							"doc_comment": "A mock WS client: send requests, inspect/await incoming messages.",
+							"source_line": 218,
+							"type_signature": "MockWsClient",
+							"properties": [
+								{
+									"name": "send",
+									"kind": "variable",
+									"type_signature": "(message: unknown) => Promise<void>",
+									"doc_comment": "Send a JSON-RPC message (request or notification) to the server."
+								},
+								{
+									"name": "request",
+									"kind": "variable",
+									"type_signature": "<R = unknown>(\n\t\tid: number | string,\n\t\tmethod: string,\n\t\tparams: unknown,\n\t\ttimeout_ms?: number,\n\t) => Promise<R>",
+									"doc_comment": "Send a JSON-RPC request and await its response. Resolves with the\n`result`; throws with a useful message (code, text, and any `data`\npayload) on an error frame — without this, asserting on\n`result.foo` for a failed request throws\n`Cannot read property 'foo' of undefined`, which hides the real\ncause. Use `send` + `wait_for(is_response_for(id))` directly when\nyou need to assert on the error frame itself."
+								},
+								{
+									"name": "close",
+									"kind": "variable",
+									"type_signature": "(code?: number, reason?: string) => Promise<void>",
+									"doc_comment": "Close the connection, firing `onClose`. Returns a promise that\nresolves once `on_socket_close` (and the transport's own cleanup)\nhave completed — tests that assert on post-close state should await."
+								},
+								{
+									"name": "messages",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "ReadonlyArray<unknown>",
+									"doc_comment": "Every message the server has sent, in arrival order."
+								},
+								{
+									"name": "wait_for",
+									"kind": "variable",
+									"type_signature": "{\n\t\t<T>(predicate: (msg: unknown) => msg is T, timeout_ms?: number): Promise<T>;\n\t\t<T = unknown>(predicate: (msg: unknown) => boolean, timeout_ms?: number): Promise<T>;\n\t}",
+									"doc_comment": "Wait until a message satisfies `predicate`. Matches are checked\nagainst already-received messages first, then new arrivals until\nthe timeout (defaults to 1000ms).\n\nWhen `predicate` is a type guard (e.g. `is_notification_with<P>`),\nthe result is narrowed automatically and callers don't need to\nspell `<JsonrpcNotificationFrame<P>>` on the call site."
+								}
+							]
+						},
+						{
+							"name": "JsonrpcNotificationFrame",
+							"kind": "type",
+							"source_line": 275,
+							"type_signature": "JsonrpcNotificationFrame<P>",
+							"generic_params": [
+								{
+									"name": "P",
+									"default_type": "unknown"
+								}
+							],
+							"properties": [
+								{
+									"name": "jsonrpc",
+									"kind": "variable",
+									"type_signature": "typeof JSONRPC_VERSION"
+								},
+								{
+									"name": "method",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "params",
+									"kind": "variable",
+									"type_signature": "P"
+								}
+							]
+						},
+						{
+							"name": "JsonrpcSuccessResponseFrame",
+							"kind": "type",
+							"source_line": 281,
+							"type_signature": "JsonrpcSuccessResponseFrame<R>",
+							"generic_params": [
+								{
+									"name": "R",
+									"default_type": "unknown"
+								}
+							],
+							"properties": [
+								{
+									"name": "jsonrpc",
+									"kind": "variable",
+									"type_signature": "typeof JSONRPC_VERSION"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "number | string"
+								},
+								{
+									"name": "result",
+									"kind": "variable",
+									"type_signature": "R"
+								}
+							]
+						},
+						{
+							"name": "JsonrpcErrorResponseFrame",
+							"kind": "type",
+							"source_line": 287,
+							"type_signature": "JsonrpcErrorResponseFrame<D>",
+							"generic_params": [
+								{
+									"name": "D",
+									"default_type": "unknown"
+								}
+							],
+							"properties": [
+								{
+									"name": "jsonrpc",
+									"kind": "variable",
+									"type_signature": "typeof JSONRPC_VERSION"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "number | string"
+								},
+								{
+									"name": "error",
+									"kind": "variable",
+									"type_signature": "{code: number; message: string; data?: D}"
+								}
+							]
+						},
+						{
+							"name": "is_notification",
+							"kind": "function",
+							"doc_comment": "Predicate matching a JSON-RPC notification with the given method name.",
+							"source_line": 294,
+							"type_signature": "(method: string): (msg: unknown) => boolean",
+							"return_type": "(msg: unknown) => boolean",
+							"parameters": [
+								{
+									"name": "method",
+									"type": "string"
+								}
+							]
+						},
+						{
+							"name": "is_notification_with",
+							"kind": "function",
+							"doc_comment": "Type-guard combinator: match a notification whose typed `params` satisfies\n`match`. Collapses the common test pattern of casting `msg` to\n`JsonrpcNotificationFrame<P>` in every predicate body.\n\n```ts\nconst match_roster_for = (id: Uuid) =>\n  is_notification_with<RosterChangedParams>(\n    WORLD_METHODS.roster_changed,\n    (params) => params.character_id === id && !params.removed,\n  );\nconst roster = await client.wait_for(match_roster_for(char_id));\n```",
+							"source_line": 313,
+							"type_signature": "<P>(method: string, match: (params: P) => boolean): (msg: unknown) => msg is JsonrpcNotificationFrame<P>",
+							"return_type": "(msg: unknown) => msg is JsonrpcNotificationFrame<P>",
+							"parameters": [
+								{
+									"name": "method",
+									"type": "string"
+								},
+								{
+									"name": "match",
+									"type": "(params: P) => boolean"
+								}
+							]
+						},
+						{
+							"name": "is_response_for",
+							"kind": "function",
+							"doc_comment": "Predicate matching a JSON-RPC response frame (success or error) for the given request id.",
+							"source_line": 321,
+							"type_signature": "(id: string | number): (msg: unknown) => boolean",
+							"return_type": "(msg: unknown) => boolean",
+							"parameters": [
+								{
+									"name": "id",
+									"type": "string | number"
+								}
+							]
+						},
+						{
+							"name": "CreateWsTestHarnessOptions",
+							"kind": "type",
+							"doc_comment": "Options for `create_ws_test_harness`.",
+							"source_line": 327,
+							"type_signature": "CreateWsTestHarnessOptions<TCtx>",
+							"generic_params": [
+								{
+									"name": "TCtx",
+									"constraint": "BaseHandlerContext"
+								}
+							],
+							"properties": [
+								{
+									"name": "specs",
+									"kind": "variable",
+									"type_signature": "ReadonlyArray<ActionSpecUnion>"
+								},
+								{
+									"name": "handlers",
+									"kind": "variable",
+									"type_signature": "Record<string, WsActionHandler<TCtx>>"
+								},
+								{
+									"name": "extend_context",
+									"kind": "variable",
+									"type_signature": "RegisterActionWsOptions<TCtx>['extend_context']"
+								},
+								{
+									"name": "transport",
+									"kind": "variable",
+									"type_signature": "BackendWebsocketTransport",
+									"doc_comment": "Pass a pre-created transport to share with a broadcast API."
+								},
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "Logger",
+									"doc_comment": "Optional logger. Defaults to a silent `[ws-test]` logger."
+								},
+								{
+									"name": "on_socket_open",
+									"kind": "variable",
+									"type_signature": "RegisterActionWsOptions<TCtx>['on_socket_open']",
+									"doc_comment": "Threaded straight through to `register_action_ws`."
+								},
+								{
+									"name": "on_socket_close",
+									"kind": "variable",
+									"type_signature": "RegisterActionWsOptions<TCtx>['on_socket_close']",
+									"doc_comment": "Threaded straight through to `register_action_ws`."
+								}
+							]
+						},
+						{
+							"name": "WsTestHarness",
+							"kind": "type",
+							"doc_comment": "A harness instance — transport handle + connection factory.",
+							"source_line": 342,
+							"type_signature": "WsTestHarness",
+							"properties": [
+								{
+									"name": "transport",
+									"kind": "variable",
+									"type_signature": "BackendWebsocketTransport"
+								},
+								{
+									"name": "connect",
+									"kind": "variable",
+									"type_signature": "(identity?: WsConnectIdentity) => Promise<MockWsClient>",
+									"doc_comment": "Open a mock connection. Resolves after `on_socket_open` (and the\ntransport's `register_ws`) completes, so broadcasts issued\nimmediately after the `await` reach the connection. Earlier\nrevisions returned synchronously and required a `settle_open()`\nmicrotask drain — no longer necessary."
+								}
+							]
+						},
+						{
+							"name": "create_ws_test_harness",
+							"kind": "function",
+							"doc_comment": "Create a WebSocket test harness for the given specs + handlers.\n\nRegisters against a throwaway Hono app with a fake\n`upgradeWebSocket`; the captured events factory is invoked per\n`connect()` with a synthesized Hono context carrying the requested\nauth identity. Returned clients drive the real\n`onOpen`/`onMessage`/`onClose` path against a real `WSContext`.",
+							"source_line": 453,
+							"type_signature": "<TCtx extends BaseHandlerContext>(options: CreateWsTestHarnessOptions<TCtx>): WsTestHarness",
+							"return_type": "WsTestHarness",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "CreateWsTestHarnessOptions<TCtx>"
+								}
+							]
+						},
+						{
+							"name": "keeper_identity",
+							"kind": "function",
+							"doc_comment": "Convenience: default identity for keeper-authenticated connections.",
+							"source_line": 631,
+							"type_signature": "(): WsConnectIdentity",
+							"return_type": "WsConnectIdentity",
+							"parameters": []
+						},
+						{
+							"name": "build_broadcast_api",
+							"kind": "function",
+							"doc_comment": "Wire a typed broadcast API against the harness's transport, matching\nhow a consumer's real backend composes the stack. Returns the typed\nAPI so tests can call `.tx_run_created(...)` / `.workspace_changed(...)`\netc. directly.\n\n```ts\nconst harness = create_ws_test_harness<BaseHandlerContext>({specs, handlers});\nconst broadcast = build_broadcast_api<MyBackendActionsApi>({\n  harness,\n  specs: my_broadcast_action_specs,\n});\nconst client = await harness.connect(keeper_identity());\nawait broadcast.tx_run_created({run_id: '...', ...});\nawait client.wait_for(is_notification('tx_run_created'));\n```",
+							"source_line": 663,
+							"type_signature": "<TApi>(options: { harness: WsTestHarness; specs: readonly ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]; }): TApi",
+							"return_type": "TApi",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "{ harness: WsTestHarness; specs: readonly ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]; }"
+								}
+							]
+						}
+					],
+					"module_comment": "In-process test helpers for WebSocket JSON-RPC round-trips.\n\nDrives `register_action_ws` without an HTTP server. Consumers supply\nspecs + handlers; the harness constructs real `WSContext` instances\nbacked by test-owned `send`/`close` pairs, fakes the authenticated\nHono context (`request_context`, credential type, session id, api\ntoken id), and exposes a `connect()` factory returning a\n`MockWsClient` per connection.\n\nThree layers are exported:\n\n  - **Primitives** (`create_fake_ws`, `create_fake_hono_context`,\n    `create_stub_upgrade`, `MinimalActionEnvironment`,\n    `dispatch_ws_message`) — used by fuz_app's own dispatcher tests\n    and by consumers wiring tight one-off tests.\n  - **Harness** (`create_ws_test_harness`, `MockWsClient`,\n    `keeper_identity`) — the high-level driver. Give it specs +\n    handlers, get back `{transport, connect()}`. `connect()` is async\n    and resolves after `on_socket_open` completes, so broadcasts sent\n    immediately after `await harness.connect()` reach the client.\n  - **Round-trip helpers** — `is_notification` / `is_notification_with`\n    / `is_response_for` predicates, JSON-RPC wire-frame types\n    (`JsonrpcNotificationFrame`, `JsonrpcSuccessResponseFrame`,\n    `JsonrpcErrorResponseFrame` — distinct from the runtime Zod types\n    in `http/jsonrpc.ts` so tests can narrow `params` / `result`),\n    and `build_broadcast_api` for wiring a typed broadcast API against\n    the harness's transport. Used by consumer round-trip test suites\n    to replace ~100 lines of verbatim-identical glue.\n\nHono's wire upgrade is skipped — the Node test runtime has no\n`@hono/node-ws` adapter — but the full dispatch path is exercised\n(per-action auth, input validation, `ctx.notify` back to the\noriginating socket, broadcast via `BackendWebsocketTransport`, and\nclose-on-revoke).",
+					"dependencies": [
+						"actions/action_peer.ts",
+						"actions/broadcast_api.ts",
+						"actions/register_action_ws.ts",
+						"actions/transports_ws_backend.ts",
+						"auth/request_context.ts",
+						"auth/role_schema.ts",
+						"hono_context.ts",
+						"http/jsonrpc.ts",
+						"http/jsonrpc_helpers.ts",
+						"uuid.ts"
+					]
 				},
 				{
 					"path": "ui/account_sessions_state.svelte.ts",
@@ -50429,7 +51537,11 @@
 						}
 					],
 					"module_comment": "UUID utilities — branded Zod schema and factory function.",
-					"dependents": ["actions/action_event.ts", "actions/transports_ws_backend.ts"]
+					"dependents": [
+						"actions/action_event.ts",
+						"actions/transports_ws_backend.ts",
+						"testing/ws_round_trip.ts"
+					]
 				}
 			]
 		}
@@ -58516,7 +59628,7 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.3.16",
-				"@fuzdev/fuz_app": "^0.15.0",
+				"@fuzdev/fuz_app": "^0.22.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
@@ -59236,7 +60348,7 @@
 							"name": "_test_notification_action_spec",
 							"kind": "variable",
 							"source_line": 541,
-							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: false; input: ZodObject<{ index: ZodNumber; }, $strict>; output: ZodVoid; async: true; description: string; }"
+							"type_signature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ index: ZodNumber; }, $strict>; output: ZodVoid; async: true; description: string; }"
 						},
 						{
 							"name": "all_action_specs",
@@ -60323,32 +61435,32 @@
 						{
 							"name": "cell_classes",
 							"kind": "variable",
-							"source_line": 34,
-							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 24 more ...; Workspaces: typeof Workspaces; }"
+							"source_line": 33,
+							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 23 more ...; Workspaces: typeof Workspaces; }"
 						},
 						{
 							"name": "CellClasses",
 							"kind": "type",
-							"source_line": 69,
-							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 24 more ...; Workspaces: typeof Workspaces; }"
+							"source_line": 67,
+							"type_signature": "{ Parts: typeof Parts; Capabilities: typeof Capabilities; Chat: typeof Chat; Chats: typeof Chats; Diskfile: typeof Diskfile; DiskfileTab: typeof DiskfileTab; DiskfileTabs: typeof DiskfileTabs; ... 23 more ...; Workspaces: typeof Workspaces; }"
 						},
 						{
 							"name": "CellClassNames",
 							"kind": "type",
-							"source_line": 71,
-							"type_signature": "\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 18 more ... | \"Workspaces\""
+							"source_line": 69,
+							"type_signature": "\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 17 more ... | \"Workspaces\""
 						},
 						{
 							"name": "CellRegistryMap",
 							"kind": "type",
-							"source_line": 73,
+							"source_line": 71,
 							"type_signature": "CellRegistryMap"
 						},
 						{
 							"name": "is_cell_type",
 							"kind": "function",
 							"doc_comment": "Type guard to check if a cell is an instance of a specific cell class.",
-							"source_line": 80,
+							"source_line": 78,
 							"type_signature": "<K extends CellClassNames>(cell: Cell<any> | null | undefined, class_name: K): cell is CellRegistryMap[K]",
 							"return_type": "boolean",
 							"parameters": [
@@ -60366,9 +61478,9 @@
 							"name": "get_cell_class_names",
 							"kind": "function",
 							"doc_comment": "Get a list of all registered cell class names.",
-							"source_line": 88,
-							"type_signature": "(): (\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 18 more ... | \"Workspaces\")[]",
-							"return_type": "(\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 18 more ... | \"Workspaces\")[]",
+							"source_line": 86,
+							"type_signature": "(): (\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 17 more ... | \"Workspaces\")[]",
+							"return_type": "(\"Action\" | \"Actions\" | \"Capabilities\" | \"Parts\" | \"Chat\" | \"Chats\" | \"Diskfile\" | \"DiskfileTab\" | \"DiskfileTabs\" | \"DiskfilePart\" | \"DiskfileHistory\" | \"Diskfiles\" | \"DiskfilesEditor\" | ... 17 more ... | \"Workspaces\")[]",
 							"parameters": []
 						}
 					],
@@ -60392,7 +61504,6 @@
 						"prompts.svelte.ts",
 						"provider.svelte.ts",
 						"providers.svelte.ts",
-						"socket.svelte.ts",
 						"space.svelte.ts",
 						"spaces.svelte.ts",
 						"terminal.svelte.ts",
@@ -60782,7 +61893,6 @@
 						"prompts.svelte.ts",
 						"provider.svelte.ts",
 						"providers.svelte.ts",
-						"socket.svelte.ts",
 						"space.svelte.ts",
 						"spaces.svelte.ts",
 						"terminal.svelte.ts",
@@ -61168,7 +62278,6 @@
 						"prompts.svelte.ts",
 						"provider.svelte.ts",
 						"providers.svelte.ts",
-						"socket.svelte.ts",
 						"space.svelte.ts",
 						"spaces.svelte.ts",
 						"terminal.svelte.ts",
@@ -72300,7 +73409,7 @@
 							"name": "BackendActionsApi",
 							"kind": "type",
 							"doc_comment": "Broadcast-style notifications from the backend to all connected clients.\nRequest-scoped streaming (completion_progress, ollama_progress) goes through\n`ctx.notify` instead — it's socket-scoped, not a broadcast.",
-							"source_line": 28,
+							"source_line": 23,
 							"type_signature": "BackendActionsApi",
 							"properties": [
 								{
@@ -72328,7 +73437,7 @@
 						{
 							"name": "create_backend_actions_api",
 							"kind": "function",
-							"source_line": 76,
+							"source_line": 37,
 							"type_signature": "(backend: Backend): BackendActionsApi",
 							"return_type": "BackendActionsApi",
 							"parameters": [
@@ -72342,7 +73451,7 @@
 							"name": "handle_filer_change",
 							"kind": "function",
 							"doc_comment": "Handle file system changes and notify clients.",
-							"source_line": 89,
+							"source_line": 48,
 							"type_signature": "(change: WatcherChange, disknode: Disknode, backend: Backend, dir: string, filer: Filer): void",
 							"return_type": "void",
 							"parameters": [
@@ -72369,12 +73478,7 @@
 							]
 						}
 					],
-					"dependencies": [
-						"action_specs.ts",
-						"diskfile_helpers.ts",
-						"diskfile_types.ts",
-						"zod_helpers.ts"
-					],
+					"dependencies": ["action_specs.ts", "diskfile_helpers.ts", "diskfile_types.ts"],
 					"dependents": ["server/backend.ts", "server/create_zzz_app.ts"]
 				},
 				{
@@ -73583,6 +74687,20 @@
 					"dependents": ["server/create_zzz_app.ts"]
 				},
 				{
+					"path": "server/constants.ts",
+					"declarations": [
+						{
+							"name": "ENV_FILE",
+							"kind": "variable",
+							"doc_comment": "Canonical env file path for daemon-initiated reads and writes.\n\nThe write target must match a file that's reloaded on next daemon start,\nso user-entered values (e.g. API keys via `provider_update_api_key`)\nsurvive restart:\n\n- **Dev** (`gro dev`, `deno task dev`): both Vite and `scripts/dev.ts`\n  reload `.env.development`. `.env` is shadowed by `.env.development` in\n  Vite's mode-precedence and is not loaded at all by `scripts/dev.ts`,\n  so writing to `.env` in dev would be invisible on restart.\n- **Prod** (compiled `zzz daemon start`): `server.ts` loads `.env` via\n  `load_env_file`. `.env.production` is NOT loaded by the compiled daemon\n  (only by `deno task preview`'s `--env=.env.production` flag), so writing\n  there would be invisible on restart.",
+							"source_line": 29,
+							"type_signature": "string"
+						}
+					],
+					"module_comment": "Server-side constants (Deno-compile-safe).\n\nMirror of `src/lib/constants.ts` for modules in the Deno compile chain.\nMust not import `$env/static/public` or any SvelteKit build-time module —\nthose don't exist in Deno and crash `gro build` / `deno compile`.",
+					"dependents": ["server/server.ts", "server/zzz_action_handlers.ts"]
+				},
+				{
 					"path": "server/create_zzz_app.ts",
 					"declarations": [
 						{
@@ -73722,65 +74840,6 @@
 					],
 					"module_comment": "Database schema initialization for zzz.\n\nRuns fuz_app auth migrations. No zzz-specific DDL yet\n(all domain state is in-memory via Cells).",
 					"dependents": ["server/create_zzz_app.ts"]
-				},
-				{
-					"path": "server/env_file_helpers.ts",
-					"declarations": [
-						{
-							"name": "update_env_variable",
-							"kind": "function",
-							"doc_comment": "Updates or adds an environment variable in the .env file.\nPreserves existing formatting, comments, and other variables.\n\nBehavior:\n- **Duplicate keys**: Updates the LAST occurrence (matches dotenv behavior)\n- **Inline comments**: Preserved after the value (e.g., `KEY=value # comment`)\n- **Quote style**: Preserved from original (quoted/unquoted)",
-							"source_line": 38,
-							"type_signature": "(key: string, value: string, options?: UpdateEnvVariableOptions): Promise<void>",
-							"return_type": "Promise<void>",
-							"parameters": [
-								{
-									"name": "key",
-									"type": "string",
-									"description": "the environment variable name (e.g., 'SOME_CONFIGURATION_KEY')"
-								},
-								{
-									"name": "value",
-									"type": "string",
-									"description": "the new value for the environment variable"
-								},
-								{
-									"name": "options",
-									"type": "UpdateEnvVariableOptions",
-									"description": "optional configuration for file path and operations",
-									"default_value": "{}"
-								}
-							]
-						},
-						{
-							"name": "UpdateEnvVariableOptions",
-							"kind": "type",
-							"doc_comment": "Options for updating environment variables in a .env file.",
-							"source_line": 10,
-							"type_signature": "UpdateEnvVariableOptions",
-							"properties": [
-								{
-									"name": "env_file_path",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Path to the .env file (defaults to `./.env`)"
-								},
-								{
-									"name": "read_file",
-									"kind": "variable",
-									"type_signature": "(path: string, encoding: string) => Promise<string>",
-									"doc_comment": "Function to read file contents (defaults to node:fs/promises readFile)"
-								},
-								{
-									"name": "write_file",
-									"kind": "variable",
-									"type_signature": "(path: string, content: string, encoding: string) => Promise<void>",
-									"doc_comment": "Function to write file contents (defaults to node:fs/promises writeFile)"
-								}
-							]
-						}
-					],
-					"dependents": ["server/zzz_action_handlers.ts"]
 				},
 				{
 					"path": "server/helpers.ts",
@@ -74031,7 +75090,7 @@
 						{
 							"name": "RegisterWebsocketActionsOptions",
 							"kind": "type",
-							"source_line": 35,
+							"source_line": 24,
 							"type_signature": "RegisterWebsocketActionsOptions",
 							"properties": [
 								{
@@ -74071,8 +75130,8 @@
 						{
 							"name": "register_websocket_actions",
 							"kind": "function",
-							"doc_comment": "Registers WebSocket endpoints for all service actions in the schema registry.",
-							"source_line": 49,
+							"doc_comment": "Registers the WebSocket endpoint for all zzz request/response actions.\n\nThe zzz `Backend` is exposed on every handler's context. Per-action auth,\nZod validation, and socket-scoped `notify` / `signal` come from fuz_app.",
+							"source_line": 41,
 							"type_signature": "({ path, app, backend, upgradeWebSocket, artificial_delay, transport, }: RegisterWebsocketActionsOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -74083,7 +75142,7 @@
 							]
 						}
 					],
-					"module_comment": "WebSocket endpoint with direct handler dispatch.\n\nReplaces the old `backend.receive(json)` → ActionPeer → ActionEvent path\nwith: spec lookup → Zod input validation → handler call → JSON-RPC response.\nKeeps existing per-action auth checking at the transport layer.",
+					"module_comment": "WebSocket endpoint wiring — thin wrapper over fuz_app's\n{@link register_action_ws}.\n\nzzz supplies the handler map, action specs, and a context-extender that\nadds the domain `Backend` onto the base per-request context. All dispatch,\nauth, validation, and transport bookkeeping live in fuz_app.",
 					"dependencies": ["action_specs.ts", "server/zzz_action_handlers.ts"],
 					"dependents": ["server/server.ts"]
 				},
@@ -74680,7 +75739,7 @@
 							"name": "start_server",
 							"kind": "function",
 							"doc_comment": "Start the zzz server using Deno runtime.\n\nCreates the full backend with auth, database, providers, WebSocket, and HTTP RPC\nendpoints via `create_zzz_app`, then serves with `Deno.serve`.",
-							"source_line": 46,
+							"source_line": 47,
 							"type_signature": "(): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": []
@@ -74688,6 +75747,7 @@
 					],
 					"module_comment": "Deno server entry point for zzz.\n\nSingle entry point for both dev mode (`gro dev` via `gro_plugin_deno_server`)\nand production (`zzz daemon start`). Uses the shared `create_zzz_app` factory\nfor the Hono app with fuz_app auth stack, then binds with `Deno.serve`\nand handles daemon lifecycle.",
 					"dependencies": [
+						"server/constants.ts",
 						"server/create_zzz_app.ts",
 						"server/register_websocket_actions.ts",
 						"server/security.ts",
@@ -74703,7 +75763,7 @@
 							"name": "ZzzHandlerContext",
 							"kind": "type",
 							"doc_comment": "Per-request context passed to every handler.\nMirrors Rust's `HandlerContext` — transport constructs it, handler borrows it.",
-							"source_line": 29,
+							"source_line": 30,
 							"type_signature": "ZzzHandlerContext",
 							"properties": [
 								{
@@ -74735,21 +75795,21 @@
 							"name": "ZzzHandledMethod",
 							"kind": "type",
 							"doc_comment": "Methods handled by zzz_action_handlers (request_response only, excludes remote_notifications).",
-							"source_line": 43,
+							"source_line": 44,
 							"type_signature": "ZzzHandledMethod"
 						},
 						{
 							"name": "ZzzActionHandlers",
 							"kind": "type",
 							"doc_comment": "Typed handler map — each handler has per-method input/output types.",
-							"source_line": 55,
+							"source_line": 56,
 							"type_signature": "ZzzActionHandlers"
 						},
 						{
 							"name": "zzz_action_handlers",
 							"kind": "variable",
 							"doc_comment": "All 23 request_response handlers as pure functions.\n\nLogic sourced from the RPC versions (cleaner than the old WS handlers —\nno Deno-only bug in provider_update_api_key, no console.log noise).",
-							"source_line": 68,
+							"source_line": 69,
 							"type_signature": "ZzzActionHandlers"
 						}
 					],
@@ -74757,7 +75817,7 @@
 					"dependencies": [
 						"diskfile_helpers.ts",
 						"diskfile_types.ts",
-						"server/env_file_helpers.ts",
+						"server/constants.ts",
 						"server/helpers.ts",
 						"zod_helpers.ts",
 						"zzz_jsonrpc_errors.ts"
@@ -74908,18 +75968,6 @@
 							"kind": "variable",
 							"source_line": 5,
 							"type_signature": "true"
-						},
-						{
-							"name": "DEFAULT_RETRY_COUNT",
-							"kind": "variable",
-							"source_line": 8,
-							"type_signature": "3"
-						},
-						{
-							"name": "DEFAULT_CLOSE_CODE",
-							"kind": "variable",
-							"source_line": 11,
-							"type_signature": "1000"
 						}
 					],
 					"dependents": ["CapabilityWebsocket.svelte", "socket.svelte.ts"]
@@ -74928,42 +75976,23 @@
 					"path": "socket.svelte.ts",
 					"declarations": [
 						{
-							"name": "SocketJson",
-							"kind": "type",
-							"source_line": 23,
-							"type_signature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; ... 6 more ...; auto_reconnect: ZodDefault<...>; }, $strict>"
-						},
-						{
-							"name": "SocketJsonInput",
-							"kind": "type",
-							"source_line": 32,
-							"type_signature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; url?: string | null | undefined; url_input?: string | undefined; heartbeat_interval?: number | undefined; reconnect_delay?: number | undefined; reconnect_delay_max?: number | undefined; auto_reconnect?: boolean | undefined; }"
-						},
-						{
 							"name": "SocketOptions",
 							"kind": "type",
-							"source_line": 34,
+							"source_line": 20,
 							"type_signature": "SocketOptions",
-							"extends": ["CellOptions<typeof SocketJson>"],
-							"properties": []
-						},
-						{
-							"name": "SocketActionHandler",
-							"kind": "type",
-							"source_line": 36,
-							"type_signature": "SocketActionHandler"
-						},
-						{
-							"name": "SocketErrorHandler",
-							"kind": "type",
-							"source_line": 37,
-							"type_signature": "SocketErrorHandler"
+							"properties": [
+								{
+									"name": "app",
+									"kind": "variable",
+									"type_signature": "Frontend"
+								}
+							]
 						},
 						{
 							"name": "QueuedMessage",
 							"kind": "type",
 							"doc_comment": "Queued message that couldn't be sent immediately.",
-							"source_line": 44,
+							"source_line": 27,
 							"type_signature": "QueuedMessage",
 							"properties": [
 								{
@@ -74987,7 +76016,7 @@
 							"name": "FailedMessage",
 							"kind": "type",
 							"doc_comment": "Failed message that exceeded retry count.",
-							"source_line": 53,
+							"source_line": 36,
 							"type_signature": "FailedMessage",
 							"extends": ["QueuedMessage"],
 							"properties": [
@@ -75006,25 +76035,41 @@
 						{
 							"name": "Socket",
 							"kind": "class",
-							"doc_comment": "Socket class for WebSocket connection management with auto-reconnect and message queueing.",
-							"source_line": 61,
-							"extends": ["Cell<typeof SocketJson>"],
-							"implements": [],
+							"doc_comment": "Wraps  with zzz-specific concerns:\na retryable message queue, a heartbeat that pings the backend, URL input\ntracking, and a mapping from fuz_app's `SocketStatus` onto zzz's\n`AsyncStatus`. Plain reactive class — not a Cell. Implements\n so it can back `FrontendWebsocketTransport`.\n\nReconnect settings (`reconnect_delay`, `reconnect_delay_max`,\n`auto_reconnect`) propagate to the underlying client via\n — callers wire an `$effect` to\ninvoke it when any of the three fields change. In-flight waits are\nmonotonically shortened (never extended).",
+							"source_line": 54,
+							"extends": [],
+							"implements": ["WebsocketConnection"],
 							"members": [
 								{
-									"name": "ws",
+									"name": "app",
 									"kind": "variable",
-									"type_signature": "WebSocket | null"
+									"modifiers": ["readonly"],
+									"type_signature": "Frontend"
 								},
 								{
-									"name": "open",
+									"name": "url_input",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "heartbeat_interval",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "reconnect_delay",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "reconnect_delay_max",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "auto_reconnect",
 									"kind": "variable",
 									"type_signature": "boolean"
-								},
-								{
-									"name": "status",
-									"kind": "variable",
-									"type_signature": "AsyncStatus"
 								},
 								{
 									"name": "last_send_time",
@@ -75037,36 +76082,6 @@
 									"type_signature": "number | null"
 								},
 								{
-									"name": "last_connect_time",
-									"kind": "variable",
-									"type_signature": "number | null"
-								},
-								{
-									"name": "heartbeat_timeout",
-									"kind": "variable",
-									"type_signature": "NodeJS.Timeout | null"
-								},
-								{
-									"name": "reconnect_count",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "reconnect_attempt",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "reconnect_timeout",
-									"kind": "variable",
-									"type_signature": "NodeJS.Timeout | null"
-								},
-								{
-									"name": "current_reconnect_delay",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
 									"name": "message_queue",
 									"kind": "variable",
 									"type_signature": "Array<QueuedMessage>"
@@ -75077,7 +76092,62 @@
 									"type_signature": "SvelteMap<string, FailedMessage>"
 								},
 								{
+									"name": "ws",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "WebSocket | null"
+								},
+								{
+									"name": "url",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string | null"
+								},
+								{
+									"name": "reconnect_count",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "number"
+								},
+								{
+									"name": "current_reconnect_delay",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "number"
+								},
+								{
+									"name": "last_connect_time",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "number | null"
+								},
+								{
+									"name": "reconnect_attempt",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"doc_comment": "Changes each time a close fires — used by the UI as an animation key so\neach reconnect wait restarts the progress bar. Replaces the dedicated\ncounter the old Cell kept.",
+									"type_signature": "number"
+								},
+								{
+									"name": "is_reconnect_pending",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean"
+								},
+								{
+									"name": "status",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "AsyncStatus"
+								},
+								{
 									"name": "connected",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean"
+								},
+								{
+									"name": "open",
 									"kind": "variable",
 									"modifiers": ["readonly"],
 									"type_signature": "boolean"
@@ -75132,14 +76202,12 @@
 								{
 									"name": "connect",
 									"kind": "function",
-									"doc_comment": "Connects to the WebSocket server.",
 									"type_signature": "(url?: string | null): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "url",
 											"type": "string | null",
-											"description": "the WebSocket URL to connect to",
 											"default_value": "null"
 										}
 									]
@@ -75147,51 +76215,37 @@
 								{
 									"name": "disconnect",
 									"kind": "function",
-									"doc_comment": "Disconnects from the WebSocket server.",
-									"type_signature": "(code?: number): void",
+									"type_signature": "(): void",
 									"return_type": "void",
-									"parameters": [
-										{
-											"name": "code",
-											"type": "number",
-											"description": "the close code to use (default: 1000 - normal closure)",
-											"default_value": "DEFAULT_CLOSE_CODE"
-										}
-									]
+									"parameters": []
 								},
 								{
 									"name": "send",
 									"kind": "function",
-									"doc_comment": "Sends a message through the WebSocket.",
 									"type_signature": "(data: object): boolean",
 									"return_type": "boolean",
-									"return_description": "`true` if the message was sent immediately, `false` if queued or failed",
 									"parameters": [
 										{
 											"name": "data",
-											"type": "object",
-											"description": "the data to send"
+											"type": "object"
 										}
 									]
 								},
 								{
 									"name": "update_url",
 									"kind": "function",
-									"doc_comment": "Updates the connection URL and reconnects if currently connected.",
 									"type_signature": "(url: string): void",
 									"return_type": "void",
 									"parameters": [
 										{
 											"name": "url",
-											"type": "string",
-											"description": "the new WebSocket URL"
+											"type": "string"
 										}
 									]
 								},
 								{
 									"name": "send_heartbeat",
 									"kind": "function",
-									"doc_comment": "Sends a ping message for heartbeat purposes",
 									"type_signature": "(): Promise<void>",
 									"return_type": "Promise<void>",
 									"parameters": []
@@ -75199,21 +76253,12 @@
 								{
 									"name": "retry_queued_messages",
 									"kind": "function",
-									"doc_comment": "Retry sending all queued messages.",
 									"type_signature": "(): void",
 									"return_type": "void",
 									"parameters": []
 								},
 								{
 									"name": "clear_failed_messages",
-									"kind": "function",
-									"doc_comment": "Clear the failed messages list",
-									"type_signature": "(): void",
-									"return_type": "void",
-									"parameters": []
-								},
-								{
-									"name": "maybe_reconnect",
 									"kind": "function",
 									"type_signature": "(): void",
 									"return_type": "void",
@@ -75222,7 +76267,14 @@
 								{
 									"name": "cancel_reconnect",
 									"kind": "function",
-									"doc_comment": "Cancel any pending reconnection attempt.",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
+								},
+								{
+									"name": "apply_reconnect_policy",
+									"kind": "function",
+									"doc_comment": "Push the current `auto_reconnect` / `reconnect_delay` /\n`reconnect_delay_max` fields to the underlying client. No-op when\nthere is no client (next `connect()` picks them up from construction).",
 									"type_signature": "(): void",
 									"return_type": "void",
 									"parameters": []
@@ -75230,43 +76282,32 @@
 								{
 									"name": "add_message_handler",
 									"kind": "function",
-									"doc_comment": "Add a message handler and return a function to remove it.",
-									"type_signature": "(handler: SocketActionHandler): () => void",
+									"type_signature": "(handler: SocketMessageHandler): () => void",
 									"return_type": "() => void",
-									"return_description": "a function that removes the handler when called",
 									"parameters": [
 										{
 											"name": "handler",
-											"type": "SocketActionHandler",
-											"description": "the message handler to add"
+											"type": "SocketMessageHandler"
 										}
 									]
 								},
 								{
 									"name": "add_error_handler",
 									"kind": "function",
-									"doc_comment": "Add an error handler and return a function to remove it.",
 									"type_signature": "(handler: SocketErrorHandler): () => void",
 									"return_type": "() => void",
-									"return_description": "a function that removes the handler when called",
 									"parameters": [
 										{
 											"name": "handler",
-											"type": "SocketErrorHandler",
-											"description": "the error handler to add"
+											"type": "SocketErrorHandler"
 										}
 									]
 								}
 							]
 						}
 					],
-					"dependencies": [
-						"cell.svelte.ts",
-						"cell_types.ts",
-						"socket_helpers.ts",
-						"zod_helpers.ts"
-					],
-					"dependents": ["cell_classes.ts", "frontend.svelte.ts"]
+					"dependencies": ["socket_helpers.ts", "zod_helpers.ts"],
+					"dependents": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "SocketMessageQueue.svelte",
@@ -77965,20 +79006,6 @@
 									"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>"
 								}
 							]
-						},
-						{
-							"name": "format_zod_validation_error",
-							"kind": "function",
-							"doc_comment": "Formats a Zod validation error with field paths for clearer error messages.",
-							"source_line": 117,
-							"type_signature": "(error: ZodError<unknown>): string",
-							"return_type": "string",
-							"parameters": [
-								{
-									"name": "error",
-									"type": "ZodError<unknown>"
-								}
-							]
 						}
 					],
 					"dependents": [
@@ -78004,7 +79031,6 @@
 						"parts.svelte.ts",
 						"prompt.svelte.ts",
 						"response_helpers.ts",
-						"server/backend_actions_api.ts",
 						"server/zzz_action_handlers.ts",
 						"socket.svelte.ts",
 						"terminal.svelte.ts",

@@ -866,6 +866,64 @@ Tests with dynamic expected values or extra assertions should stay standalone.
 Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
 configuration with `session_options` and `create_route_specs`.
 
+### WebSocket Round-Trip Tests
+
+WebSocket JSON-RPC endpoints are tested in-process via
+`@fuzdev/fuz_app/testing/ws_round_trip.js` — no HTTP server, no Deno. The
+harness drives the real `register_action_ws` dispatcher and
+`BackendWebsocketTransport` against `MockWsClient` connections, so
+per-action auth, input validation, `ctx.notify`, and broadcast fan-out
+all run through the real code paths.
+
+Convention (used in tx, zzz, undying.dealt.dev):
+
+1. **All round-trip helpers live in fuz_app**
+   (`@fuzdev/fuz_app/testing/ws_round_trip.js`):
+   - `create_ws_test_harness({specs, handlers, ...})` → `{transport,
+     connect}`. `connect(identity?)` is async and resolves after
+     `on_socket_open` completes. Passes through `register_action_ws`
+     options (`on_socket_open`, `on_socket_close`, `extend_context`,
+     `transport`, `log`); share a `BackendWebsocketTransport` via the
+     `transport` option to test cross-harness broadcast fan-out.
+   - `MockWsClient.request<R>(id, method, params, timeout?)` — the
+     default for request/response. Returns `result` on success; throws
+     `rpc #id failed: [code] message data=...` on error frames.
+   - `client.send(message)` + `client.wait_for(predicate)` — raw
+     primitives. Use them to assert on an error frame directly (e.g.
+     `-32602` + zod issues) or when the request never resolves
+     (`ctx.signal` abort tests).
+   - Predicates: `is_notification(method)`, `is_response_for(id)`, and
+     `is_notification_with<P>(method, (params) => boolean)` — a type
+     guard that narrows `wait_for` / `messages.filter` results without
+     an explicit `<T>` at the call site.
+   - Wire-frame types for narrowing: `JsonrpcNotificationFrame<P>`,
+     `JsonrpcSuccessResponseFrame<R>`, `JsonrpcErrorResponseFrame<D>`.
+   - `build_broadcast_api<TApi>({harness, specs})` — wires peer +
+     transport + typed broadcast API, mirroring real backend assembly.
+   - `keeper_identity()` — default identity for keeper-authed connections.
+
+2. **Repo-local `ws_test_harness.ts` is only for project-specific
+   setup** — not a re-implementation of the above. undying has one
+   (memoized pglite+schema+seed+world_state init per worker, plus a
+   `make_client_tracker` that closes tracked clients in `afterEach`
+   because module-level world_state leaks between tests). tx and zzz
+   have no repo-local harness at all — tests import directly from
+   `@fuzdev/fuz_app/testing/ws_round_trip.js`.
+
+3. **Split test files by aspect** (same as other test suites —
+   see _Test File Naming_ above):
+   - `ws.integration.dispatch.test.ts` — request/response, `ctx.notify`,
+     per-action auth, input validation, `ctx.signal`, concurrent requests
+   - `ws.integration.broadcast.test.ts` — `create_broadcast_api`
+     fan-out, close-removes-from-transport
+
+4. **DB-backed WS tests** (e.g. undying.dealt.dev) use the
+   `.db.test.ts` suffix and memoize the harness per worker since
+   `isolate: false` + `fileParallelism: false` means module-level state
+   (world_state globals, embodiments map) would otherwise double-init.
+   Non-DB WS tests (tx, zzz) build a fresh harness per test — setup
+   is cheap and each test can supply its own ad-hoc specs + handlers.
+
 ## Quick Reference
 
 | Pattern                           | Purpose                                                            |
@@ -895,6 +953,10 @@ configuration with `session_options` and `create_route_specs`.
 | `vi.stubGlobal('ResizeObserver')` | Required in jsdom for components using ResizeObserver              |
 | `describe_db(name, fn)`           | DB test wrapper (fuz_app)                                          |
 | `create_test_app()`               | Full Hono app for integration tests (fuz_app)                      |
+| `create_ws_test_harness()`        | In-process WS JSON-RPC harness (fuz_app); async `connect()`        |
+| `client.request(id, method, ...)` | Send + await response; throws on error frame                       |
+| `build_broadcast_api({harness})`  | Typed broadcast API wired to the harness transport (fuz_app)       |
+| `ws_test_harness.ts` (repo-local) | Only for project-specific setup (memoized DB, client tracking)     |
 | `stub_app_deps`                   | Throwing stub deps for unit tests (fuz_app)                        |
 | DI via `*Operations`/`*Deps`      | Preferred over vi.mock() for side effects                          |
 | `create_mock_*()`                 | Factory functions for test data                                    |
