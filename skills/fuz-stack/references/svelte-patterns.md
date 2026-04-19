@@ -263,6 +263,11 @@ export class DocsLinks {
 
 Standard `Map`/`Set` are not tracked by Svelte's reactivity.
 
+For entity streams where the same data is consumed by different
+lookups, maintain **multiple `SvelteMap` indexes** over it — rebuild
+on snapshot events, update incrementally on delta events. Deriveds
+then use `.get()` lookups instead of array scans.
+
 ## Schema-Driven Reactive Classes
 
 Zod schemas paired with Svelte 5 runes classes — the schema defines the JSON
@@ -1228,6 +1233,17 @@ export const effect_with_count = (fn: (count: number) => void, initial = 0): voi
 	});
 };
 ```
+
+### Plain Classes for Imperative Loops
+
+Canvas2D/WebGPU renderers, `requestAnimationFrame` loops, and
+long-lived pointer listeners are the inverse case: use a **plain
+class with no runes**, mounted by a thin `.svelte` wrapper. Private
+fields (e.g. `#hovered_id`, `#cursor_x`) stay non-reactive on purpose
+— mutating them from an rAF tick must not schedule reruns. The
+wrapper binds dimensions, forwards reactive sources via
+getter-backed options, and calls `destroy()` on unmount. Runes live
+in the wrapper, never in the loop.
 
 ## Debugging
 
