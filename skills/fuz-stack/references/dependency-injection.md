@@ -173,15 +173,15 @@ export interface FsOperations {
 	readFile: (options: {
 		path: string;
 		encoding: BufferEncoding;
-	}) => Promise<Result<{value: string}, {message: string}>>;
-	writeFile: (options: {
-		path: string;
-		content: string;
-	}) => Promise<Result<object, {message: string}>>;
-	mkdir: (options: {path: string; recursive?: boolean}) => Promise<Result<object, {message: string}>>;
-	exists: (options: {path: string}) => boolean;
+	}) => Promise<Result<{value: string}, FsError>>;
+	writeFile: (options: {path: string; content: string}) => Promise<Result<object, FsError>>;
+	mkdir: (options: {path: string; recursive?: boolean}) => Promise<Result<object, FsError>>;
+	exists: (options: {path: string}) => Promise<boolean>;
 }
 ```
+
+`FsError` is the shared discriminated error type — see the L1 filesystem
+contract under Design Principles.
 
 ### Default implementations
 
@@ -215,31 +215,34 @@ Focused deps interface for cache file I/O. Files: `deps.ts` +
 
 ```typescript
 // deps.ts
+import type {FsError} from '@fuzdev/fuz_util/fs.js';
+
 export interface CacheDeps {
-	read_text: (options: {path: string}) => Promise<string | null>;
-	write_text_atomic: (options: {
-		path: string;
-		content: string;
-	}) => Promise<Result<object, {message: string}>>;
-	unlink: (options: {path: string}) => Promise<Result<object, {message: string}>>;
+	read_text: (options: {path: string}) => Promise<Result<{value: string}, FsError>>;
+	write_text_atomic: (options: {path: string; content: string}) => Promise<Result<object, FsError>>;
+	unlink: (options: {path: string}) => Promise<Result<object, FsError>>;
 }
 
-// deps_defaults.ts
+// deps_defaults.ts — every fs throw routes through classify_fs_error
+import {classify_fs_error} from '@fuzdev/fuz_util/fs.js';
+
 export const default_cache_deps: CacheDeps = {
 	read_text: async ({path}) => {
-		try { return await readFile(path, 'utf8'); }
-		catch { return null; }
+		try { return {ok: true, value: await readFile(path, 'utf8')}; }
+		catch (error) { return {ok: false, ...classify_fs_error(error)}; }
 	},
 	write_text_atomic: async ({path, content}) => {
-		return wrap_void(async () => {
+		try {
 			await mkdir(dirname(path), {recursive: true});
 			const temp_path = path + '.tmp.' + process.pid + '.' + Date.now();
 			await writeFile(temp_path, content);
 			await rename(temp_path, path);
-		});
+			return {ok: true};
+		} catch (error) { return {ok: false, ...classify_fs_error(error)}; }
 	},
 	unlink: async ({path}) => {
-		return wrap_void(async () => { await unlink(path).catch(() => {}); });
+		try { await unlink(path); return {ok: true}; }
+		catch (error) { return {ok: false, ...classify_fs_error(error)}; }
 	},
 };
 ```
@@ -424,11 +427,51 @@ export interface GitOperations {
 }
 ```
 
-### Null for not-found
+### L1 filesystem contract: uniform Result with typed `FsError`
+
+L1 domain filesystem wrappers (`CacheDeps`, `FsOperations`, mageguild's
+`FsOperations`) use a uniform shape from `@fuzdev/fuz_util/fs.js`: reads,
+writes, and queries all return `Result<{value: T}, FsError>` — no mix of
+`string | null` reads with `Result` writes. Implementations route thrown
+errors through `classify_fs_error(error)`, which maps Node `code`
+(ENOENT/EACCES/EPERM/EEXIST) to a discriminated `kind`:
 
 ```typescript
-read_text: (options: {path: string}) => Promise<string | null>;
+type FsError =
+	| {kind: 'not_found'; message: string}
+	| {kind: 'permission_denied'; message: string}
+	| {kind: 'already_exists'; message: string}
+	| {kind: 'io_error'; message: string};
+
+// FsJsonError adds {kind: 'invalid_json'} — for read_json-style deps where
+// missing vs corrupt must be distinguishable (e.g. self-healing config loads).
 ```
+
+Callers branch on `kind` instead of regex-matching `message`:
+
+```typescript
+// Missing is expected
+if (!r.ok) return null;
+
+// Missing returns a default
+if (!r.ok) {
+	if (r.kind === 'not_found') return [];
+	throw new Error(`readdir failed: ${r.message}`);
+}
+
+// Missing is impossible
+if (!r.ok) throw new Error(`read failed: ${r.message}`);
+
+// rm -f semantics (tolerate missing)
+if (!r.ok && r.kind !== 'not_found') throw new Error(r.message);
+```
+
+Uniform shape keeps the contract symmetric for a future Rust port where
+`Result<T, E>` is native; typed kinds replace the `{message}` structural
+shape that earlier code had to regex-match. Scope: L1 domain wrappers only.
+The L0 platform runtime (`FsReadDeps` in `fuz_app/runtime/deps.ts`) keeps
+throws-on-error to mirror `Deno.readTextFile` / `node:fs`. See the
+ops-layering quest in the grimoire for the migration history.
 
 ### No `vi.mock` — plain objects instead
 
@@ -717,7 +760,8 @@ assert.deepStrictEqual(runtime.exit_calls, [0]);
 | ---------- | -------------------------------------------------------------------- |
 | Parameters | Single `options` object in operations interfaces                     |
 | Errors     | Return `Result`, never throw                                         |
-| Not found  | Return `null`                                                        |
+| L1 fs      | Uniform `Result<{value: T}, FsError>` — reads, writes, queries alike |
+| L0 fs      | Platform mirror — throws on error (`FsReadDeps` in fuz_app)          |
 | Testing    | Plain objects — no `vi.mock()` for module replacement                |
 | State      | Deps are stateless — mutable refs passed separately                  |
 | Narrowing  | Accept the smallest `*Deps` interface that covers usage              |
