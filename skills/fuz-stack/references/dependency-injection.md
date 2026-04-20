@@ -223,13 +223,13 @@ export interface CacheDeps {
 	unlink: (options: {path: string}) => Promise<Result<object, FsError>>;
 }
 
-// deps_defaults.ts — every fs throw routes through classify_fs_error
-import {classify_fs_error} from '@fuzdev/fuz_util/fs.js';
+// deps_defaults.ts — every fs throw routes through fs_classify_error
+import {fs_classify_error} from '@fuzdev/fuz_util/fs.js';
 
 export const default_cache_deps: CacheDeps = {
 	read_text: async ({path}) => {
 		try { return {ok: true, value: await readFile(path, 'utf8')}; }
-		catch (error) { return {ok: false, ...classify_fs_error(error)}; }
+		catch (error) { return {ok: false, ...fs_classify_error(error)}; }
 	},
 	write_text_atomic: async ({path, content}) => {
 		try {
@@ -238,11 +238,11 @@ export const default_cache_deps: CacheDeps = {
 			await writeFile(temp_path, content);
 			await rename(temp_path, path);
 			return {ok: true};
-		} catch (error) { return {ok: false, ...classify_fs_error(error)}; }
+		} catch (error) { return {ok: false, ...fs_classify_error(error)}; }
 	},
 	unlink: async ({path}) => {
 		try { await unlink(path); return {ok: true}; }
-		catch (error) { return {ok: false, ...classify_fs_error(error)}; }
+		catch (error) { return {ok: false, ...fs_classify_error(error)}; }
 	},
 };
 ```
@@ -433,7 +433,7 @@ L1 domain filesystem wrappers (`CacheDeps`, `FsOperations`, mageguild's
 `FsOperations`) use a uniform shape from `@fuzdev/fuz_util/fs.js`: reads,
 writes, and queries all return `Result<{value: T}, FsError>` — no mix of
 `string | null` reads with `Result` writes. Implementations route thrown
-errors through `classify_fs_error(error)`, which maps Node `code`
+errors through `fs_classify_error(error)`, which maps Node `code`
 (ENOENT/EACCES/EPERM/EEXIST) to a discriminated `kind`:
 
 ```typescript
