@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.png" />
+		<link rel="icon" href="/logo.svg" sizes="any" type="image/svg+xml" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<script>
+			document.documentElement.classList.add(
+				((c) =>
+					c === 'dark' || (c !== 'light' && matchMedia('(prefers-color-scheme:dark)').matches)
+						? 'dark'
+						: 'light')(localStorage.getItem('fuz:color-scheme')),
+			);
+		</script>
+
+		<link href="/_app/immutable/entry/start.DchKdZjd.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B6WfSvph.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CMFWjsnc.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Bl9Qqa7N.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BeJqtvKi.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.b_nuJFBs.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B3XzBmQV.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DsC9oUgF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BlZNqYU0.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.Bj221Vzo.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BFONfvvG.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BNp1_m-P.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BDy9nSkU.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BK6-sHUo.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Dqx3-4jf.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/GMbY26Pr.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.C3IiSF-F.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Cx89o3zl.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Jjefo8fU.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CLGo5n5t.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DNsGWXSZ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/3RMPM9hT.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/IwB03OH8.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/QeaNnfvq.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Do6r0MuT.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/29.CdmJo4Eq.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CcIJcnxn.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Fa7M310E.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CQ-HaRZI.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/C8QoZIyx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CEFSbHeT.js" rel="modulepreload">
+		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
+		<link href="/_app/immutable/assets/0.iAmfJnGz.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/Breadcrumb.WXbxZC1L.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/SidebarLayout.BvQ5cJdi.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/Code.DEKaXs8h.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="sidebar_layout svelte-14dwz9s"><header class="primary_nav svelte-14dwz9s"><nav><div class="breadcrumb  svelte-1k0skcb"><a href="/" class="svelte-1k0skcb"><!--[0--><!---->📜<!----><!--]--></a><!--[--><!--[-1--><span class="separator svelte-1k0skcb"><!--[-1-->/<!--]--></span><!--]--><!--[0--><a href="/skills" class="svelte-1k0skcb">skills</a><!--]--><!--[-1--><span class="separator svelte-1k0skcb"><!--[-1-->/<!--]--></span><!--]--><!--[0--><a href="/skills/fuz-stack" class="svelte-1k0skcb">fuz-stack</a><!--]--><!--[-1--><span class="separator svelte-1k0skcb"><!--[-1-->/<!--]--></span><!--]--><!--[0--><a href="/skills/fuz-stack/references" class="svelte-1k0skcb">references</a><!--]--><!--[-1--><span class="separator svelte-1k0skcb"><!--[-1-->/<!--]--></span><!--]--><!--[0--><a href="/skills/fuz-stack/references/tsdoc-comments" class="svelte-1k0skcb selected">tsdoc-comments</a><!--]--><!--]--></div><!----></nav></header> <aside class="sidebar unstyled svelte-14dwz9s"><nav><ul class="unstyled"><li><a class="menuitem" href="/docs">docs</a></li> <li><a class="menuitem" href="/skills">skills</a></li> <!--[--><li><a class="menuitem pl_lg" href="/skills/fuz-stack">fuz-stack</a> <!--[0--><ul class="unstyled"><!--[--><li><a class="menuitem" href="/skills/fuz-stack/references/async-patterns" style="padding-left: calc(2 * var(--space_lg));">Async Patterns</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/code-generation" style="padding-left: calc(2 * var(--space_lg));">Code Generation</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/common-utilities" style="padding-left: calc(2 * var(--space_lg));">Common Utilities</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/css-patterns" style="padding-left: calc(2 * var(--space_lg));">CSS Patterns</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/dependency-injection" style="padding-left: calc(2 * var(--space_lg));">Dependency Injection</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/documentation-system" style="padding-left: calc(2 * var(--space_lg));">Documentation System</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/rust-patterns" style="padding-left: calc(2 * var(--space_lg));">Rust Patterns for the Fuz Ecosystem</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/rust-conventions" style="padding-left: calc(2 * var(--space_lg));">Rust Conventions for the Fuz Ecosystem</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/svelte-patterns" style="padding-left: calc(2 * var(--space_lg));">Svelte 5 Patterns</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/task-patterns" style="padding-left: calc(2 * var(--space_lg));">Task Patterns</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/testing-patterns" style="padding-left: calc(2 * var(--space_lg));">Testing Patterns</a></li><li><a class="menuitem selected" href="/skills/fuz-stack/references/tsdoc-comments" style="padding-left: calc(2 * var(--space_lg));">TSDoc Comment Style Guide</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/type-utilities" style="padding-left: calc(2 * var(--space_lg));">Type Utilities</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/wasm-patterns" style="padding-left: calc(2 * var(--space_lg));">WASM Patterns for the Fuz Ecosystem</a></li><li><a class="menuitem" href="/skills/fuz-stack/references/zod-schemas" style="padding-left: calc(2 * var(--space_lg));">Zod Schemas</a></li><!--]--></ul><!--]--></li><li><a class="menuitem pl_lg" href="/skills/grimoire">grimoire</a> <!--[-1--><!--]--></li><!--]--> <li><a class="menuitem" href="/tools">tools</a></li> <!--[--><li><a class="menuitem pl_lg" href="/tools/hash">hash</a></li><!--]--></ul></nav></aside> <div class="content svelte-14dwz9s"><div class="width_atmost_md"><!--[--><!----><div style="white-space: pre-wrap;"><!--[--><!--[10--><!----><h1 id="tsdoc-comment-style-guide"><!--[--><!--[2-->TSDoc Comment Style Guide<!--]--><!--]--><!----></h1><!----><!--]--><!--[8--><p><!--[--><!--[2-->JSDoc/TSDoc conventions for <!--]--><!--[3--><!--[-1--><code><!--[-1-->@fuzdev<!--]--><!----></code><!--]--><!--]--><!--[2--> packages.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="overview"><!--[--><!--[2-->Overview<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Doc comments flow through a three-stage pipeline:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->1. <!--]--><!--[4--><strong><!--[--><!--[2-->fuz<!--]--><!--[2-->_<!--]--><!--[2-->ui analysis<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->tsdoc_helpers.ts<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->ts_helpers.ts<!--]--><!----></code><!--]--><!--]--><!--[2-->,
+   <!--]--><!--[3--><!--[-1--><code><!--[-1-->svelte_helpers.ts<!--]--><!----></code><!--]--><!--]--><!--[2--> extract JSDoc/TSDoc from TypeScript AST, producing
+   structured metadata per declaration
+2. <!--]--><!--[4--><strong><!--[--><!--[2-->Gro gen tasks<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->library.gen.ts<!--]--><!----></code><!--]--><!--]--><!--[2--> outputs <!--]--><!--[3--><!--[-1--><code><!--[-1-->library.json<!--]--><!----></code><!--]--><!--]--><!--[2--> and
+   <!--]--><!--[3--><!--[-1--><code><!--[-1-->library.ts<!--]--><!----></code><!--]--><!--]--><!--[2--> with all module and declaration metadata
+3. <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->mdz<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> renders docs with auto-linking — backticked identifiers become
+   clickable links to API docs<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Write standard JSDoc with the tags below, wrap identifier references in
+backticks, and the system handles the rest.<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="writing-good-documentation"><!--[--><!--[2-->Writing Good Documentation<!--]--><!--]--><!----></h2><!----><!--]--><!--[10--><!----><h3 id="prioritize-why-over-what"><!--[--><!--[2-->Prioritize "why" over "what"<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Don't restate the function name. Explain why this exists and what problem it
+solves.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">// Weak — restates function name</span>
+<span class="token_comment">/**
+ * Predicts the next version for a repo based on its changesets.
+ */</span>
+
+<span class="token_comment">// Strong — explains purpose</span>
+<span class="token_comment">/**
+ * Predicts the next version by analyzing all changesets in a repo.
+ *
+ * Critical for dry-run mode accuracy — allows simulating publishes without
+ * actually running `gro publish` which consumes changesets.
+ *
+ * @returns predicted version and bump type, or null if no changesets
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="document-workflows-with-numbered-steps"><!--[--><!--[2-->Document workflows with numbered steps<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Multi-repo publishing pipeline.
+ *
+ * Steps:
+ * 1. **Sort** — `compute_topological_order` determines publish order
+ * 2. **Changeset** — `predict_next_version` simulates version bumps
+ * 3. **Publish** — `publish_package` publishes and waits for propagation
+ * 4. **Update** — `update_dependents` bumps downstream version ranges
+ *
+ * @module
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="name-algorithms-and-explain-rationale"><!--[--><!--[2-->Name algorithms and explain rationale<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Computes topological sort order for dependency graph.
+ *
+ * Uses Kahn's algorithm with alphabetical ordering within tiers for
+ * deterministic results.
+ *
+ * @param exclude_dev - If true, excludes dev dependencies to break cycles.
+ *   Publishing uses exclude_dev=true to handle circular dev deps.
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="explain-system-context"><!--[--><!--[2-->Explain system context<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Waits for package version to propagate to NPM registry.
+ *
+ * Critical for multi-repo publishing: ensures published packages are available
+ * before updating dependent packages.
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="when-to-document"><!--[--><!--[2-->When to document<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Focus on:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[2-->Public API surfaces<!--]--><!--]--><!----></strong><!--]--><!--[2--> — all exported functions consumers use
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Complexity<!--]--><!--]--><!----></strong><!--]--><!--[2--> — where the "why" isn't obvious
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Side effects<!--]--><!--]--><!----></strong><!--]--><!--[2--> — mutations, async operations, error conditions
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Domain knowledge<!--]--><!--]--><!----></strong><!--]--><!--[2--> — business rules, algorithms<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Skip:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- Simple getters/setters with obvious behavior
+- Internal helpers with clear names
+- Code where TypeScript types provide sufficient documentation<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="tag-reference"><!--[--><!--[2-->Tag Reference<!--]--><!--]--><!----></h2><!----><!--]--><!--[10--><!----><h3 id="main-description"><!--[--><!--[2-->Main description<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Complete sentences ending in a period. Separate summary from details with a
+blank line:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Formats a person's name in display order.
+ *
+ * Combines first and last names, handling edge cases like hyphenated or
+ * compound surnames. See `format_person_parts` for splitting.
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="param"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@param<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Format:<!--]--><!--]--><!----></strong><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code><!--[-1-->@param name - description<!--]--><!----></code><!--]--><!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- Hyphen separator (per TSDoc spec)
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Single-sentence:<!--]--><!--]--><!----></strong><!--]--><!--[2--> lowercase, no period
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Multi-sentence:<!--]--><!--]--><!----></strong><!--]--><!--[2--> capitalize, end with period
+- Acronyms (CSS, HTML, URL) and proper names (Zod, Fisher-Yates) stay uppercase
+- Wrap type/identifier references in backticks
+- Must be in source parameter order
+- Parser strips leading <!--]--><!--[3--><!--[-1--><code><!--[-1-->- <!--]--><!----></code><!--]--><!--]--><!--[2--> for rendering<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Parses a semantic version string.
+ * @param version_string - version to parse (format: "major.minor.patch")
+ * @param allow_prerelease - allow versions with prerelease suffixes like "1.0.0-alpha"
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Multi-sentence:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Computes topological sort order for dependency graph.
+ * @param exclude_dev - If true, excludes dev dependencies to break cycles.
+ *   Publishing uses exclude_dev=true to handle circular dev deps.
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="returns"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@returns<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Use <!--]--><!--[3--><!--[-1--><code><!--[-1-->@returns<!--]--><!----></code><!--]--><!--]--><!--[2--> (not <!--]--><!--[3--><!--[-1--><code><!--[-1-->@return<!--]--><!----></code><!--]--><!--]--><!--[2-->). Same capitalization rules as <!--]--><!--[3--><!--[-1--><code><!--[-1-->@param<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Gets the current time.
+ * @returns the current `Date` in milliseconds since epoch
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->For async functions, describe what the <!--]--><!--[3--><!--[-1--><code><!--[-1-->Promise<!--]--><!----></code><!--]--><!--]--><!--[2--> resolves to:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Fetches user data from the API.
+ * @returns user object with id, name, and email fields
+ */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">async</span> <span class="token_keyword">function</span> <span class="token_function">fetch_user</span><span class="token_punctuation">(</span>id<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">)</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Promise</span><span class="token_operator">&lt;</span><span class="token_capitalized_identifier token_class_name">User</span><span class="token_operator">></span> <span class="token_punctuation">{</span>
+	<span class="token_comment">// ...</span>
+<span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="throws"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@throws<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Three formats (all used):<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[3--><!--[-1--><code><!--[-1-->@throws ErrorType description<!--]--><!----></code><!--]--><!--]--><!--[2--> — type as first word (most common)
+- <!--]--><!--[3--><!--[-1--><code><!--[-1-->@throws {ErrorType} description<!--]--><!----></code><!--]--><!--]--><!--[2--> — type in curly braces
+- <!--]--><!--[3--><!--[-1--><code><!--[-1-->@throws description<!--]--><!----></code><!--]--><!--]--><!--[2--> — no type<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * @throws Error if task with given name doesn't exist
+ */</span>
+
+<span class="token_comment">/**
+ * @throws {TaskError} if production cycles detected
+ */</span>
+
+<span class="token_comment">/**
+ * @throws if timeout_ms is negative
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="example"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@example<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Code must be in fenced code blocks for syntax highlighting — <!--]--><!--[3--><!--[-1--><code><!--[-1-->mdz<!--]--><!----></code><!--]--><!--]--><!--[2--> renders
+examples as markdown.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Convert raw TSDoc `@see` content to mdz format for rendering.
+ *
+ * @param content - raw `@see` tag content in TSDoc format
+ * @returns mdz-formatted string ready for `Mdz` component
+ *
+ * @example
+ * ```typescript
+ * tsdoc_see_to_mdz('{@link https://fuz.dev|API Docs}')
+ * // → '[API Docs](https://fuz.dev)'
+ *
+ * tsdoc_see_to_mdz('{@link SomeType}')
+ * // → '`SomeType`'
+ * ```
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Interface fields can have inline <!--]--><!--[3--><!--[-1--><code><!--[-1-->@example<!--]--><!----></code><!--]--><!--]--><!--[2--> tags:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_special_keyword">export</span> <span class="token_keyword">interface</span> <span class="token_class_name"><span class="token_capitalized_identifier token_class_name">ModuleSourceOptions</span></span> <span class="token_punctuation">{</span>
+	<span class="token_comment">/**
+	 * Source directory paths to include, relative to `project_root`.
+	 *
+	 * @example
+	 * ```typescript
+	 * ['src/lib'] // single source directory
+	 * ```
+	 * @example
+	 * ```typescript
+	 * ['src/lib', 'src/routes'] // multiple directories
+	 * ```
+	 */</span>
+	source_paths<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span>
+<span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--[10--><!----><h4 id="writing-effective-examples"><!--[--><!--[2-->Writing effective examples<!--]--><!--]--><!----></h4><!----><!--]--><!--[8--><p><!--[--><!--[2-->Focus on giving the reader a clear mental model of how to use the API:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- Show the most common use case first — additional <!--]--><!--[3--><!--[-1--><code><!--[-1-->@example<!--]--><!----></code><!--]--><!--]--><!--[2--> tags for variants
+- Use <!--]--><!--[3--><!--[-1--><code><!--[-1-->// =><!--]--><!----></code><!--]--><!--]--><!--[2--> or <!--]--><!--[3--><!--[-1--><code><!--[-1-->// →<!--]--><!----></code><!--]--><!--]--><!--[2--> comments to show return values inline
+- For option objects, show the minimal required fields
+- For type narrowing helpers, show the pattern that makes the types useful
+- Constants and simple predicates don't need examples unless usage is non-obvious
+- Keep examples complete enough to understand without reading the implementation<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">// Good — shows input and return value</span>
+<span class="token_comment">/**
+ * @example
+ * ```ts
+ * get_component_name('components/Button.svelte') // => 'Button'
+ * ```
+ */</span>
+
+<span class="token_comment">// Good — shows the pattern that motivates the API</span>
+<span class="token_comment">/**
+ * @example
+ * ```ts
+ * if (is_kind(declaration, 'function')) {
+ *   declaration.parameters; // narrowed to FunctionDeclarationJson
+ *   declaration.return_type; // accessible after narrowing
+ * }
+ * ```
+ */</span>
+
+<span class="token_comment">// Good — shows minimal setup and the typical workflow</span>
+<span class="token_comment">/**
+ * @example
+ * ```ts
+ * const {modules, diagnostics} = await analyze_from_files({
+ *   project_root: process.cwd(),
+ * });
+ * if (diagnostics.has_errors()) {
+ *   for (const err of diagnostics.errors()) {
+ *     console.error(format_diagnostic(err));
+ *   }
+ * }
+ * ```
+ */</span>
+
+<span class="token_comment">// Weak — doesn't show what the function does or returns</span>
+<span class="token_comment">/**
+ * @example
+ * ```ts
+ * process_data(input);
+ * ```
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="deprecated"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@deprecated<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Include migration guidance with backtick-linked replacement. Rarely used —
+"no backwards compatibility" policy means deprecated code is usually deleted.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Legacy way to process data.
+ * @deprecated Use `process_data_v2` instead for better performance.
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="see"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@see<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Three patterns:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->External URLs<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->{@link}<!--]--><!----></code><!--]--><!--]--><!--[2--> for display text, bare URL when self-explanatory:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/** @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event} */</span>
+<span class="token_comment">/** @see {@link https://tools.ietf.org/html/rfc5322|RFC 5322} */</span>
+<span class="token_comment">/** @see https://github.com/colinhacks/zod#brand */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Sibling modules<!--]--><!--]--><!----></strong><!--]--><!--[2--> — filename for cross-references within a package:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Gro-specific library metadata generation.
+ *
+ * @see library_generate.ts for the generic generation entry point
+ * @see library_pipeline.ts for pipeline helpers
+ * @see library_output.ts for output file generation
+ *
+ * @module
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Identifiers<!--]--><!--]--><!----></strong><!--]--><!--[2--> — wrap in backticks (not <!--]--><!--[3--><!--[-1--><code><!--[-1-->{@link}<!--]--><!----></code><!--]--><!--]--><!--[2-->):<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/** @see `tsdoc_parse` for the extraction step */</span>
+<span class="token_comment">/** @see `format_number` in `maths.ts` for the underlying implementation. */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="since"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@since<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Supported by the parser but not currently used. Use when versioning matters.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Generates a UUID v4.
+ * @since 1.5.0
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="default"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@default<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Documents default values for interface fields and component props:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="svelte" class="svelte-jqsy8a"><!--[-1--><!---->const <span class="token_svelte_expression"><span class="token_punctuation">{</span><span class="token_lang_ts">
+	layout <span class="token_operator">=</span> <span class="token_string">'centered'</span><span class="token_punctuation">,</span>
+	index <span class="token_operator">=</span> <span class="token_number">0</span><span class="token_punctuation">,</span>
+	content_selector <span class="token_operator">=</span> <span class="token_string">'.pane'</span><span class="token_punctuation">,</span>
+</span><span class="token_punctuation">}</span></span>: <span class="token_svelte_expression"><span class="token_punctuation">{</span><span class="token_lang_ts">
+	<span class="token_comment">/**
+	 * @default 'centered'
+	 */</span>
+	layout<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">DialogLayout</span><span class="token_punctuation">;</span>
+	<span class="token_comment">/**
+	 * Index 0 is under 1 is under 2 — the topmost dialog is last in the array.
+	 * @default 0
+	 */</span>
+	index<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_builtin">number</span><span class="token_punctuation">;</span>
+	<span class="token_comment">/**
+	 * If provided, prevents clicks that would close the dialog
+	 * from bubbling past any elements matching this selector.
+	 * @default '.pane'
+	 */</span>
+	content_selector<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_builtin">string</span> <span class="token_operator">|</span> <span class="token_keyword">null</span><span class="token_punctuation">;</span>
+</span><span class="token_punctuation">}</span></span> = $props();<!----><!--]--></code><!--]--><!--[10--><!----><h3 id="nodocs-non-standard"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@nodocs<!--]--><!----></code><!--]--><!--]--><!--[2--> (non-standard)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Excludes from docs generation and flat namespace validation. Supported by
+fuz_ui's <!--]--><!--[3--><!--[-1--><code><!--[-1-->tsdoc_helpers.ts<!--]--><!----></code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code><!--[-1-->svelte-docinfo<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Use cases:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[2-->Gro task exports<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->Args<!--]--><!----></code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code><!--[-1-->task<!--]--><!----></code><!--]--><!--]--><!--[2--> are build system internals (most
+  common use)
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Gen file exports<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->gen<!--]--><!----></code><!--]--><!--]--><!--[2--> function called by Gro
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Flat namespace conflicts<!--]--><!--]--><!----></strong><!--]--><!--[2--> — declarations that need to coexist<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/** @nodocs */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">const</span> <span class="token_capitalized_identifier token_class_name">Args</span> <span class="token_operator">=</span> z<span class="token_punctuation">.</span><span class="token_function">object</span><span class="token_punctuation">(</span><span class="token_punctuation">{</span><span class="token_operator">...</span><span class="token_punctuation">}</span><span class="token_punctuation">)</span><span class="token_punctuation">;</span>
+
+<span class="token_comment">/** @nodocs */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">const</span> task<span class="token_type_annotation"><span class="token_:">:</span><span class="token_type"> <span class="token_capitalized_identifier token_class_name">Task</span><span class="token_operator">&lt;</span><span class="token_keyword">typeof</span> <span class="token_capitalized_identifier token_class_name">Args</span><span class="token_operator">></span> </span></span><span class="token_operator">=</span> <span class="token_punctuation">{</span><span class="token_operator">...</span><span class="token_punctuation">}</span><span class="token_punctuation">;</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Prefer renaming to <!--]--><!--[3--><!--[-1--><code><!--[-1-->domain_action<!--]--><!----></code><!--]--><!--]--><!--[2--> patterns when possible. Use <!--]--><!--[3--><!--[-1--><code><!--[-1-->@nodocs<!--]--><!----></code><!--]--><!--]--><!--[2--> only
+when exclusion is the right solution.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Never <!--]--><!--[3--><!--[-1--><code><!--[-1-->@nodocs<!--]--><!----></code><!--]--><!--]--><!--[2--> a symbol that external consumers import and use directly.<!--]--><!--]--><!----></strong><!--]--><!--[2-->
+If it's part of the public API, rename one side of the collision instead —
+hiding the primary surface from the flat namespace also hides it from
+generated docs and tomes, which silently breaks downstream documentation.
+See <!--]--><!--[3--><!--[-1--><code><!--[-1-->../SKILL.md<!--]--><!----></code><!--]--><!--]--><!--[2--> §Flat Namespace for which side to rename.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="mutates-non-standard"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@mutates<!--]--><!----></code><!--]--><!--]--><!--[2--> (non-standard)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Documents mutations to parameters or external state. Supported by fuz_ui's
+<!--]--><!--[3--><!--[-1--><code><!--[-1-->tsdoc_helpers.ts<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Two formats:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[3--><!--[-1--><code><!--[-1-->@mutates target - description<!--]--><!----></code><!--]--><!--]--><!--[2--> — bare name with hyphen (most common)
+- `` @mutates <!--]--><!--[3--><!--[-1--><code><!--[-1-->target<!--]--><!----></code><!--]--><!--]--><!--[2--> `` — backtick-wrapped, no description (when obvious)<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Same capitalization rules as <!--]--><!--[3--><!--[-1--><code><!--[-1-->@param<!--]--><!----></code><!--]--><!--]--><!--[2-->. Only document mutations visible outside
+the function — not internal locals, closure state, or <!--]--><!--[3--><!--[-1--><code><!--[-1-->this.x<!--]--><!----></code><!--]--><!--]--><!--[2--> in methods.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Shuffles an array in place using the Fisher-Yates algorithm.
+ * @param array - the array to shuffle
+ * @mutates array - randomly reorders elements in place
+ */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">function</span> <span class="token_generic_function"><span class="token_function">shuffle</span><span class="token_generic token_class_name"><span class="token_operator">&lt;</span><span class="token_constant">T</span><span class="token_operator">></span></span></span><span class="token_punctuation">(</span>array<span class="token_operator">:</span> <span class="token_constant">T</span><span class="token_punctuation">[</span><span class="token_punctuation">]</span><span class="token_punctuation">)</span><span class="token_operator">:</span> <span class="token_constant">T</span><span class="token_punctuation">[</span><span class="token_punctuation">]</span> <span class="token_punctuation">{</span>
+	<span class="token_comment">// ...</span>
+<span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Apply named middleware specs to a Hono app.
+ *
+ * @param app - the Hono app
+ * @param specs - middleware specs to apply
+ * @mutates `app`
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="module"><!--[--><!--[3--><!--[-1--><code><!--[-1-->@module<!--]--><!----></code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Marks a module-level doc comment. Place at end of comment block. Works in
+<!--]--><!--[3--><!--[-1--><code><!--[-1-->.ts<!--]--><!----></code><!--]--><!--]--><!--[2--> files and <!--]--><!--[3--><!--[-1--><code><!--[-1-->.svelte<!--]--><!----></code><!--]--><!--]--><!--[2--> components.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="svelte" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;</span>script</span> <span class="token_attr_name">lang</span><span class="token_attr_value"><span class="token_punctuation token_attr_equals">=</span><span class="token_punctuation token_attr_quote">"</span>ts<span class="token_punctuation token_attr_quote">"</span></span><span class="token_punctuation token_tag_punctuation">></span></span><span class="token_script"><span class="token_lang_ts">
+	<span class="token_comment">/**
+	 * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/alert/}
+	 *
+	 * @module
+	 */</span>
+</span></span><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;/</span>script</span><span class="token_punctuation token_tag_punctuation">></span></span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="tag-order"><!--[--><!--[2-->Tag order<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->1. Main description
+2. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@param<!--]--><!----></code><!--]--><!--]--><!--[2--> (in source parameter order)
+3. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@returns<!--]--><!----></code><!--]--><!--]--><!--[2-->
+4. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@mutates<!--]--><!----></code><!--]--><!--]--><!--[2-->
+5. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@throws<!--]--><!----></code><!--]--><!--]--><!--[2-->
+6. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@example<!--]--><!----></code><!--]--><!--]--><!--[2-->
+7. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@deprecated<!--]--><!----></code><!--]--><!--]--><!--[2-->
+8. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@see<!--]--><!----></code><!--]--><!--]--><!--[2-->
+9. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@since<!--]--><!----></code><!--]--><!--]--><!--[2-->
+10. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@default<!--]--><!----></code><!--]--><!--]--><!--[2-->
+11. <!--]--><!--[3--><!--[-1--><code><!--[-1-->@nodocs<!--]--><!----></code><!--]--><!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code><!--[-1-->@mutates<!--]--><!----></code><!--]--><!--]--><!--[2--> goes after <!--]--><!--[3--><!--[-1--><code><!--[-1-->@returns<!--]--><!----></code><!--]--><!--]--><!--[2--> (or after <!--]--><!--[3--><!--[-1--><code><!--[-1-->@param<!--]--><!----></code><!--]--><!--]--><!--[2--> if no return), logically
+adjacent to parameter and return documentation.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="inter-linking-with-mdz"><!--[--><!--[2-->Inter-linking with mdz<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Backtick-wrapped identifiers auto-link to API docs.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="how-it-works"><!--[--><!--[2-->How it works<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->1. <!--]--><!--[3--><!--[-1--><code><!--[-1-->mdz<!--]--><!----></code><!--]--><!--]--><!--[2--> parses backtick content as <!--]--><!--[3--><!--[-1--><code><!--[-1-->Code<!--]--><!----></code><!--]--><!--]--><!--[2--> nodes
+2. <!--]--><!--[3--><!--[-1--><code><!--[-1-->DocsLink.svelte<!--]--><!----></code><!--]--><!--]--><!--[2--> resolves: <!--]--><!--[3--><!--[-1--><code><!--[-1-->library.declaration_by_name.get(ref)<!--]--><!----></code><!--]--><!--]--><!--[2--> →
+   <!--]--><!--[3--><!--[-1--><code><!--[-1-->library.module_by_path.get(ref)<!--]--><!----></code><!--]--><!--]--><!--[2--> → plain <!--]--><!--[3--><!--[-1--><code><!--[-1-->&lt;code><!--]--><!----></code><!--]--><!--]--><!--[2--> fallback
+3. Matches render as clickable links to API docs<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="always-link"><!--[--><!--[2-->Always link<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Wrap every mention of an exported identifier, module filename, or type name
+in backticks.<!--]--><!--]--><!----></strong><!--]--><!--[2--> This maximizes discoverability.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Wraps `LibraryJson` with computed properties and provides the root
+ * of the API documentation hierarchy: `Library` → `Module` → `Declaration`.
+ *
+ * @see `module.svelte.ts` for `Module` class
+ * @see `declaration.svelte.ts` for `Declaration` class
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->What to wrap:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- exported function names: `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->tsdoc_parse<!--]--><!----></code><!--]--><!--]--><!--[2--> ``, `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->shuffle<!--]--><!----></code><!--]--><!--]--><!--[2--> ``
+- type and interface names: `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->ModuleJson<!--]--><!----></code><!--]--><!--]--><!--[2--> ``, `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->SourceFileInfo<!--]--><!----></code><!--]--><!--]--><!--[2--> ``
+- class names: `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->Library<!--]--><!----></code><!--]--><!--]--><!--[2--> ``, `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->Declaration<!--]--><!----></code><!--]--><!--]--><!--[2--> ``
+- module filenames: `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->module_helpers.ts<!--]--><!----></code><!--]--><!--]--><!--[2--> ``, `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->DocsLink.svelte<!--]--><!----></code><!--]--><!--]--><!--[2--> ``
+- tag names in prose: `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->@param<!--]--><!----></code><!--]--><!--]--><!--[2--> ``, `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->@returns<!--]--><!----></code><!--]--><!--]--><!--[2--> ``
+- enum and constant names<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="internal-paths"><!--[--><!--[2-->Internal paths<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Bare paths starting with <!--]--><!--[3--><!--[-1--><code><!--[-1-->/<!--]--><!----></code><!--]--><!--]--><!--[2--> (after whitespace) auto-link as internal
+navigation — including HTTP route notations, which create broken links that
+fail SvelteKit prerender:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">// BAD — mdz auto-links /login as internal route, breaks prerender</span>
+<span class="token_comment">/**
+ * - POST /login
+ * - GET /session
+ */</span>
+
+<span class="token_comment">// GOOD — backtick-wrapped renders as &lt;code>, not &lt;a></span>
+<span class="token_comment">/**
+ * - `POST /login`
+ * - `GET /session`
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="case-sensitivity"><!--[--><!--[2-->Case sensitivity<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->References are case-sensitive. `` <!--]--><!--[3--><!--[-1--><code><!--[-1-->library<!--]--><!----></code><!--]--><!--]--><!--[2--> `` will NOT match <!--]--><!--[3--><!--[-1--><code><!--[-1-->Library<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="link-vs-backticks"><!--[--><!--[3--><!--[-1--><code><!--[-1-->{@link}<!--]--><!----></code><!--]--><!--]--><!--[2--> vs backticks<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Backticks for identifiers. <!--]--><!--[3--><!--[-1--><code><!--[-1-->{@link}<!--]--><!----></code><!--]--><!--]--><!--[2--> for external URLs in <!--]--><!--[3--><!--[-1--><code><!--[-1-->@see<!--]--><!----></code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">// Preferred — backticks for identifier references</span>
+<span class="token_comment">/** See `tsdoc_parse` for the extraction step. */</span>
+
+<span class="token_comment">// Avoid — {@link} with an identifier renders as plain text in generated docs</span>
+<span class="token_comment">/** See {@link tsdoc_parse} for the extraction step. */</span>
+
+<span class="token_comment">// BROKEN — {@link} with a relative path breaks prerender: the generator</span>
+<span class="token_comment">// strips the wrapper, leaving bare path text that mdz auto-links as an</span>
+<span class="token_comment">// internal route.</span>
+<span class="token_comment">/** Symmetric to {@link ../actions/action_rpc.js | create_rpc_endpoint}. */</span>
+<span class="token_comment">// Fix — backticks + prose filename:</span>
+<span class="token_comment">/** Symmetric to `create_rpc_endpoint` (from `actions/action_rpc.ts`). */</span>
+
+<span class="token_comment">// Correct — {@link} for a URL in `@see`</span>
+<span class="token_comment">/** @see {@link https://fuz.dev|Fuz documentation} */</span><!----><!--]--></code><!--]--><!--[10--><!----><h2 id="documentation-patterns"><!--[--><!--[2-->Documentation Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[10--><!----><h3 id="module-level-documentation"><!--[--><!--[2-->Module-level documentation<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Prioritize <!--]--><!--[3--><!--[-1--><code><!--[-1-->@module<!--]--><!----></code><!--]--><!--]--><!--[2--> for modules with design rationale, pipeline stages, or
+cross-references.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Basic:<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Module path and metadata helpers.
+ *
+ * Provides utilities for working with source module paths, file types,
+ * and import relationships in the package generation system.
+ *
+ * @module
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Design sections<!--]--><!--]--><!----></strong><!--]--><!--[2--> with <!--]--><!--[3--><!--[-1--><code><!--[-1-->##<!--]--><!----></code><!--]--><!--]--><!--[2--> headings for complex modules:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * TSDoc/JSDoc parsing helpers using the TypeScript Compiler API.
+ *
+ * ## Design
+ *
+ * Pure extraction approach: extracts documentation as-is with minimal
+ * transformation, preserving source intent. Works around TypeScript
+ * Compiler API quirks where needed.
+ *
+ * ## Tag support
+ *
+ * Supports a subset of standard TSDoc tags:
+ * `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`,
+ * `@since`, `@nodocs`.
+ *
+ * ## Behavioral notes
+ *
+ * Due to TS Compiler API limitations:
+ * - `@throws` tags have `{Type}` stripped by TS API; fallback regex
+ *   extracts first word as error type
+ * - TS API strips URL protocols from `@see` tag text; we use
+ *   `getText()` to preserve original format
+ *
+ * @module
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Pipeline stages<!--]--><!--]--><!----></strong><!--]--><!--[2--> — combines numbered steps with <!--]--><!--[3--><!--[-1--><code><!--[-1-->@see<!--]--><!----></code><!--]--><!--]--><!--[2--> cross-references
+(see also the <!--]--><!--[7--><!--[0--><!--[1--><a href="#document-workflows-with-numbered-steps"><!--[--><!--[2-->Document workflows with numbered steps<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2-->
+pattern above):<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Library metadata generation pipeline.
+ *
+ * Pipeline stages:
+ * 1. **Collection** — `library_collect_source_files` gathers and filters
+ * 2. **Analysis** — `library_analyze_module` extracts metadata
+ * 3. **Validation** — `library_find_duplicates` checks flat namespace
+ * 4. **Transformation** — `library_merge_re_exports` resolves re-exports
+ * 5. **Output** — `library_sort_modules` prepares deterministic output
+ *
+ * @see library_generate.ts for the main generation entry point
+ * @see library_analysis.ts for module-level analysis
+ * @see library_output.ts for output file generation
+ * @see library_gen.ts for Gro-specific integration
+ *
+ * @module
+ */</span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Design philosophy:<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * mdz — minimal markdown dialect for Fuz documentation.
+ *
+ * ## Design philosophy
+ *
+ * - **False negatives over false positives**: When in doubt, treat as
+ *   plain text.
+ * - **One way to do things**: Single unambiguous syntax per feature.
+ * - **Explicit over implicit**: Clear delimiters avoid ambiguity.
+ * - **Simple over complete**: Prefer simple parsing rules.
+ *
+ * @module
+ */</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="functions"><!--[--><!--[2-->Functions<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Find duplicate declaration names across modules.
+ *
+ * Returns a `Map` of declaration names to their full metadata
+ * (only includes duplicates). Callers decide how to handle duplicates
+ * (throw, warn, ignore).
+ *
+ * @example
+ * const duplicates = library_find_duplicates(source_json);
+ * if (duplicates.size > 0) {
+ *   for (const [name, occurrences] of duplicates) {
+ *     console.error(`"${name}" found in:`);
+ *     for (const {declaration, module} of occurrences) {
+ *       console.error(`  - ${module}:${declaration.source_line}`);
+ *     }
+ *   }
+ * }
+ */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">const</span> <span class="token_function_variable token_function">library_find_duplicates</span> <span class="token_operator">=</span> <span class="token_punctuation">(</span>
+	source_json<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">SourceJson</span><span class="token_punctuation">,</span>
+<span class="token_punctuation">)</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Map</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_punctuation">,</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_capitalized_identifier token_class_name">DuplicateInfo</span><span class="token_operator">>></span> <span class="token_operator">=></span> <span class="token_punctuation">{</span>
+	<span class="token_comment">// ...</span>
+<span class="token_punctuation">}</span><span class="token_punctuation">;</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="classes"><!--[--><!--[2-->Classes<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Rich runtime representation of a library.
+ *
+ * Wraps `LibraryJson` with computed properties and provides the root
+ * of the API documentation hierarchy: `Library` → `Module` → `Declaration`.
+ *
+ * @see `module.svelte.ts` for `Module` class
+ * @see `declaration.svelte.ts` for `Declaration` class
+ */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">class</span> <span class="token_class_name"><span class="token_capitalized_identifier token_class_name">Library</span></span> <span class="token_punctuation">{</span>
+	<span class="token_comment">/**
+	 * URL path prefix for multi-package documentation sites.
+	 * Prepended to `/docs/api/` paths in `Module.url_api` and
+	 * `Declaration.url_api`. Default `''` preserves single-package behavior.
+	 */</span>
+	<span class="token_keyword">readonly</span> url_prefix<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span>
+
+	<span class="token_comment">/**
+	 * All modules as rich `Module` instances.
+	 */</span>
+	modules <span class="token_operator">=</span> <span class="token_function">$derived</span><span class="token_punctuation">(</span><span class="token_comment">/* ... */</span><span class="token_punctuation">)</span><span class="token_punctuation">;</span>
+
+	<span class="token_comment">/**
+	 * Module lookup map by path.
+	 */</span>
+	module_by_path <span class="token_operator">=</span> <span class="token_function">$derived</span><span class="token_punctuation">(</span><span class="token_comment">/* ... */</span><span class="token_punctuation">)</span><span class="token_punctuation">;</span>
+
+	<span class="token_comment">/**
+	 * Declaration lookup map by name.
+	 */</span>
+	declaration_by_name <span class="token_operator">=</span> <span class="token_function">$derived</span><span class="token_punctuation">(</span><span class="token_comment">/* ... */</span><span class="token_punctuation">)</span><span class="token_punctuation">;</span>
+
+	<span class="token_comment">/**
+	 * Search declarations by query string with multi-term AND logic.
+	 */</span>
+	<span class="token_function">search_declarations</span><span class="token_punctuation">(</span>query<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">)</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_capitalized_identifier token_class_name">Declaration</span><span class="token_operator">></span> <span class="token_punctuation">{</span>
+		<span class="token_comment">// ...</span>
+	<span class="token_punctuation">}</span>
+<span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="interfaces"><!--[--><!--[2-->Interfaces<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * File information for source analysis.
+ *
+ * Can be constructed from Gro's `Disknode` or from plain file system access.
+ * This abstraction enables non-Gro usage while keeping Gro support via adapter.
+ *
+ * Note: `content` is required to keep analysis functions pure (no hidden I/O).
+ */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">interface</span> <span class="token_class_name"><span class="token_capitalized_identifier token_class_name">SourceFileInfo</span></span> <span class="token_punctuation">{</span>
+	<span class="token_comment">/** Absolute path to the file. */</span>
+	id<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span>
+	<span class="token_comment">/** File content (required - analysis functions don't read from disk). */</span>
+	content<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span>
+	<span class="token_comment">/**
+	 * Absolute file paths of modules this file imports (optional).
+	 * Only include resolved local imports, not node_modules.
+	 * Order should be declaration order in source for deterministic output.
+	 */</span>
+	dependencies<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">ReadonlyArray</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span>
+	<span class="token_comment">/**
+	 * Absolute file paths of modules that import this file (optional).
+	 * Only include resolved local imports, not node_modules.
+	 */</span>
+	dependents<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">ReadonlyArray</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span>
+<span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_special_keyword">export</span> <span class="token_keyword">interface</span> <span class="token_class_name"><span class="token_capitalized_identifier token_class_name">ModuleSourceOptions</span></span> <span class="token_punctuation">{</span>
+	<span class="token_comment">/**
+	 * Absolute path to the project root directory.
+	 *
+	 * All `source_paths` are relative to this.
+	 *
+	 * @example
+	 * ```typescript
+	 * '/home/user/my-project'
+	 * ```
+	 */</span>
+	project_root<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span>
+	<span class="token_comment">/**
+	 * Source directory paths to include, relative to `project_root`.
+	 *
+	 * @example
+	 * ```typescript
+	 * ['src/lib'] // single source directory
+	 * ```
+	 * @example
+	 * ```typescript
+	 * ['src/lib', 'src/routes'] // multiple directories
+	 * ```
+	 */</span>
+	source_paths<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span>
+<span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="svelte-components"><!--[--><!--[2-->Svelte components<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Document props inline in the <!--]--><!--[3--><!--[-1--><code><!--[-1-->$props()<!--]--><!----></code><!--]--><!--]--><!--[2--> type annotation:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="svelte" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;</span>script</span> <span class="token_attr_name">lang</span><span class="token_attr_value"><span class="token_punctuation token_attr_equals">=</span><span class="token_punctuation token_attr_quote">"</span>ts<span class="token_punctuation token_attr_quote">"</span></span><span class="token_punctuation token_tag_punctuation">></span></span><span class="token_script"><span class="token_lang_ts">
+	<span class="token_keyword">const</span> <span class="token_punctuation">{</span>
+		container<span class="token_punctuation">,</span>
+		layout <span class="token_operator">=</span> <span class="token_string">'centered'</span><span class="token_punctuation">,</span>
+		index <span class="token_operator">=</span> <span class="token_number">0</span><span class="token_punctuation">,</span>
+		active <span class="token_operator">=</span> <span class="token_boolean">true</span><span class="token_punctuation">,</span>
+		content_selector <span class="token_operator">=</span> <span class="token_string">'.pane'</span><span class="token_punctuation">,</span>
+		onclose<span class="token_punctuation">,</span>
+		children<span class="token_punctuation">,</span>
+	<span class="token_punctuation">}</span><span class="token_operator">:</span> <span class="token_punctuation">{</span>
+		container<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">HTMLElement</span><span class="token_punctuation">;</span>
+		<span class="token_comment">/**
+		 * @default 'centered'
+		 */</span>
+		layout<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">DialogLayout</span><span class="token_punctuation">;</span>
+		<span class="token_comment">/**
+		 * Index 0 is under 1 is under 2 — the topmost dialog
+		 * is last in the array.
+		 * @default 0
+		 */</span>
+		index<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_builtin">number</span><span class="token_punctuation">;</span>
+		<span class="token_comment">/**
+		 * @default true
+		 */</span>
+		active<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_builtin">boolean</span><span class="token_punctuation">;</span>
+		<span class="token_comment">/**
+		 * If provided, prevents clicks that would close the dialog
+		 * from bubbling past any elements matching this selector.
+		 * @default '.pane'
+		 */</span>
+		content_selector<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_builtin">string</span> <span class="token_operator">|</span> <span class="token_keyword">null</span><span class="token_punctuation">;</span>
+		onclose<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_punctuation">(</span><span class="token_punctuation">)</span> <span class="token_operator">=></span> <span class="token_keyword">void</span><span class="token_punctuation">;</span>
+		children<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Snippet</span><span class="token_operator">&lt;</span><span class="token_punctuation">[</span><span class="token_function_variable token_function">close</span><span class="token_operator">:</span> <span class="token_punctuation">(</span>e<span class="token_operator">?</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Event</span><span class="token_punctuation">)</span> <span class="token_operator">=></span> <span class="token_keyword">void</span><span class="token_punctuation">]</span><span class="token_operator">></span><span class="token_punctuation">;</span>
+	<span class="token_punctuation">}</span> <span class="token_operator">=</span> <span class="token_function">$props</span><span class="token_punctuation">(</span><span class="token_punctuation">)</span><span class="token_punctuation">;</span>
+</span></span><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;/</span>script</span><span class="token_punctuation token_tag_punctuation">></span></span><!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->For obvious props with no default, a comment is optional. Focus on behavior,
+constraints, and non-obvious defaults.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="type-aliases"><!--[--><!--[2-->Type aliases<!--]--><!--]--><!----></h3><!----><!--]--><!--[11--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">/**
+ * Analyzer type for source files.
+ *
+ * - `'typescript'` - TypeScript/JS files analyzed via TypeScript Compiler API
+ * - `'svelte'` - Svelte components analyzed via svelte2tsx + TypeScript Compiler API
+ */</span>
+<span class="token_special_keyword">export</span> <span class="token_keyword">type</span> <span class="token_class_name"><span class="token_capitalized_identifier token_class_name">AnalyzerType</span></span> <span class="token_operator">=</span> <span class="token_string">'typescript'</span> <span class="token_operator">|</span> <span class="token_string">'svelte'</span><span class="token_punctuation">;</span><!----><!--]--></code><!--]--><!--[10--><!----><h3 id="bullet-items"><!--[--><!--[2-->Bullet items<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Non-sentence bullets: lowercase, no trailing period:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="md" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_list"><span class="token_punctuation">-</span> this is a bullet item describing something</span><span class="token_list"><span class="token_punctuation">
+-</span> another item without a period</span><span class="token_list"><span class="token_punctuation">
+-</span> complete sentences in bullets are fine too. They end with periods.</span><!----><!--]--></code><!--]--><!--[10--><!----><h2 id="auditing-coverage"><!--[--><!--[2-->Auditing Coverage<!--]--><!--]--><!----></h2><!----><!--]--><!--[11--><code data-lang="bash" class="svelte-jqsy8a"><!--[-1--><!---->gro run skills/fuz-stack/scripts/generate_jsdoc_audit.ts<!----><!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Generates <!--]--><!--[3--><!--[-1--><code><!--[-1-->jsdoc_audit.md<!--]--><!----></code><!--]--><!--]--><!--[2--> — a checklist of <!--]--><!--[3--><!--[-1--><code><!--[-1-->src/lib/<!--]--><!----></code><!--]--><!--]--><!--[2--> files that contain
+JSDoc, for reviewing and cleaning up existing comments. Files without JSDoc
+are omitted.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="when-to-audit"><!--[--><!--[2-->When to audit<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->- Pre-release — ensure public APIs are documented
+- Post-refactoring — verify docs stayed in sync
+- Code reviews — identify documentation gaps<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="ecosystem-conventions"><!--[--><!--[2-->Ecosystem Conventions<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Shared across <!--]--><!--[3--><!--[-1--><code><!--[-1-->@fuzdev<!--]--><!----></code><!--]--><!--]--><!--[2--> packages (fuz_ui, fuz_css, fuz_util, fuz_app, gro).
+All use <!--]--><!--[3--><!--[-1--><code><!--[-1-->domain_action<!--]--><!----></code><!--]--><!--]--><!--[2--> naming, the same JSDoc tags, and generate docs through
+fuz_ui analysis → <!--]--><!--[3--><!--[-1--><code><!--[-1-->library.json<!--]--><!----></code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code><!--[-1-->mdz<!--]--><!----></code><!--]--><!--]--><!--[2--> pipeline.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></div><!----><!--]--><!----><!----></div></div></div><!--]--><!--]--><!----><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_ekal = {
+						base: ""
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/_app/immutable/entry/start.DchKdZjd.js"),
+						import("/_app/immutable/entry/app.b_nuJFBs.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 3, 29],
+							data: [null,null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
