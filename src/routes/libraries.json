@@ -22067,7 +22067,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.28.0",
+			"version": "0.30.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -22182,7 +22182,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.28.0",
+			"version": "0.30.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -22329,7 +22329,7 @@
 						}
 					],
 					"module_comment": "Bridge functions to derive `RouteSpec` and `EventSpec` from `ActionSpec`.\n\nAction specs define the contract (method, input/output, auth, side effects).\nBridge functions produce transport-specific specs from them. HTTP-specific\nconcerns (path, handler) come from options.",
-					"dependents": ["http/surface.ts"]
+					"dependents": ["auth/permit_offer_notifications.ts", "http/surface.ts"]
 				},
 				{
 					"path": "actions/action_codegen.ts",
@@ -23443,32 +23443,22 @@
 						{
 							"name": "ActionPeerSendOptions",
 							"kind": "type",
-							"source_line": 35,
+							"doc_comment": "Per-call options for `ActionPeer.send`. Extends `TransportSendOptions`\nwith `transport_name` for per-call transport selection. The peer-wide\ndefault for any field lives on `ActionPeerOptions.default_send_options` —\nset `queue: true` there once for client-authoritative peers and override\nper-call for exceptions (e.g. high-frequency position sync where stale\nreplays are wrong).",
+							"source_line": 43,
 							"type_signature": "ActionPeerSendOptions",
+							"extends": ["TransportSendOptions"],
 							"properties": [
 								{
 									"name": "transport_name",
 									"kind": "variable",
 									"type_signature": "TransportName"
-								},
-								{
-									"name": "signal",
-									"kind": "variable",
-									"type_signature": "AbortSignal",
-									"doc_comment": "Per-call `AbortSignal`. Forwarded into the chosen transport's `send`,\nwhich bottoms out at `FrontendWebsocketClient.request({signal})` for WS\n(sends the shared `cancel` notification on abort) and at\n`fetch({signal})` for HTTP. Backend transport ignores it."
-								},
-								{
-									"name": "queue",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Per-call durable-queue override. Selects between\n**client-authoritative** (`true` — buffer while WS is down, replay\non reconnect) and **server-authoritative** (`false` — fail-fast\nwith `service_unavailable`) dispatch for this send. Peer-wide\ndefault goes on `default_send_options`; set once at construction\nfor client-authoritative consumers and override per-call for\nexceptions (e.g. high-frequency position sync where stale replays\nare wrong). Only `FrontendWebsocketTransport` acts on it; HTTP\nand backend transports ignore."
 								}
 							]
 						},
 						{
 							"name": "ActionPeerOptions",
 							"kind": "type",
-							"source_line": 58,
+							"source_line": 47,
 							"type_signature": "ActionPeerOptions",
 							"properties": [
 								{
@@ -23484,14 +23474,14 @@
 								{
 									"name": "default_send_options",
 									"kind": "variable",
-									"type_signature": "Partial<ActionPeerSendOptions>"
+									"type_signature": "Omit<ActionPeerSendOptions, 'signal'>"
 								}
 							]
 						},
 						{
 							"name": "ActionPeer",
 							"kind": "class",
-							"source_line": 68,
+							"source_line": 59,
 							"members": [
 								{
 									"name": "environment",
@@ -23508,7 +23498,7 @@
 								{
 									"name": "default_send_options",
 									"kind": "variable",
-									"type_signature": "ActionPeerSendOptions"
+									"type_signature": "Omit<ActionPeerSendOptions, 'signal'>"
 								},
 								{
 									"name": "constructor",
@@ -23859,7 +23849,9 @@
 					"dependents": [
 						"actions/action_event_data.ts",
 						"actions/cancel.ts",
-						"actions/heartbeat.ts"
+						"actions/heartbeat.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_notifications.ts"
 					]
 				},
 				{
@@ -24635,26 +24627,11 @@
 						{
 							"name": "RpcClientCallOptions",
 							"kind": "type",
-							"doc_comment": "Per-call options accepted by every typed Proxy method. `signal` lets the\ncaller cancel an in-flight request (sends the shared `cancel` notification\non the WS path, aborts `fetch` on HTTP). `transport_name` overrides the\nper-method `transport_for_method` selector for this call. `queue` overrides\nthe peer's client-authoritative vs server-authoritative default (see\n`ActionPeerSendOptions` and `TransportSendOptions`).",
-							"source_line": 165,
+							"doc_comment": "Per-call options accepted by every typed Proxy method. Same shape as\n`ActionPeerSendOptions` — the client threads these through unchanged\nto the underlying peer. `transport_name` overrides the per-method\n`transport_for_method` selector for this call.",
+							"source_line": 163,
 							"type_signature": "RpcClientCallOptions",
-							"properties": [
-								{
-									"name": "signal",
-									"kind": "variable",
-									"type_signature": "AbortSignal"
-								},
-								{
-									"name": "transport_name",
-									"kind": "variable",
-									"type_signature": "TransportName"
-								},
-								{
-									"name": "queue",
-									"kind": "variable",
-									"type_signature": "boolean"
-								}
-							]
+							"extends": ["ActionPeerSendOptions"],
+							"properties": []
 						}
 					],
 					"module_comment": "Typed RPC client — creates a Proxy-based API from action specs.\n\nTwo tiers of usage:\n- **Tier 1** (simple, for tx): transport send/receive, Result return. No `environment`.\n- **Tier 2** (full, for zzz): ActionEvent lifecycle with `environment`.\n\nConsumers cast the return to their generated `ActionsApi` interface for full type safety.",
@@ -24671,74 +24648,74 @@
 							"name": "DEFAULT_CLOSE_CODE",
 							"kind": "variable",
 							"doc_comment": "Default WebSocket close code (normal closure).",
-							"source_line": 38,
+							"source_line": 39,
 							"type_signature": "1000"
 						},
 						{
 							"name": "DEFAULT_RECONNECT_DELAY",
 							"kind": "variable",
 							"doc_comment": "Base reconnect delay in ms.",
-							"source_line": 40,
+							"source_line": 41,
 							"type_signature": "1000"
 						},
 						{
 							"name": "DEFAULT_RECONNECT_DELAY_MAX",
 							"kind": "variable",
 							"doc_comment": "Max reconnect delay in ms (cap on exponential backoff).",
-							"source_line": 42,
+							"source_line": 43,
 							"type_signature": "10000"
 						},
 						{
 							"name": "DEFAULT_BACKOFF_FACTOR",
 							"kind": "variable",
 							"doc_comment": "Exponential backoff factor: delay = base * factor^(attempt-1).",
-							"source_line": 44,
+							"source_line": 45,
 							"type_signature": "1.5"
 						},
 						{
 							"name": "DEFAULT_HEARTBEAT_INTERVAL",
 							"kind": "variable",
 							"doc_comment": "Idle interval before sending a heartbeat (ms).",
-							"source_line": 46,
+							"source_line": 47,
 							"type_signature": "30000"
 						},
 						{
 							"name": "DEFAULT_HEARTBEAT_RECEIVE_TIMEOUT",
 							"kind": "variable",
 							"doc_comment": "Max receive silence before closing with  (ms).",
-							"source_line": 48,
+							"source_line": 49,
 							"type_signature": "60000"
 						},
 						{
 							"name": "DEFAULT_QUEUE_MAX_SIZE",
 							"kind": "variable",
 							"doc_comment": "Default bound on buffered requests while disconnected. Overflow rejects.",
-							"source_line": 50,
+							"source_line": 51,
 							"type_signature": "100"
 						},
 						{
 							"name": "SocketStatus",
 							"kind": "type",
 							"doc_comment": "Client-side WebSocket status.\n\n- `initial` — never connected; `connect()` has not been called.\n- `connecting` — WebSocket `readyState === CONNECTING`.\n- `connected` — WebSocket `readyState === OPEN`.\n- `reconnecting` — close fired; waiting out backoff before next attempt.\n- `closed` — socket is not open. Terminal only when `revoked` is `true`\n  or auto-reconnect is disabled; otherwise `connect()` reopens.",
-							"source_line": 62,
+							"source_line": 63,
 							"type_signature": "SocketStatus"
 						},
 						{
 							"name": "SocketMessageHandler",
 							"kind": "type",
-							"source_line": 64,
+							"source_line": 65,
 							"type_signature": "SocketMessageHandler"
 						},
 						{
 							"name": "SocketErrorHandler",
 							"kind": "type",
-							"source_line": 65,
+							"source_line": 66,
 							"type_signature": "SocketErrorHandler"
 						},
 						{
 							"name": "FrontendWebsocketReconnectOptions",
 							"kind": "type",
-							"source_line": 67,
+							"source_line": 68,
 							"type_signature": "FrontendWebsocketReconnectOptions",
 							"properties": [
 								{
@@ -24764,7 +24741,7 @@
 						{
 							"name": "FrontendWebsocketHeartbeatOptions",
 							"kind": "type",
-							"source_line": 76,
+							"source_line": 77,
 							"type_signature": "FrontendWebsocketHeartbeatOptions",
 							"properties": [
 								{
@@ -24784,7 +24761,7 @@
 						{
 							"name": "FrontendWebsocketQueueOptions",
 							"kind": "type",
-							"source_line": 92,
+							"source_line": 93,
 							"type_signature": "FrontendWebsocketQueueOptions",
 							"properties": [
 								{
@@ -24798,7 +24775,7 @@
 						{
 							"name": "FrontendWebsocketClientOptions",
 							"kind": "type",
-							"source_line": 101,
+							"source_line": 102,
 							"type_signature": "FrontendWebsocketClientOptions",
 							"properties": [
 								{
@@ -24831,7 +24808,7 @@
 							"name": "FrontendWebsocketClient",
 							"kind": "class",
 							"doc_comment": "Reactive WebSocket client implementing `WebsocketConnection`.\n\nConstruct with a URL and optional config; call `connect()` to open the\nsocket and begin auto-reconnect. Register message/error handlers via\n`add_message_handler` / `add_error_handler` — both return unsubscribe\nfunctions. `FrontendWebsocketTransport` consumes this as its connection.\n\nSession-revocation close codes (`WS_CLOSE_SESSION_REVOKED`) put the client\nin a permanently-closed state; reconnecting would just loop on 401.",
-							"source_line": 150,
+							"source_line": 151,
 							"extends": [],
 							"implements": ["WebsocketConnection", "Disposable"],
 							"members": [
@@ -24988,7 +24965,7 @@
 								{
 									"name": "request",
 									"kind": "function",
-									"doc_comment": "Promise-based JSON-RPC over the socket. Auto-assigns a monotonic request\nid (or uses an explicit one supplied via `options.id` — used by\n`FrontendWebsocketTransport` which delegates to this method and has its\nown peer-minted UUID), tracks the pending promise, and resolves when the\nserver sends a matching response (or rejects on error frame, socket\nclose, or aborted signal).\n\nCallers supplying an explicit `options.id` are responsible for\nuniqueness — the pending map is keyed by id, and a duplicate silently\noverwrites the prior entry. Auto-minted ids are monotonic and never\ncollide with themselves or with peer-minted UUIDs (the types differ:\ninteger vs string).\n\nWhile the socket is disconnected, the request is buffered in a bounded\nqueue (default-on, `DEFAULT_QUEUE_MAX_SIZE`) and flushed on reopen. Pass\n`{queue: false}` to reject immediately when disconnected — used\ninternally by the heartbeat, which must not fight the queue for the\ndisconnect-detection slot.\n\nOn `AbortSignal` fire: rejects the local promise *and* sends the shared\n`cancel` notification (`CANCEL_METHOD`) so the server-side dispatcher\ncan abort the matching handler's `ctx.signal`. Suppressed for\nqueued-but-never-sent (server doesn't know about it) and\nresponse-beat-cancel races.",
+									"doc_comment": "Promise-based JSON-RPC over the socket. Auto-assigns a monotonic request\nid (or uses an explicit one supplied via `options.id` — used by\n`FrontendWebsocketTransport` which delegates to this method and has its\nown peer-minted UUID), tracks the pending promise, and resolves when the\nserver sends a matching response.\n\nCallers supplying an explicit `options.id` are responsible for\nuniqueness — the pending map is keyed by id, and a duplicate silently\noverwrites the prior entry. Auto-minted ids are monotonic and never\ncollide with themselves or with peer-minted UUIDs (the types differ:\ninteger vs string).\n\nWhile the socket is disconnected, the request is buffered in a bounded\nqueue (default-on, `DEFAULT_QUEUE_MAX_SIZE`) and flushed on reopen. Pass\n`{queue: false}` to reject immediately when disconnected — used\ninternally by the heartbeat, which must not fight the queue for the\ndisconnect-detection slot.\n\nOn `AbortSignal` fire: rejects the local promise *and* sends the shared\n`cancel` notification () so the server-side\ndispatcher can abort the matching handler's `ctx.signal`. Suppressed\nfor queued-but-never-sent (server doesn't know about it) and\nresponse-beat-cancel races.\n\nRejections throw `ThrownJsonrpcError` with a specific code so\n`FrontendWebsocketTransport` can preserve the code verbatim in its\nerror envelope rather than collapsing every rejection to\n`internal_error`:\n- `unauthenticated` — session revoked (entry check or close code);\n- `request_cancelled` — caller's `AbortSignal` fired;\n- `queue_overflow` — durable queue full;\n- `service_unavailable` — socket not connected / closed / torn down\n  mid-flight;\n- `internal_error` — `ws.send` threw (serialization, buffer full);\n- server's wire code verbatim — JSON-RPC error frame from peer.",
 									"type_signature": "<R = unknown>(method: string, params?: unknown, options?: { signal?: AbortSignal | undefined; queue?: boolean | undefined; id?: string | number | undefined; }): Promise<R>",
 									"return_type": "Promise<R>",
 									"parameters": [
@@ -25038,7 +25015,7 @@
 							"name": "socket_status_to_async_status",
 							"kind": "function",
 							"doc_comment": "Project  onto fuz_util's  — the\n5-way → 4-way mapping every consumer re-derives to surface connection state\nto UI (loading indicators, retry banners). Collapses `reconnecting` into\n`failure` (UI shows \"lost, retrying\") and splits `closed` by `revoked` so\na terminal session-revocation read as `failure` while a clean client-\ninitiated close reads as `initial` (the \"not connected, not trying\" state).",
-							"source_line": 853,
+							"source_line": 883,
 							"type_signature": "(status: SocketStatus, revoked: boolean): AsyncStatus",
 							"return_type": "AsyncStatus",
 							"parameters": [
@@ -25060,7 +25037,8 @@
 						"actions/cancel.ts",
 						"actions/heartbeat.ts",
 						"actions/transports.ts",
-						"http/jsonrpc.ts"
+						"http/jsonrpc.ts",
+						"http/jsonrpc_errors.ts"
 					]
 				},
 				{
@@ -25419,6 +25397,24 @@
 									]
 								},
 								{
+									"name": "send_to_account",
+									"kind": "function",
+									"doc_comment": "Send a message to every socket bound to a specific account.\n\nTargeted per-account fan-out for any flow where the delivery target\nis a single known account. Prefer this over `broadcast_filtered` when\nthe filter is exactly \"this account_id\"; reach for `broadcast_filtered`\nwhen the ACL is an arbitrary predicate over `ConnectionIdentity`.\n\nMirrors `close_sockets_for_account` on the send side: every connection\nfor the account (session, bearer, and daemon-token) receives the\nmessage.",
+									"type_signature": "(account_id: string & $brand<\"Uuid\">, message: { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; }; } | { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { ...; }; } | { ...; }): number",
+									"return_type": "number",
+									"return_description": "the number of sockets the message was sent to",
+									"parameters": [
+										{
+											"name": "account_id",
+											"type": "string & $brand<\"Uuid\">"
+										},
+										{
+											"name": "message",
+											"type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number; result: { [x: string]: unknown; }; } | { [x: string]: unknown; jsonrpc: \"2.0\"; id: string | number | null; error: { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); message: string; data?: unknown; }; } | { ...."
+										}
+									]
+								},
+								{
 									"name": "is_ready",
 									"kind": "function",
 									"type_signature": "(): boolean",
@@ -25628,26 +25624,28 @@
 						{
 							"name": "TransportSendOptions",
 							"kind": "type",
-							"doc_comment": "Per-call options accepted by every transport's `send`. Optional and\nextensible — adding a field is non-breaking.\n\n- `signal`: cancellation that bottoms out at\n  `FrontendWebsocketClient.request` (which sends the shared `cancel`\n  notification on abort) and at `fetch({signal})` for HTTP. Backend\n  transport receives the option but has no per-call abort surface to\n  honor.\n- `queue`: request whether the transport should durably buffer this\n  call while the underlying connection is unavailable. Names the\n  **client-authoritative vs server-authoritative** distinction —\n  server-authoritative consumers (e.g. zzz) fail fast with\n  `service_unavailable`; client-authoritative consumers (e.g. games,\n  real-time apps) replay on reconnect because the user already\n  committed to the action at click time. Honored by\n  `FrontendWebsocketTransport` (default `false`); HTTP and backend\n  transports ignore it.",
-							"source_line": 53,
+							"doc_comment": "Per-call options accepted by every transport's `send`. Optional and\nextensible — adding a field is non-breaking. Source of truth for the\nshared option shape; `ActionPeerSendOptions` and `RpcClientCallOptions`\nextend it.",
+							"source_line": 40,
 							"type_signature": "TransportSendOptions",
 							"properties": [
 								{
 									"name": "signal",
 									"kind": "variable",
-									"type_signature": "AbortSignal"
+									"type_signature": "AbortSignal",
+									"doc_comment": "Per-call cancellation. Bottoms out at\n`FrontendWebsocketClient.request({signal})` on the WS path (sends the\nshared `cancel` notification on abort) and at `fetch({signal})` on\nHTTP. Backend transport has no per-call abort surface to honor."
 								},
 								{
 									"name": "queue",
 									"kind": "variable",
-									"type_signature": "boolean"
+									"type_signature": "boolean",
+									"doc_comment": "Per-call durable-queue opt-in. Names the **client-authoritative vs\nserver-authoritative** distinction — server-authoritative consumers\n(e.g. zzz completion calls) fail fast with `service_unavailable` when\nthe transport is down; client-authoritative consumers (games,\nreal-time apps) buffer and replay on reconnect because the user\nalready committed to the action at click time. Honored only by\n`FrontendWebsocketTransport` on the `request_response` path (default\n`false`). HTTP and backend transports ignore it; WS notifications\nalso ignore it and always fail-fast when disconnected (fire-and-forget\n`connection.send` has no queue semantic)."
 								}
 							]
 						},
 						{
 							"name": "Transport",
 							"kind": "type",
-							"source_line": 58,
+							"source_line": 63,
 							"type_signature": "Transport",
 							"properties": [
 								{
@@ -25670,7 +25668,7 @@
 						{
 							"name": "Transports",
 							"kind": "class",
-							"source_line": 74,
+							"source_line": 79,
 							"members": [
 								{
 									"name": "allow_fallback",
@@ -26011,10 +26009,10 @@
 						{
 							"name": "query_admin_account_list",
 							"kind": "function",
-							"doc_comment": "List all accounts with their actors and active permits for admin display.\n\nUses 3 flat queries instead of N+1 per-account loops.",
-							"source_line": 212,
-							"type_signature": "(deps: QueryDeps): Promise<{ account: { id: string; username: string; email: string | null; email_verified: boolean; created_at: string; updated_at: string; updated_by: string | null; }; actor: { ...; } | null; permits: { ...; }[]; }[]>",
-							"return_type": "Promise<{ account: { id: string; username: string; email: string | null; email_verified: boolean; created_at: string; updated_at: string; updated_by: string | null; }; actor: { id: string; name: string; } | null; permits: { ...; }[]; }[]>",
+							"doc_comment": "List all accounts with their actors, active permits, and pending inbound\npermit offers for admin display.\n\nUses 4 flat queries instead of N+1 per-account loops. Pending offers surface\nthe \"offer pending — awaiting acceptance\" UX without a second round-trip;\n`message` is intentionally excluded (cross-admin visibility of grantor notes\nwould expand beyond what the audit log discloses).",
+							"source_line": 227,
+							"type_signature": "(deps: QueryDeps): Promise<{ account: { id: string; username: string; email: string | null; email_verified: boolean; created_at: string; updated_at: string; updated_by: string | null; }; actor: { ...; } | null; permits: { ...; }[]; pending_offers: { ...; }[]; }[]>",
+							"return_type": "Promise<{ account: { id: string; username: string; email: string | null; email_verified: boolean; created_at: string; updated_at: string; updated_by: string | null; }; actor: { id: string; name: string; } | null; permits: { ...; }[]; pending_offers: { ...; }[]; }[]>",
 							"return_description": "admin account entries sorted by creation date",
 							"parameters": [
 								{
@@ -26032,9 +26030,12 @@
 						"auth/admin_routes.ts",
 						"auth/bootstrap_account.ts",
 						"auth/invite_routes.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_queries.ts",
 						"auth/request_context.ts",
 						"auth/signup_routes.ts",
 						"dev/setup.ts",
+						"testing/admin_integration.ts",
 						"testing/app_server.ts",
 						"testing/middleware.ts"
 					]
@@ -26381,10 +26382,17 @@
 							]
 						},
 						{
+							"name": "PERMIT_REVOKED_REASON_LENGTH_MAX",
+							"kind": "variable",
+							"doc_comment": "Maximum length of the optional free-form `revoked_reason` attached to a\nrevoked permit. Bounds the value at the schema layer so both the admin\ninput (when the route surfaces a reason field) and the revokee-facing\n`permit_revoke` WS notification validate against the same ceiling.",
+							"source_line": 82,
+							"type_signature": "500"
+						},
+						{
 							"name": "Permit",
 							"kind": "type",
 							"doc_comment": "Permit — time-bounded, revocable grant of a role to an actor.",
-							"source_line": 77,
+							"source_line": 85,
 							"type_signature": "Permit",
 							"properties": [
 								{
@@ -26401,6 +26409,12 @@
 									"name": "role",
 									"kind": "variable",
 									"type_signature": "string"
+								},
+								{
+									"name": "scope_id",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Resource scope this grant applies to (e.g. a classroom id). `null` for global permits."
 								},
 								{
 									"name": "created_at",
@@ -26423,16 +26437,28 @@
 									"type_signature": "string | null"
 								},
 								{
+									"name": "revoked_reason",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Optional free-form reason attached on revoke (surfaced in the revokee WS notification once it lands)."
+								},
+								{
 									"name": "granted_by",
 									"kind": "variable",
 									"type_signature": "string | null"
+								},
+								{
+									"name": "source_offer_id",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Offer that produced this permit (set by `query_accept_offer`). `null` for direct grants."
 								}
 							]
 						},
 						{
 							"name": "is_permit_active",
 							"kind": "function",
-							"source_line": 88,
+							"source_line": 102,
 							"type_signature": "(p: Permit, now?: Date): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -26451,7 +26477,7 @@
 							"name": "AuthSession",
 							"kind": "type",
 							"doc_comment": "Server-side auth session, keyed by blake3 hash of session token.",
-							"source_line": 92,
+							"source_line": 106,
 							"type_signature": "AuthSession",
 							"properties": [
 								{
@@ -26485,7 +26511,7 @@
 							"name": "ApiToken",
 							"kind": "type",
 							"doc_comment": "API token for CLI/programmatic access.",
-							"source_line": 101,
+							"source_line": 115,
 							"type_signature": "ApiToken",
 							"properties": [
 								{
@@ -26534,55 +26560,62 @@
 							"name": "SessionAccountJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for `SessionAccount` — account without sensitive fields.",
-							"source_line": 115,
+							"source_line": 129,
 							"type_signature": "ZodObject<{ id: ZodString; username: ZodString; email: ZodNullable<ZodEmail>; email_verified: ZodBoolean; created_at: ZodString; }, $strict>"
 						},
 						{
 							"name": "AuthSessionJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for `AuthSession` — id is the blake3 hash, safe for client.",
-							"source_line": 125,
+							"source_line": 139,
 							"type_signature": "ZodObject<{ id: ZodString; account_id: ZodString; created_at: ZodString; expires_at: ZodString; last_seen_at: ZodString; }, $strict>"
 						},
 						{
 							"name": "ClientApiTokenJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for client-safe API token listing (excludes `token_hash`).",
-							"source_line": 135,
+							"source_line": 149,
 							"type_signature": "ZodObject<{ id: ZodString; account_id: ZodString; name: ZodString; expires_at: ZodNullable<ZodString>; last_used_at: ZodNullable<ZodString>; last_used_ip: ZodNullable<...>; created_at: ZodString; }, $strict>"
 						},
 						{
 							"name": "PermitSummaryJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for the permit summary returned in admin account listings.",
-							"source_line": 147,
+							"source_line": 161,
 							"type_signature": "ZodObject<{ id: ZodString; role: ZodString; created_at: ZodString; expires_at: ZodNullable<ZodString>; granted_by: ZodNullable<ZodString>; }, $strict>"
 						},
 						{
 							"name": "ActorSummaryJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for the actor summary returned in admin account listings.",
-							"source_line": 157,
+							"source_line": 171,
 							"type_signature": "ZodObject<{ id: ZodString; name: ZodString; }, $strict>"
 						},
 						{
 							"name": "AdminAccountJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for admin-facing account data — extends `SessionAccountJson` with audit fields.",
-							"source_line": 164,
+							"source_line": 178,
 							"type_signature": "ZodObject<{ id: ZodString; username: ZodString; email: ZodNullable<ZodEmail>; email_verified: ZodBoolean; created_at: ZodString; updated_at: ZodString; updated_by: ZodNullable<...>; }, $strict>"
+						},
+						{
+							"name": "PendingOfferSummaryJson",
+							"kind": "type",
+							"doc_comment": "Zod schema for a pending permit offer surfaced in admin account listings.\n\nDeliberately narrower than `PermitOfferJson`: omits `message` and\n`decline_reason` so cross-admin visibility of the listing does not expose\ngrantor-authored text that the audit log also withholds. Full offer\npayloads remain available through the offer-specific RPC surface and the\naudit log when admins need them.",
+							"source_line": 193,
+							"type_signature": "ZodObject<{ id: ZodString; role: ZodString; scope_id: ZodNullable<ZodString>; from_actor_id: ZodString; created_at: ZodString; expires_at: ZodString; }, $strict>"
 						},
 						{
 							"name": "AdminAccountEntryJson",
 							"kind": "type",
-							"doc_comment": "Zod schema for an admin account listing entry (account + actor + permits).",
-							"source_line": 171,
-							"type_signature": "ZodObject<{ account: ZodObject<{ id: ZodString; username: ZodString; email: ZodNullable<ZodEmail>; email_verified: ZodBoolean; created_at: ZodString; updated_at: ZodString; updated_by: ZodNullable<...>; }, $strict>; actor: ZodNullable<...>; permits: ZodArray<...>; }, $strict>"
+							"doc_comment": "Zod schema for an admin account listing entry (account + actor + permits + pending offers).",
+							"source_line": 204,
+							"type_signature": "ZodObject<{ account: ZodObject<{ id: ZodString; username: ZodString; email: ZodNullable<ZodEmail>; email_verified: ZodBoolean; created_at: ZodString; updated_at: ZodString; updated_by: ZodNullable<...>; }, $strict>; actor: ZodNullable<...>; permits: ZodArray<...>; pending_offers: ZodArray<...>; }, $strict>"
 						},
 						{
 							"name": "CreateAccountInput",
 							"kind": "type",
-							"source_line": 180,
+							"source_line": 214,
 							"type_signature": "CreateAccountInput",
 							"properties": [
 								{
@@ -26605,7 +26638,7 @@
 						{
 							"name": "GrantPermitInput",
 							"kind": "type",
-							"source_line": 186,
+							"source_line": 220,
 							"type_signature": "GrantPermitInput",
 							"properties": [
 								{
@@ -26619,6 +26652,12 @@
 									"type_signature": "string"
 								},
 								{
+									"name": "scope_id",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Scope the grant applies to. `null` / omitted grants a global permit."
+								},
+								{
 									"name": "expires_at",
 									"kind": "variable",
 									"type_signature": "Date | null"
@@ -26627,6 +26666,12 @@
 									"name": "granted_by",
 									"kind": "variable",
 									"type_signature": "string | null"
+								},
+								{
+									"name": "source_offer_id",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Offer id that produced this permit. Set by `query_accept_offer`; leave unset for direct grants."
 								}
 							]
 						},
@@ -26634,7 +26679,7 @@
 							"name": "to_session_account",
 							"kind": "function",
 							"doc_comment": "Convert an `Account` to a `SessionAccount` by stripping sensitive fields.",
-							"source_line": 199,
+							"source_line": 237,
 							"type_signature": "(account: Account): SessionAccount",
 							"return_type": "SessionAccount",
 							"return_description": "the client-safe account",
@@ -26650,7 +26695,7 @@
 							"name": "to_admin_account",
 							"kind": "function",
 							"doc_comment": "Convert an `Account` to an `AdminAccountJson` for admin listings.",
-							"source_line": 213,
+							"source_line": 251,
 							"type_signature": "(account: Account): { id: string; username: string; email: string | null; email_verified: boolean; created_at: string; updated_at: string; updated_by: string | null; }",
 							"return_type": "{ id: string; username: string; email: string | null; email_verified: boolean; created_at: string; updated_at: string; updated_by: string | null; }",
 							"return_description": "the admin-safe account with audit fields",
@@ -26672,6 +26717,7 @@
 						"auth/bootstrap_routes.ts",
 						"auth/invite_routes.ts",
 						"auth/invite_schema.ts",
+						"auth/permit_offer_notifications.ts",
 						"auth/request_context.ts",
 						"auth/signup_routes.ts",
 						"ui/BootstrapForm.svelte",
@@ -26686,7 +26732,7 @@
 							"name": "AdminRouteOptions",
 							"kind": "type",
 							"doc_comment": "Options for admin route specs.",
-							"source_line": 38,
+							"source_line": 49,
 							"type_signature": "AdminRouteOptions",
 							"properties": [
 								{
@@ -26694,6 +26740,28 @@
 									"kind": "variable",
 									"type_signature": "RoleSchemaResult",
 									"doc_comment": "Role schema result from `create_role_schema()`. Defaults to builtin roles only.\nPass the full result to enable extended app-defined roles in the admin UI.\nBoth `Role` and `role_options` come from the same call — passing them together\nvia this field ensures they stay in sync."
+								},
+								{
+									"name": "permit_offer_default_ttl_ms",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "TTL applied to offers emitted by the admin grant route. Defaults to\n. Independent of\n`PermitOfferActionOptions.default_ttl_ms` so admin-issued offers (known\ngrantor, operational context) can carry a different expiry than\nconsumer-issued offers."
+								}
+							]
+						},
+						{
+							"name": "AdminAccountRouteDeps",
+							"kind": "type",
+							"doc_comment": "Dependencies for .\n\n`notification_sender` is optional — when absent, the permit-revoke and\noffer-supersede WS fan-out is silently skipped. Consumers wiring\n`BackendWebsocketTransport` assign its instance directly.",
+							"source_line": 74,
+							"type_signature": "AdminAccountRouteDeps",
+							"extends": ["Pick<RouteFactoryDeps, 'log' | 'on_audit_event'>"],
+							"properties": [
+								{
+									"name": "notification_sender",
+									"kind": "variable",
+									"type_signature": "NotificationSender | null",
+									"doc_comment": "Optional WS fan-out primitive. `null` or absent → notifications skipped."
 								}
 							]
 						},
@@ -26701,15 +26769,15 @@
 							"name": "create_admin_account_route_specs",
 							"kind": "function",
 							"doc_comment": "Create admin route specs for account listing and permit management.",
-							"source_line": 55,
-							"type_signature": "(deps: Pick<RouteFactoryDeps, \"log\" | \"on_audit_event\">, options?: AdminRouteOptions | undefined): RouteSpec[]",
+							"source_line": 86,
+							"type_signature": "(deps: AdminAccountRouteDeps, options?: AdminRouteOptions | undefined): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "route specs for admin account management",
 							"parameters": [
 								{
 									"name": "deps",
-									"type": "Pick<RouteFactoryDeps, \"log\" | \"on_audit_event\">",
-									"description": "stateless capabilities (log)"
+									"type": "AdminAccountRouteDeps",
+									"description": "stateless capabilities (log, on_audit_event, optional notification_sender)"
 								},
 								{
 									"name": "options",
@@ -26726,11 +26794,16 @@
 						"auth/account_schema.ts",
 						"auth/api_token_queries.ts",
 						"auth/audit_log_queries.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_notifications.ts",
+						"auth/permit_offer_queries.ts",
+						"auth/permit_offer_schema.ts",
 						"auth/permit_queries.ts",
 						"auth/request_context.ts",
 						"auth/role_schema.ts",
 						"auth/session_queries.ts",
 						"http/error_schemas.ts",
+						"http/pending_effects.ts",
 						"http/proxy.ts",
 						"http/route_spec.ts"
 					]
@@ -27198,8 +27271,8 @@
 							"kind": "function",
 							"doc_comment": "List audit log entries with resolved usernames, newest first.",
 							"source_line": 134,
-							"type_signature": "(deps: QueryDeps, options?: AuditLogListOptions | undefined): Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | ... 10 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
-							"return_type": "Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | ... 5 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
+							"type_signature": "(deps: QueryDeps, options?: AuditLogListOptions | undefined): Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | ... 16 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
+							"return_type": "Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | ... 11 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
 							"return_description": "matching audit log entries with `username` and `target_username`",
 							"parameters": [
 								{
@@ -27246,8 +27319,8 @@
 							"kind": "function",
 							"doc_comment": "List permit grant/revoke events with resolved usernames.",
 							"source_line": 213,
-							"type_signature": "(deps: QueryDeps, limit?: number, offset?: number): Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | ... 8 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
-							"return_type": "Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | ... 5 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
+							"type_signature": "(deps: QueryDeps, limit?: number, offset?: number): Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | ... 14 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
+							"return_type": "Promise<{ id: string; seq: number; event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | ... 11 more ... | \"app_settings_update\"; ... 8 more ...; target_username: string | null; }[]>",
 							"return_description": "permit history events with `username` and `target_username`",
 							"parameters": [
 								{
@@ -27331,6 +27404,8 @@
 						"auth/audit_log_routes.ts",
 						"auth/bootstrap_routes.ts",
 						"auth/invite_routes.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_queries.ts",
 						"auth/signup_routes.ts"
 					]
 				},
@@ -27394,41 +27469,41 @@
 							"kind": "variable",
 							"doc_comment": "All tracked auth event types.",
 							"source_line": 15,
-							"type_signature": "readonly [\"login\", \"logout\", \"bootstrap\", \"signup\", \"password_change\", \"session_revoke\", \"session_revoke_all\", \"token_create\", \"token_revoke\", \"token_revoke_all\", \"permit_grant\", \"permit_revoke\", \"invite_create\", \"invite_delete\", \"app_settings_update\"]"
+							"type_signature": "readonly [\"login\", \"logout\", \"bootstrap\", \"signup\", \"password_change\", \"session_revoke\", \"session_revoke_all\", \"token_create\", \"token_revoke\", \"token_revoke_all\", \"permit_grant\", ... 9 more ..., \"app_settings_update\"]"
 						},
 						{
 							"name": "AuditEventType",
 							"kind": "type",
 							"doc_comment": "Zod schema for audit event types.",
-							"source_line": 34,
-							"type_signature": "ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; session_revoke_all: \"session_revoke_all\"; ... 7 more ...; app_settings_update: \"app_settings_update\"; }>"
+							"source_line": 40,
+							"type_signature": "ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; session_revoke_all: \"session_revoke_all\"; ... 13 more ...; app_settings_update: \"app_settings_update\"; }>"
 						},
 						{
 							"name": "AuditOutcome",
 							"kind": "type",
 							"doc_comment": "Zod schema for audit event outcomes.",
-							"source_line": 38,
+							"source_line": 44,
 							"type_signature": "ZodEnum<{ success: \"success\"; failure: \"failure\"; }>"
 						},
 						{
 							"name": "AUDIT_METADATA_SCHEMAS",
 							"kind": "variable",
 							"doc_comment": "Per-event-type metadata Zod schemas.\n\nUses `z.looseObject` so consumers can add extra fields\n(e.g. visiones `self_service`) while known fields are validated.\nEvents with outcome-dependent metadata use a union with `z.null()`.",
-							"source_line": 48,
-							"type_signature": "{ login: ZodNullable<ZodObject<{ username: ZodString; }, $loose>>; logout: ZodNull; bootstrap: ZodNullable<ZodObject<{ error: ZodString; }, $loose>>; ... 11 more ...; app_settings_update: ZodObject<...>; }"
+							"source_line": 54,
+							"type_signature": "{ login: ZodNullable<ZodObject<{ username: ZodString; }, $loose>>; logout: ZodNull; bootstrap: ZodNullable<ZodObject<{ error: ZodString; }, $loose>>; ... 17 more ...; app_settings_update: ZodObject<...>; }"
 						},
 						{
 							"name": "AuditMetadataMap",
 							"kind": "type",
 							"doc_comment": "Mapped type of metadata shapes per event type, derived from Zod schemas.",
-							"source_line": 81,
+							"source_line": 139,
 							"type_signature": "AuditMetadataMap"
 						},
 						{
 							"name": "AuditLogEvent",
 							"kind": "type",
 							"doc_comment": "Audit log row from the database.",
-							"source_line": 86,
+							"source_line": 144,
 							"type_signature": "AuditLogEvent",
 							"properties": [
 								{
@@ -27487,7 +27562,7 @@
 							"name": "get_audit_metadata",
 							"kind": "function",
 							"doc_comment": "Narrow metadata type for a known event type.\n\nUse after checking `event_type` to get typed metadata access.",
-							"source_line": 104,
+							"source_line": 162,
 							"type_signature": "<T extends AuditEventType>(event: AuditLogEvent & { event_type: T; }): AuditMetadataMap[T] | null",
 							"return_type": "AuditMetadataMap[T] | null",
 							"parameters": [
@@ -27501,7 +27576,7 @@
 							"name": "AuditLogInput",
 							"kind": "type",
 							"doc_comment": "Input for creating an audit log entry.",
-							"source_line": 111,
+							"source_line": 169,
 							"type_signature": "AuditLogInput<T>",
 							"generic_params": [
 								{
@@ -27552,7 +27627,7 @@
 							"name": "AuditLogListOptions",
 							"kind": "type",
 							"doc_comment": "Options for listing audit log entries.",
-							"source_line": 122,
+							"source_line": 180,
 							"type_signature": "AuditLogListOptions",
 							"properties": [
 								{
@@ -27597,40 +27672,40 @@
 							"name": "AuditLogEventJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for client-safe audit log event.",
-							"source_line": 134,
-							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 8 more ...; app_settings_update: \"app_settings_update\"; }>; ... 6 more ...; metadata: ZodNullable<...>..."
+							"source_line": 192,
+							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 14 more ...; app_settings_update: \"app_settings_update\"; }>; ... 6 more ...; metadata: ZodNullable<......"
 						},
 						{
 							"name": "AuditLogEventWithUsernamesJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for audit log events with resolved usernames.",
-							"source_line": 149,
-							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 8 more ...; app_settings_update: \"app_settings_update\"; }>; ... 8 more ...; target_username: ZodNullab..."
+							"source_line": 207,
+							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 14 more ...; app_settings_update: \"app_settings_update\"; }>; ... 8 more ...; target_username: ZodNulla..."
 						},
 						{
 							"name": "PermitHistoryEventJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for permit history events with resolved usernames.",
-							"source_line": 156,
-							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 8 more ...; app_settings_update: \"app_settings_update\"; }>; ... 8 more ...; target_username: ZodNullab..."
+							"source_line": 214,
+							"type_signature": "ZodObject<{ id: ZodString; seq: ZodNumber; event_type: ZodEnum<{ login: \"login\"; logout: \"logout\"; bootstrap: \"bootstrap\"; signup: \"signup\"; password_change: \"password_change\"; session_revoke: \"session_revoke\"; ... 14 more ...; app_settings_update: \"app_settings_update\"; }>; ... 8 more ...; target_username: ZodNulla..."
 						},
 						{
 							"name": "AdminSessionJson",
 							"kind": "type",
 							"doc_comment": "Zod schema for admin session listing (session + username).",
-							"source_line": 163,
+							"source_line": 221,
 							"type_signature": "ZodObject<{ id: ZodString; account_id: ZodString; created_at: ZodString; expires_at: ZodString; last_seen_at: ZodString; username: ZodString; }, $strict>"
 						},
 						{
 							"name": "AUDIT_LOG_SCHEMA",
 							"kind": "variable",
-							"source_line": 170,
+							"source_line": 228,
 							"type_signature": "\"\\nCREATE TABLE IF NOT EXISTS audit_log (\\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\\n  seq SERIAL NOT NULL,\\n  event_type TEXT NOT NULL,\\n  outcome TEXT NOT NULL DEFAULT 'success',\\n  actor_id UUID REFERENCES actor(id) ON DELETE SET NULL,\\n  account_id UUID REFERENCES account(id) ON DELETE SET NULL,\\n  targe..."
 						},
 						{
 							"name": "AUDIT_LOG_INDEXES",
 							"kind": "variable",
-							"source_line": 184,
+							"source_line": 242,
 							"type_signature": "string[]"
 						}
 					],
@@ -28878,26 +28953,30 @@
 							"name": "AUTH_MIGRATION_NAMESPACE",
 							"kind": "variable",
 							"doc_comment": "Namespace identifier for fuz_app auth migrations.",
-							"source_line": 54,
+							"source_line": 60,
 							"type_signature": "\"fuz_auth\""
 						},
 						{
 							"name": "AUTH_MIGRATIONS",
 							"kind": "variable",
-							"doc_comment": "Auth schema migrations in order.\n\n- v0: Full auth schema — account (with email_verified), actor, permit,\n  auth_session, api_token, audit_log (with seq), bootstrap_lock, invite,\n  app_settings, plus all indexes and seeds.",
-							"source_line": 63,
+							"doc_comment": "Auth schema migrations in order.\n\n- v0: Full auth schema — account (with email_verified), actor, permit,\n  auth_session, api_token, audit_log (with seq), bootstrap_lock, invite,\n  app_settings, plus all indexes and seeds.\n- v1: `permit_offer` table for consentful grants; adds `scope_id` /\n  `source_offer_id` / `revoked_reason` to `permit` and swaps the\n  `(actor_id, role)` partial unique index for a scope-aware variant using\n  the all-zeros sentinel UUID. The `permit_offer` table carries a\n  `superseded_at` terminal state; its partial unique index is scoped by\n  `(to_account, role, scope, from_actor)` so multiple grantors may coexist.",
+							"source_line": 75,
 							"type_signature": "Migration[]"
 						},
 						{
 							"name": "AUTH_MIGRATION_NS",
 							"kind": "variable",
 							"doc_comment": "Pre-composed migration namespace for auth tables.",
-							"source_line": 100,
+							"source_line": 139,
 							"type_signature": "MigrationNamespace"
 						}
 					],
 					"module_comment": "Auth schema migrations.\n\nSingle v0 migration for the fuz identity system tables.\nConsumed by `run_migrations` with namespace `'fuz_auth'`.\n\nCollapsed to a single v0 for the 0.1.0 release — no production databases\nexist, so the prior v0–v6 development iterations are consolidated.\nPost-0.1.0, each new migration appends as v1, v2, etc.\n\nTo add a migration, append a new entry to `AUTH_MIGRATIONS`:\n\n```ts\n// v1: add display_name to account\n{\n  name: 'account_display_name',\n  up: async (db) => {\n    await db.query('ALTER TABLE account ADD COLUMN display_name TEXT');\n  },\n},\n```\n\nMigrations are forward-only (no down). Use `IF NOT EXISTS` / `IF EXISTS`\nfor DDL safety. Named migrations (`{name, up}`) are preferred for\ndebuggability — the name appears in error messages on failure.",
-					"dependencies": ["auth/audit_log_schema.ts", "auth/ddl.ts"],
+					"dependencies": [
+						"auth/audit_log_schema.ts",
+						"auth/ddl.ts",
+						"auth/permit_offer_schema.ts"
+					],
 					"dependents": [
 						"server/app_backend.ts",
 						"server/app_server.ts",
@@ -29047,13 +29126,1028 @@
 					]
 				},
 				{
+					"path": "auth/permit_offer_actions.ts",
+					"declarations": [
+						{
+							"name": "ERROR_OFFER_SELF_TARGET",
+							"kind": "variable",
+							"doc_comment": "Error reason — caller tried to offer themselves a permit.",
+							"source_line": 74,
+							"type_signature": "\"offer_self_target\""
+						},
+						{
+							"name": "ERROR_OFFER_TERMINAL",
+							"kind": "variable",
+							"doc_comment": "Error reason — offer is declined, retracted, or superseded.",
+							"source_line": 76,
+							"type_signature": "\"offer_terminal\""
+						},
+						{
+							"name": "ERROR_OFFER_EXPIRED",
+							"kind": "variable",
+							"doc_comment": "Error reason — offer's `expires_at` has passed.",
+							"source_line": 78,
+							"type_signature": "\"offer_expired\""
+						},
+						{
+							"name": "ERROR_OFFER_NOT_FOUND",
+							"kind": "variable",
+							"doc_comment": "Error reason — offer does not exist or belongs to a different recipient (404-over-403 IDOR mask).",
+							"source_line": 80,
+							"type_signature": "\"offer_not_found\""
+						},
+						{
+							"name": "ERROR_OFFER_ROLE_NOT_GRANTABLE",
+							"kind": "variable",
+							"doc_comment": "Error reason — the offered role is not `web_grantable` (nobody may offer it via this surface).",
+							"source_line": 82,
+							"type_signature": "\"offer_role_not_grantable\""
+						},
+						{
+							"name": "ERROR_OFFER_NOT_AUTHORIZED",
+							"kind": "variable",
+							"doc_comment": "Error reason — caller is not authorized to offer this role (default policy: caller lacks the role; consumer `authorize` callback may add further policy).",
+							"source_line": 84,
+							"type_signature": "\"offer_not_authorized\""
+						},
+						{
+							"name": "PermitOfferCreateAuthorize",
+							"kind": "type",
+							"doc_comment": "Authorization callback for `permit_offer_create`. Returns `true` to allow,\n`false` to reject (handler converts to `forbidden`).\n\nProvided with the fully-resolved request context and the parsed input\n(pre-TTL, pre-normalization). Consumers override the default to implement\npolicies like \"teacher may offer classroom_student only in classrooms they\nteach\".",
+							"source_line": 95,
+							"type_signature": "PermitOfferCreateAuthorize"
+						},
+						{
+							"name": "PermitOfferActionOptions",
+							"kind": "type",
+							"doc_comment": "Options for .",
+							"source_line": 103,
+							"type_signature": "PermitOfferActionOptions",
+							"properties": [
+								{
+									"name": "roles",
+									"kind": "variable",
+									"type_signature": "RoleSchemaResult",
+									"doc_comment": "Role schema result from `create_role_schema()`. Defaults to builtin roles only.\nThe `role_options` map is read for `web_grantable` lookups."
+								},
+								{
+									"name": "default_ttl_ms",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "TTL applied to newly-created offers. Defaults to ."
+								},
+								{
+									"name": "authorize",
+									"kind": "variable",
+									"type_signature": "PermitOfferCreateAuthorize",
+									"doc_comment": "Custom authorization for `permit_offer_create`. The default requires the\ncaller to hold an active permit for the offered role *and* the role to\nbe `web_grantable`. Consumers with richer policies (scope-aware, chained\nroles) override this."
+								}
+							]
+						},
+						{
+							"name": "PermitOfferCreateInput",
+							"kind": "type",
+							"doc_comment": "Input for `permit_offer_create`.",
+							"source_line": 123,
+							"type_signature": "ZodObject<{ to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; role: ZodString; scope_id: ZodOptional<ZodNullable<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>>; message: ZodOptional<...>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferAcceptInput",
+							"kind": "type",
+							"doc_comment": "Input for `permit_offer_accept`.",
+							"source_line": 138,
+							"type_signature": "ZodObject<{ offer_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; }, $strict>"
+						},
+						{
+							"name": "PermitOfferDeclineInput",
+							"kind": "type",
+							"doc_comment": "Input for `permit_offer_decline`.",
+							"source_line": 144,
+							"type_signature": "ZodObject<{ offer_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; reason: ZodOptional<ZodNullable<ZodString>>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferRetractInput",
+							"kind": "type",
+							"doc_comment": "Input for `permit_offer_retract`.",
+							"source_line": 155,
+							"type_signature": "ZodObject<{ offer_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; }, $strict>"
+						},
+						{
+							"name": "PermitOfferListInput",
+							"kind": "type",
+							"doc_comment": "Input for `permit_offer_list`. `account_id` is admin-only (inspect another account's inbox).",
+							"source_line": 161,
+							"type_signature": "ZodObject<{ account_id: ZodOptional<ZodNullable<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferHistoryInput",
+							"kind": "type",
+							"doc_comment": "Input for `permit_offer_history`. Returns every offer involving the account\nin either direction (recipient or grantor), including terminal rows, newest\nfirst. `account_id` is admin-only.",
+							"source_line": 173,
+							"type_signature": "ZodObject<{ account_id: ZodOptional<ZodNullable<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>>; limit: ZodOptional<ZodNullable<ZodNumber>>; offset: ZodOptional<...>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferCreateOutput",
+							"kind": "variable",
+							"doc_comment": "Output for `permit_offer_create`.",
+							"source_line": 187,
+							"type_signature": "ZodObject<{ offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferAcceptOutput",
+							"kind": "variable",
+							"doc_comment": "Output for `permit_offer_accept`.",
+							"source_line": 192,
+							"type_signature": "ZodObject<{ permit_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 11 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; superseded_offer_ids: ZodArray<...>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferOkOutput",
+							"kind": "variable",
+							"doc_comment": "Output for `permit_offer_decline` / `permit_offer_retract`.",
+							"source_line": 199,
+							"type_signature": "ZodObject<{ ok: ZodLiteral<true>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferListOutput",
+							"kind": "variable",
+							"doc_comment": "Output for `permit_offer_list`.",
+							"source_line": 202,
+							"type_signature": "ZodObject<{ offers: ZodArray<ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferHistoryOutput",
+							"kind": "variable",
+							"doc_comment": "Output for `permit_offer_history`.",
+							"source_line": 205,
+							"type_signature": "ZodObject<{ offers: ZodArray<ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>>; }, $strict>"
+						},
+						{
+							"name": "PERMIT_OFFER_CREATE_METHOD",
+							"kind": "variable",
+							"source_line": 209,
+							"type_signature": "\"permit_offer_create\""
+						},
+						{
+							"name": "PERMIT_OFFER_ACCEPT_METHOD",
+							"kind": "variable",
+							"source_line": 210,
+							"type_signature": "\"permit_offer_accept\""
+						},
+						{
+							"name": "PERMIT_OFFER_DECLINE_METHOD",
+							"kind": "variable",
+							"source_line": 211,
+							"type_signature": "\"permit_offer_decline\""
+						},
+						{
+							"name": "PERMIT_OFFER_RETRACT_METHOD",
+							"kind": "variable",
+							"source_line": 212,
+							"type_signature": "\"permit_offer_retract\""
+						},
+						{
+							"name": "PERMIT_OFFER_LIST_METHOD",
+							"kind": "variable",
+							"source_line": 213,
+							"type_signature": "\"permit_offer_list\""
+						},
+						{
+							"name": "PERMIT_OFFER_HISTORY_METHOD",
+							"kind": "variable",
+							"source_line": 214,
+							"type_signature": "\"permit_offer_history\""
+						},
+						{
+							"name": "PermitOfferActionDeps",
+							"kind": "type",
+							"doc_comment": "Dependencies for .\n\n`notification_sender` is optional — when absent, WS fan-out is silently\nskipped. Consumers wiring `BackendWebsocketTransport` assign its instance\ndirectly (the transport's `send_to_account` signature accepts the broader\n`JsonrpcMessageFromServerToClient`, which is contravariantly compatible).",
+							"source_line": 259,
+							"type_signature": "PermitOfferActionDeps",
+							"extends": ["Pick<RouteFactoryDeps, 'log' | 'on_audit_event'>"],
+							"properties": [
+								{
+									"name": "notification_sender",
+									"kind": "variable",
+									"type_signature": "NotificationSender | null",
+									"doc_comment": "Optional WS fan-out primitive. `null` or absent → notifications skipped."
+								}
+							]
+						},
+						{
+							"name": "create_permit_offer_actions",
+							"kind": "function",
+							"doc_comment": "Create the five permit-offer RPC actions.",
+							"source_line": 271,
+							"type_signature": "(deps: PermitOfferActionDeps, options?: PermitOfferActionOptions): RpcAction[]",
+							"return_type": "RpcAction[]",
+							"return_description": "the `RpcAction` array to spread into a `create_rpc_endpoint` call",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "PermitOfferActionDeps",
+									"description": "stateless capabilities; needs `log` and `on_audit_event`; optional `notification_sender` for WS fan-out"
+								},
+								{
+									"name": "options",
+									"type": "PermitOfferActionOptions",
+									"description": "role schema, default TTL, authorization override",
+									"default_value": "{}"
+								}
+							]
+						}
+					],
+					"module_comment": "Permit offer RPC actions — the consentful-permits action surface.\n\nFive actions: create / accept / decline / retract / list. All mount on\na consumer's JSON-RPC endpoint via `create_rpc_endpoint`. Mutations\ndeclare `side_effects: true` so the RPC dispatcher wraps the handler\nin a DB transaction; `permit_offer_list` declares `side_effects: false`\nso it is addressable via GET.\n\nAuthorization:\n- `permit_offer_create` — the grantor must hold an active permit for the\n  role being offered, and that role must be `web_grantable`. Consumers\n  needing a richer policy (e.g., \"teacher may offer student in *their*\n  classroom\") pass an `authorize` callback that overrides the default.\n- `permit_offer_accept` / `permit_offer_decline` — keyed to the caller's\n  account; `query_*` helpers enforce the IDOR guard.\n- `permit_offer_retract` — keyed to the caller's actor.\n- `permit_offer_list` — self by default; `{account_id}` is admin-only.\n\nAudit events are emitted in-transaction by the query layer (atomic with\nthe permit write on accept) or by the handler via `audit_log_fire_and_forget`\nfor single-event lifecycle transitions. `on_audit_event` (SSE broadcast)\nfires post-commit in both paths.\n\nWS notifications are not sent from this file — the notification layer\nwires into handler return values (`superseded_offer_ids` etc.) in a\nfollow-up commit.",
+					"dependencies": [
+						"actions/action_spec.ts",
+						"auth/account_queries.ts",
+						"auth/audit_log_queries.ts",
+						"auth/permit_offer_notifications.ts",
+						"auth/permit_offer_queries.ts",
+						"auth/permit_offer_schema.ts",
+						"auth/permit_queries.ts",
+						"auth/request_context.ts",
+						"auth/role_schema.ts",
+						"http/jsonrpc_errors.ts",
+						"http/pending_effects.ts",
+						"uuid.ts"
+					],
+					"dependents": ["auth/admin_routes.ts", "ui/PermitOfferForm.svelte"]
+				},
+				{
+					"path": "auth/permit_offer_notifications.ts",
+					"declarations": [
+						{
+							"name": "NotificationSender",
+							"kind": "type",
+							"doc_comment": "Narrow structural capability for sending a JSON-RPC notification to every\nsocket bound to an account.\n\n`BackendWebsocketTransport` satisfies this interface — its\n`send_to_account(account_id, message)` signature accepts the broader\n`JsonrpcMessageFromServerToClient` type, which is contravariantly\ncompatible with `JsonrpcNotification` here. The interface stays local so\nhandlers don't couple to the concrete transport, and tests can inject a\ncapturing stub with no WS machinery.\n\nReturns the number of sockets the notification was sent to — callers\ntypically ignore it (used by telemetry / tests).",
+							"source_line": 58,
+							"type_signature": "NotificationSender",
+							"properties": [
+								{
+									"name": "send_to_account",
+									"kind": "variable",
+									"type_signature": "(account_id: Uuid, message: JsonrpcNotification) => number"
+								}
+							]
+						},
+						{
+							"name": "PERMIT_OFFER_RECEIVED_NOTIFICATION_METHOD",
+							"kind": "variable",
+							"source_line": 64,
+							"type_signature": "\"permit_offer_received\""
+						},
+						{
+							"name": "PERMIT_OFFER_RETRACTED_NOTIFICATION_METHOD",
+							"kind": "variable",
+							"source_line": 65,
+							"type_signature": "\"permit_offer_retracted\""
+						},
+						{
+							"name": "PERMIT_OFFER_ACCEPTED_NOTIFICATION_METHOD",
+							"kind": "variable",
+							"source_line": 66,
+							"type_signature": "\"permit_offer_accepted\""
+						},
+						{
+							"name": "PERMIT_OFFER_DECLINED_NOTIFICATION_METHOD",
+							"kind": "variable",
+							"source_line": 67,
+							"type_signature": "\"permit_offer_declined\""
+						},
+						{
+							"name": "PERMIT_OFFER_SUPERSEDE_NOTIFICATION_METHOD",
+							"kind": "variable",
+							"source_line": 68,
+							"type_signature": "\"permit_offer_supersede\""
+						},
+						{
+							"name": "PERMIT_REVOKE_NOTIFICATION_METHOD",
+							"kind": "variable",
+							"source_line": 69,
+							"type_signature": "\"permit_revoke\""
+						},
+						{
+							"name": "PermitOfferReceivedParams",
+							"kind": "type",
+							"doc_comment": "Params for `permit_offer_received` — offer delivered to its recipient.",
+							"source_line": 74,
+							"type_signature": "ZodObject<{ offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferRetractedParams",
+							"kind": "type",
+							"doc_comment": "Params for `permit_offer_retracted` — grantor-side retraction.",
+							"source_line": 80,
+							"type_signature": "ZodObject<{ offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferAcceptedParams",
+							"kind": "type",
+							"doc_comment": "Params for `permit_offer_accepted` — recipient accepted the offer.",
+							"source_line": 86,
+							"type_signature": "ZodObject<{ offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferDeclinedParams",
+							"kind": "type",
+							"doc_comment": "Params for `permit_offer_declined`. The decline reason (if any) rides along\ninside `offer.decline_reason` — the DB stamps it on the offer row during\ndecline, so a sibling `reason` field would just duplicate it.",
+							"source_line": 96,
+							"type_signature": "ZodObject<{ offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; }, $strict>"
+						},
+						{
+							"name": "PermitOfferSupersedeParams",
+							"kind": "type",
+							"doc_comment": "Params for `permit_offer_supersede`. Fires to the grantor's sockets when\ntheir pending offer is obsoleted — either by a sibling accept\n(`reason: 'sibling_accepted'`) or by revoke of the resulting permit\n(`reason: 'permit_revoked'`). `cause_id` points at the accepted offer id\nor the revoked permit id respectively.",
+							"source_line": 108,
+							"type_signature": "ZodObject<{ offer: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>; reason: ZodEnum<...>; cause_id: $ZodBranded<...>; }, $strict>"
+						},
+						{
+							"name": "PermitRevokeParams",
+							"kind": "type",
+							"doc_comment": "Params for `permit_revoke`. Delivered to the revokee's sockets when one\nof their active permits is revoked. Flat wire shape — `revoked_by` is\nadmin-UI-visible but deliberately omitted here (the revokee doesn't need\nto learn the admin's identity). Target account is implicit in the send\ntarget.",
+							"source_line": 122,
+							"type_signature": "ZodObject<{ permit_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; role: ZodString; scope_id: ZodNullable<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; reason: ZodNullable<...>; }, $strict>"
+						},
+						{
+							"name": "permit_offer_received_notification_spec",
+							"kind": "variable",
+							"source_line": 132,
+							"type_signature": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"remote_notification\"; ... 4 more ...; streams?: string | undefined; }"
+						},
+						{
+							"name": "permit_offer_retracted_notification_spec",
+							"kind": "variable",
+							"source_line": 140,
+							"type_signature": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"remote_notification\"; ... 4 more ...; streams?: string | undefined; }"
+						},
+						{
+							"name": "permit_offer_accepted_notification_spec",
+							"kind": "variable",
+							"source_line": 148,
+							"type_signature": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"remote_notification\"; ... 4 more ...; streams?: string | undefined; }"
+						},
+						{
+							"name": "permit_offer_declined_notification_spec",
+							"kind": "variable",
+							"source_line": 156,
+							"type_signature": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"remote_notification\"; ... 4 more ...; streams?: string | undefined; }"
+						},
+						{
+							"name": "permit_offer_supersede_notification_spec",
+							"kind": "variable",
+							"source_line": 164,
+							"type_signature": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"remote_notification\"; ... 4 more ...; streams?: string | undefined; }"
+						},
+						{
+							"name": "permit_revoke_notification_spec",
+							"kind": "variable",
+							"source_line": 173,
+							"type_signature": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; description: string; kind: \"remote_notification\"; ... 4 more ...; streams?: string | undefined; }"
+						},
+						{
+							"name": "PERMIT_OFFER_NOTIFICATION_SPECS",
+							"kind": "variable",
+							"doc_comment": "SSE/WS event specs for the consentful-permits notification surface.\n\nPass to `create_app_server`'s `event_specs` so the attack surface reflects\nthem and DEV-mode `create_validated_broadcaster` catches payload drift.",
+							"source_line": 189,
+							"type_signature": "EventSpec[]"
+						},
+						{
+							"name": "build_permit_offer_received_notification",
+							"kind": "function",
+							"source_line": 200,
+							"type_signature": "(params: { offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }): { ...; }",
+							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; } | undefined; }",
+							"parameters": [
+								{
+									"name": "params",
+									"type": "{ offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }"
+								}
+							]
+						},
+						{
+							"name": "build_permit_offer_retracted_notification",
+							"kind": "function",
+							"source_line": 205,
+							"type_signature": "(params: { offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }): { ...; }",
+							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; } | undefined; }",
+							"parameters": [
+								{
+									"name": "params",
+									"type": "{ offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }"
+								}
+							]
+						},
+						{
+							"name": "build_permit_offer_accepted_notification",
+							"kind": "function",
+							"source_line": 210,
+							"type_signature": "(params: { offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }): { ...; }",
+							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; } | undefined; }",
+							"parameters": [
+								{
+									"name": "params",
+									"type": "{ offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }"
+								}
+							]
+						},
+						{
+							"name": "build_permit_offer_declined_notification",
+							"kind": "function",
+							"source_line": 215,
+							"type_signature": "(params: { offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }): { ...; }",
+							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; } | undefined; }",
+							"parameters": [
+								{
+									"name": "params",
+									"type": "{ offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; }"
+								}
+							]
+						},
+						{
+							"name": "build_permit_offer_supersede_notification",
+							"kind": "function",
+							"source_line": 220,
+							"type_signature": "(params: { offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; reason: \"sibling_accepted\" | \"permit_revoked\"; cause_id: string & $brand<...>; }): { ...; }",
+							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; } | undefined; }",
+							"parameters": [
+								{
+									"name": "params",
+									"type": "{ offer: { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }; reason: \"sibling_accepted\" | \"permit_revoked\"; cause_id: string & $bran..."
+								}
+							]
+						},
+						{
+							"name": "build_permit_revoke_notification",
+							"kind": "function",
+							"source_line": 225,
+							"type_signature": "(params: { permit_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<\"Uuid\">) | null; reason: string | null; }): { [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { ...; } | undefined; }",
+							"return_type": "{ [x: string]: unknown; jsonrpc: \"2.0\"; method: string; params?: { [x: string]: unknown; } | undefined; }",
+							"parameters": [
+								{
+									"name": "params",
+									"type": "{ permit_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<\"Uuid\">) | null; reason: string | null; }"
+								}
+							]
+						}
+					],
+					"module_comment": "Permit offer WebSocket notification specs, builders, and the narrow\n`NotificationSender` interface that decouples offer/revoke send sites\nfrom `BackendWebsocketTransport`.\n\nSix `RemoteNotificationActionSpec`s cover the consentful-permits\nlifecycle events the server pushes to affected accounts:\n\n- `permit_offer_received` → recipient's sockets when an offer is created\n- `permit_offer_retracted` → recipient's sockets when a grantor retracts\n- `permit_offer_accepted` → grantor's sockets when the recipient accepts\n- `permit_offer_declined` → grantor's sockets when the recipient declines\n- `permit_offer_supersede` → grantor's sockets when a sibling accept or\n  a revoke of the resulting permit obsoletes their pending offer\n- `permit_revoke` → revokee's sockets when one of their active permits\n  is revoked (companion to the `permit_revoke` audit event)\n\nPayloads are flat and normalized — `PermitOfferJson` for the offer-lifecycle\nnotifications (decline reason rides on `offer.decline_reason`, not a\nsibling field), and `{permit_id, role, scope_id, reason?}` for `permit_revoke`. The\nrevokee/grantor/recipient account id travels via the send target (the\n`NotificationSender.send_to_account` argument), not in the payload.\n\nThe specs surface as `EventSpec`s via `create_action_event_spec` — callers\nappend `PERMIT_OFFER_NOTIFICATION_SPECS` to their `event_specs` on\n`create_app_server` so the surface reflects them and DEV-mode broadcast\nvalidation catches payload drift.",
+					"dependencies": [
+						"actions/action_bridge.ts",
+						"actions/action_spec.ts",
+						"auth/account_schema.ts",
+						"auth/permit_offer_schema.ts",
+						"auth/role_schema.ts",
+						"http/jsonrpc_helpers.ts",
+						"uuid.ts"
+					],
+					"dependents": [
+						"auth/admin_routes.ts",
+						"auth/permit_offer_actions.ts",
+						"ui/permit_offers_state.svelte.ts"
+					]
+				},
+				{
+					"path": "auth/permit_offer_queries.ts",
+					"declarations": [
+						{
+							"name": "PermitOfferAlreadyTerminalError",
+							"kind": "class",
+							"doc_comment": "Error thrown by offer-lifecycle queries when the offer is in a non-pending\nstate (accepted / declined / retracted / superseded) and therefore not\nactionable. Distinct from `PermitOfferExpiredError` — expiry has its own\nuser-facing story (\"ask the grantor to re-send\") so it travels separately.",
+							"source_line": 34,
+							"extends": ["Error"],
+							"implements": [],
+							"members": [
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(offer_id: string): PermitOfferAlreadyTerminalError",
+									"parameters": [
+										{
+											"name": "offer_id",
+											"type": "string"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "PermitOfferExpiredError",
+							"kind": "class",
+							"doc_comment": "Error thrown when an offer's `expires_at` has passed. The accept path\nenforces this independently of the sweep — a stale offer past its expiry\nmust not be accepted, even in the race window between expiry and the\nsweep stamping the audit event.",
+							"source_line": 47,
+							"extends": ["Error"],
+							"implements": [],
+							"members": [
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(offer_id: string): PermitOfferExpiredError",
+									"parameters": [
+										{
+											"name": "offer_id",
+											"type": "string"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "PermitOfferNotFoundError",
+							"kind": "class",
+							"doc_comment": "Error thrown when an offer cannot be located for the caller. Covers both\n\"offer does not exist\" and \"offer belongs to a different recipient\"\n(IDOR guard) — the standard 404-over-403 pattern that avoids disclosing\nwhether an offer id exists.",
+							"source_line": 60,
+							"extends": ["Error"],
+							"implements": [],
+							"members": [
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(offer_id: string): PermitOfferNotFoundError",
+									"parameters": [
+										{
+											"name": "offer_id",
+											"type": "string"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "PermitOfferSelfTargetError",
+							"kind": "class",
+							"doc_comment": "Error thrown when a grantor attempts to offer a permit to their own account.\n\nEnforced here (rather than via a CHECK constraint) so the constraint can\nbe expressed as a cross-row JOIN on `actor.account_id` without requiring\ndenormalized columns.",
+							"source_line": 74,
+							"extends": ["Error"],
+							"implements": [],
+							"members": [
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(): PermitOfferSelfTargetError",
+									"parameters": []
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_create",
+							"kind": "function",
+							"doc_comment": "Create a new permit offer, or refresh an existing pending offer for the\nsame `(to_account_id, role, scope_id, from_actor_id)` tuple.\n\nRe-offer semantics: a second call by the same grantor with the same\n`(to_account, role, scope)` while pending upserts the existing row,\nrefreshing `message` and `expires_at`. A different grantor offering the\nsame `(to_account, role, scope)` creates a distinct row — multiple\npending grantors coexist. After a terminal state, a re-offer is a fresh\nINSERT.\n\nSelf-offer rejection: throws `PermitOfferSelfTargetError` if the offering\nactor belongs to the recipient account.",
+							"source_line": 95,
+							"type_signature": "(deps: QueryDeps, input: CreatePermitOfferInput): Promise<PermitOffer>",
+							"return_type": "Promise<PermitOffer>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "input",
+									"type": "CreatePermitOfferInput"
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_decline",
+							"kind": "function",
+							"doc_comment": "Mark an offer declined.\n\nGuarded by `to_account_id` (IDOR). Returns `null` if the offer does not\nexist or belongs to a different account. Throws\n`PermitOfferAlreadyTerminalError` if the offer exists for the caller but\nis already in a terminal state.",
+							"source_line": 133,
+							"type_signature": "(deps: QueryDeps, offer_id: string, to_account_id: string, reason: string | null): Promise<PermitOffer | null>",
+							"return_type": "Promise<PermitOffer | null>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "offer_id",
+									"type": "string"
+								},
+								{
+									"name": "to_account_id",
+									"type": "string"
+								},
+								{
+									"name": "reason",
+									"type": "string | null"
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_retract",
+							"kind": "function",
+							"doc_comment": "Mark an offer retracted by the grantor.\n\nGuarded by `from_actor_id` (IDOR). Returns `null` if the offer does not\nexist or was issued by a different actor. Throws\n`PermitOfferAlreadyTerminalError` if the offer exists for this grantor\nbut is already in a terminal state.",
+							"source_line": 163,
+							"type_signature": "(deps: QueryDeps, offer_id: string, from_actor_id: string): Promise<PermitOffer | null>",
+							"return_type": "Promise<PermitOffer | null>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "offer_id",
+									"type": "string"
+								},
+								{
+									"name": "from_actor_id",
+									"type": "string"
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_list",
+							"kind": "function",
+							"doc_comment": "List pending, non-expired offers for an account, soonest expiry first.\n\nExpired offers are filtered server-side (`expires_at > NOW()`) so the\ninbox never surfaces a row that can no longer be accepted. The periodic\nsweep (`query_permit_offer_sweep_expired`) handles audit tombstoning.",
+							"source_line": 219,
+							"type_signature": "(deps: QueryDeps, to_account_id: string): Promise<PermitOffer[]>",
+							"return_type": "Promise<PermitOffer[]>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "to_account_id",
+									"type": "string"
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_history_for_account",
+							"kind": "function",
+							"doc_comment": "List every offer involving an account (either direction), newest first.\n\nIncludes terminal offers — used by the grantor-side admin / history view.",
+							"source_line": 241,
+							"type_signature": "(deps: QueryDeps, account_id: string, limit?: number, offset?: number): Promise<PermitOffer[]>",
+							"return_type": "Promise<PermitOffer[]>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "account_id",
+									"type": "string"
+								},
+								{
+									"name": "limit",
+									"type": "number",
+									"default_value": "100"
+								},
+								{
+									"name": "offset",
+									"type": "number",
+									"default_value": "0"
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_find_pending",
+							"kind": "function",
+							"doc_comment": "Look up a pending offer by id. Returns `null` if the offer is terminal,\nexpired (server-side filter), or missing.",
+							"source_line": 261,
+							"type_signature": "(deps: QueryDeps, offer_id: string): Promise<PermitOffer | null>",
+							"return_type": "Promise<PermitOffer | null>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "offer_id",
+									"type": "string"
+								}
+							]
+						},
+						{
+							"name": "query_permit_offer_sweep_expired",
+							"kind": "function",
+							"doc_comment": "Return pending offers whose `expires_at` has passed.\n\nCallers fire `permit_offer_expire` audit events for each row. The schema\ndoes not tombstone the row, so callers are responsible for their own\nidempotency (e.g. check whether a `permit_offer_expire` audit event\nalready exists for the offer id).",
+							"source_line": 286,
+							"type_signature": "(deps: QueryDeps): Promise<PermitOffer[]>",
+							"return_type": "Promise<PermitOffer[]>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								}
+							]
+						},
+						{
+							"name": "AcceptOfferInput",
+							"kind": "type",
+							"doc_comment": "Input for .",
+							"source_line": 301,
+							"type_signature": "AcceptOfferInput",
+							"properties": [
+								{
+									"name": "offer_id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "to_account_id",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Account of the accepting recipient — IDOR guard against another account accepting the offer."
+								},
+								{
+									"name": "ip",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Optional IP to stamp on the audit events."
+								}
+							]
+						},
+						{
+							"name": "AcceptOfferResult",
+							"kind": "type",
+							"doc_comment": "Result of  — the permit produced (new or pre-existing on race), plus the (now-accepted) offer.",
+							"source_line": 310,
+							"type_signature": "AcceptOfferResult",
+							"properties": [
+								{
+									"name": "permit",
+									"kind": "variable",
+									"type_signature": "Permit"
+								},
+								{
+									"name": "offer",
+									"kind": "variable",
+									"type_signature": "PermitOffer"
+								},
+								{
+									"name": "created",
+									"kind": "variable",
+									"type_signature": "boolean",
+									"doc_comment": "`true` if this call is the one that accepted the offer (new permit inserted); `false` on a race returning the already-created permit."
+								},
+								{
+									"name": "superseded_offers",
+									"kind": "variable",
+									"type_signature": "Array<SupersededOffer>",
+									"doc_comment": "Sibling offers superseded by this accept — empty on the race-loser path.\nEach entry carries its grantor's `from_account_id` so the caller can\nfan out `permit_offer_supersede` notifications without a second\nround-trip."
+								},
+								{
+									"name": "audit_events",
+									"kind": "variable",
+									"type_signature": "Array<AuditLogEvent>",
+									"doc_comment": "Audit events emitted in-transaction — fed back through the normal `on_audit_event` broadcast chain by the caller. Includes one `permit_offer_supersede` per superseded sibling."
+								}
+							]
+						},
+						{
+							"name": "query_accept_offer",
+							"kind": "function",
+							"doc_comment": "Accept an offer atomically: mark accepted, insert the permit, stamp\n`resulting_permit_id`, supersede sibling pending offers for the same\n`(to_account, role, scope)`, and emit `permit_offer_accept` +\n`permit_grant` + one `permit_offer_supersede` per sibling. Must run\ninside a transaction — the caller's route spec should declare\n`transaction: true` (or wrap explicitly).\n\nIdempotent on race: if a second concurrent call observes the offer\nalready accepted, returns the existing permit rather than creating a\nduplicate or throwing.\n\nError map:\n- `PermitOfferNotFoundError` — offer does not exist, or belongs to a\n  different recipient (IDOR guard). The offer row is untouched.\n- `PermitOfferAlreadyTerminalError` — offer is declined, retracted, or\n  superseded.\n- `PermitOfferExpiredError` — offer is pending but past `expires_at`.\n\nSibling supersede is what closes the \"accept a pre-revoke sibling offer\nto bypass a revoke\" path: once A is accepted, B/C/... can no longer be\naccepted even if the resulting permit is later revoked.",
+							"source_line": 349,
+							"type_signature": "(deps: QueryDeps, input: AcceptOfferInput): Promise<AcceptOfferResult>",
+							"return_type": "Promise<AcceptOfferResult>",
+							"parameters": [
+								{
+									"name": "deps",
+									"type": "QueryDeps"
+								},
+								{
+									"name": "input",
+									"type": "AcceptOfferInput"
+								}
+							]
+						}
+					],
+					"module_comment": "Permit offer database queries.\n\nCovers the offer side of the consentful-permits flow: create (with\nre-offer upsert), decline, retract, list, find-pending, sweep-expired,\nand the atomic `query_accept_offer` that bridges offer → permit.\n\nIDOR guards are expressed in each helper's signature — decline/accept\nrequire the recipient's `to_account_id`, retract requires the grantor's\n`from_actor_id`.",
+					"dependencies": [
+						"auth/account_queries.ts",
+						"auth/audit_log_queries.ts",
+						"auth/permit_offer_schema.ts",
+						"db/assert_row.ts"
+					],
+					"dependents": [
+						"auth/admin_routes.ts",
+						"auth/permit_offer_actions.ts",
+						"testing/admin_integration.ts"
+					]
+				},
+				{
+					"path": "auth/permit_offer_schema.ts",
+					"declarations": [
+						{
+							"name": "PERMIT_OFFER_SCOPE_SENTINEL_UUID",
+							"kind": "variable",
+							"doc_comment": "Sentinel UUID used inside the partial unique indexes to collapse `scope_id IS NULL` into a comparable value.",
+							"source_line": 19,
+							"type_signature": "\"00000000-0000-0000-0000-000000000000\""
+						},
+						{
+							"name": "PERMIT_OFFER_MESSAGE_LENGTH_MAX",
+							"kind": "variable",
+							"doc_comment": "Maximum length of the optional message attached to an offer.",
+							"source_line": 22,
+							"type_signature": "500"
+						},
+						{
+							"name": "PERMIT_OFFER_DEFAULT_TTL_MS",
+							"kind": "variable",
+							"doc_comment": "Default TTL for a newly created offer — 30 days. Matches GitHub org-invite expiry.",
+							"source_line": 25,
+							"type_signature": "number"
+						},
+						{
+							"name": "PERMIT_OFFER_SCHEMA",
+							"kind": "variable",
+							"source_line": 27,
+							"type_signature": "\"\\nCREATE TABLE IF NOT EXISTS permit_offer (\\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\\n  from_actor_id UUID NOT NULL REFERENCES actor(id) ON DELETE CASCADE,\\n  to_account_id UUID NOT NULL REFERENCES account(id) ON DELETE CASCADE,\\n  role TEXT NOT NULL,\\n  scope_id UUID NULL,\\n  message TEXT NULL,\\n  created..."
+						},
+						{
+							"name": "PERMIT_OFFER_PENDING_UNIQUE_INDEX",
+							"kind": "variable",
+							"doc_comment": "At most one pending offer per (to_account, role, scope, from_actor).\n\nIncluding `from_actor_id` in the tuple lets multiple grantors coexist —\nteacher A and teacher B can each have a pending `classroom_student` offer\nfor the same student and scope. A same-grantor re-offer upserts the\nexisting pending row. `COALESCE` collapses `NULL` scopes into the\nsentinel UUID so Postgres's NULL-in-unique-index quirk does not allow\nduplicate global pending offers. The ON CONFLICT target in\n`query_permit_offer_create` must match this expression literally.",
+							"source_line": 69,
+							"type_signature": "\"\\nCREATE UNIQUE INDEX IF NOT EXISTS permit_offer_pending_unique\\n  ON permit_offer (\\n    to_account_id,\\n    role,\\n    COALESCE(scope_id, '00000000-0000-0000-0000-000000000000'::uuid),\\n    from_actor_id\\n  )\\n  WHERE accepted_at IS NULL\\n    AND declined_at IS NULL\\n    AND retracted_at IS NULL\\n    AND supersed..."
+						},
+						{
+							"name": "PERMIT_OFFER_INBOX_INDEX",
+							"kind": "variable",
+							"doc_comment": "Inbox lookup — pending offers for an account, ordered by soonest expiry.",
+							"source_line": 83,
+							"type_signature": "\"\\nCREATE INDEX IF NOT EXISTS permit_offer_inbox\\n  ON permit_offer (to_account_id, expires_at)\\n  WHERE accepted_at IS NULL\\n    AND declined_at IS NULL\\n    AND retracted_at IS NULL\\n    AND superseded_at IS NULL\""
+						},
+						{
+							"name": "PermitOffer",
+							"kind": "type",
+							"doc_comment": "Permit offer row as returned by the database.",
+							"source_line": 92,
+							"type_signature": "PermitOffer",
+							"properties": [
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "from_actor_id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "to_account_id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "role",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "scope_id",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "message",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "created_at",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "expires_at",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "accepted_at",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "declined_at",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "decline_reason",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "retracted_at",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "superseded_at",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Set when the offer was obsoleted by an external event — a sibling\noffer was accepted (yielding the permit this offer's role+scope maps to)\nor the resulting permit for this (to_account, role, scope) was revoked.\nCloses the \"accept a pre-revoke offer to bypass the revoke\" path."
+								},
+								{
+									"name": "resulting_permit_id",
+									"kind": "variable",
+									"type_signature": "string | null"
+								}
+							]
+						},
+						{
+							"name": "SupersededOffer",
+							"kind": "type",
+							"doc_comment": "A superseded offer row annotated with the grantor's `account_id`.\n\nCarried by `superseded_offers` in accept/revoke query results so callers\ncan fan out `permit_offer_supersede` notifications to the grantor's\nsockets without a second round-trip. Populated via a CTE join on `actor`\nin the supersede UPDATE.",
+							"source_line": 123,
+							"type_signature": "SupersededOffer",
+							"extends": ["PermitOffer"],
+							"properties": [
+								{
+									"name": "from_account_id",
+									"kind": "variable",
+									"type_signature": "string"
+								}
+							]
+						},
+						{
+							"name": "CreatePermitOfferInput",
+							"kind": "type",
+							"doc_comment": "Input for `query_permit_offer_create`.\n\n`expires_at` must be supplied — the query layer does not apply a default,\nso callers can thread their own TTL (typically `PERMIT_OFFER_DEFAULT_TTL_MS`).",
+							"source_line": 133,
+							"type_signature": "CreatePermitOfferInput",
+							"properties": [
+								{
+									"name": "from_actor_id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "to_account_id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "role",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "scope_id",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "message",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "expires_at",
+									"kind": "variable",
+									"type_signature": "Date"
+								}
+							]
+						},
+						{
+							"name": "PermitOfferJson",
+							"kind": "type",
+							"doc_comment": "Zod schema for client-safe permit offer data.",
+							"source_line": 143,
+							"type_signature": "ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; from_actor_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; to_account_id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; ... 10 more ...; resulting_permit_id: ZodNullable<...>; }, $strict>"
+						},
+						{
+							"name": "to_permit_offer_json",
+							"kind": "function",
+							"doc_comment": "Convert a `PermitOffer` row to its JSON payload shape.",
+							"source_line": 191,
+							"type_signature": "(offer: PermitOffer): { id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; ... 10 more ...; resulting_permit_id: (string & $brand<...>) | null; }",
+							"return_type": "{ id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<\"Uuid\">) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; }",
+							"parameters": [
+								{
+									"name": "offer",
+									"type": "PermitOffer"
+								}
+							]
+						}
+					],
+					"module_comment": "Permit offer DDL, types, and client-safe schemas.\n\nAn offer is a pending grant awaiting recipient consent. Lifecycle states\nare mutually exclusive via a CHECK constraint (`permit_offer_single_terminal`):\nat most one of `accepted_at` / `declined_at` / `retracted_at` may be set.\nOn accept, the offer's `resulting_permit_id` links to the permit row\nproduced by `query_accept_offer`.",
+					"dependencies": ["auth/role_schema.ts", "uuid.ts"],
+					"dependents": [
+						"auth/admin_routes.ts",
+						"auth/migrations.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_notifications.ts",
+						"auth/permit_offer_queries.ts",
+						"auth/permit_queries.ts",
+						"ui/PermitOfferForm.svelte",
+						"ui/PermitOfferInbox.svelte"
+					]
+				},
+				{
 					"path": "auth/permit_queries.ts",
 					"declarations": [
 						{
 							"name": "query_grant_permit",
 							"kind": "function",
-							"doc_comment": "Grant a permit to an actor.\nIdempotent — if an active permit already exists for this actor and role,\nreturns the existing permit instead of creating a duplicate.",
-							"source_line": 23,
+							"doc_comment": "Grant a permit to an actor.\nIdempotent — if an active permit already exists for this actor, role, and\nscope, returns the existing permit instead of creating a duplicate.\n\nThe `ON CONFLICT` target and the fallback `SELECT` both collapse `NULL`\nscopes via the same sentinel used by the partial unique index\n(`permit_actor_role_scope_active_unique`). The `IS NOT DISTINCT FROM`\nform on the fallback is deliberate — plain `=` would miss the\nNULL-scope case where the conflict fired.",
+							"source_line": 30,
 							"type_signature": "(deps: QueryDeps, input: GrantPermitInput): Promise<Permit>",
 							"return_type": "Promise<Permit>",
 							"return_description": "the created or existing active permit",
@@ -29074,7 +30168,7 @@
 							"name": "query_permit_find_active_role_for_actor",
 							"kind": "function",
 							"doc_comment": "Look up the role of an active permit, constrained to a specific actor.\n\nUsed by admin routes to inspect the permit's role before acting\n(e.g., enforcing `web_grantable` on revoke). The actor constraint\nmirrors `query_revoke_permit` so IDOR protection is consistent:\na caller can only see permits belonging to the target actor.\n\nReturns `null` if the permit is not found, already revoked, or\nbelongs to a different actor.",
-							"source_line": 61,
+							"source_line": 79,
 							"type_signature": "(deps: QueryDeps, permit_id: string, actor_id: string): Promise<{ role: string; } | null>",
 							"return_type": "Promise<{ role: string; } | null>",
 							"return_description": "`{role}` on a match, or `null`",
@@ -29097,12 +30191,42 @@
 							]
 						},
 						{
+							"name": "RevokePermitResult",
+							"kind": "type",
+							"doc_comment": "Result of  — the revoked permit plus any pending offers superseded by the revoke.",
+							"source_line": 93,
+							"type_signature": "RevokePermitResult",
+							"properties": [
+								{
+									"name": "id",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "role",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "scope_id",
+									"kind": "variable",
+									"type_signature": "string | null"
+								},
+								{
+									"name": "superseded_offers",
+									"kind": "variable",
+									"type_signature": "Array<SupersededOffer>",
+									"doc_comment": "Pending offers for the revoked permit's `(account, role, scope)` that\nwere marked superseded as a side effect. Each entry carries its\ngrantor's `from_account_id` so callers can fan out\n`permit_offer_supersede` notifications without a second round-trip.\nThe caller is responsible for emitting a `permit_offer_supersede`\naudit event per entry (with `reason: 'permit_revoked'` and\n`cause_id: <revoked permit id>`)."
+								}
+							]
+						},
+						{
 							"name": "query_revoke_permit",
 							"kind": "function",
-							"doc_comment": "Revoke a permit by id, constrained to a specific actor.\n\nRequires `actor_id` to prevent cross-account revocation (IDOR guard).\nReturns `null` if the permit is not found, already revoked, or belongs\nto a different actor. Returns `{id, role}` on success for audit logging.",
-							"source_line": 86,
-							"type_signature": "(deps: QueryDeps, permit_id: string, actor_id: string, revoked_by: string | null): Promise<{ id: string; role: string; } | null>",
-							"return_type": "Promise<{ id: string; role: string; } | null>",
+							"doc_comment": "Revoke a permit by id, constrained to a specific actor.\n\nRequires `actor_id` to prevent cross-account revocation (IDOR guard).\nReturns `null` if the permit is not found, already revoked, or belongs\nto a different actor.\n\nSupersedes any pending offers for the revoked permit's\n`(to_account, role, scope)` in the same transaction. Prevents the\n\"accept a pre-revoke offer to bypass the revoke\" path — any stale\noffer becomes terminal at revoke time. A fresh post-revoke grant\nrequires the grantor to call `query_permit_offer_create` again.",
+							"source_line": 128,
+							"type_signature": "(deps: QueryDeps, permit_id: string, actor_id: string, revoked_by: string | null, reason?: string | null | undefined): Promise<RevokePermitResult | null>",
+							"return_type": "Promise<RevokePermitResult | null>",
 							"parameters": [
 								{
 									"name": "deps",
@@ -29123,6 +30247,12 @@
 									"name": "revoked_by",
 									"type": "string | null",
 									"description": "the actor who revoked it (for audit trail)"
+								},
+								{
+									"name": "reason",
+									"type": "string | null | undefined",
+									"optional": true,
+									"description": "optional free-form reason, stamped on `permit.revoked_reason` and surfaced to the revokee notification."
 								}
 							]
 						},
@@ -29130,7 +30260,7 @@
 							"name": "query_permit_find_active_for_actor",
 							"kind": "function",
 							"doc_comment": "Find all active (non-revoked, non-expired) permits for an actor.",
-							"source_line": 104,
+							"source_line": 177,
 							"type_signature": "(deps: QueryDeps, actor_id: string): Promise<Permit[]>",
 							"return_type": "Promise<Permit[]>",
 							"parameters": [
@@ -29147,9 +30277,9 @@
 						{
 							"name": "query_permit_has_role",
 							"kind": "function",
-							"doc_comment": "Check if an actor has an active permit for a given role.",
-							"source_line": 121,
-							"type_signature": "(deps: QueryDeps, actor_id: string, role: string): Promise<boolean>",
+							"doc_comment": "Check if an actor has an active permit for a given role.\n\nThe `scope_id` parameter selects between global and scoped checks:\n- Omitted or `null` — matches a global permit (`scope_id IS NULL`).\n  Pre-scope callers keep their existing semantics.\n- A scope uuid — matches a permit bound to that exact scope.\n\nThe `IS NOT DISTINCT FROM` comparison handles the NULL case uniformly.",
+							"source_line": 201,
+							"type_signature": "(deps: QueryDeps, actor_id: string, role: string, scope_id?: string | null | undefined): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"parameters": [
 								{
@@ -29163,6 +30293,11 @@
 								{
 									"name": "role",
 									"type": "string"
+								},
+								{
+									"name": "scope_id",
+									"type": "string | null | undefined",
+									"optional": true
 								}
 							]
 						},
@@ -29170,7 +30305,7 @@
 							"name": "query_permit_list_for_actor",
 							"kind": "function",
 							"doc_comment": "List all permits for an actor (including revoked/expired).",
-							"source_line": 142,
+							"source_line": 224,
 							"type_signature": "(deps: QueryDeps, actor_id: string): Promise<Permit[]>",
 							"return_type": "Promise<Permit[]>",
 							"parameters": [
@@ -29188,7 +30323,7 @@
 							"name": "query_permit_find_account_id_for_role",
 							"kind": "function",
 							"doc_comment": "Find the account ID of an account that holds an active permit for a given role.\n\nJoins permit → actor → account. Returns the first match, or `null` if none.",
-							"source_line": 161,
+							"source_line": 243,
 							"type_signature": "(deps: QueryDeps, role: string): Promise<string | null>",
 							"return_type": "Promise<string | null>",
 							"return_description": "the account ID, or `null`",
@@ -29206,13 +30341,34 @@
 							]
 						},
 						{
+							"name": "RevokeRoleResult",
+							"kind": "type",
+							"doc_comment": "Result of  — every permit revoked plus the pending offers superseded by the bulk revoke.",
+							"source_line": 262,
+							"type_signature": "RevokeRoleResult",
+							"properties": [
+								{
+									"name": "revoked",
+									"kind": "variable",
+									"type_signature": "Array<{permit_id: string; role: string; scope_id: string | null; account_id: string}>",
+									"doc_comment": "One entry per permit revoked by this call. Carries the revokee's\n`account_id` so callers can fan out a `permit_revoke` notification per\nscope-instance. Empty array means nothing was active for `(actor, role)`."
+								},
+								{
+									"name": "superseded_offers",
+									"kind": "variable",
+									"type_signature": "Array<SupersededOffer>",
+									"doc_comment": "Pending offers for the actor's account+role (all scopes) superseded by\nthe bulk revoke. Each entry carries its grantor's `from_account_id` so\ncallers can fan out `permit_offer_supersede` notifications without a\nsecond round-trip."
+								}
+							]
+						},
+						{
 							"name": "query_permit_revoke_role",
 							"kind": "function",
-							"doc_comment": "Revoke the active permit for an actor with a given role.\n\nDue to the unique partial index on `(actor_id, role) WHERE revoked_at IS NULL`,\nat most one active permit exists per actor+role combination.",
-							"source_line": 191,
-							"type_signature": "(deps: QueryDeps, actor_id: string, role: string, revoked_by: string | null): Promise<boolean>",
-							"return_type": "Promise<boolean>",
-							"return_description": "`true` if a permit was revoked, `false` if none was active",
+							"doc_comment": "Revoke every active permit an actor holds for a given role.\n\nWith scoped permits a single actor+role tuple can hold several active\npermits (one per scope), so this revokes all of them. Pass\n`query_revoke_permit(permit_id, ...)` when a single scoped permit\nis the target.\n\nAlso supersedes pending offers for the actor's account across every\nscope of this role (the actor can no longer hold the role, so any\npending offer of the same role is a bypass vector).",
+							"source_line": 297,
+							"type_signature": "(deps: QueryDeps, actor_id: string, role: string, revoked_by: string | null, reason?: string | null | undefined): Promise<RevokeRoleResult>",
+							"return_type": "Promise<RevokeRoleResult>",
+							"return_description": "the list of revoked permits (empty if none were active) and superseded pending offers",
 							"parameters": [
 								{
 									"name": "deps",
@@ -29222,7 +30378,7 @@
 								{
 									"name": "actor_id",
 									"type": "string",
-									"description": "the actor whose permit to revoke"
+									"description": "the actor whose permits to revoke"
 								},
 								{
 									"name": "role",
@@ -29233,18 +30389,26 @@
 									"name": "revoked_by",
 									"type": "string | null",
 									"description": "the actor who revoked it (for audit trail)"
+								},
+								{
+									"name": "reason",
+									"type": "string | null | undefined",
+									"optional": true,
+									"description": "optional free-form reason, stamped on `permit.revoked_reason`."
 								}
 							]
 						}
 					],
 					"module_comment": "Permit database queries.\n\nPermits are time-bounded, revocable grants of a role to an actor.\nThe system is safe by default — no permit, no capability.",
-					"dependencies": ["db/assert_row.ts"],
+					"dependencies": ["auth/permit_offer_schema.ts", "db/assert_row.ts"],
 					"dependents": [
 						"auth/admin_routes.ts",
 						"auth/bootstrap_account.ts",
 						"auth/daemon_token_middleware.ts",
+						"auth/permit_offer_actions.ts",
 						"auth/request_context.ts",
 						"dev/setup.ts",
+						"testing/admin_integration.ts",
 						"testing/app_server.ts",
 						"testing/middleware.ts"
 					]
@@ -29478,6 +30642,7 @@
 						"auth/daemon_token_middleware.ts",
 						"auth/invite_routes.ts",
 						"auth/middleware.ts",
+						"auth/permit_offer_actions.ts",
 						"auth/require_keeper.ts",
 						"auth/route_guards.ts",
 						"testing/auth_apps.ts",
@@ -29629,6 +30794,9 @@
 						"auth/admin_routes.ts",
 						"auth/bootstrap_account.ts",
 						"auth/daemon_token_middleware.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_notifications.ts",
+						"auth/permit_offer_schema.ts",
 						"auth/require_keeper.ts",
 						"testing/admin_integration.ts",
 						"testing/app_server.ts",
@@ -31269,6 +32437,7 @@
 						"auth/api_token_queries.ts",
 						"auth/audit_log_queries.ts",
 						"auth/invite_queries.ts",
+						"auth/permit_offer_queries.ts",
 						"auth/permit_queries.ts"
 					]
 				},
@@ -33448,22 +34617,22 @@
 						{
 							"name": "JSONRPC_ERROR_CODES",
 							"kind": "variable",
-							"doc_comment": "Standard JSON-RPC error codes (5) plus general application codes (8).\n\nExtensible — consumers add domain-specific codes to their own objects\nby casting `as JsonrpcErrorCode`. Application codes use the -32000 to\n-32099 range reserved by the JSON-RPC spec.",
-							"source_line": 56,
-							"type_signature": "{ readonly parse_error: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); readonly invalid_request: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); ... 10 more ...; readonly timeout: -32700 | ... 4 more ... | (number & $brand<...>); }"
+							"doc_comment": "Standard JSON-RPC error codes (5) plus general application codes (10).\n\nExtensible — consumers add domain-specific codes to their own objects\nby casting `as JsonrpcErrorCode`. Application codes use the -32000 to\n-32099 range reserved by the JSON-RPC spec.",
+							"source_line": 58,
+							"type_signature": "{ readonly parse_error: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); readonly invalid_request: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); ... 12 more ...; readonly request_cancelled: -32700 | ... 4 more ... | (number & $brand<...>); }"
 						},
 						{
 							"name": "jsonrpc_error_messages",
 							"kind": "variable",
 							"doc_comment": "Named constructors for `JsonrpcErrorObject` values.\n\nEach function creates a JSON-RPC error object with the correct\ncode and a sensible default message. Used by the catch layer in\n`apply_route_specs` to build response bodies.",
-							"source_line": 95,
-							"type_signature": "{ readonly parse_error: (data?: unknown) => { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; readonly invalid_request: (data?: unknown) => { ...; }; ... 10 more ...; readonly timeout: (message?: string, data?: ..."
+							"source_line": 109,
+							"type_signature": "{ readonly parse_error: (data?: unknown) => { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; readonly invalid_request: (data?: unknown) => { ...; }; ... 12 more ...; readonly request_cancelled: (message?: strin..."
 						},
 						{
 							"name": "ThrownJsonrpcError",
 							"kind": "class",
 							"doc_comment": "Error class carrying a JSON-RPC error code — thrown by handlers,\ncaught by `apply_route_specs` and mapped to HTTP status + JSON-RPC error response.\n\nNamed for what it is: an error with a JSON-RPC error code that gets thrown.",
-							"source_line": 187,
+							"source_line": 216,
 							"extends": ["Error"],
 							"implements": [],
 							"members": [
@@ -33508,28 +34677,28 @@
 							"name": "jsonrpc_errors",
 							"kind": "variable",
 							"doc_comment": "Named constructors for `ThrownJsonrpcError`.\n\nUsage: `throw jsonrpc_errors.not_found('user')` or `throw jsonrpc_errors.forbidden()`.",
-							"source_line": 212,
-							"type_signature": "{ readonly parse_error: (data?: unknown) => ThrownJsonrpcError; readonly invalid_request: (data?: unknown) => ThrownJsonrpcError; readonly method_not_found: (method?: string | undefined, data?: unknown) => ThrownJsonrpcError; ... 9 more ...; readonly timeout: (message?: string | undefined, data?: unknown) => ThrownJ..."
+							"source_line": 241,
+							"type_signature": "{ readonly parse_error: (data?: unknown) => ThrownJsonrpcError; readonly invalid_request: (data?: unknown) => ThrownJsonrpcError; readonly method_not_found: (method?: string | undefined, data?: unknown) => ThrownJsonrpcError; ... 11 more ...; readonly request_cancelled: (message?: string | undefined, data?: unknown)..."
 						},
 						{
 							"name": "JSONRPC_ERROR_CODE_TO_HTTP_STATUS",
 							"kind": "variable",
 							"doc_comment": "Maps JSON-RPC error codes to HTTP status codes.\n\nExtensible — consumers with domain-specific error codes can spread\nthis into their own mapping object.",
-							"source_line": 236,
+							"source_line": 267,
 							"type_signature": "Record<number, number>"
 						},
 						{
 							"name": "HTTP_STATUS_TO_JSONRPC_ERROR_CODE",
 							"kind": "variable",
 							"doc_comment": "Maps HTTP status codes to JSON-RPC error codes (reverse mapping).\n\nWhen multiple error codes map to the same HTTP status (e.g. parse_error\nand invalid_request both map to 400), the last one wins. Use for\nbest-effort HTTP → JSON-RPC translation.",
-							"source_line": 259,
+							"source_line": 294,
 							"type_signature": "Record<number, -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)>"
 						},
 						{
 							"name": "jsonrpc_error_code_to_http_status",
 							"kind": "function",
 							"doc_comment": "Map a JSON-RPC error code to an HTTP status code.\n\nReturns 500 for unrecognized codes (consumer-defined codes\nwithout a mapping default to internal server error).",
-							"source_line": 276,
+							"source_line": 311,
 							"type_signature": "(code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)): number",
 							"return_type": "number",
 							"return_description": "the corresponding HTTP status code",
@@ -33545,7 +34714,7 @@
 							"name": "http_status_to_jsonrpc_error_code",
 							"kind": "function",
 							"doc_comment": "Map an HTTP status code to a JSON-RPC error code.\n\nReturns `internal_error` (-32603) for unrecognized status codes.",
-							"source_line": 287,
+							"source_line": 322,
 							"type_signature": "(status: number): -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)",
 							"return_type": "-32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">)",
 							"return_description": "the corresponding JSON-RPC error code",
@@ -33558,7 +34727,7 @@
 							]
 						}
 					],
-					"module_comment": "JSON-RPC error infrastructure for fuz_app routes.\n\nProvides error types, named constructors, and HTTP status mapping\nfor the throw/catch error pattern used by `apply_route_specs`.\nCore error codes (5 standard + 8 general application). Domain-specific\ncodes stay in consumers — add by casting `as JsonrpcErrorCode`.\n\n`JsonrpcErrorCode` and `JsonrpcErrorObject` types are Zod-inferred\nfrom `jsonrpc.ts` — this module re-uses those as the single source\nof truth.\n\nComplementary to `error_schemas.ts`: that module is declarative\n(Zod schemas for surface introspection), this one is runtime\n(throw + catch + map).",
+					"module_comment": "JSON-RPC error infrastructure for fuz_app routes.\n\nProvides error types, named constructors, and HTTP status mapping\nfor the throw/catch error pattern used by `apply_route_specs`.\nCore error codes (5 standard + 10 general application). Domain-specific\ncodes stay in consumers — add by casting `as JsonrpcErrorCode`.\n\n`JsonrpcErrorCode` and `JsonrpcErrorObject` types are Zod-inferred\nfrom `jsonrpc.ts` — this module re-uses those as the single source\nof truth.\n\nComplementary to `error_schemas.ts`: that module is declarative\n(Zod schemas for surface introspection), this one is runtime\n(throw + catch + map).",
 					"dependencies": ["http/jsonrpc.ts"],
 					"dependents": [
 						"actions/action_event.ts",
@@ -33567,9 +34736,11 @@
 						"actions/register_action_ws.ts",
 						"actions/request_tracker.svelte.ts",
 						"actions/rpc_client.ts",
+						"actions/socket.svelte.ts",
 						"actions/transports_http.ts",
 						"actions/transports_ws.ts",
 						"actions/transports_ws_backend.ts",
+						"auth/permit_offer_actions.ts",
 						"http/jsonrpc_helpers.ts",
 						"http/route_spec.ts",
 						"testing/rpc_attack_surface.ts"
@@ -33823,6 +34994,7 @@
 						"actions/transports_http.ts",
 						"actions/transports_ws.ts",
 						"actions/transports_ws_backend.ts",
+						"auth/permit_offer_notifications.ts",
 						"testing/ws_round_trip.ts"
 					]
 				},
@@ -34129,6 +35301,50 @@
 						"server/env.ts",
 						"testing/middleware.ts"
 					]
+				},
+				{
+					"path": "http/pending_effects.ts",
+					"declarations": [
+						{
+							"name": "PendingEffectsContext",
+							"kind": "type",
+							"doc_comment": "Minimal structural context required by .",
+							"source_line": 19,
+							"type_signature": "PendingEffectsContext",
+							"properties": [
+								{
+									"name": "log",
+									"kind": "variable",
+									"type_signature": "Logger"
+								},
+								{
+									"name": "pending_effects",
+									"kind": "variable",
+									"type_signature": "Array<Promise<void>>"
+								}
+							]
+						},
+						{
+							"name": "emit_after_commit",
+							"kind": "function",
+							"doc_comment": "Defer a side effect until after the handler's transaction commits.\n\nExceptions thrown by `fn` are caught and logged via `ctx.log.error`, so one\nfailed send cannot corrupt the already-committed response or starve other\nqueued effects in the same tick.",
+							"source_line": 31,
+							"type_signature": "(ctx: PendingEffectsContext, fn: () => void): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "ctx",
+									"type": "PendingEffectsContext"
+								},
+								{
+									"name": "fn",
+									"type": "() => void"
+								}
+							]
+						}
+					],
+					"module_comment": "Shared post-commit side-effect helper.\n\nWS sends and `on_audit_event` SSE broadcasts must never fire mid-transaction —\na rollback would leak state that never existed. Anything pushed onto\n`pending_effects` runs after the response is sent (see the request-context\nmiddleware), so this helper is the canonical home for post-commit fan-out.\n\nSatisfied by both `RouteContext` (HTTP routes) and `ActionContext` (RPC\nactions) — they share `{log, pending_effects}` by convention, so this\nmodule stays in `http/` (both depend on it).",
+					"dependents": ["auth/admin_routes.ts", "auth/permit_offer_actions.ts"]
 				},
 				{
 					"path": "http/proxy.ts",
@@ -37346,7 +38562,7 @@
 							"name": "StandardAdminIntegrationTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_standard_admin_integration_tests`.",
-							"source_line": 42,
+							"source_line": 45,
 							"type_signature": "StandardAdminIntegrationTestOptions",
 							"properties": [
 								{
@@ -37391,7 +38607,7 @@
 							"name": "describe_standard_admin_integration_tests",
 							"kind": "function",
 							"doc_comment": "Standard admin integration test suite for fuz_app admin routes.\n\nExercises account listing, permit grant/revoke, session management, token\nmanagement, audit log routes, admin-to-admin isolation, and response\nschema validation.\n\nEach test group asserts that required routes exist, failing with a descriptive\nmessage if the consumer's route specs are misconfigured.",
-							"source_line": 125,
+							"source_line": 128,
 							"type_signature": "(options: StandardAdminIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -37405,7 +38621,10 @@
 					],
 					"module_comment": "Standard admin integration test suite for fuz_app admin routes.\n\n`describe_standard_admin_integration_tests` creates a composable test suite\nthat exercises admin account listing, permit grant/revoke, session/token\nmanagement, and audit log routes against a real PGlite database.\n\nConsumers call it with their route factory, session config, and role schema —\nall admin route tests come for free.",
 					"dependencies": [
+						"auth/account_queries.ts",
 						"auth/migrations.ts",
+						"auth/permit_offer_queries.ts",
+						"auth/permit_queries.ts",
 						"auth/role_schema.ts",
 						"db/migrate.ts",
 						"testing/app_server.ts",
@@ -38386,7 +39605,7 @@
 							"name": "create_test_app_from_specs",
 							"kind": "function",
 							"doc_comment": "Create a Hono test app from route specs with optional auth context.",
-							"source_line": 71,
+							"source_line": 74,
 							"type_signature": "(route_specs: RouteSpec[], auth_ctx?: RequestContext | undefined, credential_type?: \"session\" | \"api_token\" | \"daemon_token\" | undefined): Hono<BlankEnv, BlankSchema, \"/\">",
 							"return_type": "Hono<BlankEnv, BlankSchema, \"/\">",
 							"return_description": "a configured Hono app",
@@ -38414,7 +39633,7 @@
 							"name": "AuthTestApps",
 							"kind": "type",
 							"doc_comment": "Pre-built Hono apps for each auth level, shared across adversarial test suites.",
-							"source_line": 96,
+							"source_line": 99,
 							"type_signature": "AuthTestApps",
 							"properties": [
 								{
@@ -38443,7 +39662,7 @@
 							"name": "create_auth_test_apps",
 							"kind": "function",
 							"doc_comment": "Create one Hono test app per auth level.",
-							"source_line": 110,
+							"source_line": 113,
 							"type_signature": "(route_specs: RouteSpec[], roles: string[]): AuthTestApps",
 							"return_type": "AuthTestApps",
 							"return_description": "apps keyed by auth level",
@@ -38464,7 +39683,7 @@
 							"name": "select_auth_app",
 							"kind": "function",
 							"doc_comment": "Select the Hono test app with correct auth for a route.",
-							"source_line": 137,
+							"source_line": 140,
 							"type_signature": "(apps: AuthTestApps, auth: RouteAuth): Hono<BlankEnv, BlankSchema, \"/\">",
 							"return_type": "Hono<BlankEnv, BlankSchema, \"/\">",
 							"return_description": "the correctly-authenticated Hono app",
@@ -38485,7 +39704,7 @@
 							"name": "resolve_test_path",
 							"kind": "function",
 							"doc_comment": "Replace Hono route params (`:foo`) with dummy values for HTTP testing.",
-							"source_line": 154,
+							"source_line": 157,
 							"type_signature": "(path: string): string",
 							"return_type": "string",
 							"parameters": [
@@ -38767,21 +39986,21 @@
 							"name": "AUTH_INTEGRATION_TRUNCATE_TABLES",
 							"kind": "variable",
 							"doc_comment": "Auth tables including `audit_log` — for integration tests that exercise\nthe full middleware stack (login, admin, rate limiting).\n\nSeparate from `AUTH_TRUNCATE_TABLES` because unit-level DB tests that don't\ntouch audit logging don't need to truncate it.",
-							"source_line": 201,
+							"source_line": 202,
 							"type_signature": "string[]"
 						},
 						{
 							"name": "AUTH_DROP_TABLES",
 							"kind": "variable",
 							"doc_comment": "All auth tables in drop order (children first for FK safety).\n\nThe full set created by `AUTH_MIGRATIONS` — use for clean-slate\ntest DB initialization. `AUTH_TRUNCATE_TABLES` is the subset for\nbetween-test data cleanup (excludes `audit_log`).\n\nWhen adding tables to `AUTH_MIGRATIONS`, add them here too.",
-							"source_line": 212,
-							"type_signature": "readonly [\"app_settings\", \"invite\", \"audit_log\", \"api_token\", \"auth_session\", \"permit\", \"actor\", \"account\", \"bootstrap_lock\"]"
+							"source_line": 213,
+							"type_signature": "readonly [\"app_settings\", \"invite\", \"audit_log\", \"api_token\", \"auth_session\", \"permit\", \"permit_offer\", \"actor\", \"account\", \"bootstrap_lock\"]"
 						},
 						{
 							"name": "drop_auth_schema",
 							"kind": "function",
 							"doc_comment": "Drop all auth tables and schema version tracking for a clean slate.\n\nRecommended at the start of `init_schema` callbacks for `create_pg_factory`.\nPersistent test databases can accumulate stale schema from previous fuz_app\nversions — this ensures migrations run against a truly empty database.\nSafe on fresh databases (`IF EXISTS` on all statements). No-op effect for\nPGlite (already fresh), but harmless to call unconditionally.",
-							"source_line": 235,
+							"source_line": 237,
 							"type_signature": "(db: Db): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -38796,7 +40015,7 @@
 							"name": "create_describe_db",
 							"kind": "function",
 							"doc_comment": "Create a `describe_db` function bound to specific factories and truncate tables.\n\nReturns a 2-arg `(name, fn)` function that runs the test suite against each\nfactory. Each factory gets its own `describe` block with a shared database\ninstance, automatic `beforeEach` truncation, and `afterAll` cleanup.\nSkipped factories use `describe.skip`.",
-							"source_line": 254,
+							"source_line": 256,
 							"type_signature": "(factories: DbFactory | DbFactory[], truncate_tables: string[]): (name: string, fn: (get_db: () => Db) => void) => void",
 							"return_type": "(name: string, fn: (get_db: () => Db) => void) => void",
 							"return_description": "a `describe_db` function for use in test files",
@@ -38817,7 +40036,7 @@
 							"name": "log_db_factory_status",
 							"kind": "function",
 							"doc_comment": "Log factory status to console.",
-							"source_line": 288,
+							"source_line": 290,
 							"type_signature": "(factories: DbFactory[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -38900,7 +40119,7 @@
 							"name": "create_test_context",
 							"kind": "function",
 							"doc_comment": "Create a test `RequestContext` with permits from partial overrides.",
-							"source_line": 55,
+							"source_line": 58,
 							"type_signature": "(permits?: Partial<Permit>[]): RequestContext",
 							"return_type": "RequestContext",
 							"parameters": [
@@ -41583,7 +42802,7 @@
 							"name": "create_ws_test_harness",
 							"kind": "function",
 							"doc_comment": "Create a WebSocket test harness for the given specs + handlers.\n\nRegisters against a throwaway Hono app with a fake\n`upgradeWebSocket`; the captured events factory is invoked per\n`connect()` with a synthesized Hono context carrying the requested\nauth identity. Returned clients drive the real\n`onOpen`/`onMessage`/`onClose` path against a real `WSContext`.",
-							"source_line": 465,
+							"source_line": 471,
 							"type_signature": "<TCtx extends BaseHandlerContext>(options: CreateWsTestHarnessOptions<TCtx>): WsTestHarness",
 							"return_type": "WsTestHarness",
 							"parameters": [
@@ -41597,7 +42816,7 @@
 							"name": "keeper_identity",
 							"kind": "function",
 							"doc_comment": "Convenience: default identity for keeper-authenticated connections.",
-							"source_line": 643,
+							"source_line": 649,
 							"type_signature": "(): WsConnectIdentity",
 							"return_type": "WsConnectIdentity",
 							"parameters": []
@@ -41606,7 +42825,7 @@
 							"name": "build_broadcast_api",
 							"kind": "function",
 							"doc_comment": "Wire a typed broadcast API against the harness's transport, matching\nhow a consumer's real backend composes the stack. Returns the typed\nAPI so tests can call `.tx_run_created(...)` / `.workspace_changed(...)`\netc. directly.\n\n```ts\nconst harness = create_ws_test_harness<BaseHandlerContext>({specs, handlers});\nconst broadcast = build_broadcast_api<MyBackendActionsApi>({\n  harness,\n  specs: my_broadcast_action_specs,\n});\nconst client = await harness.connect(keeper_identity());\nawait broadcast.tx_run_created({run_id: '...', ...});\nawait client.wait_for(is_notification('tx_run_created'));\n```",
-							"source_line": 675,
+							"source_line": 681,
 							"type_signature": "<TApi>(options: { harness: WsTestHarness; specs: readonly ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]; }): TApi",
 							"return_type": "TApi",
 							"parameters": [
@@ -41706,7 +42925,7 @@
 						{
 							"name": "AdminAccountsState",
 							"kind": "class",
-							"source_line": 13,
+							"source_line": 14,
 							"extends": ["Loadable"],
 							"implements": [],
 							"members": [
@@ -41747,8 +42966,9 @@
 								{
 									"name": "grant_permit",
 									"kind": "function",
-									"type_signature": "(account_id: string, role: string): Promise<void>",
-									"return_type": "Promise<void>",
+									"doc_comment": "Offer the role to the recipient. Server returns the pending offer;\nthe recipient must accept before the permit materializes. Returns the\noffer payload on success so callers can drive follow-up UX (e.g. seed\n`PermitOffersState.outgoing`). A re-offer from the same admin to the\nsame `(account, role)` refreshes the existing pending row — the\nreturned offer id is stable across those calls.",
+									"type_signature": "(account_id: string, role: string): Promise<{ id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; ... 10 more ...; resulting_permit_id: (string & $brand<...>) | null; } | undefined>",
+									"return_type": "Promise<{ id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; } | undefined>",
 									"parameters": [
 										{
 											"name": "account_id",
@@ -42522,7 +43742,8 @@
 						"ui/AdminInvites.svelte",
 						"ui/AdminOverview.svelte",
 						"ui/AdminSessions.svelte",
-						"ui/AdminSettings.svelte"
+						"ui/AdminSettings.svelte",
+						"ui/PermitOfferInbox.svelte"
 					]
 				},
 				{
@@ -42540,7 +43761,8 @@
 						"ui/AdminAuditLog.svelte",
 						"ui/AdminInvites.svelte",
 						"ui/AdminPermitHistory.svelte",
-						"ui/AdminSessions.svelte"
+						"ui/AdminSessions.svelte",
+						"ui/PermitOfferHistory.svelte"
 					]
 				},
 				{
@@ -42696,7 +43918,12 @@
 						}
 					],
 					"module_comment": "Reactive form state for controlling when field errors appear and focusing invalid fields.\n\nTracks per-field `touched` state (set on blur via delegated `focusout`) and form-level\n`attempted` state (set on submit attempt). Errors show after a field is blurred or\nafter a submit attempt, avoiding premature validation while the user is still typing.\n\nThe `FormState.form` attachment also handles Enter key advancing\nbetween focusable elements.\n\nAll trackable inputs must have a `name` attribute — an error is thrown in dev\nif an input without `name` loses focus.\n\n@example\n```svelte\n<script>\n  const form_state = new FormState();\n  let username = $state.raw('');\n  const username_valid = $derived(Username.safeParse(username).success);\n  const can_submit = $derived(username.trim() && username_valid);\n\n  const handle_submit = async () => {\n    form_state.attempt();\n    if (!can_submit) {\n      if (!username.trim() || !username_valid) form_state.focus('username');\n      return;\n    }\n    // submit...\n  };\n</script>\n\n<form {@attach form_state.form()} onsubmit={(e) => { e.preventDefault(); void handle_submit(); }}>\n  <input name=\"username\" bind:value={username} />\n  {#if form_state.show('username') && username && !username_valid}\n    <p>error message</p>\n  {/if}\n  <PendingButton onclick={handle_submit}>submit</PendingButton>\n</form>\n```",
-					"dependents": ["ui/BootstrapForm.svelte", "ui/LoginForm.svelte", "ui/SignupForm.svelte"]
+					"dependents": [
+						"ui/BootstrapForm.svelte",
+						"ui/LoginForm.svelte",
+						"ui/PermitOfferForm.svelte",
+						"ui/SignupForm.svelte"
+					]
 				},
 				{
 					"path": "ui/loadable.svelte.ts",
@@ -42771,6 +43998,7 @@
 						"ui/admin_sessions_state.svelte.ts",
 						"ui/app_settings_state.svelte.ts",
 						"ui/audit_log_state.svelte.ts",
+						"ui/permit_offers_state.svelte.ts",
 						"ui/table_state.svelte.ts"
 					]
 				},
@@ -42857,6 +44085,389 @@
 					],
 					"dependencies": ["ui/app_settings_state.svelte.ts"],
 					"dependents": ["ui/AdminInvites.svelte", "ui/AdminSettings.svelte"]
+				},
+				{
+					"path": "ui/permit_offers_state.svelte.ts",
+					"declarations": [
+						{
+							"name": "permit_offers_state_context",
+							"kind": "variable",
+							"doc_comment": "Svelte context for `PermitOffersState`.\nUse `permit_offers_state_context.set(state)` in the provider and\n`permit_offers_state_context.get()` to access.",
+							"source_line": 37,
+							"type_signature": "{ get: (error_message?: string | undefined) => PermitOffersState; get_maybe: () => PermitOffersState | undefined; set: (value: PermitOffersState) => PermitOffersState; }"
+						},
+						{
+							"name": "PermitOffersRpc",
+							"kind": "type",
+							"doc_comment": "Narrow RPC surface consumed by `PermitOffersState`. Consumers adapt their\ntyped client (e.g. a `create_rpc_client` Proxy) to this shape — the state\nclass stays decoupled from the client's `Result` return type so tests can\ninject plain-function stubs.",
+							"source_line": 45,
+							"type_signature": "PermitOffersRpc",
+							"properties": [
+								{
+									"name": "list",
+									"kind": "variable",
+									"type_signature": "() => Promise<{offers: Array<PermitOfferJson>}>"
+								},
+								{
+									"name": "history",
+									"kind": "variable",
+									"type_signature": "(options?: {\n\t\tlimit?: number;\n\t\toffset?: number;\n\t}) => Promise<{offers: Array<PermitOfferJson>}>"
+								},
+								{
+									"name": "create",
+									"kind": "variable",
+									"type_signature": "(params: {\n\t\tto_account_id: string;\n\t\trole: string;\n\t\tscope_id?: string | null;\n\t\tmessage?: string | null;\n\t}) => Promise<{offer: PermitOfferJson}>"
+								},
+								{
+									"name": "accept",
+									"kind": "variable",
+									"type_signature": "(offer_id: string) => Promise<{\n\t\tpermit_id: string;\n\t\toffer: PermitOfferJson;\n\t\tsuperseded_offer_ids: Array<string>;\n\t}>"
+								},
+								{
+									"name": "decline",
+									"kind": "variable",
+									"type_signature": "(offer_id: string, reason?: string | null) => Promise<{ok: true}>"
+								},
+								{
+									"name": "retract",
+									"kind": "variable",
+									"type_signature": "(offer_id: string) => Promise<{ok: true}>"
+								}
+							]
+						},
+						{
+							"name": "PermitOfferNotification",
+							"kind": "type",
+							"doc_comment": "Narrow WS notification envelope — method + params, matching `JsonrpcNotification`.",
+							"source_line": 67,
+							"type_signature": "PermitOfferNotification",
+							"properties": [
+								{
+									"name": "method",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "params",
+									"kind": "variable",
+									"type_signature": "unknown"
+								}
+							]
+						},
+						{
+							"name": "PermitOfferSubscribe",
+							"kind": "type",
+							"doc_comment": "Subscription primitive — consumer wires their WS receiver; returns a disposer.",
+							"source_line": 73,
+							"type_signature": "PermitOfferSubscribe"
+						},
+						{
+							"name": "PermitOffersStateOptions",
+							"kind": "type",
+							"source_line": 77,
+							"type_signature": "PermitOffersStateOptions",
+							"properties": [
+								{
+									"name": "rpc",
+									"kind": "variable",
+									"type_signature": "PermitOffersRpc"
+								},
+								{
+									"name": "account_id",
+									"kind": "variable",
+									"type_signature": "() => string | null",
+									"doc_comment": "Reactive accessor for the current account id; returns `null` when logged out."
+								},
+								{
+									"name": "actor_id",
+									"kind": "variable",
+									"type_signature": "() => string | null",
+									"doc_comment": "Reactive accessor for the current actor id — required to classify\noffers as outgoing. Returns `null` when unknown."
+								}
+							]
+						},
+						{
+							"name": "PermitOffersState",
+							"kind": "class",
+							"source_line": 94,
+							"extends": ["Loadable"],
+							"implements": [],
+							"members": [
+								{
+									"name": "incoming",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"doc_comment": "Pending offers for the current account, soonest-expiring first.",
+									"type_signature": "Array<PermitOfferJson>"
+								},
+								{
+									"name": "outgoing",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"doc_comment": "Pending offers from the current actor, newest-created first.",
+									"type_signature": "Array<PermitOfferJson>"
+								},
+								{
+									"name": "history",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"doc_comment": "Every offer known to this state, newest-created first. Feeds the history view.",
+									"type_signature": "Array<PermitOfferJson>"
+								},
+								{
+									"name": "incoming_count",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "number"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"type_signature": "(options: PermitOffersStateOptions): PermitOffersState",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "PermitOffersStateOptions"
+										}
+									]
+								},
+								{
+									"name": "fetch",
+									"kind": "function",
+									"doc_comment": "Seed the cache with the recipient-side pending inbox.",
+									"type_signature": "(): Promise<void>",
+									"return_type": "Promise<void>",
+									"parameters": []
+								},
+								{
+									"name": "fetch_history",
+									"kind": "function",
+									"doc_comment": "Seed both-directions history (includes terminal rows).",
+									"type_signature": "(options?: { limit?: number | undefined; offset?: number | undefined; } | undefined): Promise<void>",
+									"return_type": "Promise<void>",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "{ limit?: number | undefined; offset?: number | undefined; } | undefined",
+											"optional": true
+										}
+									]
+								},
+								{
+									"name": "create",
+									"kind": "function",
+									"doc_comment": "Issue a new offer; merges the returned offer into the cache on success.",
+									"type_signature": "(params: { to_account_id: string; role: string; scope_id?: string | null | undefined; message?: string | null | undefined; }): Promise<{ id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<...>; ... 11 more ...; resulting_permit_id: (string & $brand<...>) | null; } | undefined>",
+									"return_type": "Promise<{ id: string & $brand<\"Uuid\">; from_actor_id: string & $brand<\"Uuid\">; to_account_id: string & $brand<\"Uuid\">; role: string; scope_id: (string & $brand<...>) | null; ... 8 more ...; resulting_permit_id: (string & $brand<...>) | null; } | undefined>",
+									"parameters": [
+										{
+											"name": "params",
+											"type": "{ to_account_id: string; role: string; scope_id?: string | null | undefined; message?: string | null | undefined; }"
+										}
+									]
+								},
+								{
+									"name": "accept",
+									"kind": "function",
+									"doc_comment": "Accept an offer; stamps it terminal in the cache and drops any siblings the server superseded.",
+									"type_signature": "(offer_id: string): Promise<void>",
+									"return_type": "Promise<void>",
+									"parameters": [
+										{
+											"name": "offer_id",
+											"type": "string"
+										}
+									]
+								},
+								{
+									"name": "decline",
+									"kind": "function",
+									"type_signature": "(offer_id: string, reason?: string | null | undefined): Promise<void>",
+									"return_type": "Promise<void>",
+									"parameters": [
+										{
+											"name": "offer_id",
+											"type": "string"
+										},
+										{
+											"name": "reason",
+											"type": "string | null | undefined",
+											"optional": true
+										}
+									]
+								},
+								{
+									"name": "retract",
+									"kind": "function",
+									"type_signature": "(offer_id: string): Promise<void>",
+									"return_type": "Promise<void>",
+									"parameters": [
+										{
+											"name": "offer_id",
+											"type": "string"
+										}
+									]
+								},
+								{
+									"name": "subscribe",
+									"kind": "function",
+									"doc_comment": "Wire a notification subscription. The handler dispatches each matching\nnotification into `apply_notification`; the returned disposer unwires.",
+									"type_signature": "(subscribe_fn: PermitOfferSubscribe): () => void",
+									"return_type": "() => void",
+									"parameters": [
+										{
+											"name": "subscribe_fn",
+											"type": "PermitOfferSubscribe"
+										}
+									]
+								},
+								{
+									"name": "apply_notification",
+									"kind": "function",
+									"doc_comment": "Reduce a single WS notification into the cache. Exposed so consumers\nwiring their WS receiver directly (without `subscribe`) and tests can\ndrive the reducer without allocating a subscription.",
+									"type_signature": "(notification: PermitOfferNotification): void",
+									"return_type": "void",
+									"parameters": [
+										{
+											"name": "notification",
+											"type": "PermitOfferNotification"
+										}
+									]
+								},
+								{
+									"name": "reset",
+									"kind": "function",
+									"doc_comment": "Clear the cache and reset loading/error state.",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
+								}
+							]
+						}
+					],
+					"module_comment": "Reactive state for the consentful-permits offer flow.\n\nMaintains one offer cache keyed by id, seeded by the RPC list/history\nactions and kept live by the six permit-offer WebSocket notifications.\n`incoming` (recipient-side pending) and `outgoing` (grantor-side pending)\nare derived views; `history` is the full cache ordered newest-first for\nthe grantor/admin history view.\n\nWiring is transport-agnostic: the ctor accepts a narrow RPC interface\nthe consumer adapts from their typed client, plus an `account_id` /\n`actor_id` getter pair (typically bound to `auth_state`). Notification\ndelivery is pull-only via `subscribe()` — the consumer plumbs their\n`FrontendWebsocketClient` / `ActionPeer` receiver to `apply_notification`.",
+					"dependencies": ["auth/permit_offer_notifications.ts", "ui/loadable.svelte.ts"],
+					"dependents": [
+						"ui/PermitOfferForm.svelte",
+						"ui/PermitOfferHistory.svelte",
+						"ui/PermitOfferInbox.svelte"
+					]
+				},
+				{
+					"path": "ui/PermitOfferForm.svelte",
+					"declarations": [
+						{
+							"name": "PermitOfferForm",
+							"kind": "component",
+							"props": [
+								{
+									"name": "to_account_id",
+									"type": "string"
+								},
+								{
+									"name": "roles",
+									"type": "Array<string>",
+									"description": "Roles the caller may offer — caller filters by `web_grantable` upstream."
+								},
+								{
+									"name": "scope_id",
+									"type": "string | null",
+									"optional": true,
+									"description": "Resource scope for the offer; `null` (default) yields a global offer."
+								},
+								{
+									"name": "on_created",
+									"type": "(offer: PermitOfferJson) => void",
+									"optional": true
+								},
+								{
+									"name": "format_role",
+									"type": "(role: string) => string",
+									"optional": true
+								}
+							],
+							"source_line": 1
+						}
+					],
+					"dependencies": [
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_schema.ts",
+						"ui/form_state.svelte.ts",
+						"ui/permit_offers_state.svelte.ts"
+					]
+				},
+				{
+					"path": "ui/PermitOfferHistory.svelte",
+					"declarations": [
+						{
+							"name": "PermitOfferHistory",
+							"kind": "component",
+							"props": [
+								{
+									"name": "current_actor_id",
+									"type": "string | null",
+									"description": "Used to label a row as sent vs received. When `null`, direction shows as `-`."
+								},
+								{
+									"name": "format_actor",
+									"type": "(from_actor_id: string) => string",
+									"optional": true
+								},
+								{
+									"name": "format_scope",
+									"type": "(scope_id: string | null, role: string) => string",
+									"optional": true
+								},
+								{
+									"name": "format_role",
+									"type": "(role: string) => string",
+									"optional": true
+								}
+							],
+							"source_line": 1
+						}
+					],
+					"dependencies": [
+						"ui/Datatable.svelte",
+						"ui/permit_offers_state.svelte.ts",
+						"ui/ui_format.ts"
+					]
+				},
+				{
+					"path": "ui/PermitOfferInbox.svelte",
+					"declarations": [
+						{
+							"name": "PermitOfferInbox",
+							"kind": "component",
+							"props": [
+								{
+									"name": "format_actor",
+									"type": "(from_actor_id: string) => string",
+									"optional": true,
+									"description": "Display label for `from_actor_id`. Defaults to a truncated uuid."
+								},
+								{
+									"name": "format_scope",
+									"type": "(scope_id: string | null, role: string) => string",
+									"optional": true,
+									"description": "Display label for an offer's scope. Defaults to truncated uuid or \"global\" when `null`."
+								},
+								{
+									"name": "format_role",
+									"type": "(role: string) => string",
+									"optional": true,
+									"description": "Display label for a role constant. Defaults to identity (role name as stored)."
+								}
+							],
+							"source_line": 1
+						}
+					],
+					"dependencies": [
+						"auth/permit_offer_schema.ts",
+						"ui/ConfirmButton.svelte",
+						"ui/permit_offers_state.svelte.ts",
+						"ui/ui_format.ts"
+					]
 				},
 				{
 					"path": "ui/popover.svelte.ts",
@@ -43598,13 +45209,13 @@
 							"kind": "function",
 							"doc_comment": "Format audit event metadata for display based on event type.",
 							"source_line": 135,
-							"type_signature": "(event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"permit_grant\" | \"permit_revoke\" | \"invite_create\" | \"invite_delete\" | \"app_settings_update\", metadata: Record<...> | null): string",
+							"type_signature": "(event_type: \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"permit_grant\" | ... 9 more ... | \"app_settings_update\", metadata: Record<...> | null): string",
 							"return_type": "string",
 							"return_description": "human-readable summary string",
 							"parameters": [
 								{
 									"name": "event_type",
-									"type": "\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"permit_grant\" | \"permit_revoke\" | \"invite_create\" | \"invite_delete\" | \"app_settings_update\"",
+									"type": "\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"permit_grant\" | ... 9 more ... | \"app_settings_update\"",
 									"description": "the audit event type"
 								},
 								{
@@ -43624,6 +45235,8 @@
 						"ui/AdminOverview.svelte",
 						"ui/AdminPermitHistory.svelte",
 						"ui/AdminSessions.svelte",
+						"ui/PermitOfferHistory.svelte",
+						"ui/PermitOfferInbox.svelte",
 						"ui/table_state.svelte.ts"
 					]
 				},
@@ -43655,6 +45268,9 @@
 					"dependents": [
 						"actions/action_event.ts",
 						"actions/transports_ws_backend.ts",
+						"auth/permit_offer_actions.ts",
+						"auth/permit_offer_notifications.ts",
+						"auth/permit_offer_schema.ts",
 						"testing/ws_round_trip.ts"
 					]
 				}
@@ -45045,15 +46661,15 @@
 			},
 			"devDependencies": {
 				"@fuzdev/fuz_code": "^0.45.1",
-				"@fuzdev/fuz_css": "^0.58.0",
+				"@fuzdev/fuz_css": "^0.59.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
 				"@fuzdev/fuz_util": "^0.57.0",
-				"@fuzdev/gro": "^0.197.3",
+				"@fuzdev/gro": "^0.198.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
-				"@ryanatkn/eslint-config": "^0.10.1",
+				"@ryanatkn/eslint-config": "^0.11.0",
 				"@sveltejs/acorn-typescript": "^1.0.9",
 				"@sveltejs/adapter-static": "^3.0.10",
-				"@sveltejs/kit": "^2.57.0",
+				"@sveltejs/kit": "^2.57.1",
 				"@sveltejs/vite-plugin-svelte": "^6.2.4",
 				"@types/estree": "^1.0.8",
 				"@webref/css": "^8.2.0",
@@ -45063,7 +46679,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.5.1",
-				"svelte": "^5.55.2",
+				"svelte": "^5.55.4",
 				"svelte-check": "^4.4.6",
 				"svelte2tsx": "^0.7.53",
 				"tslib": "^2.8.1",
@@ -51743,7 +53359,7 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.3.16",
-				"@fuzdev/fuz_app": "^0.28.0",
+				"@fuzdev/fuz_app": "^0.30.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
 				"@fuzdev/fuz_ui": "^0.191.4",
@@ -51767,7 +53383,7 @@
 				"pg": "^8.20.0",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.4.1",
-				"svelte": "^5.55.3",
+				"svelte": "5.55.4",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -52070,105 +53686,105 @@
 							"name": "ActionMethod",
 							"kind": "type",
 							"doc_comment": "All action method names. Request/response actions have two types per method.",
-							"source_line": 11,
+							"source_line": 12,
 							"type_signature": "ZodEnum<{ heartbeat: \"heartbeat\"; cancel: \"cancel\"; ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; ... 26 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "RequestResponseActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all request_response actions.",
-							"source_line": 52,
+							"source_line": 53,
 							"type_signature": "ZodEnum<{ heartbeat: \"heartbeat\"; ping: \"ping\"; session_load: \"session_load\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; directory_create: \"directory_create\"; ... 18 more ...; _test_emit_notifications: \"_test_emit_notifications\"; }>"
 						},
 						{
 							"name": "RemoteNotificationActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all remote_notification actions.",
-							"source_line": 84,
+							"source_line": 85,
 							"type_signature": "ZodEnum<{ cancel: \"cancel\"; filer_change: \"filer_change\"; completion_progress: \"completion_progress\"; ollama_progress: \"ollama_progress\"; terminal_data: \"terminal_data\"; terminal_exited: \"terminal_exited\"; workspace_changed: \"workspace_changed\"; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "LocalCallActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all local_call actions.",
-							"source_line": 99,
+							"source_line": 100,
 							"type_signature": "ZodEnum<{ toggle_main_menu: \"toggle_main_menu\"; }>"
 						},
 						{
 							"name": "FrontendActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all actions that may be handled on the client.",
-							"source_line": 105,
+							"source_line": 106,
 							"type_signature": "ZodEnum<{ heartbeat: \"heartbeat\"; cancel: \"cancel\"; ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; ... 26 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "BackendActionMethod",
 							"kind": "type",
 							"doc_comment": "Names of all actions that may be handled on the server.",
-							"source_line": 146,
+							"source_line": 147,
 							"type_signature": "ZodEnum<{ heartbeat: \"heartbeat\"; cancel: \"cancel\"; ping: \"ping\"; session_load: \"session_load\"; filer_change: \"filer_change\"; diskfile_update: \"diskfile_update\"; diskfile_delete: \"diskfile_delete\"; ... 25 more ...; _test_notification: \"_test_notification\"; }>"
 						},
 						{
 							"name": "ActionsApi",
 							"kind": "type",
-							"doc_comment": "Interface for action dispatch functions.\nAll async methods return Result types for type-safe error handling.\nSync methods (like toggle_main_menu) return values directly.",
-							"source_line": 188,
+							"doc_comment": "Interface for action dispatch functions.\nAsync methods (request_response, async local_call) return `Promise<Result<...>>`\nand accept an optional `RpcClientCallOptions` second arg that threads `signal`,\n`transport_name`, and `queue` through to the peer. Sync methods (like\n`toggle_main_menu`) return values directly.",
+							"source_line": 191,
 							"type_signature": "ActionsApi",
 							"properties": [
 								{
 									"name": "heartbeat",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['heartbeat'],\n\t) => Promise<Result<{value: ActionOutputs['heartbeat']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['heartbeat'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['heartbeat']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "cancel",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['cancel'],\n\t) => Promise<Result<{value: ActionOutputs['cancel']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(input: ActionInputs['cancel']) => ActionOutputs['cancel']"
 								},
 								{
 									"name": "ping",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput?: void,\n\t) => Promise<Result<{value: ActionOutputs['ping']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput?: void,\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ping']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "session_load",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput?: void,\n\t) => Promise<Result<{value: ActionOutputs['session_load']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput?: void,\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['session_load']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "filer_change",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['filer_change'],\n\t) => Promise<Result<{value: ActionOutputs['filer_change']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(input: ActionInputs['filer_change']) => ActionOutputs['filer_change']"
 								},
 								{
 									"name": "diskfile_update",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['diskfile_update'],\n\t) => Promise<Result<{value: ActionOutputs['diskfile_update']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['diskfile_update'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['diskfile_update']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "diskfile_delete",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['diskfile_delete'],\n\t) => Promise<Result<{value: ActionOutputs['diskfile_delete']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['diskfile_delete'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['diskfile_delete']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "directory_create",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['directory_create'],\n\t) => Promise<Result<{value: ActionOutputs['directory_create']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['directory_create'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['directory_create']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "completion_create",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['completion_create'],\n\t) => Promise<Result<{value: ActionOutputs['completion_create']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['completion_create'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['completion_create']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "completion_progress",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['completion_progress'],\n\t) => Promise<Result<{value: ActionOutputs['completion_progress']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['completion_progress'],\n\t) => ActionOutputs['completion_progress']"
 								},
 								{
 									"name": "ollama_progress",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_progress'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_progress']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(input: ActionInputs['ollama_progress']) => ActionOutputs['ollama_progress']"
 								},
 								{
 									"name": "toggle_main_menu",
@@ -52178,112 +53794,112 @@
 								{
 									"name": "ollama_list",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput?: void,\n\t) => Promise<Result<{value: ActionOutputs['ollama_list']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput?: void,\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_list']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_ps",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput?: void,\n\t) => Promise<Result<{value: ActionOutputs['ollama_ps']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput?: void,\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_ps']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_show",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_show'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_show']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['ollama_show'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_show']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_pull",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_pull'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_pull']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['ollama_pull'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_pull']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_delete",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_delete'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_delete']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['ollama_delete'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_delete']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_copy",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_copy'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_copy']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['ollama_copy'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_copy']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_create",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_create'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_create']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['ollama_create'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_create']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "ollama_unload",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['ollama_unload'],\n\t) => Promise<Result<{value: ActionOutputs['ollama_unload']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['ollama_unload'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['ollama_unload']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "provider_load_status",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['provider_load_status'],\n\t) => Promise<Result<{value: ActionOutputs['provider_load_status']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['provider_load_status'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['provider_load_status']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "provider_update_api_key",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['provider_update_api_key'],\n\t) => Promise<\n\t\tResult<{value: ActionOutputs['provider_update_api_key']}, {error: JsonrpcErrorObject}>\n\t>"
+									"type_signature": "(\n\t\tinput: ActionInputs['provider_update_api_key'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<\n\t\tResult<{value: ActionOutputs['provider_update_api_key']}, {error: JsonrpcErrorObject}>\n\t>"
 								},
 								{
 									"name": "terminal_create",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['terminal_create'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_create']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['terminal_create'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['terminal_create']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "terminal_data_send",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['terminal_data_send'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_data_send']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['terminal_data_send'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['terminal_data_send']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "terminal_data",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['terminal_data'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_data']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(input: ActionInputs['terminal_data']) => ActionOutputs['terminal_data']"
 								},
 								{
 									"name": "terminal_resize",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['terminal_resize'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_resize']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['terminal_resize'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['terminal_resize']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "terminal_close",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['terminal_close'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_close']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['terminal_close'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['terminal_close']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "terminal_exited",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['terminal_exited'],\n\t) => Promise<Result<{value: ActionOutputs['terminal_exited']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(input: ActionInputs['terminal_exited']) => ActionOutputs['terminal_exited']"
 								},
 								{
 									"name": "workspace_open",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['workspace_open'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_open']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['workspace_open'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['workspace_open']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "workspace_close",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['workspace_close'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_close']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['workspace_close'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['workspace_close']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "workspace_list",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput?: void,\n\t) => Promise<Result<{value: ActionOutputs['workspace_list']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput?: void,\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<Result<{value: ActionOutputs['workspace_list']}, {error: JsonrpcErrorObject}>>"
 								},
 								{
 									"name": "workspace_changed",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['workspace_changed'],\n\t) => Promise<Result<{value: ActionOutputs['workspace_changed']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['workspace_changed'],\n\t) => ActionOutputs['workspace_changed']"
 								},
 								{
 									"name": "_test_emit_notifications",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['_test_emit_notifications'],\n\t) => Promise<\n\t\tResult<{value: ActionOutputs['_test_emit_notifications']}, {error: JsonrpcErrorObject}>\n\t>"
+									"type_signature": "(\n\t\tinput: ActionInputs['_test_emit_notifications'],\n\t\toptions?: RpcClientCallOptions,\n\t) => Promise<\n\t\tResult<{value: ActionOutputs['_test_emit_notifications']}, {error: JsonrpcErrorObject}>\n\t>"
 								},
 								{
 									"name": "_test_notification",
 									"kind": "variable",
-									"type_signature": "(\n\t\tinput: ActionInputs['_test_notification'],\n\t) => Promise<Result<{value: ActionOutputs['_test_notification']}, {error: JsonrpcErrorObject}>>"
+									"type_signature": "(\n\t\tinput: ActionInputs['_test_notification'],\n\t) => ActionOutputs['_test_notification']"
 								}
 							]
 						}
@@ -55338,7 +56954,8 @@
 							"props": [
 								{
 									"name": "value",
-									"type": "string"
+									"type": "string",
+									"bindable": true
 								},
 								{
 									"name": "restore_icon",
@@ -55733,7 +57350,8 @@
 							"props": [
 								{
 									"name": "content",
-									"type": "string"
+									"type": "string",
+									"bindable": true
 								},
 								{
 									"name": "token_count",
@@ -55932,7 +57550,8 @@
 							"props": [
 								{
 									"name": "enabled",
-									"type": "boolean"
+									"type": "boolean",
+									"bindable": true
 								},
 								{
 									"name": "label",
@@ -58102,7 +59721,8 @@
 							"props": [
 								{
 									"name": "value",
-									"type": "string"
+									"type": "string",
+									"bindable": true
 								},
 								{
 									"name": "attrs",
@@ -58328,7 +59948,7 @@
 						{
 							"name": "create_frontend_action_handlers",
 							"kind": "function",
-							"source_line": 8,
+							"source_line": 10,
 							"type_signature": "(frontend: Frontend): FrontendActionHandlers",
 							"return_type": "FrontendActionHandlers",
 							"parameters": [
@@ -59291,6 +60911,12 @@
 							"kind": "variable",
 							"source_line": 25,
 							"type_signature": "\"❙❙\""
+						},
+						{
+							"name": "GLYPH_STOP",
+							"kind": "variable",
+							"source_line": 26,
+							"type_signature": "\"⏹\""
 						},
 						{
 							"name": "GLYPH_CHECKMARK",
@@ -61112,7 +62738,8 @@
 							"props": [
 								{
 									"name": "show",
-									"type": "boolean"
+									"type": "boolean",
+									"bindable": true
 								},
 								{
 									"name": "onpick",
@@ -65949,19 +67576,25 @@
 									"kind": "variable",
 									"type_signature": "OnCompletionProgress",
 									"doc_comment": "Routes progress chunks to the originating WS socket via ctx.notify.\nRequired for streaming handlers; ignored by non-streaming handlers."
+								},
+								{
+									"name": "signal",
+									"kind": "variable",
+									"type_signature": "AbortSignal",
+									"doc_comment": "Request-scoped cancel signal. Fires on WS socket close or when the client\nsends a `cancel` notification for this request id. Providers must honor it\non long-running streams — forward to the SDK's native `signal` option, or\ncheck `signal.aborted` inside async-iteration loops and break."
 								}
 							]
 						},
 						{
 							"name": "OnCompletionProgress",
 							"kind": "type",
-							"source_line": 47,
+							"source_line": 54,
 							"type_signature": "OnCompletionProgress"
 						},
 						{
 							"name": "BackendProviderRemoteOptions",
 							"kind": "type",
-							"source_line": 49,
+							"source_line": 56,
 							"type_signature": "BackendProviderRemoteOptions",
 							"properties": [
 								{
@@ -65975,7 +67608,7 @@
 							"name": "BackendProvider",
 							"kind": "class",
 							"doc_comment": "Base class for all backend AI providers.\nProvides shared functionality for completion handlers and logging.",
-							"source_line": 57,
+							"source_line": 64,
 							"generic_params": [
 								{
 									"name": "TClient",
@@ -66178,7 +67811,7 @@
 							"name": "BackendProviderRemote",
 							"kind": "class",
 							"doc_comment": "Base class for remote API-based providers (Claude, ChatGPT, Gemini).\nHandles API key management and provides default error handling for missing keys.",
-							"source_line": 136,
+							"source_line": 143,
 							"extends": ["BackendProvider<TClient>"],
 							"implements": [],
 							"generic_params": [
@@ -66244,7 +67877,7 @@
 							"name": "BackendProviderLocal",
 							"kind": "class",
 							"doc_comment": "Base class for locally-installed providers (Ollama).\nHandles installation checking and provides default error handling for missing installations.",
-							"source_line": 182,
+							"source_line": 189,
 							"extends": ["BackendProvider<TClient>"],
 							"implements": [],
 							"generic_params": [
@@ -68117,7 +69750,7 @@
 						{
 							"name": "SocketOptions",
 							"kind": "type",
-							"source_line": 21,
+							"source_line": 22,
 							"type_signature": "SocketOptions",
 							"properties": [
 								{
@@ -68131,7 +69764,7 @@
 							"name": "QueuedMessage",
 							"kind": "type",
 							"doc_comment": "Queued message that couldn't be sent immediately.",
-							"source_line": 26,
+							"source_line": 27,
 							"type_signature": "QueuedMessage",
 							"properties": [
 								{
@@ -68155,7 +69788,7 @@
 							"name": "FailedMessage",
 							"kind": "type",
 							"doc_comment": "Failed message that exceeded retry count.",
-							"source_line": 33,
+							"source_line": 34,
 							"type_signature": "FailedMessage",
 							"extends": ["QueuedMessage"],
 							"properties": [
@@ -68174,10 +69807,10 @@
 						{
 							"name": "Socket",
 							"kind": "class",
-							"doc_comment": "Wraps `FrontendWebsocketClient` with zzz-specific concerns: a\nretryable fire-and-forget send queue (distinct from fuz_app's\nrequest-level durable queue), URL input tracking, and a mapping from\nfuz_app's `SocketStatus` onto zzz's `AsyncStatus`. Plain reactive class\n— not a Cell. Implements `WebsocketConnection` so it can back\n`FrontendWebsocketTransport`.\n\nThe bespoke heartbeat timer has been retired — fuz_app's\n`FrontendWebsocketClient` now ships an activity-aware heartbeat that\nsends the shared `heartbeat_action` at `heartbeat_interval` idle.\nAssigning `heartbeat_interval` pushes the new policy into the live\nclient immediately (the timer is restarted in place when connected).\n\nReconnect settings (`reconnect_delay`, `reconnect_delay_max`,\n`auto_reconnect`) propagate to the underlying client on assignment\nvia `apply_reconnect_policy()` — in-flight waits are monotonically\nshortened (never extended).",
-							"source_line": 57,
+							"doc_comment": "Wraps `FrontendWebsocketClient` with zzz-specific concerns: a\nretryable fire-and-forget send queue (distinct from fuz_app's\nrequest-level durable queue), URL input tracking, and a mapping from\nfuz_app's `SocketStatus` onto zzz's `AsyncStatus`. Plain reactive class\n— not a Cell. Implements `WebsocketRpcConnection` so it can back\n`FrontendWebsocketTransport`; the `request` method is a one-line\ndelegate to the underlying `FrontendWebsocketClient`, keeping the\npending-request map in one canonical place.\n\nThe bespoke heartbeat timer has been retired — fuz_app's\n`FrontendWebsocketClient` now ships an activity-aware heartbeat that\nsends the shared `heartbeat_action` at `heartbeat_interval` idle.\nAssigning `heartbeat_interval` pushes the new policy into the live\nclient immediately (the timer is restarted in place when connected).\n\nReconnect settings (`reconnect_delay`, `reconnect_delay_max`,\n`auto_reconnect`) propagate to the underlying client on assignment\nvia `apply_reconnect_policy()` — in-flight waits are monotonically\nshortened (never extended).",
+							"source_line": 60,
 							"extends": [],
-							"implements": ["WebsocketConnection"],
+							"implements": ["WebsocketRpcConnection"],
 							"members": [
 								{
 									"name": "app",
@@ -68338,6 +69971,29 @@
 									"type_signature": "(): void",
 									"return_type": "void",
 									"parameters": []
+								},
+								{
+									"name": "request",
+									"kind": "function",
+									"doc_comment": "Delegate to the underlying `FrontendWebsocketClient.request` — keeps the\npending-request map, durable queue, and `AbortSignal` cancel in one\ncanonical place. Rejects when there is no client (call `connect()` first).",
+									"type_signature": "(method: string, params?: unknown, options?: { signal?: AbortSignal | undefined; queue?: boolean | undefined; id?: string | number | undefined; } | undefined): Promise<unknown>",
+									"return_type": "Promise<unknown>",
+									"parameters": [
+										{
+											"name": "method",
+											"type": "string"
+										},
+										{
+											"name": "params",
+											"type": "unknown",
+											"optional": true
+										},
+										{
+											"name": "options",
+											"type": "{ signal?: AbortSignal | undefined; queue?: boolean | undefined; id?: string | number | undefined; } | undefined",
+											"optional": true
+										}
+									]
 								},
 								{
 									"name": "send",
@@ -69357,6 +71013,12 @@
 									"type_signature": "string"
 								},
 								{
+									"name": "pending",
+									"kind": "variable",
+									"doc_comment": "Reactive flag: true while `send_message` has an in-flight `completion_create`.\nOwned by the thread so multiple views of the same thread stay in sync.\nCallers that bypass `send_message` and call `app.api.completion_create`\ndirectly will not update this flag.",
+									"type_signature": "boolean"
+								},
+								{
 									"name": "constructor",
 									"kind": "constructor",
 									"type_signature": "(options: ThreadOptions): Thread",
@@ -69466,6 +71128,14 @@
 											"type": "string"
 										}
 									]
+								},
+								{
+									"name": "cancel_pending",
+									"kind": "function",
+									"doc_comment": "Abort the in-flight `completion_create` call (if any). Safe to call when\nnothing is pending — no-op. The frontend WS client rejects the pending\npromise with `request_cancelled` and fires a `cancel` notification so the\nserver can stop its provider stream.",
+									"type_signature": "(): void",
+									"return_type": "void",
+									"parameters": []
 								},
 								{
 									"name": "switch_model",
@@ -70102,7 +71772,8 @@
 								{
 									"name": "active",
 									"type": "boolean",
-									"description": "Current state of the toggle"
+									"description": "Current state of the toggle",
+									"bindable": true
 								},
 								{
 									"name": "active_content",
@@ -71167,21 +72838,21 @@
 							"kind": "variable",
 							"doc_comment": "Extended error codes with zzz-specific AI provider error.",
 							"source_line": 25,
-							"type_signature": "{ readonly ai_provider_error: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); readonly parse_error: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); ... 11 more ...; readonly timeout: -32700 | ... 4 more ... | (number & $brand<...>); }"
+							"type_signature": "{ readonly ai_provider_error: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); readonly parse_error: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<...>); ... 13 more ...; readonly request_cancelled: -32700 | ... 4 more ... | (number & $brand<...>); }"
 						},
 						{
 							"name": "jsonrpc_error_messages",
 							"kind": "variable",
 							"doc_comment": "Extended error message constructors.",
 							"source_line": 31,
-							"type_signature": "{ readonly ai_provider_error: (provider?: string | undefined, message?: string | undefined, data?: unknown) => { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; ... 12 more ...; readonly timeout: (message?: stri..."
+							"type_signature": "{ readonly ai_provider_error: (provider?: string | undefined, message?: string | undefined, data?: unknown) => { [x: string]: unknown; code: -32700 | -32600 | -32601 | -32602 | -32603 | (number & $brand<\"JsonrpcServerErrorCode\">); message: string; data?: unknown; }; ... 14 more ...; readonly request_cancelled: (mess..."
 						},
 						{
 							"name": "jsonrpc_errors",
 							"kind": "variable",
 							"doc_comment": "Extended error throwers.",
 							"source_line": 55,
-							"type_signature": "{ readonly ai_provider_error: (provider?: string | undefined, message?: string | undefined, data?: unknown) => ThrownJsonrpcError; readonly parse_error: (data?: unknown) => ThrownJsonrpcError; ... 11 more ...; readonly timeout: (message?: string | undefined, data?: unknown) => ThrownJsonrpcError; }"
+							"type_signature": "{ readonly ai_provider_error: (provider?: string | undefined, message?: string | undefined, data?: unknown) => ThrownJsonrpcError; readonly parse_error: (data?: unknown) => ThrownJsonrpcError; ... 13 more ...; readonly request_cancelled: (message?: string | undefined, data?: unknown) => ThrownJsonrpcError; }"
 						}
 					],
 					"module_comment": "zzz-specific JSON-RPC error codes extending fuz_app's base set.\n\nfuz_app provides 5 standard + 8 general application error codes.\nzzz adds domain-specific codes for AI provider errors.",

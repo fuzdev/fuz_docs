@@ -97,6 +97,21 @@ Skip:
 - Internal helpers with clear names
 - Code where TypeScript types provide sufficient documentation
 
+### CLAUDE.md is a map; TSDoc is the detail
+
+When a symbol has non-obvious semantics — wire shape, invariants, ordering
+constraints, failure modes — the explanation belongs on the symbol's TSDoc
+(or its return type's), not in downstream CLAUDE.md or architecture docs.
+mdz renders TSDoc through the `library.json` pipeline into API docs, so the
+detail stays one hop from the code and moves when the code moves.
+
+CLAUDE.md entries should read as one-line pointers: the symbol name and a
+short hook. If you find yourself writing three sentences explaining what a
+function returns or how it interacts with sibling symbols, that content
+belongs in source TSDoc. The failure mode is drift — CLAUDE.md prose goes
+stale because it lives far from the code it describes, while the TSDoc on
+the same symbol often stays current because it's visible during the edit.
+
 ## Tag Reference
 
 ### Main description
@@ -502,9 +517,10 @@ What to wrap:
 
 ### Internal paths
 
-Bare paths starting with `/` (after whitespace) auto-link as internal
-navigation — including HTTP route notations, which create broken links that
-fail SvelteKit prerender:
+Paths starting with `/` after whitespace auto-link as internal navigation.
+
+**Gotcha — API route lists**: `/word` patterns get auto-linked, including HTTP
+routes. Bare paths create broken links that fail SvelteKit prerender:
 
 ```typescript
 // BAD — mdz auto-links /login as internal route, breaks prerender
@@ -529,20 +545,13 @@ References are case-sensitive. `` `library` `` will NOT match `Library`.
 Backticks for identifiers. `{@link}` for external URLs in `@see`:
 
 ```typescript
-// Preferred — backticks for identifier references
+// Preferred — backtick for identifier
 /** See `tsdoc_parse` for the extraction step. */
 
-// Avoid — {@link} with an identifier renders as plain text in generated docs
+// Avoid — {@link} for identifier
 /** See {@link tsdoc_parse} for the extraction step. */
 
-// BROKEN — {@link} with a relative path breaks prerender: the generator
-// strips the wrapper, leaving bare path text that mdz auto-links as an
-// internal route.
-/** Symmetric to {@link ../actions/action_rpc.js | create_rpc_endpoint}. */
-// Fix — backticks + prose filename:
-/** Symmetric to `create_rpc_endpoint` (from `actions/action_rpc.ts`). */
-
-// Correct — {@link} for a URL in `@see`
+// Correct — {@link} for URL
 /** @see {@link https://fuz.dev|Fuz documentation} */
 ```
 
@@ -851,6 +860,26 @@ are omitted.
 - Pre-release — ensure public APIs are documented
 - Post-refactoring — verify docs stayed in sync
 - Code reviews — identify documentation gaps
+
+### Correctness, not just coverage
+
+Coverage (presence) is one axis; **correctness (currency) is the other, and
+usually the failure mode.** When refactoring a public API — changing
+signatures, adding fields to return types, tightening error semantics, or
+renaming constants — re-read the TSDoc on every touched symbol before
+shipping. A wrong doc comment is worse than a missing one: it looks
+authoritative, so downstream readers trust it and propagate the mistake.
+
+Common drift patterns to watch for:
+
+- **Signature changed** — `@param` list no longer matches parameter order, or
+  names refer to renamed arguments
+- **Return shape widened** — new fields on a returned type go undocumented on
+  the function that produces them
+- **Error semantics tightened** — a thrown error class was replaced or a
+  distinct `error.data.reason` was added, but `@throws` still names the old one
+- **Cross-refs rotted** — `@see some_helper.ts` points at a file that was
+  moved, merged, or deleted
 
 ## Ecosystem Conventions
 
