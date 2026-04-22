@@ -26745,7 +26745,7 @@
 									"name": "permit_offer_default_ttl_ms",
 									"kind": "variable",
 									"type_signature": "number",
-									"doc_comment": "TTL applied to offers emitted by the admin grant route. Defaults to\n. Independent of\n`PermitOfferActionOptions.default_ttl_ms` so admin-issued offers (known\ngrantor, operational context) can carry a different expiry than\nconsumer-issued offers."
+									"doc_comment": "TTL applied to offers emitted by the admin grant route. Defaults to\n`PERMIT_OFFER_DEFAULT_TTL_MS`. Independent of\n`PermitOfferActionOptions.default_ttl_ms` so admin-issued offers (known\ngrantor, operational context) can carry a different expiry than\nconsumer-issued offers."
 								}
 							]
 						},
@@ -29924,7 +29924,8 @@
 					"dependents": [
 						"auth/admin_routes.ts",
 						"auth/permit_offer_actions.ts",
-						"testing/admin_integration.ts"
+						"testing/admin_integration.ts",
+						"testing/audit_completeness.ts"
 					]
 				},
 				{
@@ -39524,7 +39525,7 @@
 							"name": "AuditCompletenessTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_audit_completeness_tests`.",
-							"source_line": 39,
+							"source_line": 40,
 							"type_signature": "AuditCompletenessTestOptions",
 							"properties": [
 								{
@@ -39557,7 +39558,7 @@
 							"name": "describe_audit_completeness_tests",
 							"kind": "function",
 							"doc_comment": "Composable audit log completeness test suite.\n\nVerifies that every auth mutation route produces the correct audit log\nevent type. Exercises routes via HTTP requests against a real PGlite\ndatabase, then queries the `audit_log` table to verify events.",
-							"source_line": 141,
+							"source_line": 142,
 							"type_signature": "(options: AuditCompletenessTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -39573,6 +39574,7 @@
 					"dependencies": [
 						"auth/audit_log_schema.ts",
 						"auth/migrations.ts",
+						"auth/permit_offer_queries.ts",
 						"auth/role_schema.ts",
 						"db/migrate.ts",
 						"testing/app_server.ts",

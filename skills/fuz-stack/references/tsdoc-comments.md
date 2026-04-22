@@ -7,12 +7,12 @@ JSDoc/TSDoc conventions for `@fuzdev` packages.
 Doc comments flow through a three-stage pipeline:
 
 1. **fuz_ui analysis** — `tsdoc_helpers.ts`, `ts_helpers.ts`,
-   `svelte_helpers.ts` extract JSDoc/TSDoc from TypeScript AST, producing
-   structured metadata per declaration
-2. **Gro gen tasks** — `library.gen.ts` outputs `library.json` and
-   `library.ts` with all module and declaration metadata
+   `svelte_helpers.ts` extract JSDoc/TSDoc from the TypeScript AST into
+   per-declaration metadata
+2. **Gro gen tasks** — `library.gen.ts` emits `library.json` and
+   `library.ts` with module and declaration metadata
 3. **`mdz`** renders docs with auto-linking — backticked identifiers become
-   clickable links to API docs
+   clickable API-doc links
 
 **Write standard JSDoc with the tags below, wrap identifier references in
 backticks, and the system handles the rest.**
@@ -59,6 +59,9 @@ solves.
 
 ### Name algorithms and explain rationale
 
+Name the algorithm so readers can look it up, and note rationale for
+non-obvious parameter choices.
+
 ```typescript
 /**
  * Computes topological sort order for dependency graph.
@@ -72,6 +75,9 @@ solves.
 ```
 
 ### Explain system context
+
+State the function's role in the larger system — what depends on it, what
+it enables.
 
 ```typescript
 /**
@@ -102,15 +108,15 @@ Skip:
 When a symbol has non-obvious semantics — wire shape, invariants, ordering
 constraints, failure modes — the explanation belongs on the symbol's TSDoc
 (or its return type's), not in downstream CLAUDE.md or architecture docs.
-mdz renders TSDoc through the `library.json` pipeline into API docs, so the
-detail stays one hop from the code and moves when the code moves.
+mdz renders TSDoc through the `library.json` pipeline, so the detail stays
+one hop from the code and moves when the code moves.
 
-CLAUDE.md entries should read as one-line pointers: the symbol name and a
-short hook. If you find yourself writing three sentences explaining what a
-function returns or how it interacts with sibling symbols, that content
-belongs in source TSDoc. The failure mode is drift — CLAUDE.md prose goes
-stale because it lives far from the code it describes, while the TSDoc on
-the same symbol often stays current because it's visible during the edit.
+CLAUDE.md entries should read as one-line pointers: symbol name plus a
+short hook. If you're writing three sentences about what a function returns
+or how it interacts with sibling symbols, that content belongs in source
+TSDoc. The failure mode is drift: CLAUDE.md prose goes stale because it
+lives far from the code it describes, while TSDoc on the same symbol often
+stays current because it's visible during the edit.
 
 ## Tag Reference
 
@@ -494,7 +500,8 @@ Backtick-wrapped identifiers auto-link to API docs.
 ### Always link
 
 **Wrap every mention of an exported identifier, module filename, or type name
-in backticks.** This maximizes discoverability.
+in backticks.** Unmatched references fall through to plain `<code>`, so there's
+no cost to wrapping defensively.
 
 ```typescript
 /**
@@ -701,16 +708,6 @@ export class Library {
 	modules = $derived(/* ... */);
 
 	/**
-	 * Module lookup map by path.
-	 */
-	module_by_path = $derived(/* ... */);
-
-	/**
-	 * Declaration lookup map by name.
-	 */
-	declaration_by_name = $derived(/* ... */);
-
-	/**
 	 * Search declarations by query string with multi-term AND logic.
 	 */
 	search_declarations(query: string): Array<Declaration> {
@@ -863,12 +860,12 @@ are omitted.
 
 ### Correctness, not just coverage
 
-Coverage (presence) is one axis; **correctness (currency) is the other, and
-usually the failure mode.** When refactoring a public API — changing
-signatures, adding fields to return types, tightening error semantics, or
-renaming constants — re-read the TSDoc on every touched symbol before
-shipping. A wrong doc comment is worse than a missing one: it looks
-authoritative, so downstream readers trust it and propagate the mistake.
+**A wrong doc comment is worse than a missing one**: it looks authoritative,
+so downstream readers trust it and propagate the mistake. Coverage
+(presence) is one axis; correctness (currency) is the other, and usually
+the failure mode. When refactoring a public API — changing signatures,
+adding fields to return types, tightening error semantics, or renaming
+constants — re-read the TSDoc on every touched symbol before shipping.
 
 Common drift patterns to watch for:
 
