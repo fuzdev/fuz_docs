@@ -20,8 +20,9 @@ defaults, metadata, CLI help text, and serialization.
 
 | Layer | Module | Capabilities |
 |---|---|---|
-| Foundation | `@fuzdev/fuz_util/zod.ts` | Schema introspection — extract descriptions, defaults, aliases, types, properties; unwrap wrappers; check optional/nullable/default; format values for display |
-| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | `Uuid`, `Datetime` branded types and factories; schema unwrapping; field extraction; validation error formatting |
+| Foundation | `@fuzdev/fuz_util/zod.ts` | Schema introspection — extract descriptions, defaults, aliases, types, properties; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); object-field helpers (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`); check optional/nullable/default; format values for display |
+| Foundation | `@fuzdev/fuz_util/uuid.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` branded types and factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`) |
+| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | Re-exports `Uuid`/`Datetime` from fuz_util; `TypeLiteral` and path-transform schemas (`PathWithTrailingSlash`, etc.); `SvelteMapSchema`; validation error formatting |
 | CLI | `@fuzdev/fuz_app/cli/args.ts`, `help.ts` | Schema-validated CLI arg parsing; schema-driven help text generation |
 | HTTP | `@fuzdev/fuz_app/http/schema_helpers.ts` | `schema_to_surface()` exports JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces; `instanceof` checks for schema type detection |
 | Testing | `@fuzdev/fuz_app/testing/schema_generators.ts` | Schema-driven test data generation — valid bodies, adversarial inputs |
@@ -169,10 +170,11 @@ Nominal typing for primitives — a `Uuid` is not interchangeable with `string`
 at the type level:
 
 ```typescript
-// zzz/zod_helpers.ts — Zod 4 built-in validators + brand
+// fuz_util/uuid.ts — Zod 4 built-in validators + brand
 export const Uuid = z.uuid().brand('Uuid');
 export type Uuid = z.infer<typeof Uuid>;
 
+// fuz_util/datetime.ts
 export const Datetime = z.iso.datetime().brand('Datetime');
 export type Datetime = z.infer<typeof Datetime>;
 
@@ -303,8 +305,11 @@ schema._zod.def  // works but prefer schema.def
 ```
 
 See `@fuzdev/fuz_util/zod.ts` for unwrapping utilities (`zod_unwrap_def`,
-`zod_get_base_type`, `zod_to_subschema`) that handle wrappers like optional,
-nullable, default, transform, and pipe.
+`zod_get_base_type`, `zod_to_subschema`, `zod_get_innermost_type`,
+`zod_get_innermost_type_name`, `zod_unwrap_to_object`) that handle wrappers
+like optional, nullable, default, transform, and pipe; and field helpers
+(`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`)
+for inspecting object schemas.
 
 ## Unions and Enums
 
