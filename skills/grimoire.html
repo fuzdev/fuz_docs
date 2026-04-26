@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.B86ocMJo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BYLmmPP9.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.DSQ9DyAy.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/D1SaDH4K.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DJKk3Zif.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BUp2y4-X.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DK5h5w4R.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.D8h4HHvB.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/sPJRwWFc.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.YL6t-EVy.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DAfuroMG.js" rel="modulepreload">
@@ -33,18 +33,18 @@
 		<link href="/_app/immutable/chunks/DAQioxTK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dqx3-4jf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/GMbY26Pr.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.BetyggW4.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D88rYvic.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.Dc6RST2g.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BpVYO5KD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/SMcemH51.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BB1JoMeo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/XSI2KloX.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BbpWAI7l.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CKJ5crZS.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BLQzmaWG.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/C9iTeq7E.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CKpOngBG.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/QeaNnfvq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Do6r0MuT.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/33.CiHgZubg.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/C09RePZb.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/33.CVcHzN28.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CTk5oiYq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BhJn2AK0.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BCSE9QTm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/HN_09iSZ.js" rel="modulepreload">
@@ -199,8 +199,10 @@ planning context, it's lore. If it articulates ideas that span the whole
 ecosystem or connect to broader frameworks, it's writing. Example: "how the auth
 system works" is lore; "why autonomy matters for software design" is writing.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Writing docs may reference each other and link to lore entries, but lore entries
 should not depend on writing docs for implementation context.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->A grimoire may also include <!--]--><!--[3--><!--[-1--><code><!--[-1-->scripts/<!--]--><!----></code><!--]--><!--]--><!--[2--> for experimental linting — checking index
-sync, dead links, stale files — and <!--]--><!--[3--><!--[-1--><code><!--[-1-->scries/<!--]--><!----></code><!--]--><!--]--><!--[2--> for persisting findings across
-runs. These are still taking shape and aren't prescribed here.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="work-loop"><!--[--><!--[2-->Work Loop<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->The grimoire runs an implicit program across agent sessions. Each session
+sync, dead links, stale files — <!--]--><!--[3--><!--[-1--><code><!--[-1-->scries/<!--]--><!----></code><!--]--><!--]--><!--[2--> for persisting findings across runs,
+and <!--]--><!--[3--><!--[-1--><code><!--[-1-->surveys/<!--]--><!----></code><!--]--><!--]--><!--[2--> for cross-repo observations (read-only stats and pattern audits
+across the repos a grimoire coordinates). These are still taking shape and
+aren't prescribed here.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="work-loop"><!--[--><!--[2-->Work Loop<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->The grimoire runs an implicit program across agent sessions. Each session
 executes this loop:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->On session start<!--]--><!--]--><!----></strong><!--]--><!--[2--> (load context):<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->1. <!--]--><!--[4--><strong><!--[--><!--[2-->Check lore<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->lore/{project}/<!--]--><!----></code><!--]--><!--]--><!--[2--> — CLAUDE.md for planning context, TODO.md
    for active work
 2. <!--]--><!--[4--><strong><!--[--><!--[2-->Check quests<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code><!--[-1-->quests/CLAUDE.md<!--]--><!----></code><!--]--><!--]--><!--[2--> for active cross-repo goals touching
@@ -270,15 +272,15 @@ doesn't require a single author.<!--]--><!--]--><!----></p><!--]--><!--[10--><!-
 			
 			<script>
 				{
-					__sveltekit_kvihvf = {
+					__sveltekit_9lmk8s = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.B86ocMJo.js"),
-						import("/_app/immutable/entry/app.D8h4HHvB.js")
+						import("/_app/immutable/entry/start.DSQ9DyAy.js"),
+						import("/_app/immutable/entry/app.YL6t-EVy.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 33],
