@@ -331,7 +331,9 @@ Three patterns:
 /** @see https://github.com/colinhacks/zod#brand */
 ```
 
-**Sibling modules** — filename for cross-references within a package:
+**Sibling modules** — module path relative to `src/lib/` for cross-references
+within a package. See [Module path format](#module-path-format) for the exact
+shape.
 
 ```typescript
 /**
@@ -343,6 +345,12 @@ Three patterns:
  *
  * @module
  */
+```
+
+For nested modules, use the full lib-relative path:
+
+```typescript
+/** @see `actions/composables.ts` for the action set to spread here */
 ```
 
 **Identifiers** — wrap in backticks (not `{@link}`):
@@ -518,9 +526,39 @@ What to wrap:
 - exported function names: `` `tsdoc_parse` ``, `` `shuffle` ``
 - type and interface names: `` `ModuleJson` ``, `` `SourceFileInfo` ``
 - class names: `` `Library` ``, `` `Declaration` ``
-- module filenames: `` `module_helpers.ts` ``, `` `DocsLink.svelte` ``
+- module paths: `` `module_helpers.ts` ``, `` `actions/composables.ts` ``,
+  `` `DocsLink.svelte` `` — see [Module path format](#module-path-format)
 - tag names in prose: `` `@param` ``, `` `@returns` ``
 - enum and constant names
+
+### Module path format
+
+Module references must use the **canonical path** that `Library.module_by_path`
+indexes — the `src/lib/`-relative path with the source extension. Anything
+else falls through to plain `<code>` and the auto-link silently breaks.
+
+```typescript
+// GOOD — lib-relative path with source extension
+/** @see `actions/composables.ts` for the action set to spread here */
+/** Wraps `LibraryJson`. @see `module.svelte.ts` for the `Module` class */
+
+// BAD — relative `./` prefix doesn't match canonical paths
+/** Spread `composable_actions` from `./composables.js` here */
+
+// BAD — `.js` runtime extension doesn't match the indexed `.ts` source path
+/** @see `composables.js` for the bundled action set */
+
+// BAD — bare filename of a nested module ambiguous and won't resolve
+/** @see `composables.ts` */ // breaks if the file is at actions/composables.ts
+```
+
+Top-level files (e.g., `src/lib/Alert.ts`) match by bare filename
+(`` `Alert.ts` ``). Nested files (e.g., `src/lib/actions/composables.ts`)
+require the full sub-path (`` `actions/composables.ts` ``). When in doubt,
+include the directory — the longer form always works.
+
+The canonical format is documented on `Module.path` in `module.svelte.ts`
+(fuz_ui).
 
 ### Internal paths
 
