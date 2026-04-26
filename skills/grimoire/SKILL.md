@@ -267,8 +267,10 @@ Writing docs may reference each other and link to lore entries, but lore entries
 should not depend on writing docs for implementation context.
 
 A grimoire may also include `scripts/` for experimental linting — checking index
-sync, dead links, stale files — and `scries/` for persisting findings across
-runs. These are still taking shape and aren't prescribed here.
+sync, dead links, stale files — `scries/` for persisting findings across runs,
+and `surveys/` for cross-repo observations (read-only stats and pattern audits
+across the repos a grimoire coordinates). These are still taking shape and
+aren't prescribed here.
 
 ## Work Loop
 
