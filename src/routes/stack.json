@@ -86,9 +86,9 @@
 			"glyph": "🧶",
 			"homepage_url": "https://ui.fuz.dev/",
 			"published": true,
-			"module_count": 0,
-			"exported_module_count": 0,
-			"export_count": 0,
+			"module_count": 103,
+			"exported_module_count": 103,
+			"export_count": 324,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
@@ -107,7 +107,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.49.0",
+			"version": "0.52.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -293,8 +293,8 @@
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
 			"module_count": 261,
-			"exported_module_count": 256,
-			"export_count": 807,
+			"exported_module_count": 257,
+			"export_count": 808,
 			"peer_dependencies": [],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [

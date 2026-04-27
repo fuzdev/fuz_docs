@@ -25,12 +25,11 @@ Don't restate the function name. Explain why this exists and what problem it
 solves.
 
 ```typescript
-// Weak — restates function name
-/**
- * Predicts the next version for a repo based on its changesets.
- */
+// Weak — restates the function name and types
+/** Creates a new session. */
+export const create_session = (deps: QueryDeps, account_id: AccountId): Session => {/* ... */};
 
-// Strong — explains purpose
+// Strong — explains purpose and rationale
 /**
  * Predicts the next version by analyzing all changesets in a repo.
  *
@@ -40,6 +39,70 @@ solves.
  * @returns predicted version and bump type, or null if no changesets
  */
 ```
+
+### Conciseness — anti-patterns
+
+A wrong or filler comment is worse than no comment. Three patterns recur
+in real audits.
+
+**1. Helper-contract `@throws` at every callsite.** When your function
+delegates a failure to an internal helper or an external engine, document
+the contract on the helper — not on every caller.
+
+```typescript
+// Weak — same internal invariant repeated on every create_* query
+/** @throws Error if the INSERT does not return a row (failed `assert_row` invariant) */
+
+// Weak — generic driver error true of every SQL call
+/** @throws Error propagated from the underlying driver on syntax errors, constraint violations, or connection failures */
+
+// Strong — contract lives on the helper
+// (in assert_row.ts)
+/** @throws Error if `row` is undefined */
+```
+
+**2. `@mutates X - <verb that mirrors the function name>`.** A tag that
+adds no scope beyond the name + description is filler. A `@mutates`
+earns its line when it surfaces *what would surprise a reader*: specific
+tables/columns, cross-table cascades, fire-and-forget effects, context
+keys consumed by downstream middleware, counter or rate-limiter state.
+
+```typescript
+// Weak — set_session_cookie already says it
+/**
+ * Set the session cookie on a response.
+ * @mutates `c` - writes the `Set-Cookie` header
+ */
+
+// Useful — names columns / scopes / cross-table cascade / non-obvious side channel
+/** @mutates `app_settings` row - sets `open_signup`, `updated_at`, `updated_by` */
+/** @mutates `permit_offer` siblings - stamps `superseded_at` on every other pending offer for the tuple */
+/** @mutates Hono context - sets REQUEST_CONTEXT_KEY, CREDENTIAL_TYPE_KEY, AUTH_API_TOKEN_ID_KEY */
+/** @mutates drift counters - bumps `audit_unknown_event_type_failures` on mismatch */
+```
+
+**3. Duplicate sentence — `@returns` + prose saying the same thing.**
+
+```typescript
+// Weak — two sentences, one fact
+/**
+ * @returns cleanup function that deactivates and hides the sidebar
+ *
+ * The returned disposer hides and disables on cleanup.
+ */
+```
+
+Pick one phrasing.
+
+### Voice
+
+`@mutates` and `@throws` are terse fragments — `@mutates <target> -
+<verb> <scope>`, not full sentences. Backticks on every
+table/column/symbol/constant name are house style.
+
+Multi-paragraph descriptions are *earned* by security or invariant
+rationale (TOCTOU, fail-closed, sibling-supersede, ordering, init order).
+Long prose without that payoff is the pattern to flag.
 
 ### Document workflows with numbered steps
 
@@ -139,12 +202,9 @@ blank line:
 **Format:** `@param name - description`
 
 - Hyphen separator (per TSDoc spec)
-- **Single-sentence:** lowercase, no period
-- **Multi-sentence:** capitalize, end with period
-- Acronyms (CSS, HTML, URL) and proper names (Zod, Fisher-Yates) stay uppercase
 - Wrap type/identifier references in backticks
 - Must be in source parameter order
-- Parser strips leading `- ` for rendering
+- Capitalization and trailing periods follow normal English. Both fragment-style (`@param foo - the value to clamp`) and sentence-style (`@param foo - The value to clamp.`) are accepted; pick one and stay consistent within a file. Acronyms (CSS, HTML, URL) and proper names (Zod, Fisher-Yates) stay capitalized regardless.
 
 ```typescript
 /**
@@ -154,7 +214,7 @@ blank line:
  */
 ```
 
-Multi-sentence:
+Multi-sentence descriptions read as sentences:
 
 ```typescript
 /**
@@ -175,39 +235,20 @@ Use `@returns` (not `@return`). Same capitalization rules as `@param`.
  */
 ```
 
-For async functions, describe what the `Promise` resolves to:
-
-```typescript
-/**
- * Fetches user data from the API.
- * @returns user object with id, name, and email fields
- */
-export async function fetch_user(id: string): Promise<User> {
-	// ...
-}
-```
+For async functions, describe what the `Promise` resolves to, not the `Promise` itself.
 
 ### `@throws`
 
-Three formats (all used):
-
-- `@throws ErrorType description` — type as first word (most common)
-- `@throws {ErrorType} description` — type in curly braces
-- `@throws description` — no type
+Preferred: `@throws ErrorType description` — error type as first word, description follows. Pick a class even if it's just `Error`.
 
 ```typescript
 /**
  * @throws Error if task with given name doesn't exist
- */
-
-/**
- * @throws {TaskError} if production cycles detected
- */
-
-/**
- * @throws if timeout_ms is negative
+ * @throws TaskError if production cycles detected
  */
 ```
+
+The bare form (`@throws description`) and curly-brace form (`@throws {ErrorType} description`) also parse but are not preferred.
 
 ### `@example`
 
@@ -402,14 +443,9 @@ const {
 ### `@nodocs` (non-standard)
 
 Excludes from docs generation and flat namespace validation. Supported by
-fuz_ui's `tsdoc_helpers.ts` and `svelte-docinfo`.
-
-Use cases:
-
-- **Gro task exports** — `Args` and `task` are build system internals (most
-  common use)
-- **Gen file exports** — `gen` function called by Gro
-- **Flat namespace conflicts** — declarations that need to coexist
+fuz_ui's `tsdoc_helpers.ts` and `svelte-docinfo`. Use for build-system
+internals (Gro `Args`/`task`, generated `gen` exports) or to resolve
+flat-namespace collisions.
 
 ```typescript
 /** @nodocs */
@@ -418,9 +454,6 @@ export const Args = z.object({...});
 /** @nodocs */
 export const task: Task<typeof Args> = {...};
 ```
-
-Prefer renaming to `domain_action` patterns when possible. Use `@nodocs` only
-when exclusion is the right solution.
 
 **Never `@nodocs` a symbol that external consumers import and use directly.**
 If it's part of the public API, rename one side of the collision instead —
@@ -438,8 +471,12 @@ Two formats:
 - `@mutates target - description` — bare name with hyphen (most common)
 - `` @mutates `target` `` — backtick-wrapped, no description (when obvious)
 
-Same capitalization rules as `@param`. Only document mutations visible outside
-the function — not internal locals, closure state, or `this.x` in methods.
+Same capitalization rules as `@param`. Document mutations visible outside
+the function. Internal locals and closure state are out of scope. Class
+instance state is in scope when consumers depend on the change — Svelte 5
+`*_state.svelte.ts` rune classes, public-API classes whose fields are part
+of the observable contract. Name the specific fields rather than just
+`@mutates this`.
 
 ```typescript
 /**
@@ -491,25 +528,17 @@ Marks a module-level doc comment. Place at end of comment block. Works in
 10. `@default`
 11. `@nodocs`
 
-`@mutates` goes after `@returns` (or after `@param` if no return), logically
-adjacent to parameter and return documentation.
+`@mutates` goes after `@returns` (or after `@param` if no return).
 
 ## Inter-linking with mdz
 
-Backtick-wrapped identifiers auto-link to API docs.
-
-### How it works
-
-1. `mdz` parses backtick content as `Code` nodes
-2. `DocsLink.svelte` resolves: `library.declaration_by_name.get(ref)` →
-   `library.module_by_path.get(ref)` → plain `<code>` fallback
-3. Matches render as clickable links to API docs
+Backtick-wrapped identifiers auto-link to API docs. Unmatched references
+fall through to plain `<code>`.
 
 ### Always link
 
 **Wrap every mention of an exported identifier, module filename, or type name
-in backticks.** Unmatched references fall through to plain `<code>`, so there's
-no cost to wrapping defensively.
+in backticks.**
 
 ```typescript
 /**
@@ -584,21 +613,6 @@ routes. Bare paths create broken links that fail SvelteKit prerender:
 ### Case sensitivity
 
 References are case-sensitive. `` `library` `` will NOT match `Library`.
-
-### `{@link}` vs backticks
-
-Backticks for identifiers. `{@link}` for external URLs in `@see`:
-
-```typescript
-// Preferred — backtick for identifier
-/** See `tsdoc_parse` for the extraction step. */
-
-// Avoid — {@link} for identifier
-/** See {@link tsdoc_parse} for the extraction step. */
-
-// Correct — {@link} for URL
-/** @see {@link https://fuz.dev|Fuz documentation} */
-```
 
 ## Documentation Patterns
 
@@ -784,35 +798,6 @@ export interface SourceFileInfo {
 }
 ````
 
-````typescript
-export interface ModuleSourceOptions {
-	/**
-	 * Absolute path to the project root directory.
-	 *
-	 * All `source_paths` are relative to this.
-	 *
-	 * @example
-	 * ```typescript
-	 * '/home/user/my-project'
-	 * ```
-	 */
-	project_root: string;
-	/**
-	 * Source directory paths to include, relative to `project_root`.
-	 *
-	 * @example
-	 * ```typescript
-	 * ['src/lib'] // single source directory
-	 * ```
-	 * @example
-	 * ```typescript
-	 * ['src/lib', 'src/routes'] // multiple directories
-	 * ```
-	 */
-	source_paths: Array<string>;
-}
-````
-
 ### Svelte components
 
 Document props inline in the `$props()` type annotation:
@@ -870,16 +855,6 @@ constraints, and non-obvious defaults.
 export type AnalyzerType = 'typescript' | 'svelte';
 ```
 
-### Bullet items
-
-Non-sentence bullets: lowercase, no trailing period:
-
-```md
-- this is a bullet item describing something
-- another item without a period
-- complete sentences in bullets are fine too. They end with periods.
-```
-
 ## Auditing Coverage
 
 ```bash
@@ -889,12 +864,6 @@ gro run skills/fuz-stack/scripts/generate_jsdoc_audit.ts
 Generates `jsdoc_audit.md` — a checklist of `src/lib/` files that contain
 JSDoc, for reviewing and cleaning up existing comments. Files without JSDoc
 are omitted.
-
-### When to audit
-
-- Pre-release — ensure public APIs are documented
-- Post-refactoring — verify docs stayed in sync
-- Code reviews — identify documentation gaps
 
 ### Correctness, not just coverage
 
@@ -916,8 +885,3 @@ Common drift patterns to watch for:
 - **Cross-refs rotted** — `@see some_helper.ts` points at a file that was
   moved, merged, or deleted
 
-## Ecosystem Conventions
-
-Shared across `@fuzdev` packages (fuz_ui, fuz_css, fuz_util, fuz_app, gro).
-All use `domain_action` naming, the same JSDoc tags, and generate docs through
-fuz_ui analysis → `library.json` → `mdz` pipeline.
