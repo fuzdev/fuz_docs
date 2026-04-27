@@ -42,7 +42,7 @@ export const create_session = (deps: QueryDeps, account_id: AccountId): Session 
 
 ### Conciseness — anti-patterns
 
-A wrong or filler comment is worse than no comment. Three patterns recur
+A wrong or filler comment is worse than no comment. Four patterns recur
 in real audits.
 
 **1. Helper-contract `@throws` at every callsite.** When your function
@@ -93,6 +93,40 @@ keys consumed by downstream middleware, counter or rate-limiter state.
 ```
 
 Pick one phrasing.
+
+**4. Verbose prose / useless detail.** Filler that pads without adding
+signal. Specific shapes that recur:
+
+- **Filler `@param X - the X`** — when the description adds nothing beyond
+  the parameter name and type. Drop the line; the signature is enough. A
+  qualifier ("the X to <verb>", a format hint, an edge-case note) is
+  usually worth keeping.
+- **Step-by-step narration of self-evident behavior** — when the function
+  name + signature already tell the story.
+- **Hedging filler** — "simply", "just", "essentially", "basically", and
+  "should never happen" almost always indicate filler. Cut the sentence
+  or rewrite without the hedge.
+- **Marketing "useful for" bullet lists** that repeat the main
+  description in different words.
+
+```typescript
+// Weak — every line restates the parameter name + type
+/**
+ * @param specs - route specs to register
+ * @param method - HTTP method
+ * @param path - request path
+ * @returns matching route spec, or `undefined`
+ */
+
+// Strong — keep `@param`/`@returns` only when they add a qualifier
+//   beyond the signature (constraint, format, edge-case behavior)
+/**
+ * @param path - request path (exact or with concrete param values)
+ */
+```
+
+Long prose without security, ordering, or invariant rationale is the shape
+to flag — multi-paragraph descriptions are *earned* (see [Voice](#voice)).
 
 ### Voice
 
@@ -466,17 +500,52 @@ See `../SKILL.md` §Flat Namespace for which side to rename.
 Documents mutations to parameters or external state. Supported by fuz_ui's
 `tsdoc_helpers.ts`.
 
-Two formats:
+**Preferred form**: `@mutates target - description`. The description is
+the value-add — it tells the reader *what* changes and, when non-obvious,
+*why or when*. Without it the tag duplicates information the function name
+and signature already carry.
 
-- `@mutates target - description` — bare name with hyphen (most common)
-- `` @mutates `target` `` — backtick-wrapped, no description (when obvious)
+A bare backtick form (`` @mutates `target` ``, no description) parses but
+is discouraged: if the mutation is obvious enough that no description is
+warranted, the tag itself is also adding little. If you write `@mutates`,
+make the description carry weight.
 
 Same capitalization rules as `@param`. Document mutations visible outside
-the function. Internal locals and closure state are out of scope. Class
-instance state is in scope when consumers depend on the change — Svelte 5
-`*_state.svelte.ts` rune classes, public-API classes whose fields are part
-of the observable contract. Name the specific fields rather than just
-`@mutates this`.
+the function. Internal locals, closure state, and pull-based lazy caches
+that consumers don't observe are out of scope.
+
+#### When `@mutates this` is warranted on class methods
+
+Stateful classes mutate by design — that's the point. Tagging *every*
+state-changing method (`add`, `remove`, `clear`, `set`, `release`,
+`acquire`, …) produces noise: the method name already names the mutation.
+
+`@mutates this[.field] - description` earns its line on a class method
+**when the mutation isn't obvious from the method name**. Recurring shapes:
+
+- **Cross-field invalidation** — clearing one field also resets caches or
+  derived state. Example: `Logger.clear_colors_override` resets the
+  override AND invalidates four cached prefix strings.
+- **Cross-resource side effects** — the method registers/unregisters
+  external listeners, file watchers, timers, or process handlers in
+  addition to mutating local state. Example: `attach_error_handler` sets
+  `#error_handler` AND subscribes to `process.uncaughtException`.
+- **Implicit tracking** — the method name describes one action but the
+  class also records it for lifecycle/cleanup purposes. Example:
+  `ProcessRegistry.spawn` is named after spawning, but also adds the
+  child to `this.processes` for later `despawn_all`.
+- **Surprising mutation on a query-shaped name** — the method looks like
+  a getter or pure query but mutates. Example: `LruMap.get` reorders the
+  recency list.
+
+A method whose name fully communicates the mutation (`set foo`,
+`clear_console_override`, `Counter.increment`, `LruMap.delete`) does NOT
+need the tag.
+
+Ranking when the tag *is* warranted: `@mutates this.specific_field -
+description` (best, names the field) > `@mutates this - description`
+(generic but at least carries reasoning) > `` @mutates `this` `` (bare,
+discouraged) > omit (correct when the name says it all).
 
 ```typescript
 /**
@@ -493,9 +562,8 @@ export function shuffle<T>(array: T[]): T[] {
 /**
  * Apply named middleware specs to a Hono app.
  *
- * @param app - the Hono app
  * @param specs - middleware specs to apply
- * @mutates `app`
+ * @mutates app - registers each spec's middleware on the app
  */
 ```
 
