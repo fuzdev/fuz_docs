@@ -391,6 +391,28 @@ example paths must be backticked to prevent mdz from linkifying them. The bare
 syntax is for CLAUDE.md files and docs where the paths resolve relative to the
 file's location on disk.
 
+**Anti-patterns** (the linkifier won't fire, costing tokens and navigability):
+
+- Backticking a relative path: `` `./src/lib/foo.ts` `` defeats auto-linking.
+  Use bare `./src/lib/foo.ts`. Backticks are for code, CLI commands, and
+  identifiers — not navigable paths.
+- Wrapping a path in markdown-link syntax when target equals visible text:
+  `[../README.md](../README.md)` is redundant; bare `../README.md` already
+  auto-links. Reserve `[text](url)` for cases where the visible token *isn't*
+  the path — e.g. a package-name-as-link: `[@fuzdev/fuz_app](../../fuz_app)`.
+
+**Formatter cautions** (Prettier in particular — these have bitten real docs):
+
+- A line wrapping after `+` becomes a sublist. `cell + fact` followed by
+  Prettier wrapping to `+ cell_history` reflows as a bullet. Rephrase
+  (`cell, fact, and cell_history`) or keep the `+` mid-line.
+- Bare `_` in inline prose mixed with backticked identifiers can be parsed
+  as italic delimiters and mangle text — eating spaces and swapping
+  characters. Backtick identifiers like `scope_id` or `cell_*` even when
+  the surrounding sentence isn't otherwise code-heavy. When several
+  `_`-bearing identifiers appear in one sentence, restructure as a bullet
+  list so each lands at end-of-line away from prose interactions.
+
 ## Testing
 
 Tests live in `src/test/` (NOT co-located). Use `assert` from vitest —

@@ -144,6 +144,31 @@ try {
 assert.fail('Expected error');
 ```
 
+### Test Placeholder Domains
+
+When tests need stand-in domain names (allowlists, URL parsing, CSP sources,
+etc.), use `*.fuz.dev` subdomains rather than `example.com`, RFC-2606 reserved
+TLDs, or arbitrary strings. The convention keeps test fixtures consistent
+across the ecosystem and signals that the domain is owned/controllable.
+
+```typescript
+// Anonymous placeholders — letters for "any domain"
+const A = src('a.fuz.dev');
+const B = src('b.fuz.dev');
+
+// Scenario placeholders — pick a meaningful subdomain
+const cdn = src('cdn.fuz.dev');
+const api = src('https://api.fuz.dev/');
+const untrusted = src('untrusted-cdn.fuz.dev');
+
+// Generated placeholders
+Array.from({length: 100}, (_, i) => src(`source${i}.fuz.dev`));
+```
+
+Real third-party domains (`fonts.googleapis.com`, `js.stripe.com`,
+`cdnjs.cloudflare.com`) are fine when the test specifically documents
+integration with that vendor.
+
 ### Async Rejection Testing
 
 For async functions that should reject, use `assert_rejects` from
