@@ -9041,7 +9041,7 @@
 				"@fuzdev/blake3_wasm": "^0.1.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.58.0",
-				"@fuzdev/fuz_ui": "^0.191.4",
+				"@fuzdev/fuz_ui": "^0.192.0",
 				"@fuzdev/fuz_util": "^0.59.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.11.0",
@@ -30881,7 +30881,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.52.0",
+			"version": "0.54.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -30996,7 +30996,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.52.0",
+			"version": "0.54.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -36453,6 +36453,7 @@
 						"auth/permit_offer_action_specs.ts",
 						"auth/permit_offer_notifications.ts",
 						"auth/request_context.ts",
+						"auth/self_service_role_actions.ts",
 						"auth/signup_routes.ts",
 						"ui/BootstrapForm.svelte",
 						"ui/SignupForm.svelte",
@@ -39502,14 +39503,14 @@
 							"name": "PermitOfferCreateAuthorize",
 							"kind": "type",
 							"doc_comment": "Authorization callback for `permit_offer_create`. Returns `true` to allow,\n`false` to reject (handler converts to `forbidden`).\n\nProvided with the fully-resolved request context and the parsed input\n(pre-TTL, pre-normalization). Consumers override the default to implement\npolicies like \"teacher may offer classroom_student only in classrooms they\nteach\".",
-							"source_line": 119,
+							"source_line": 115,
 							"type_signature": "PermitOfferCreateAuthorize"
 						},
 						{
 							"name": "PermitOfferActionOptions",
 							"kind": "type",
 							"doc_comment": "Options for `create_permit_offer_actions`.",
-							"source_line": 127,
+							"source_line": 123,
 							"type_signature": "PermitOfferActionOptions",
 							"properties": [
 								{
@@ -39536,7 +39537,7 @@
 							"name": "authorize_admin_or_holder",
 							"kind": "function",
 							"doc_comment": "Authorization callback that admits any admin and otherwise falls back to\nthe symmetric default (caller must hold the offered role globally).\n\nThe `web_grantable` filter in `create_handler` runs **before** the\n`authorize` callback, so this never sees non-web-grantable roles. Drop\ninto `create_permit_offer_actions({authorize: authorize_admin_or_holder})`\n(or any factory that forwards `authorize`, e.g. `create_standard_rpc_actions`)\nfor the common \"admins offer anything; users offer what they hold\"\npattern. Scope-aware policies (e.g. classroom_teacher offering\nclassroom_student in their own scope) wrap this and short-circuit `true`\nbefore delegating.",
-							"source_line": 180,
+							"source_line": 179,
 							"type_signature": "(auth: RequestContext, input: { to_account_id: string; role: string; scope_id: string | null; }, deps: Pick<RouteFactoryDeps, \"log\">, ctx: ActionContext): boolean | Promise<...>",
 							"return_type": "boolean | Promise<boolean>",
 							"parameters": [
@@ -40823,16 +40824,16 @@
 						{
 							"name": "has_role",
 							"kind": "function",
-							"doc_comment": "Check if a request context has an active permit for a given role.\n\nChecks the permits already loaded in the context (no DB query).",
-							"source_line": 93,
-							"type_signature": "(ctx: RequestContext, role: string, now?: Date): boolean",
+							"doc_comment": "Check if a request context has an active permit for a given role.\n\nChecks the permits already loaded in the context (no DB query).\nNull-tolerant — `null` ctx (unauthenticated) returns `false`. Symmetric\nwith `has_scoped_role` / `has_any_scoped_role` so the three helpers\ncompose freely in the same predicate (e.g.\n`has_role(auth, ADMIN) || has_scoped_role(auth, role, scope)`).",
+							"source_line": 97,
+							"type_signature": "(ctx: RequestContext | null, role: string, now?: Date): boolean",
 							"return_type": "boolean",
 							"return_description": "`true` if the actor has an active permit for the role",
 							"parameters": [
 								{
 									"name": "ctx",
-									"type": "RequestContext",
-									"description": "the request context"
+									"type": "RequestContext | null",
+									"description": "the request context, or `null` for unauthenticated callers"
 								},
 								{
 									"name": "role",
@@ -40848,10 +40849,74 @@
 							]
 						},
 						{
+							"name": "has_scoped_role",
+							"kind": "function",
+							"doc_comment": "Whether the request context holds an active permit for `role` at `scope_id`.\n\nWalks the in-memory `ctx.permits` snapshot loaded once per request by\n`create_request_context_middleware`; zero DB roundtrip per check. The\n\"freshness\" framing of a SQL re-query is illusory because the race window\nis between predicate and the actual mutation, not predicate and middleware\nload. Closing that race needs a transactional re-check inside the\nUPDATE/INSERT, which neither style provides.\n\nNull-tolerant — `null` ctx (unauthenticated) returns `false`. Same\nconvention as `has_role`; lets the helper drop into `auth: 'public'`\nhandlers without a manual narrow. See `cell_authorize` for the\nresource-side analog.\n\n`scope_id` semantics: in-memory `permit.scope_id` is `string | null`, so\nJS `===` matches the SQL `IS NOT DISTINCT FROM` semantics exactly:\n\n- `scope_id === null` matches global permits (`scope_id IS NULL`).\n- `scope_id === '<uuid>'` matches permits bound to that exact scope.",
+							"source_line": 130,
+							"type_signature": "(ctx: RequestContext | null, role: string, scope_id: string | null, now?: Date): boolean",
+							"return_type": "boolean",
+							"return_description": "`true` iff the actor holds an active permit for the role at the requested scope",
+							"parameters": [
+								{
+									"name": "ctx",
+									"type": "RequestContext | null",
+									"description": "the request context, or `null` for unauthenticated callers"
+								},
+								{
+									"name": "role",
+									"type": "string",
+									"description": "the role to check"
+								},
+								{
+									"name": "scope_id",
+									"type": "string | null",
+									"description": "the scope to check (`null` for global)"
+								},
+								{
+									"name": "now",
+									"type": "Date",
+									"description": "current time (defaults to `new Date()`, pass for testability and hot-path efficiency)",
+									"default_value": "new Date()"
+								}
+							]
+						},
+						{
+							"name": "has_any_scoped_role",
+							"kind": "function",
+							"doc_comment": "Whether the request context holds an active permit for any role in `roles`\nat `scope_id`. Empty `roles` short-circuits to `false` — documents intent\nat the call site (\"zero roles trivially admit no-one\"). Same scope and\nnull-tolerance semantics as `has_scoped_role`.",
+							"source_line": 154,
+							"type_signature": "(ctx: RequestContext | null, roles: readonly string[], scope_id: string | null, now?: Date): boolean",
+							"return_type": "boolean",
+							"return_description": "`true` iff the actor holds an active permit for any role in `roles` at the requested scope",
+							"parameters": [
+								{
+									"name": "ctx",
+									"type": "RequestContext | null",
+									"description": "the request context, or `null` for unauthenticated callers"
+								},
+								{
+									"name": "roles",
+									"type": "readonly string[]",
+									"description": "the roles that would admit the caller (any-of)"
+								},
+								{
+									"name": "scope_id",
+									"type": "string | null",
+									"description": "the scope to check (`null` for global)"
+								},
+								{
+									"name": "now",
+									"type": "Date",
+									"description": "current time (defaults to `new Date()`, pass for testability)",
+									"default_value": "new Date()"
+								}
+							]
+						},
+						{
 							"name": "create_request_context_middleware",
 							"kind": "function",
 							"doc_comment": "Create middleware that builds the request context from a session cookie.\n\nReads the session identity (set by session middleware), looks up\nthe `auth_session`, loads account + actor + active permits, and\nsets the `RequestContext` on the Hono context.\n\nIf the session is invalid or the account is not found, the context\nis set to `null` (unauthenticated). No 401 is returned — use\n`require_role` or `require_auth` for enforcement.",
-							"source_line": 112,
+							"source_line": 183,
 							"type_signature": "(deps: QueryDeps, log: Logger, session_context_key?: string): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -40877,7 +40942,7 @@
 							"name": "require_auth",
 							"kind": "function",
 							"doc_comment": "Middleware that requires authentication.\n\nReturns 401 if no request context is set.",
-							"source_line": 168,
+							"source_line": 239,
 							"type_signature": "(c: Context<any, string, {}>, next: Next): Promise<void | Response>",
 							"return_type": "Promise<void | Response>",
 							"parameters": [
@@ -40895,7 +40960,7 @@
 							"name": "require_role",
 							"kind": "function",
 							"doc_comment": "Create middleware that requires a specific role.\n\nReturns 401 if unauthenticated, 403 if the role is missing.",
-							"source_line": 183,
+							"source_line": 254,
 							"type_signature": "(role: string): MiddlewareHandler",
 							"return_type": "MiddlewareHandler",
 							"parameters": [
@@ -40910,7 +40975,7 @@
 							"name": "refresh_permits",
 							"kind": "function",
 							"doc_comment": "Reload active permits from the database, returning a new request context.\n\nUseful for long-lived WebSocket connections where permits may change\n(grant or revoke) during the connection lifetime. Call periodically\nor after receiving a revocation signal.\n\nReturns a new `RequestContext` with updated permits — the original\ncontext is not mutated, making concurrent calls safe.",
-							"source_line": 210,
+							"source_line": 281,
 							"type_signature": "(ctx: RequestContext, deps: QueryDeps): Promise<RequestContext>",
 							"return_type": "Promise<RequestContext>",
 							"return_description": "a new `RequestContext` with fresh permits",
@@ -40931,7 +40996,7 @@
 							"name": "build_request_context",
 							"kind": "function",
 							"doc_comment": "Build a full `RequestContext` from an account id.\n\nShared helper used by session, bearer, and daemon token middleware,\nas well as WebSocket upgrade handlers. Does the account → actor → permits\nlookup pipeline and returns the composed context, or `null` if\nthe account or actor is not found.",
-							"source_line": 230,
+							"source_line": 301,
 							"type_signature": "(deps: QueryDeps, account_id: string): Promise<RequestContext | null>",
 							"return_type": "Promise<RequestContext | null>",
 							"return_description": "a request context, or `null` if account/actor not found",
@@ -40970,6 +41035,7 @@
 						"auth/permit_offer_actions.ts",
 						"auth/require_keeper.ts",
 						"auth/route_guards.ts",
+						"auth/self_service_role_actions.ts",
 						"testing/auth_apps.ts",
 						"testing/middleware.ts",
 						"testing/ws_round_trip.ts"
@@ -41214,7 +41280,7 @@
 							"name": "SelfServiceRoleActionsOptions",
 							"kind": "type",
 							"doc_comment": "Options for `create_self_service_role_actions`.",
-							"source_line": 55,
+							"source_line": 51,
 							"type_signature": "SelfServiceRoleActionsOptions",
 							"properties": [
 								{
@@ -41235,7 +41301,7 @@
 							"name": "SelfServiceRoleActionDeps",
 							"kind": "type",
 							"doc_comment": "Dependencies for `create_self_service_role_actions`. Same shape as the\npeer factories so consumers thread one deps object through all three.\n`audit_log_config` flows from `AppDeps` and is consumed by\n`audit_log_fire_and_forget`.",
-							"source_line": 76,
+							"source_line": 72,
 							"type_signature": "SelfServiceRoleActionDeps"
 						},
 						{
@@ -41248,7 +41314,7 @@
 									"description": "at factory time if any `eligible_roles` entry is missing from `options.roles.role_options`"
 								}
 							],
-							"source_line": 94,
+							"source_line": 90,
 							"type_signature": "(deps: SelfServiceRoleActionDeps, options: SelfServiceRoleActionsOptions): RpcAction[]",
 							"return_type": "RpcAction[]",
 							"return_description": "the `RpcAction` array to spread into a `create_rpc_endpoint` call",
@@ -41269,8 +41335,10 @@
 					"module_comment": "Unified self-service role toggle RPC action.\n\nOne static `request_response` action — `self_service_role_set` — that\ntakes `{role, enabled}` and toggles a global permit on the caller for an\nallowlisted role. Idempotent in both directions: re-enabling an\nalready-held role returns `changed: false`; disabling a role the caller\ndoesn't hold returns `changed: false`.\n\nThe factory takes an `eligible_roles` allowlist (validated against the\nsupplied `roles.role_options` at factory time so typos surface at startup\ninstead of at first call). Roles outside the allowlist are rejected\nwith `forbidden` + reason `role_not_self_service_eligible`.\n\nAudit metadata carries `self_service: true` so admin reviewers can\ndistinguish self-toggled permits from admin grants/offers. The\n`permit_grant` / `permit_revoke` metadata schemas declare\n`self_service: z.boolean().optional()` explicitly, so the field is\npart of the documented schema surface and is round-trip-validated by\n`query_audit_log`.\n\nStatic method name — `role` lives in the input, not the method name —\nso the spec is codegen-compatible (`satisfies RequestResponseActionSpec`)\nand the surface stays constant as consumers add eligible roles. Mirrors\nthe existing `permit_offer_create({role})` precedent rather than\ngenerating per-role methods.\n\nSpecs and schemas live in `auth/self_service_role_action_specs.ts` so\nclient-side codegen can import the surface without dragging in the\nquery layer.",
 					"dependencies": [
 						"actions/action_rpc.ts",
+						"auth/account_schema.ts",
 						"auth/audit_log_queries.ts",
 						"auth/permit_queries.ts",
+						"auth/request_context.ts",
 						"auth/self_service_role_action_specs.ts",
 						"http/jsonrpc_errors.ts"
 					]
@@ -52717,7 +52785,7 @@
 							"name": "resolve_valid_path",
 							"kind": "function",
 							"doc_comment": "Resolve a route path with valid-ish param values so params validation passes.\nUsed when testing input on routes that also have params.",
-							"source_line": 189,
+							"source_line": 218,
 							"type_signature": "(path: string, params_schema?: ZodObject<$ZodLooseShape, $strip> | undefined): string",
 							"return_type": "string",
 							"parameters": [
@@ -52742,7 +52810,7 @@
 									"description": "if the generated body fails `input_schema.safeParse` — catches"
 								}
 							],
-							"source_line": 213,
+							"source_line": 242,
 							"type_signature": "(input_schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): Record<string, unknown> | undefined",
 							"return_type": "Record<string, unknown> | undefined",
 							"return_description": "a generated body that passes `safeParse`, or `undefined` for null /\nnon-object schemas",
@@ -65206,7 +65274,7 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.3.16",
-				"@fuzdev/fuz_app": "^0.51.0",
+				"@fuzdev/fuz_app": "^0.54.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
 				"@fuzdev/fuz_ui": "^0.192.0",
@@ -65309,7 +65377,7 @@
 							"name": "action_specs",
 							"kind": "variable",
 							"source_line": 89,
-							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
+							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; ..."
 						},
 						{
 							"name": "ActionInputs",
@@ -66231,7 +66299,7 @@
 							"kind": "variable",
 							"doc_comment": "Canonical action spec list — fuz_app's protocol actions (`heartbeat`,\n`cancel`) plus zzz-owned specs. Single source of truth for codegen and\nruntime registries (`Frontend.action_registry`, `Backend.action_registry`).\n\nCodegen helpers default-filter protocol actions out of typed surfaces\n(`FrontendActionsApi`, `BackendActionHandlers`, `ActionMethod`, etc.) since\nthey're dispatcher-owned. Server WS registration pairs protocol specs with\nfuz_app-shipped handlers via `protocol_actions`; iteration over\n`all_action_specs` skips them via `is_protocol_action_method` to avoid\ndouble-registration. Adding a future protocol action requires no consumer\nedit — fuz_app's `protocol_action_specs` is the upstream canonical bundle.",
 							"source_line": 754,
-							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
+							"type_signature": "({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; ..."
 						}
 					],
 					"dependencies": [
@@ -72637,8 +72705,8 @@
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
-									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 7 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; } | undefined",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }...",
 									"parameters": [
 										{
 											"name": "method",
@@ -79115,7 +79183,7 @@
 									"name": "add_schema",
 									"kind": "function",
 									"doc_comment": "Add a schema to the appropriate registries.",
-									"type_signature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; ... 6 more ...; streams?: string | undefined; } | { ...; } | { ...; }): void",
+									"type_signature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; ... 8 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }): void",
 									"return_type": "void",
 									"parameters": [
 										{
@@ -79124,7 +79192,7 @@
 										},
 										{
 											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; }"
+											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 7 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }"
 										}
 									]
 								},
@@ -79159,7 +79227,7 @@
 									"kind": "function",
 									"doc_comment": "Get an action specification by method name.",
 									"type_signature": "(method: \"ping\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | \"ollama_progress\" | ... 24 more ... | \"cancel\"): { ...; } | ... 2 more ... | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }...",
 									"parameters": [
 										{
 											"name": "method",
@@ -79315,7 +79383,7 @@
 							"name": "broadcast_action_specs",
 							"kind": "variable",
 							"source_line": 24,
-							"type_signature": "readonly ({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; })[]"
+							"type_signature": "readonly ({ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } ..."
 						},
 						{
 							"name": "BackendActionHandlers",
@@ -80483,8 +80551,8 @@
 								{
 									"name": "lookup_action_spec",
 									"kind": "function",
-									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 5 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
-									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 4 more ...; streams?: string | undefined; } | { ...; } | { ...; } | undefined",
+									"type_signature": "(method: string): { method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 7 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; } | undefined",
+									"return_type": "{ method: string; initiator: \"both\" | \"frontend\" | \"backend\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }...",
 									"parameters": [
 										{
 											"name": "method",
@@ -81086,11 +81154,11 @@
 									"name": "constructor",
 									"kind": "constructor",
 									"doc_comment": "Create a new ScopedFs instance with the specified allowed paths.",
-									"type_signature": "(allowed_paths: readonly string[] | string[]): ScopedFs",
+									"type_signature": "(allowed_paths: string[] | readonly string[]): ScopedFs",
 									"parameters": [
 										{
 											"name": "allowed_paths",
-											"type": "readonly string[] | string[]",
+											"type": "string[] | readonly string[]",
 											"description": "array of absolute paths that operations will be restricted to"
 										}
 									]

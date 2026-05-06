@@ -370,36 +370,47 @@ Backticked identifiers auto-link to API docs in TSDoc rendering.
 
 ### Path references in documentation
 
-mdz auto-linkifies bare paths starting with `./`, `../`, or `/` when preceded
-by whitespace. Use this in CLAUDE.md files and other markdown docs to make
-file and directory references navigable:
+Use bare paths (no backticks) for navigational file references. Backticks are
+reserved for code, CLI commands, and identifiers — not paths.
 
-- **Navigational paths** — bare, no backticks: `./grimoire/lore/fuz/design/`
-- **CLI commands and code** — backticked: `gro check`, `src/lib/`
-- **Template/placeholder paths** — bare, consistent even though they won't
-  resolve: `./{project}/CLAUDE.md`
+Valid bare-path forms — pick the most readable for the file's location:
 
-Each file assumes the reader is in the file's parent directory. For
-`~/dev/CLAUDE.md`, all project paths are `./project/` since `~/dev/` is the
-working directory. For `~/dev/grimoire/CLAUDE.md`, sibling grimoire files use
-`./lore/` and repo references use `../fuz_util/`. Deeply nested files use as
-many `../` segments as needed — `../../../fuz_app` is fine. Consistency
-(always relative) beats aesthetics.
+- `./foo` and `../foo` — relative to the file's directory; mdz auto-linkifies
+  these when preceded by whitespace
+- `~/dev/foo` — anchored at the workspace root; reads cleanly at any nesting
+  depth
+- `grimoire/foo` — anchored at the workspace root; preferred over deep
+  `../../grimoire/foo` from nested files
 
-Note: in files rendered by mdz on a website (like this SKILL.md on fuz_docs),
-example paths must be backticked to prevent mdz from linkifying them. The bare
-syntax is for CLAUDE.md files and docs where the paths resolve relative to the
-file's location on disk.
+Backticks belong on code-shaped things, not paths:
 
-**Anti-patterns** (the linkifier won't fire, costing tokens and navigability):
+- CLI commands: `gro check`, `deno task scry`
+- Source-tree references: `src/lib/foo.ts`, `package.json`, `gitops.config.ts`
+- System/config identifiers: `~/.fuz/`, `~/.mg/config.json`
 
-- Backticking a relative path: `` `./src/lib/foo.ts` `` defeats auto-linking.
-  Use bare `./src/lib/foo.ts`. Backticks are for code, CLI commands, and
-  identifiers — not navigable paths.
+Each file's relative paths assume the reader is in the file's parent directory.
+For `~/dev/CLAUDE.md`, project paths are `./project/`. For
+`~/dev/grimoire/CLAUDE.md`, sibling grimoire files use `./lore/` and repo
+references use `../fuz_util/`. From deeply nested files like
+`grimoire/lore/fuz/design/foo.md`, prefer `grimoire/quests/bar.md` over
+`../../../quests/bar.md`.
+
+**Web-rendered caveat**: in files published via mdz on a website (this SKILL.md
+on fuz_docs), `./foo` and `../foo` examples must be backticked to prevent mdz
+from rendering them as broken `<a>` tags. `~/dev/foo` and `grimoire/foo` are
+safe bare in web context — mdz doesn't auto-linkify those prefixes.
+
+**Anti-patterns** (linkifier won't fire, costing tokens and navigability):
+
+- Backticking a path that points to a real file or directory:
+  `` `./src/lib/foo.ts` `` defeats auto-linking; `` `~/dev/fuz_util` `` reads
+  as a code identifier when it's actually a navigational target.
 - Wrapping a path in markdown-link syntax when target equals visible text:
   `[../README.md](../README.md)` is redundant; bare `../README.md` already
-  auto-links. Reserve `[text](url)` for cases where the visible token *isn't*
-  the path — e.g. a package-name-as-link: `[@fuzdev/fuz_app](../../fuz_app)`.
+  auto-links. Same for `[~/dev/foo](~/dev/foo)` — collapse to bare
+  `~/dev/foo`. Reserve `[text](url)` for cases where the visible token
+  *isn't* the path — e.g. a package-name-as-link:
+  `[@fuzdev/fuz_app](../../fuz_app)`.
 
 **Formatter cautions** (Prettier in particular — these have bitten real docs):
 

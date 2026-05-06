@@ -154,10 +154,11 @@ Links to related lore, quests, upstream/downstream projects.
 ```
 
 Not every section is needed — a light entry might just have the header, summary,
-a sentence of context, and a lore docs table. Use bare `./path` and `../path`
-syntax (no backticks) for navigational file references — mdz auto-linkifies
-these. See the fuz-stack skill's "Path references in documentation" section
-for the full convention.
+a sentence of context, and a lore docs table. Use bare paths (no backticks) for
+navigational file references — `./path`, `../path`, `~/dev/path`, or
+`grimoire/path` (the last is preferred over deep `../../grimoire/path` from
+nested files). See the fuz-stack skill's "Path references in documentation"
+section for the full convention.
 
 **Weight ranges**:
 
