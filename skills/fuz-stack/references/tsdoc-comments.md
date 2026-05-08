@@ -923,27 +923,20 @@ constraints, and non-obvious defaults.
 export type AnalyzerType = 'typescript' | 'svelte';
 ```
 
-## Auditing Coverage
-
-```bash
-gro run skills/fuz-stack/scripts/generate_jsdoc_audit.ts
-```
-
-Generates `jsdoc_audit.md` — a checklist of `src/lib/` files that contain
-JSDoc, for reviewing and cleaning up existing comments. Files without JSDoc
-are omitted.
-
-### Correctness, not just coverage
+## Drift — Correctness Over Coverage
 
 **A wrong doc comment is worse than a missing one**: it looks authoritative,
 so downstream readers trust it and propagate the mistake. Coverage
-(presence) is one axis; correctness (currency) is the other, and usually
-the failure mode. When refactoring a public API — changing signatures,
+(presence) is the easy axis; correctness (currency) is the failure mode that
+actually matters. When refactoring a public API — changing signatures,
 adding fields to return types, tightening error semantics, or renaming
 constants — re-read the TSDoc on every touched symbol before shipping.
 
 Common drift patterns to watch for:
 
+- **`@throws` vs return shape** — function declares `@throws` but the body
+  returns `null`/`undefined` on the same failure path (or vice versa). The
+  highest-value contradiction because callers branch on it
 - **Signature changed** — `@param` list no longer matches parameter order, or
   names refer to renamed arguments
 - **Return shape widened** — new fields on a returned type go undocumented on

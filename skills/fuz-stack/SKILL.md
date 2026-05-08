@@ -301,7 +301,7 @@ examples.
 ## TSDoc/JSDoc Conventions
 
 See ./references/tsdoc-comments.md for the full tag guide, documentation
-patterns, and auditing.
+patterns, and drift-detection guidance.
 
 **Key rules:**
 

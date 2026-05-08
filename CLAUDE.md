@@ -74,8 +74,7 @@ src/
 skills/
 ├── fuz-stack/        # AI agent skill — coding conventions
 │   ├── SKILL.md      # main skill file
-│   ├── references/   # detailed topic docs
-│   └── scripts/      # tooling
+│   └── references/   # detailed topic docs
 └── grimoire/         # AI agent skill — grimoire pattern
     └── SKILL.md      # lore, quests, and skills
 ```
@@ -146,8 +145,6 @@ skills/
 │   │   ├── type-utilities.md          # Nominal typing (Flavored/Branded), strict utility types
 │   │   ├── wasm-patterns.md           # WASM build targets, WIT, wasm-bindgen, component model (blake3, tsv)
 │   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
-│   └── scripts/
-│       └── generate_jsdoc_audit.ts    # Tool for auditing JSDoc coverage
 └── grimoire/
     └── SKILL.md                       # Grimoire pattern (lore, quests, skills)
 ```
