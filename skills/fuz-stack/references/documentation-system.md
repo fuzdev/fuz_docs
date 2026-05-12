@@ -358,5 +358,5 @@ generation engine.
 - **`svelte-docinfo`** (`@fuzdev/svelte-docinfo`) — standalone package with the
   same TypeScript/Svelte analysis as fuz_ui, with CLI, Vite plugin, and
   build-tool agnostic API. fuz_ui does not depend on it.
-- **./tsdoc-comments.md** — TSDoc/JSDoc authoring conventions, tag reference,
+- ./tsdoc-comments.md — TSDoc/JSDoc authoring conventions, tag reference,
   mdz auto-linking, and documentation auditing

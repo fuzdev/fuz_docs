@@ -468,11 +468,22 @@ TaskContext, error handling, override patterns, and task composition.
 See ./references/css-patterns.md for setup, variables, composites, modifiers,
 extraction, and dynamic theming.
 
-**Minimal component styles**: Components should have minimal or zero custom CSS,
-delegating to fuz_css utilities and design tokens. Use `box`/`row`/`column`
-for layout, token classes for spacing/colors, and `<style>` only for
-component-specific logic (positioning, pseudo-states, responsive breakpoints).
-See css-patterns.md §Component Styling Philosophy for the full guide.
+**Semantic HTML first**: fuz_css styles HTML elements by default — buttons,
+inputs, headings, links, lists, code, tables, `<aside>`, `<blockquote>`,
+`<details>`, `<small>`, `<kbd>`, etc. all get sensible defaults via
+`:where()` selectors. About half of fuz_ui's components have no `<style>`
+block at all.
+
+**Layered styling ladder**: Stop at the first rung that suffices —
+1. Semantic HTML (right element, no class needed)
+2. Built-in class conventions (`.selected`, `.color_a`–`.color_j` on buttons,
+   `.inline`, `.unstyled`, `.sm`/`.md`)
+3. Composite classes (`box`, `row`, `column`, `panel`, `chip`, `ellipsis`)
+4. Token classes (`p_md`, `gap_lg`, `color_a_50`)
+5. Literal classes (`display:flex`, `hover:opacity:80%`)
+6. `<style>` block with design tokens — last resort
+
+See css-patterns.md §The Default Path and §Component Styling Philosophy.
 
 **Class naming**: fuz_css tokens use `snake_case` (`p_md`, `gap_lg`).
 Component-local classes use `kebab-case` (`site-header`, `nav-links`).

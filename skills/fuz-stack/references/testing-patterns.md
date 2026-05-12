@@ -648,7 +648,7 @@ regenerate with `gro src/test/fixtures/generate_repos`.
 
 DI via small `*Deps` or `*Operations` interfaces. Functions accept an
 operations parameter with a default; tests inject controlled implementations.
-See [dependency-injection.md](./dependency-injection.md) for the full pattern.
+See ./dependency-injection.md for the full pattern.
 
 **fuz_gitops operations pattern:**
 

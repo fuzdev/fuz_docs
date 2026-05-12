@@ -184,7 +184,7 @@ pub fn keyed_hash(key: &[u8], data: &[u8]) -> Result<Vec<u8>, JsError> {
 }
 ```
 
-For component model errors, see `references/wasm-patterns.md`.
+For component model errors, see ./wasm-patterns.md.
 
 ## Naming Conventions
 
@@ -409,8 +409,8 @@ without explicit request.
 | `wit-bindgen`  | Component model (blake3)    |
 | `napi`         | N-API bindings (tsv)        |
 
-See `references/wasm-patterns.md` for build targets, WIT design, and
-optimization profiles.
+See ./wasm-patterns.md for build targets, WIT design, and optimization
+profiles.
 
 ## Patterns
 

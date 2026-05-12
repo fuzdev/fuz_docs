@@ -4,6 +4,90 @@ fuz_css: **semantic styles** (classless element defaults), **style variables**
 (design tokens as CSS custom properties), and optional **utility classes**
 generated per-project with only used classes.
 
+## The Default Path: Semantic HTML First
+
+**Most elements need zero classes.** fuz_css styles HTML elements by default —
+headings, buttons, inputs, links, lists, code, tables, `<aside>`,
+`<blockquote>`, `<details>`/`<summary>`, `<small>`, `<kbd>`/`<samp>`,
+`<abbr>`, `<sub>`/`<sup>`, `<hr>`, `<img>`/`<picture>`/`<svg>`/`<video>`
+all get sensible defaults via low-specificity `:where()` selectors. About
+half of fuz_ui's components have no `<style>` block at all.
+
+When you reach for styling, work down this ladder and stop at the first rung
+that suffices:
+
+1. **Semantic HTML** — pick the right element and you're often done. Headings
+   are pre-tiered (`h1`-`h6`), `<aside>` is a callout, `<blockquote>` is an
+   emphasis block, `<small>` shrinks text, `<code>`/`<pre>`/`<kbd>` use mono
+   font, form controls share consistent sizing and focus/hover/disabled states.
+2. **Built-in class conventions** — `.selected`, `.disabled`, `.color_a`
+   through `.color_j` (on buttons), `.deselectable`, `.inline`, `.unstyled`,
+   `.sm`/`.md` (size overrides). These layer on the semantic defaults.
+3. **Composite classes** — `box`, `row`, `column`, `panel`, `pane`, `chip`,
+   `menuitem`, `clickable`, `ellipsis`. One class replaces 4-8 properties.
+4. **Token classes** — `p_md`, `gap_lg`, `color_a_50`, `font_size_lg`. Map to
+   the design system; never hardcode spacing or color values.
+5. **Literal classes** — `display:flex`, `hover:opacity:80%`. For one-off CSS
+   or modifiers (responsive, hover, focus) without a `<style>` block.
+6. **`<style>` block with design tokens** — last resort, for component-specific
+   layout/animation/responsive behavior that classes can't express cleanly.
+
+The same hierarchy applies to text: prefer `<small>` over
+`font-size: var(--font_size_sm)`, prefer `<h2>` over a custom heading style,
+prefer `<aside>` over a custom callout box.
+
+### Elements That Come Pre-Styled
+
+| Element                         | What you get without classes                                        |
+| ------------------------------- | ------------------------------------------------------------------- |
+| `<h1>`–`<h6>`                   | Serif font, tiered sizes/weights, balanced text wrap, flow margins  |
+| `<a>`                           | Link color, focus outline, `.selected` state                        |
+| `<button>`                      | Fill, border, hover/active/focus/disabled/selected states           |
+| `<button class="color_a">`      | Hue variants `color_a` through `color_j` (intent/status colors)     |
+| `<input>`/`<textarea>`/`<select>` | Padding, border, focus outline, hover/disabled states; range, checkbox, radio all styled |
+| `<aside>`                       | Left border, tinted background, padding — callout/info box          |
+| `<blockquote>`                  | Thick left border, padding                                          |
+| `<code>`                        | Monospace, tinted background, padding; auto-inlines inside `<p>`    |
+| `<pre>`                         | Monospace, overflow handling                                        |
+| `<details>`/`<summary>`         | Pointer cursor, hover/active backgrounds                            |
+| `<table>`/`<th>`/`<td>`/`<tr>`  | Border-collapse, header alignment, cell padding, row hover          |
+| `<small>`                       | `font-size: var(--font_size_sm)` — for metadata, secondary text     |
+| `<kbd>`/`<samp>`                | Monospace font                                                      |
+| `<abbr title="...">`            | Dotted underline                                                    |
+| `<sub>`/`<sup>`                 | Baseline-aware sub/superscript                                      |
+| `<hr>`                          | Themed double border with vertical spacing                          |
+| `<img>`/`<svg>`/`<video>` etc.  | `display: block`, `max-width: 100%`, `height: auto`                 |
+| `<ul>`/`<ol>`/`<menu>`          | Indented padding (`.unstyled` removes bullets and indent)           |
+| `<label>`                       | Block layout, cursor pointer, `.selected`/`.disabled` states        |
+| `<label> .title`                | Bold, small bottom margin — field label inside a `<label>`          |
+| `<fieldset>`/`<legend>`         | Column flex layout, larger legend text                              |
+
+Most block elements (`p`, `ul`, `ol`, `form`, `fieldset`, `table`, `details`,
+`textarea`, `select`, `label`, `pre`, `blockquote`, `aside`, `nav`, `legend`)
+get `margin-bottom: var(--flow_margin)` unless `:last-child` — this is the
+**flow margin** system. Inside a `.row` flex container, child margins reset
+to 0; use `gap_*` instead.
+
+### Built-In Class Conventions
+
+These are state/variant classes that fuz_css's semantic styles recognize —
+no utility classes needed:
+
+| Class                  | Where it applies                | Effect                                       |
+| ---------------------- | ------------------------------- | -------------------------------------------- |
+| `.selected`            | `button`, `a`, `label`, `.menuitem` | Filled selected appearance, non-interactive |
+| `.deselectable`        | `button.selected`               | Keeps interactivity on a selected button     |
+| `.disabled`            | `label`                         | Muted color, default cursor                  |
+| `.color_a`–`.color_j`  | `button`                        | Hue variants (a=blue, b=green, c=red, etc.)  |
+| `.inline`              | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for inline use |
+| `.unstyled`            | Most elements                   | Opts out of opinionated styling, keeps normalizations |
+| `.sm`                  | Any container                   | Tighter sizing (overrides `--font_size`, `--input_height`) |
+| `.md`                  | Any container                   | Resets to default sizing (reverses cascaded `.sm`) |
+
+Reach for these before custom CSS. A `<button class="color_c selected">` is
+already a "selected destructive action" — no hand-rolled state styling
+required.
+
 ## Project Setup
 
 ### Import Order
@@ -72,51 +156,27 @@ Keep minimal — most apps have near-empty `style.css` files.
 
 ### Semantic Styles
 
-`style.css` styles HTML elements without classes using low-specificity `:where()`
-selectors. Elements get sensible defaults automatically.
+`style.css` styles HTML elements without classes using low-specificity
+`:where()` selectors, so utility classes always win. See §The Default Path
+above for the full table of pre-styled elements and built-in class
+conventions. The selector lowering also means fuz_css's stylesheet is
+unlikely to interfere with the page's styles regardless of import order.
 
-Key behaviors:
-
-- **Flow margins**: Block elements (`p`, `ul`, `ol`, `form`, `fieldset`,
-  `table`, `textarea`, etc.) get `margin-bottom: var(--flow_margin, var(--space_lg))`
-  unless `:last-child`
-- **Row margin reset**: `.row > *` resets margins to 0 (use `gap_*` instead)
-- **Button styling**: Fill, border, shadow, hover/active/disabled/selected
-  states. Hue variants via `color_a`-`color_j` classes
-- **Input styling**: Inputs, textareas, selects share consistent sizing and
-  borders
-
-#### Semantic Elements for Content
-
-Use these elements to get styling for free instead of writing custom CSS:
-
-| Element        | Styling                                                              |
-| -------------- | -------------------------------------------------------------------- |
-| `<small>`      | `font-size: var(--font_size_sm)` — secondary text, metadata, labels  |
-| `<aside>`      | Left border, `--fg_10` background, padding — callouts, info boxes    |
-| `<blockquote>` | Left border (thick), padding — quotations, emphasis blocks           |
-| `<code>`       | Monospace font, subtle background, padding — inline code             |
-| `<summary>`    | Pointer cursor, hover/active backgrounds — expandable sections       |
-| `<kbd>`/`<samp>` | Monospace font — keyboard input, sample output                    |
-| `<abbr>`       | Dotted underline on titled abbreviations                             |
-
-**Prefer semantic HTML over custom CSS for text sizing.** Instead of
-`font-size: var(--font_size_sm)` in a style block, wrap the content in
-`<small>`. Combine with utility classes for color:
+Combine semantic HTML with utility classes for color and layout — the element
+gives you typography and base styling, the classes layer on intent:
 
 ```svelte
-<!-- Instead of custom CSS for secondary metadata -->
 <small class="text_50">{metadata}</small>
 <small class="text_70">{subtitle}</small>
-
-<!-- Instead of custom flex + font-size for a row of metadata -->
 <small class="row gap_sm">{items}</small>
 ```
 
-### `.unstyled` Class
+### `.unstyled` and `.inline` Modifiers
 
-Opts out of opinionated styling (colors, borders, decorative properties) while
-keeping normalizations (font inheritance, border-collapse):
+`.unstyled` opts an element out of opinionated styling (colors, borders,
+decorative properties) while keeping normalizations (font inheritance,
+border-collapse). Common for nav menus, custom list components, and links
+used as buttons:
 
 ```svelte
 <ul class="unstyled column gap_xs">  <!-- reset list, use as flex column -->
@@ -124,22 +184,16 @@ keeping normalizations (font inheritance, border-collapse):
 <menu class="unstyled row gap_sm">   <!-- reset menu, use as flex row -->
 ```
 
-Common for navigation menus, custom list components, and links used as buttons.
-Applied to interactive elements and decorative containers.
-
-### `.inline` Class
-
-Forces inline-block display on elements that normally render as block-level,
-for embedding within paragraph text:
+`.inline` forces inline-block display for embedding interactive elements in
+paragraph text:
 
 ```svelte
 <p>Click <button class="inline">here</button> to continue.</p>
 <p>Enter your <input class="inline" /> name.</p>
 ```
 
-Applies to `code`, `input`, `textarea`, `select`, and `button`. These elements
-also get inline-block automatically when nested inside `<p>` tags (no class
-needed).
+Applies to `code`, `input`, `textarea`, `select`, `button`. These also get
+inline-block automatically when nested inside `<p>` (no class needed).
 
 ## Style Variables (Design Tokens)
 
@@ -442,32 +496,64 @@ reinvent layout, spacing, color, or typography.
 
 ### What "Minimal Styles" Looks Like
 
-Well-designed fuz components (fuz_ui, zzz, fuz_code, fuz_gitops) share these
-traits:
+Across fuz_ui's 65 components, ~30 have no `<style>` block at all. The rest
+typically have 5-30 lines covering positioning, animations, or complex
+pseudo-states. Shared traits:
 
-- **Many components have no `<style>` block at all** — all styling comes from
-  utility classes and semantic HTML
-- **When `<style>` exists, it's 5-30 lines** — only component-specific layout
-  logic (positioning, complex pseudo-states, responsive breakpoints)
+- **No `<style>` block when possible** — all styling comes from semantic HTML
+  and utility classes
+- **When `<style>` exists, it's component-specific** — positioning, transitions,
+  responsive breakpoints, complex parent-child selectors
 - **All colors, spacing, typography come from design tokens** — never hardcoded
   values
 - **Layout uses composites and utilities** — `box`, `row`, `column`, `panel`,
   `p_md`, `gap_lg` instead of manual flex declarations
+- **Stateful styling is conventional** — `class:selected={...}` on a button or
+  link rides on fuz_css's built-in `.selected` rules; no custom CSS needed
 
 ```svelte
-<!-- GOOD: No <style> block needed — utility classes handle everything -->
-<div class="column gap_md p_lg">
-  <header class="row gap_sm">
-    <h2>{title}</h2>
-    <small class="text_50">{subtitle}</small>
-  </header>
-  <div class="panel p_md">{@render children()}</div>
-</div>
+<!-- GOOD: No <style> block needed — semantic HTML + utility classes -->
+<aside class="column gap_md">
+  <h2>{title}</h2>
+  <small class="text_50">{subtitle}</small>
+  <p>{description}</p>
+  <button class="color_a">Confirm</button>
+  <button class="color_c" class:selected={destructive}>Delete</button>
+</aside>
 ```
+
+Real example from fuz_ui's `Details.svelte`, `EcosystemLinks.svelte`,
+`Mdz.svelte`, `Hashlink.svelte`, `LibrarySummary.svelte`: all use semantic
+HTML directly (`<details>`, `<summary>`, `<ul>`, `<li>`, `<a>`, `<p>`) and
+ride on the default element styling.
 
 ### Anti-Patterns
 
 These patterns indicate a component is doing too much styling work:
+
+#### Reimplementing semantic defaults
+
+```svelte
+<!-- BAD: rebuilding what <small> already does -->
+<span class="subtitle">{text}</span>
+<style>
+  .subtitle { color: var(--text_70); font-size: var(--font_size_sm); }
+</style>
+
+<!-- GOOD: the element does the work -->
+<small class="text_70">{text}</small>
+```
+
+```svelte
+<!-- BAD: rebuilding what <aside> already does -->
+<div class="info-box">{message}</div>
+<style>
+  .info-box { border-left: 3px solid var(--border_color); padding: var(--space_md); background: var(--fg_10); }
+</style>
+
+<!-- GOOD: the element is the callout -->
+<aside>{message}</aside>
+```
 
 #### Writing flex layout in `<style>` instead of using composites
 
@@ -485,17 +571,18 @@ These patterns indicate a component is doing too much styling work:
 <div class="row">...</div>
 ```
 
-#### Referencing design tokens in `<style>` when a utility class exists
+#### Custom button colors/states when class conventions work
 
 ```svelte
-<!-- BAD: token reference in <style> for something a class does -->
-<span class="subtitle">...</span>
+<!-- BAD: hand-rolled destructive button -->
+<button class="delete-btn" class:active={pending}>Delete</button>
 <style>
-  .subtitle { color: var(--text_70); font-size: var(--font_size_sm); }
+  .delete-btn { color: var(--color_c_50); border-color: var(--color_c_50); }
+  .delete-btn.active { background: var(--color_c_40); }
 </style>
 
-<!-- GOOD: utility classes (or semantic HTML) -->
-<small class="text_70">...</small>
+<!-- GOOD: built-in conventions handle it -->
+<button class="color_c" class:selected={pending}>Delete</button>
 ```
 
 #### Repeating the same layout patterns across components
@@ -525,13 +612,18 @@ Custom `<style>` blocks are appropriate for:
 - **Complex interactive states** — multi-property hover/active/selected
   combinations, especially with `color-mix` shadows or parent-child selectors
   like `.parent:hover .child`. Examples: tab shadow state machines,
-  hover-to-reveal controls.
+  hover-to-reveal controls (see fuz_ui's `Hashlink.svelte` for the
+  parent-hover-reveal pattern).
 - **Structural behavior** — `flex-direction: column-reverse` for bottom-up
   scrolling, `position: sticky/absolute/fixed` with calculated offsets
 - **Responsive layouts** — `@media` queries for structural layout changes
+  (e.g., `Card.svelte` shrinks icon and font at narrow widths)
 - **Animations/transitions** — `@keyframes`, `transition` definitions
 - **Rendering contexts** — canvas, 3D, or other surfaces with inherently
   custom layout
+- **Theming APIs for child consumers** — declaring CSS custom properties
+  that consumers override via `style:` (e.g., `Alert.svelte` exposes
+  `--text_color`)
 
 Even justified custom CSS should use design tokens (`var(--space_md)`,
 `var(--border_color)`) rather than hardcoded values.
@@ -570,8 +662,8 @@ Two naming systems coexist:
 </style>
 ```
 
-This convention is fully adopted — all 13 repos in the ecosystem have been
-migrated from `snake_case` to `kebab-case` for component-local classes.
+This convention is fully adopted across the ecosystem — component-local
+classes were migrated from `snake_case` to `kebab-case`.
 
 ## When to Use Classes vs Styles
 
