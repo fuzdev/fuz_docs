@@ -31,29 +31,40 @@ const extract_title = (content: string): string => {
 
 const to_slug = (filename: string): string => basename(filename, '.md').replaceAll('_', '-');
 
+// Match either an inline backtick code span (preserved) or a relative `.md` path (rewritten).
+// The path arm is anchored: `./` or `../` (one or more) + name segments + trailing name + `.md`.
+const REL_MD_PATH_RE = /(`[^`\n]*`)|((?:\.{1,2}\/)+(?:[\w-]+\/)*[\w-]+)\.md\b/g;
+
+// SKILL.md is rendered at the skill's directory route, not a `/SKILL` subroute,
+// so a `.md`-stripped `./SKILL` or `../SKILL` would 404. Map to the directory instead.
+const SKILL_PATH_RE = /^((?:\.{1,2}\/)+)SKILL$/;
+
+const rewrite_md_path = (path: string): string => {
+	const skill = SKILL_PATH_RE.exec(path);
+	if (skill) return skill[1]!.replace(/\/$/, ''); // `./SKILL` → `.`, `../SKILL` → `..`
+	return path;
+};
+
 /**
  * Strips `.md` extensions from bare relative paths for web route resolution.
- * ./foo.md → ./foo, ./references/foo.md → ./references/foo
- * Skips fenced code blocks and backtick-wrapped paths.
+ * ./foo.md → ./foo, ./references/foo.md → ./references/foo, ../SKILL.md → ..
+ * Skips fenced code blocks and inline backtick code spans.
  */
 const rewrite_md_links = (content: string): string => {
 	const lines = content.split('\n');
 	let in_code_block = false;
 
 	for (let i = 0; i < lines.length; i++) {
-		const trimmed = lines[i]!.trimStart();
-
-		// Track fenced code blocks — don't rewrite inside them
-		if (!in_code_block && trimmed.startsWith('```')) {
-			in_code_block = true;
-		} else if (in_code_block && trimmed.startsWith('```')) {
-			in_code_block = false;
+		if (lines[i]!.trimStart().startsWith('```')) {
+			in_code_block = !in_code_block;
 			continue;
 		}
+		if (in_code_block) continue;
 
-		if (!in_code_block) {
-			lines[i] = lines[i]!.replace(/(?<!`)(\.\/[\w/-]+)\.md(?!`)/g, '$1');
-		}
+		lines[i] = lines[i]!.replace(
+			REL_MD_PATH_RE,
+			(_match, code_span, path) => code_span ?? rewrite_md_path(path),
+		);
 	}
 
 	return lines.join('\n');

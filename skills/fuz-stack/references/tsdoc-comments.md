@@ -493,7 +493,7 @@ export const task: Task<typeof Args> = {...};
 If it's part of the public API, rename one side of the collision instead —
 hiding the primary surface from the flat namespace also hides it from
 generated docs and tomes, which silently breaks downstream documentation.
-See ../SKILL.md §Flat Namespace for which side to rename.
+See [SKILL.md §Flat Namespace](../#flat-namespace-fail-fast) for which side to rename.
 
 ### `@mutates` (non-standard)
 
