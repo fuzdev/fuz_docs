@@ -853,16 +853,14 @@ export interface SourceFileInfo {
 	/** File content (required - analysis functions don't read from disk). */
 	content: string;
 	/**
-	 * Absolute file paths of modules this file imports (optional).
-	 * Only include resolved local imports, not node_modules.
-	 * Order should be declaration order in source for deterministic output.
+	 * Pre-resolved absolute file paths of modules this file imports (opt-in).
+	 * When supplied, the session treats this as authoritative and skips its
+	 * own lex+resolve pass. Only include resolved local imports — node_modules
+	 * paths are filtered out at storage time by `isSource` either way.
 	 */
 	dependencies?: ReadonlyArray<string>;
-	/**
-	 * Absolute file paths of modules that import this file (optional).
-	 * Only include resolved local imports, not node_modules.
-	 */
-	dependents?: ReadonlyArray<string>;
+	// Reverse edges (`dependents`) are not a caller input — computed
+	// internally by `computeDependents` from forward edges of the owned set.
 }
 ````
 
