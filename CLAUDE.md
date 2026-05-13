@@ -11,6 +11,11 @@ reference material for `@fuzdev` projects.
 
 For coding conventions, see Skill(fuz-stack).
 
+## Committing
+
+`git add` and `git commit` are denied by `.claude/settings.local.json` in
+this repo — make the edits and stop, the user commits.
+
 ## Scope
 
 fuz_docs is an **experimental AI-generated docs site and skills repo**:
