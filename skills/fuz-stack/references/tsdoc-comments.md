@@ -620,12 +620,12 @@ in backticks.**
 
 What to wrap:
 
-- exported function names: `` `tsdoc_parse` ``, `` `shuffle` ``
-- type and interface names: `` `ModuleJson` ``, `` `SourceFileInfo` ``
-- class names: `` `Library` ``, `` `Declaration` ``
-- module paths: `` `module_helpers.ts` ``, `` `actions/composables.ts` ``,
-  `` `DocsLink.svelte` `` — see [Module path format](#module-path-format)
-- tag names in prose: `` `@param` ``, `` `@returns` ``
+- exported function names: "`tsdoc_parse`", "`shuffle`"
+- type and interface names: "`ModuleJson`", "`SourceFileInfo`"
+- class names: "`Library`", "`Declaration`"
+- module paths: "`module_helpers.ts`", "`actions/composables.ts`",
+  "`DocsLink.svelte`" — see [Module path format](#module-path-format)
+- tag names in prose: "`@param`", "`@returns`"
 - enum and constant names
 
 ### Module path format
@@ -650,8 +650,8 @@ else falls through to plain `<code>` and the auto-link silently breaks.
 ```
 
 Top-level files (e.g., `src/lib/Alert.ts`) match by bare filename
-(`` `Alert.ts` ``). Nested files (e.g., `src/lib/actions/composables.ts`)
-require the full sub-path (`` `actions/composables.ts` ``). When in doubt,
+("`Alert.ts`"). Nested files (e.g., `src/lib/actions/composables.ts`)
+require the full sub-path ("`actions/composables.ts`"). When in doubt,
 include the directory — the longer form always works.
 
 The canonical format is documented on `Module.path` in `module.svelte.ts`
@@ -680,7 +680,7 @@ routes. Bare paths create broken links that fail SvelteKit prerender:
 
 ### Case sensitivity
 
-References are case-sensitive. `` `library` `` will NOT match `Library`.
+References are case-sensitive. "`library`" will NOT match `Library`.
 
 ## Documentation Patterns
 

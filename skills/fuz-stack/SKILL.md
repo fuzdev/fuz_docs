@@ -355,7 +355,7 @@ conventions: ./references/tsdoc-comments.md.
 
 | Feature                | Syntax                                                                              |
 | ---------------------- | ----------------------------------------------------------------------------------- |
-| Code                   | `` `code` ``                                                                        |
+| Code                   | "`code`"                                                                            |
 | Bold / italic / strike | `**bold**`, `_italic_`, `~strike~`                                                  |
 | Links                  | auto-detected URLs, `/internal/path`, `[text](url)`                                 |
 | Headings               | `# Heading` (column 0 required, gets lowercase slugified `id` for fragment links)    |
@@ -370,10 +370,13 @@ Backticked identifiers auto-link to API docs in TSDoc rendering.
 
 ### Path references in documentation
 
-Use bare paths (no backticks) for navigational file references. Backticks are
-reserved for code, CLI commands, and identifiers — not paths.
+Three forms, each with its own typography. The distinction is whether the
+target is a **navigable file** (bare path) or a **code-tree identifier**
+(backticked, no leading `./`).
 
-Valid bare-path forms — pick the most readable for the file's location:
+**1. Navigational paths** (bare, no backticks). Use for docs, READMEs,
+external repos, and any reference that points to a file by location rather
+than by code identity:
 
 - `./foo` and `../foo` — relative to the file's directory; mdz auto-linkifies
   these when preceded by whitespace
@@ -382,10 +385,27 @@ Valid bare-path forms — pick the most readable for the file's location:
 - `grimoire/foo` — anchored at the workspace root; preferred over deep
   `../../grimoire/foo` from nested files
 
-Backticks belong on code-shaped things, not paths:
+**2. src/lib module references** (backticked, written relative to src/lib
+**without** a leading `./` or `../`). Marks the target as a code-like
+identifier — a module name, not a navigable filesystem path:
+
+- From any file inside src/lib: "`auth/account_schema.ts`" refers to
+  `src/lib/auth/account_schema.ts`. Prefer this over both "`../auth/account_schema.ts`"
+  (backticked with prefix — defeats the identifier framing) and
+  `../auth/account_schema.ts` (bare — reads as filesystem path)
+- From files outside src/lib (root CLAUDE.md, docs/, src/test/): include
+  the `src/lib/` prefix — "`src/lib/auth/CLAUDE.md`". The path-relative-to-src/lib
+  form ("`auth/CLAUDE.md`") is also acceptable from src/test/, but the
+  full-prefix form is unambiguous at any depth
+- Applies to any file under src/lib, including subsystem CLAUDE.mds:
+  "`auth/CLAUDE.md`", "`http/CLAUDE.md`"
+- Section refs follow: "`auth/CLAUDE.md`" §Middleware (backticks wrap
+  the module, `§Heading` follows outside the backticks)
+
+**3. Code-shaped things outside src/lib** (backticks for code, not paths):
 
 - CLI commands: `gro check`, `deno task scry`
-- Source-tree references: `src/lib/foo.ts`, `package.json`, `gitops.config.ts`
+- Top-level project files: `package.json`, `gitops.config.ts`, `tsconfig.json`
 - System/config identifiers: `~/.fuz/`, `~/.mg/config.json`
 
 Each file's relative paths assume the reader is in the file's parent directory.
@@ -402,9 +422,12 @@ safe bare in web context — mdz doesn't auto-linkify those prefixes.
 
 **Anti-patterns** (linkifier won't fire, costing tokens and navigability):
 
-- Backticking a path that points to a real file or directory:
-  `` `./src/lib/foo.ts` `` defeats auto-linking; `` `~/dev/fuz_util` `` reads
-  as a code identifier when it's actually a navigational target.
+- **Mixing the two forms**: backticks + a leading `./` or `../` is the
+  wrong-of-both-worlds case. Pick a form. "`./foo.md`" should be either
+  bare `./foo.md` (navigational) or — for src/lib — "`subsystem/foo.ts`"
+  (module-form, drop the relative prefix).
+- **Backticking a navigable target**: "`~/dev/fuz_util`" reads as a
+  code identifier when it's actually a path. Use bare `~/dev/fuz_util`.
 - Wrapping a path in markdown-link syntax when target equals visible text:
   `[../README.md](../README.md)` is redundant; bare `../README.md` already
   auto-links. Same for `[~/dev/foo](~/dev/foo)` — collapse to bare
