@@ -387,7 +387,13 @@ than by code identity:
 
 **2. src/lib module references** (backticked, written relative to src/lib
 **without** a leading `./` or `../`). Marks the target as a code-like
-identifier — a module name, not a navigable filesystem path:
+identifier — a module name, not a navigable filesystem path.
+
+> **Rule**: when a path inside src/lib is wrapped in backticks, it MUST be
+> src/lib-relative — never `../foo.ts`, never `./foo.ts`, never
+> `src/lib/foo.ts` from a file already inside src/lib. The backticks frame
+> the token as a module identifier; relative traversal contradicts that
+> framing. Bare paths are the only place `./` and `../` belong.
 
 - From any file inside src/lib: "`auth/account_schema.ts`" refers to
   `src/lib/auth/account_schema.ts`. Prefer this over both "`../auth/account_schema.ts`"
@@ -401,6 +407,11 @@ identifier — a module name, not a navigable filesystem path:
   "`auth/CLAUDE.md`", "`http/CLAUDE.md`"
 - Section refs follow: "`auth/CLAUDE.md`" §Middleware (backticks wrap
   the module, `§Heading` follows outside the backticks)
+- Examples:
+  - ✅ "`server/upload_route.ts`" — from `src/lib/server/CLAUDE.md`
+  - ✅ "`fuz_app/db/fact_store.ts`" — from `src/lib/fuz_util/CLAUDE.md`
+  - ❌ "`../fuz_app/db/fact_store.ts`" — backticked but traversal-relative
+  - ❌ "`./classroom_service.ts`" — backticked but self-relative
 
 **3. Code-shaped things outside src/lib** (backticks for code, not paths):
 
