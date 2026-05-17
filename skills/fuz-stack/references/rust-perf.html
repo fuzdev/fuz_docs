@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.Cze-Hw3y.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BGhchIhN.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.Bs7uXS_1.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DYNlVVst.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DJKk3Zif.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BUp2y4-X.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BT-mQnNx.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.KYnhsTLM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/9i5sigsQ.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CXTbj-5z.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DAfuroMG.js" rel="modulepreload">
@@ -33,22 +33,22 @@
 		<link href="/_app/immutable/chunks/DAQioxTK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dqx3-4jf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/GMbY26Pr.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.CMtllBdK.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/d-PJwCQt.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.ClkqjSvm.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/q8-RR7CU.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/SMcemH51.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BB1JoMeo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BqHTx54q.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/hmbJTRnt.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BrH1pkjC.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B1Aohb1R.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Bx9_rILL.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/lLmzCaeX.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/QeaNnfvq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/C4St1o-G.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/26.67tBfsUg.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DtX3lTjN.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/26.BaJcQ9iS.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BtrYuliI.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BhJn2AK0.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BCSE9QTm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/De76P45D.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DC-s_cy2.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DyLrJDPQ.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.iAmfJnGz.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.WXbxZC1L.css" rel="stylesheet">
@@ -164,7 +164,33 @@ have run 18 months before detection.<!--]--><!--]--><!----></p><!--]--><!--[8-->
 - Never round-trip global-heap collections (<!--]--><!--[3--><!--[-1--><code><!--[-1-->String<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->Vec<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->HashMap<!--]--><!----></code><!--]--><!--]--><!--[2-->)
   through <!--]--><!--[3--><!--[-1--><code><!--[-1-->into_bump_slice<!--]--><!----></code><!--]--><!--]--><!--[2-->.
 - One arena per logical phase (per-file parse, per-request render). Drop
-  at phase end.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="simd-on-stable"><!--[--><!--[2-->SIMD on stable<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Portable SIMD (<!--]--><!--[3--><!--[-1--><code><!--[-1-->std::simd<!--]--><!----></code><!--]--><!--]--><!--[2-->) is nightly-only and out of scope. On stable:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->target-feature<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->target-cpu=native<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> via <!--]--><!--[3--><!--[-1--><code><!--[-1-->RUSTFLAGS<!--]--><!----></code><!--]--><!--]--><!--[2--> enables LLVM
+  at phase end.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="zero-copy-archives-rkyv"><!--[--><!--[2-->Zero-copy archives (rkyv)<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Status<!--]--><!--]--><!----></strong><!--]--><!--[2-->: not currently in use. Documented as a candidate for content-
+addressed object storage — blake3-hashed bodies and <!--]--><!--[3--><!--[-1--><code><!--[-1-->{path → hash}<!--]--><!----></code><!--]--><!--]--><!--[2-->
+snapshot manifests that get read repeatedly without intervening mutation.
+The HTTP / SSE / JSON-RPC wire surfaces stay on <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde<!--]--><!----></code><!--]--><!--]--><!--[2--> + <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde_json<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code><!--[-1-->serde_json<!--]--><!----></code><!--]--><!--]--><!--[2--> parses bytes into freshly allocated structs on every read.
+<!--]--><!--[3--><!--[-1--><code><!--[-1-->rkyv<!--]--><!----></code><!--]--><!--]--><!--[2--> skips the parse step entirely: the on-disk bytes *are* the in-
+memory layout. An archive is reached via a single offset calculation
+into the buffer, returning a <!--]--><!--[3--><!--[-1--><code><!--[-1-->&amp;Archived&lt;T><!--]--><!----></code><!--]--><!--]--><!--[2--> that aliases the buffer.
+Internal pointers are encoded as offsets relative to the field's own
+position, so the buffer is valid whether it was just mmap'd, read from
+disk, or received over a socket — no fixup pass needed.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->When it fits:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- mmap'd or repeatedly-read on-disk artifacts (content-addressed bodies,
+  packed snapshot manifests, cached index pages)
+- the hot path is "decode → traverse → drop without mutating"
+- the schema is stable across versions, or evolution is rare enough to
+  warrant explicit migration<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->When it doesn't:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- HTTP / SSE / JSON-RPC wire surfaces — <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde_json<!--]--><!----></code><!--]--><!--]--><!--[2--> stays the right call
+- mutation-heavy workloads — writes go through <!--]--><!--[3--><!--[-1--><code><!--[-1-->AlignedVec<!--]--><!----></code><!--]--><!--]--><!--[2-->, not in-place
+  edits; rkyv is for the read side
+- one-shot reads where the buffer is decoded once and thrown away —
+  <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde<!--]--><!----></code><!--]--><!--]--><!--[2-->'s cost is amortized away<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Discipline:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- Pair archived reads from untrusted input with <!--]--><!--[3--><!--[-1--><code><!--[-1-->bytecheck<!--]--><!----></code><!--]--><!--]--><!--[2--> (rkyv's
+  validation layer). Without it, a malformed buffer can dereference out-
+  of-bounds offsets — and validation is opt-in, not the default.
+- Treat the archived schema as a wire format. Renaming a field or
+  reordering enum variants breaks every existing file on disk. The
+  pre-stable workspace policy still applies — break in place and
+  migrate, no compat shims — but the migration is "re-archive every
+  file," not just "update callers."
+- Don't mix archived and <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde<!--]--><!----></code><!--]--><!--]--><!--[2-->-derived shapes for the same type. Pick
+  one per type so a reader doesn't have to guess.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="simd-on-stable"><!--[--><!--[2-->SIMD on stable<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Portable SIMD (<!--]--><!--[3--><!--[-1--><code><!--[-1-->std::simd<!--]--><!----></code><!--]--><!--]--><!--[2-->) is nightly-only and out of scope. On stable:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->target-feature<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->target-cpu=native<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> via <!--]--><!--[3--><!--[-1--><code><!--[-1-->RUSTFLAGS<!--]--><!----></code><!--]--><!--]--><!--[2--> enables LLVM
   auto-vectorization for the build target. The compiler emits AVX2 / SSE /
   NEON when the target supports it, no source changes required.
 - <!--]--><!--[4--><strong><!--[--><!--[2-->Crate-specific SIMD features<!--]--><!--]--><!----></strong><!--]--><!--[2-->: some crates expose <!--]--><!--[3--><!--[-1--><code><!--[-1-->simd<!--]--><!----></code><!--]--><!--]--><!--[2--> cargo
@@ -216,19 +242,31 @@ should be able to prove this," speed claims without measurements.<!--]--><!--]--
 - <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->multiversion<!--]--><!----></code><!--]--><!--]--><!--[2--> crate<!--]--><!--]--><!----></strong><!--]--><!--[2--> for runtime CPU-feature dispatch: not currently
   justified — single-target builds suffice for the workloads here.
 - <!--]--><!--[4--><strong><!--[--><!--[2-->Manual AVX intrinsics with hand-unrolled loops<!--]--><!--]--><!----></strong><!--]--><!--[2-->: covered by §Unsafe
-  escape hatch; rare in practice and almost never the right first move.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></div><!----><!--]--><!----><!----></div></div></div><!--]--><!--]--><!----><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+  escape hatch; rare in practice and almost never the right first move.
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Left-right concurrency<!--]--><!--]--><!----></strong><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code><!--[-1-->evmap<!--]--><!----></code><!--]--><!--]--><!--[2--> and similar): two synchronized
+  copies of a structure for fully lock-free reads at the cost of 2×
+  memory, eventual consistency, and writers blocked on slow readers.
+  Niche to workloads where reads outnumber writes by orders of magnitude
+  *and* <!--]--><!--[3--><!--[-1--><code><!--[-1-->DashMap<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->RwLock<!--]--><!----></code><!--]--><!--]--><!--[2--> have been profiled as the bottleneck. Today
+  the read paths here haven't hit that wall.
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Hand-rolled lock-free structures with <!--]--><!--[3--><!--[-1--><code><!--[-1-->crossbeam-epoch<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: epoch-
+  based reclamation is the standard answer for "free a node only once
+  no reader can still see it," but writing your own lock-free stack /
+  queue / skiplist is rarely the right move. <!--]--><!--[3--><!--[-1--><code><!--[-1-->DashMap<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->tokio::sync<!--]--><!----></code><!--]--><!--]--><!--[2-->,
+  and <!--]--><!--[3--><!--[-1--><code><!--[-1-->crossbeam::queue<!--]--><!----></code><!--]--><!--]--><!--[2--> already vendor the well-tested versions —
+  reach for those before reaching for the primitive.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></div><!----><!--]--><!----><!----></div></div></div><!--]--><!--]--><!----><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
 			
 			<script>
 				{
-					__sveltekit_eu0ubf = {
+					__sveltekit_rhf3b0 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.Cze-Hw3y.js"),
-						import("/_app/immutable/entry/app.KYnhsTLM.js")
+						import("/_app/immutable/entry/start.Bs7uXS_1.js"),
+						import("/_app/immutable/entry/app.CXTbj-5z.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 26],

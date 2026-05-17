@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.Cze-Hw3y.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BGhchIhN.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.Bs7uXS_1.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DYNlVVst.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DJKk3Zif.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BUp2y4-X.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BT-mQnNx.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.KYnhsTLM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/9i5sigsQ.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CXTbj-5z.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DAfuroMG.js" rel="modulepreload">
@@ -33,22 +33,22 @@
 		<link href="/_app/immutable/chunks/DAQioxTK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dqx3-4jf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/GMbY26Pr.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.CMtllBdK.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/d-PJwCQt.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.ClkqjSvm.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/q8-RR7CU.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/SMcemH51.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BB1JoMeo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BqHTx54q.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/hmbJTRnt.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BrH1pkjC.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B1Aohb1R.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Bx9_rILL.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/lLmzCaeX.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/QeaNnfvq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/C4St1o-G.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/25.DpkGaeNc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DtX3lTjN.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/25.Cij8O_m_.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BtrYuliI.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BhJn2AK0.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BCSE9QTm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/De76P45D.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DC-s_cy2.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DyLrJDPQ.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.iAmfJnGz.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.WXbxZC1L.css" rel="stylesheet">
@@ -407,7 +407,50 @@ pub struct SidecarController {
 - <!--]--><!--[4--><strong><!--[--><!--[2-->TOCTOU-safe file operations<!--]--><!--]--><!----></strong><!--]--><!--[2-->: Open with <!--]--><!--[3--><!--[-1--><code><!--[-1-->O_NOFOLLOW<!--]--><!----></code><!--]--><!--]--><!--[2-->, check permissions
   on fd not path
 - <!--]--><!--[4--><strong><!--[--><!--[2-->Secure file permissions<!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code><!--[-1-->0o600<!--]--><!----></code><!--]--><!--]--><!--[2--> for files, <!--]--><!--[3--><!--[-1--><code><!--[-1-->0o700<!--]--><!----></code><!--]--><!--]--><!--[2--> for directories
-- <!--]--><!--[4--><strong><!--[--><!--[2-->Environment isolation<!--]--><!--]--><!----></strong><!--]--><!--[2-->: Strip sensitive env vars before spawning sidecars<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="logging"><!--[--><!--[2-->Logging<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Servers<!--]--><!--]--><!----></strong><!--]--><!--[2--> (zzz_server): <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing<!--]--><!----></code><!--]--><!--]--><!--[2--> with <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing-subscriber<!--]--><!----></code><!--]--><!--]--><!--[2--> for structured
+- <!--]--><!--[4--><strong><!--[--><!--[2-->Environment isolation<!--]--><!--]--><!----></strong><!--]--><!--[2-->: Strip sensitive env vars before spawning sidecars<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="type-state-compile-time-state-machines"><!--[--><!--[2-->Type State (compile-time state machines)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->When a value progresses through a sequence of states — parse → validate
+→ authorize → dispatch, or unauthenticated → authenticated → closed —
+encode the state as a type parameter rather than a runtime field. Each
+transition consumes the value and returns it under a new state type, so
+calling a method in the wrong phase is a compile error, not a runtime
+check.<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="rust" class="svelte-jqsy8a"><!--[0-->use std::marker::PhantomData;
+
+pub struct Unauthenticated;
+pub struct Authenticated;
+
+pub struct Session&lt;S> {
+    inner: SessionInner,
+    _state: PhantomData&lt;S>,
+}
+
+impl Session&lt;Unauthenticated> {
+    pub fn authenticate(self, token: &amp;str) -> Result&lt;Session&lt;Authenticated>, AuthError> {
+        // verify token, then:
+        // Ok(Session { inner: self.inner, _state: PhantomData })
+    }
+}
+
+impl Session&lt;Authenticated> {
+    pub fn send(&amp;self, msg: Message) -> Result&lt;(), SendError> { /* ... */ }
+}<!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Calling <!--]--><!--[3--><!--[-1--><code><!--[-1-->send()<!--]--><!----></code><!--]--><!--]--><!--[2--> on <!--]--><!--[3--><!--[-1--><code><!--[-1-->Session&lt;Unauthenticated><!--]--><!----></code><!--]--><!--]--><!--[2--> fails to compile — the
+method doesn't exist for that state. <!--]--><!--[3--><!--[-1--><code><!--[-1-->PhantomData&lt;S><!--]--><!----></code><!--]--><!--]--><!--[2--> is zero-sized;
+the compiled binary is identical to a hand-written single-state API.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->When it fits:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- ActionSpec-shaped dispatch pipelines (parse → auth → validate →
+  rate-limit → dispatch → respond): each phase produces a typed handle
+  the next phase consumes.
+- Builder APIs where <!--]--><!--[3--><!--[-1--><code><!--[-1-->.build()<!--]--><!----></code><!--]--><!--]--><!--[2--> before required fields are set should
+  fail to compile, not at runtime.
+- Connection / socket lifecycles: <!--]--><!--[3--><!--[-1--><code><!--[-1-->Closed<!--]--><!----></code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code><!--[-1-->Connecting<!--]--><!----></code><!--]--><!--]--><!--[2--> →
+  <!--]--><!--[3--><!--[-1--><code><!--[-1-->Handshaking<!--]--><!----></code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code><!--[-1-->Established<!--]--><!----></code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code><!--[-1-->Closing<!--]--><!----></code><!--]--><!--]--><!--[2-->.
+- Filesystem transaction phases: <!--]--><!--[3--><!--[-1--><code><!--[-1-->Staged<!--]--><!----></code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code><!--[-1-->Committed<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->RolledBack<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->When to skip it:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- The set of states is dynamic or driven by data — a runtime state
+  machine (enum) is clearer and supports collections of mixed states.
+- Only one transition exists — the ceremony outweighs the win; a plain
+  method that returns the next type is enough.
+- The API is meant to be ergonomic for casual callers — type-state
+  shows up in every signature and in compiler error messages.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Type-state is primarily a <!--]--><!--[4--><strong><!--[--><!--[2-->correctness pattern<!--]--><!--]--><!----></strong><!--]--><!--[2-->, not a performance
+pattern. The runtime check it removes (an <!--]--><!--[3--><!--[-1--><code><!--[-1-->if authenticated<!--]--><!----></code><!--]--><!--]--><!--[2--> branch)
+is usually well-predicted and not a hot-path cost. The real win is
+that invalid sequences become unrepresentable. Performance wins, when
+they exist, are downstream of the optimizer seeing dead branches at
+compile time.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="logging"><!--[--><!--[2-->Logging<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Servers<!--]--><!--]--><!----></strong><!--]--><!--[2--> (zzz_server): <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing<!--]--><!----></code><!--]--><!--]--><!--[2--> with <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing-subscriber<!--]--><!----></code><!--]--><!--]--><!--[2--> for structured
 logging. axum integrates with <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing<!--]--><!----></code><!--]--><!--]--><!--[2--> natively. Use <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing::info!<!--]--><!----></code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code><!--[-1-->tracing::error!<!--]--><!----></code><!--]--><!--]--><!--[2-->, etc.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->CLIs / daemons<!--]--><!--]--><!----></strong><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code><!--[-1-->fuz<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->fuzd<!--]--><!----></code><!--]--><!--]--><!--[2-->): <!--]--><!--[3--><!--[-1--><code><!--[-1-->eprintln!<!--]--><!----></code><!--]--><!--]--><!--[2--> — simple, no framework.
 Batched request logging for performance. <!--]--><!--[3--><!--[-1--><code><!--[-1-->--json<!--]--><!----></code><!--]--><!--]--><!--[2--> for machine-readable
@@ -418,15 +461,15 @@ conventions.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></div><!----><!--]
 			
 			<script>
 				{
-					__sveltekit_eu0ubf = {
+					__sveltekit_rhf3b0 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.Cze-Hw3y.js"),
-						import("/_app/immutable/entry/app.KYnhsTLM.js")
+						import("/_app/immutable/entry/start.Bs7uXS_1.js"),
+						import("/_app/immutable/entry/app.CXTbj-5z.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 25],
