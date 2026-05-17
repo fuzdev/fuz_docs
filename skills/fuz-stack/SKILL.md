@@ -15,8 +15,10 @@ metadata:
 > **À la carte**: Each project adopts only what serves it. Deep imports and
 > the flat namespace make this natural at the package level too.
 
-> **Skip for**: Grimoire-only edits, Rust projects (use repo CLAUDE.md),
-> third-party code review, simple git/shell operations.
+> **Skip for**: Grimoire-only edits, third-party code review, simple
+> git/shell operations. Repo `CLAUDE.md` is authoritative for
+> project-specific patterns — this skill covers shared conventions across
+> TypeScript, Svelte, and Rust crates.
 
 ## Why These Conventions
 

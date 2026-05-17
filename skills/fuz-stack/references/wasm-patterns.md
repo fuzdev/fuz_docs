@@ -416,48 +416,12 @@ export const hash_blake3 = (data: BufferSource | string): string =>
 Returns 64-character hex strings. `blake3_ready` resolves immediately in
 Node.js/Deno (sync init), must be awaited in browsers.
 
-### Cargo.toml for wasm-bindgen crates
-
-blake3_wasm:
-
-```toml
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-O3", "--enable-simd", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals", "--enable-sign-ext", "--strip-producers"]
-
-[dependencies]
-blake3_wasm_core = { path = "../blake3_wasm_core", features = ["simd"] }
-wasm-bindgen.workspace = true
-```
-
-blake3_wasm_small:
+See §Two Packages for the build config and `Cargo.toml` for blake3's two
+wasm-bindgen crates. tsv_wasm disables wasm-opt entirely:
 
 ```toml
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-Os", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals", "--enable-sign-ext", "--strip-producers"]
-
-[dependencies]
-blake3_wasm_core = { path = "../blake3_wasm_core" }  # no simd feature
-wasm-bindgen.workspace = true
-```
-
-tsv_wasm:
-
-```toml
-[lib]
-crate-type = ["cdylib", "rlib"]
-
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false  # Disabled until wasm-opt supports Rust 2024's bulk memory
-
-[dependencies]
-wasm-bindgen = "0.2"
-serde-wasm-bindgen = "0.6"
 ```
 
 ## Multiple Binding Crates (tsv pattern)
@@ -476,24 +440,43 @@ All export identical signatures. Consumers choose by runtime.
 
 ## Two Packages, Not Two Profiles
 
-blake3 ships two npm packages from different crates:
+blake3 ships two npm packages from different crates. Both are
+size-optimized end-to-end (`opt-level=s` + wasm-opt `-Os`); the only
+differentiator is SIMD:
 
-| Package                     | Crate              | RUSTFLAGS                                | wasm-opt   | Size    |
-| --------------------------- | ------------------ | ---------------------------------------- | ---------- | ------- |
-| `@fuzdev/blake3_wasm`       | `blake3_wasm`      | `-C opt-level=3 -C target-feature=+simd128` | `-O3 --enable-simd` | ~47 KB |
-| `@fuzdev/blake3_wasm_small` | `blake3_wasm_small` | `-C opt-level=s`                         | `-Os`      | ~32 KB |
+| Package                     | Crate              | RUSTFLAGS                                   | wasm-opt              | Size   |
+| --------------------------- | ------------------ | ------------------------------------------- | --------------------- | ------ |
+| `@fuzdev/blake3_wasm`       | `blake3_wasm`      | `-C opt-level=s -C target-feature=+simd128` | `-Os --enable-simd …` | ~47 KB |
+| `@fuzdev/blake3_wasm_small` | `blake3_wasm_small`| `-C opt-level=s`                            | `-Os …`               | ~32 KB |
 
 SIMD build: ~2.6x faster at large inputs (Deno/Node), slower on Bun (WASM
 SIMD regression). Small build for Bun and bundle-size-sensitive contexts.
+The wasmtime component (`build:component`) is the exception — it uses
+`opt-level=3` because the host can absorb more bytes for speed.
+
+```toml
+# blake3_wasm (SIMD)
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Os", "--enable-simd", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals", "--enable-sign-ext", "--strip-producers"]
+
+[dependencies]
+blake3_wasm_core = { path = "../blake3_wasm_core", features = ["simd"] }
+```
+
+blake3_wasm_small is the same minus `--enable-simd` and without the `simd`
+feature on the core crate.
+
+Rust 2024 enables bulk memory for `wasm32-unknown-unknown`, so wasm-opt
+needs `--enable-bulk-memory` (and friends) or it fails with "Bulk memory
+operations require bulk memory". `--strip-producers` removes compiler
+metadata (~26 bytes).
 
 ### Build commands
 
 ```bash
-# SIMD build
-RUSTFLAGS='-C opt-level=3 -C target-feature=+simd128' \
+RUSTFLAGS='-C opt-level=s -C target-feature=+simd128' \
     wasm-pack build crates/blake3_wasm --scope fuzdev --target deno --release --out-dir pkg/deno
 
-# Size-optimized build
 RUSTFLAGS='-C opt-level=s' \
     wasm-pack build crates/blake3_wasm_small --scope fuzdev --target deno --release --out-dir pkg/deno
 ```
@@ -501,8 +484,8 @@ RUSTFLAGS='-C opt-level=s' \
 **Why RUSTFLAGS**: `wasm-pack` doesn't support `--profile` (conflicts with
 `--release`). RUSTFLAGS overrides at the compiler level.
 
-Build pipeline runs both packages in parallel; deno and web targets sequential
-within each (shared cargo intermediate artifacts).
+Build pipeline runs both packages in parallel; deno and web targets
+sequential within each (shared cargo intermediate artifacts).
 
 ### Release profile
 
@@ -514,22 +497,6 @@ codegen-units = 1
 panic = "abort"
 strip = true
 ```
-
-### wasm-opt
-
-Per-crate with explicit feature flags. Rust 2024 enables bulk memory for
-`wasm32-unknown-unknown`, so wasm-opt must know:
-
-```toml
-# blake3_wasm — speed-optimized, SIMD
-wasm-opt = ["-O3", "--enable-simd", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals", "--enable-sign-ext", "--strip-producers"]
-
-# blake3_wasm_small — size-optimized, no SIMD
-wasm-opt = ["-Os", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals", "--enable-sign-ext", "--strip-producers"]
-```
-
-Without `--enable-*` flags, wasm-opt fails with "Bulk memory operations
-require bulk memory". `--strip-producers` removes compiler metadata (~26 bytes).
 
 ### deno compile compatibility
 
@@ -546,3 +513,4 @@ wasm-bindgen's deno target uses `fetch()` to load WASM, incompatible with
 | Component model spec — WIT       | [WebAssembly/component-model WIT](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md) |
 | Component model spec — Explainer | [WebAssembly/component-model Explainer](https://github.com/WebAssembly/component-model/blob/main/design/mvp/Explainer.md) |
 | Rust patterns (WASM errors)      | ./rust-patterns.md                                                              |
+| Rust performance                 | ./rust-perf.md                                                                  |

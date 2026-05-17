@@ -143,6 +143,7 @@ skills/
 │   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
 │   │   ├── rust-patterns.md           # Rust workspace, lint, error, CLI patterns (fuz, tsv, blake3)
+│   │   ├── rust-perf.md               # Rust perf: profiling, allocators, locks, arenas, SIMD, false sharing
 │   │   ├── svelte-patterns.md         # Svelte 5 runes, contexts, snippets, attachments
 │   │   ├── task-patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
 │   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions

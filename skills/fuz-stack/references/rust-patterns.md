@@ -12,10 +12,11 @@ This covers shared patterns.
 - **No backwards compatibility**: Pre-1.0 means breaking changes. Delete old
   code, don't shim.
 - **Code quality**: `unsafe_code = "forbid"`, pedantic lints, tests expected.
-- **Performance**: If it's slow, it's a bug.
-- **Copious `// TODO:` comments**: Mark known future work, unfinished parts.
-- **`todo!()` macro warns**: All projects set `todo = "warn"` — use
-  `#[allow(clippy::todo)]` with justification when needed.
+  See §Lints.
+- **Performance**: If it's slow, it's a bug. See ./rust-perf.md.
+- **Copious `// TODO:` comments**: Mark known future work. `todo!()` is
+  `warn` workspace-wide — use `#[allow(clippy::todo)]` with justification
+  when needed.
 
 ## Lints
 
@@ -60,8 +61,9 @@ unwrap_used = "warn"
 
 ### Project-specific lint differences
 
-- `missing_debug_implementations`: "warn" in `fuz`; "allow" where public
-  types contain non-Debug fields; not set in `blake3`.
+- `missing_debug_implementations`: "warn" in `fuz` and `zzz`; "allow" in
+  `tsv` (public types hold `Chars`, `RefCell<Interner>`, etc.); not set
+  in `blake3`.
 - **Crate-level overrides**: FFI and binding crates (`fuz_pty`,
   `blake3_component`, and any N-API/C-FFI/wit-bindgen layer) override
   `unsafe_code = "allow"` because Cargo doesn't allow partial overrides —
@@ -305,35 +307,10 @@ short-lived or owned by an `Arc`-shared component that drops naturally.
 
 ## Naming Conventions
 
-Standard Rust — **snake_case + PascalCase**:
-
-```rust
-// Functions, variables, modules - snake_case
-fn parse_typescript() {}
-let source_text = "";
-mod ast_builder;
-
-// Types, structs, enums - PascalCase
-struct AstNode {}
-enum TokenKind {}
-
-// Constants - SCREAMING_SNAKE_CASE
-const MAX_FILE_SIZE: usize = 4 * 1024 * 1024 * 1024;
-```
-
-Unlike TypeScript's domain-first naming, Rust free functions use natural naming:
-
-```rust
-impl Span {
-    fn extract<'a>(&self, source: &'a str) -> &'a str { ... }
-    fn range(&self) -> Range<usize> { ... }
-}
-
-// Free functions - natural Rust naming
-fn create_artifact(inputs: &ArtifactInputs) -> Result<ArtifactMeta> { ... }
-fn parse(source: &str) -> Result<Program> { ... }
-fn format(program: &Program, source: &str) -> String { ... }
-```
+Standard Rust (`snake_case` / `PascalCase` / `SCREAMING_SNAKE_CASE`). Free
+functions use natural Rust naming — not the domain-first `domain_action`
+style of this stack's TypeScript code (see SKILL.md). `fn parse(...)`,
+`fn create_artifact(...)` — not `fn artifact_create(...)`.
 
 ## Idioms
 
@@ -359,7 +336,7 @@ let kind: &str = "failure"; // typo-prone, no compiler help
 Three patterns recur across the ecosystem:
 
 **Function pointers over trait objects** for statically-known dispatch.
-`fuz_sidecar::SpawnConfig` holds `command_builder: fn(&Path, Option<&Path>)
+`fuz_sidecar::SpawnConfig` holds `build_command: fn(&Path, Option<&Path>)
 -> Command` instead of `Box<dyn Fn(...)>` — no allocation, inlinable.
 
 **Callback resolution over allocating accessors** in hot paths. For interned
@@ -425,17 +402,6 @@ commands.
 - **Interface crates**: Binding layers (CLI, C FFI, N-API, WASM)
 - **xtask crate**: Dev automation (`cargo xtask install`), used by fuz
 
-## Commands
-
-```bash
-cargo check --workspace            # Fast syntax check (no codegen)
-cargo test --workspace             # Run all tests
-cargo clippy --workspace           # Lint
-cargo fmt                          # Format
-cargo build --workspace            # Debug build
-cargo build --workspace --release  # Optimized build
-```
-
 ## Build Configuration
 
 ### build.rs
@@ -484,17 +450,10 @@ goes in a generated, gitignored config file.
 
 ## Testing
 
-- `cargo test --workspace` runs all tests
-- Unit tests in `#[cfg(test)] mod tests`
-- Integration tests in `tests/` where applicable
-- See each project's `CLAUDE.md` for specifics
-
-### By project
-
-- **fuz**: Unit tests in modules. Covers error handling, serialization, auth,
-  crypto, artifacts.
-- **blake3**: TypeScript correctness tests (WASM vs native reference). Rust
-  tests for compilation. Component model tested via Wasmtime.
+`cargo test --workspace`. Unit tests in `#[cfg(test)] mod tests`,
+integration tests in `tests/` where applicable. fuz uses unit tests in
+modules; blake3 tests correctness in TypeScript (WASM vs native) and uses
+Wasmtime for the component. See each project's `CLAUDE.md` for specifics.
 
 ## CLI Patterns
 
@@ -546,12 +505,16 @@ without explicit request.
 | ------------- | -------------------------------- |
 | `tokio`       | Async runtime                    |
 | `axum`        | HTTP server (built on hyper)     |
-| `reqwest`     | HTTP client (fuz only)           |
+| `reqwest`     | HTTP client (fuz_client, fuz_storage, zzz_server) |
 | `tokio-util`  | CancellationToken, TaskTracker   |
 | `parking_lot` | **Default** for `Mutex`/`RwLock` (sync, no poisoning) |
 
 Use `std::sync::*` only when you need poisoning semantics, and
 `tokio::sync::*` only when the critical section needs to `.await`.
+
+**Never hold a `parking_lot` or `std::sync` guard across `.await`** — it
+blocks the executor thread and risks deadlock. Drop the guard before the
+await, or switch to `tokio::sync::*`. See ./rust-perf.md §Async lock hygiene.
 
 **Database** (zzz_server):
 
@@ -600,7 +563,7 @@ multiplex many concurrent requests. The shape:
 ```rust
 // Generic controller, configured per runtime
 pub struct SpawnConfig {
-    pub command_builder: fn(script_path: &Path) -> Command,
+    pub build_command: fn(script: &Path, config: Option<&Path>) -> Command,
     pub script: &'static str,           // embedded via include_str!
     pub tools: &'static [&'static str], // tool names this runtime exposes
 }
@@ -666,9 +629,7 @@ output.
 
 ## Documentation
 
-- **Copious `// TODO:` comments** — expected and valued
-- `todo!()` macro: warned by default; allow per-crate with justification
-- Doc comments (`///`) for public API
-- Inline comments (`//`) for implementation notes
-
-See each project's `CLAUDE.md` for detailed conventions.
+Doc comments (`///`) for public API; inline comments (`//`) for
+implementation notes. `// TODO:` is the standard marker for known future
+work — see §Core Values. Each project's `CLAUDE.md` has detailed
+conventions.
