@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.Brl_ijC6.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DgZvmuv1.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.Cze-Hw3y.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BGhchIhN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DJKk3Zif.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BUp2y4-X.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DNXFtHpb.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.Ce6fAwAK.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BT-mQnNx.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.KYnhsTLM.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DAfuroMG.js" rel="modulepreload">
@@ -33,22 +33,22 @@
 		<link href="/_app/immutable/chunks/DAQioxTK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dqx3-4jf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/GMbY26Pr.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.BHZz1dyF.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/tViEdEaw.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.CMtllBdK.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/d-PJwCQt.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/SMcemH51.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BB1JoMeo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DWHV6rkM.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B3vsjV_N.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DIavZeSY.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BqHTx54q.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/hmbJTRnt.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BrH1pkjC.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/QeaNnfvq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/C4St1o-G.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/24.CJYJnd5V.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DTOvOZki.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/24.67tBfsUg.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DtX3lTjN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BhJn2AK0.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BCSE9QTm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/De76P45D.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CJCmwL9F.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DC-s_cy2.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.iAmfJnGz.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.WXbxZC1L.css" rel="stylesheet">
@@ -95,7 +95,11 @@ write, and even a pure-read workload bounces the lock's cache line across
 cores. <!--]--><!--[3--><!--[-1--><code><!--[-1-->DashMap<!--]--><!----></code><!--]--><!--]--><!--[2--> shards internally — each shard has its own lock, so
 unrelated keys don't collide. Reach for it when profiling shows lock
 contention on a single map. Not the default; the <!--]--><!--[3--><!--[-1--><code><!--[-1-->RwLock<!--]--><!----></code><!--]--><!--]--><!--[2--> shape is fine
-until proven otherwise.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="allocation-hygiene"><!--[--><!--[2-->Allocation hygiene<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Cheap, idiomatic wins — apply without ceremony.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->Vec::with_capacity(n)<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> when <!--]--><!--[3--><!--[-1--><code><!--[-1-->n<!--]--><!----></code><!--]--><!--]--><!--[2--> is known or estimable. Default
+until proven otherwise.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="allocation-hygiene"><!--[--><!--[2-->Allocation hygiene<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Allocate on purpose, not by reflex. A deliberate allocation can be the
+right design — terminating a pipeline, decoupling lifetimes, batching
+work that would otherwise repeat. The tactics below target *incidental*
+allocations: heap traffic that snuck in by habit, not by choice. Cheap,
+idiomatic wins — apply without ceremony.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->Vec::with_capacity(n)<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> when <!--]--><!--[3--><!--[-1--><code><!--[-1-->n<!--]--><!----></code><!--]--><!--]--><!--[2--> is known or estimable. Default
   growth is geometric reallocation + memcpy per resize.
 - <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->swap_remove(i)<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> instead of <!--]--><!--[3--><!--[-1--><code><!--[-1-->remove(i)<!--]--><!----></code><!--]--><!--]--><!--[2--> when ordering is irrelevant.
   O(1) vs O(n).
@@ -109,9 +113,10 @@ until proven otherwise.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 i
   only when the result is the final value.
 - <!--]--><!--[4--><strong><!--[--><!--[2-->Take <!--]--><!--[3--><!--[-1--><code><!--[-1-->&amp;str<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->&amp;[T]<!--]--><!----></code><!--]--><!--]--><!--[2-->, not <!--]--><!--[3--><!--[-1--><code><!--[-1-->String<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->Vec&lt;T><!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->, unless you need
   ownership. Already covered in <!--]--><!--[7--><!--[0--><!--[0--><a href="/skills/fuz-stack/references/rust-patterns"><!--[--><!--[2-->./rust-patterns<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> §Avoid clone smells —
-  it's both a clarity and an allocation rule.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="bounds-check-elision"><!--[--><!--[2-->Bounds check elision<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Rust inserts a runtime bounds check on every <!--]--><!--[3--><!--[-1--><code><!--[-1-->vec[i]<!--]--><!----></code><!--]--><!--]--><!--[2--> access. Inside tight
-loops these stall the pipeline and inhibit auto-vectorization. Help the
-compiler prove safety so it can drop the check:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[2-->Iterators over indexing.<!--]--><!--]--><!----></strong><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code><!--[-1-->for x in &amp;v<!--]--><!----></code><!--]--><!--]--><!--[2--> — no check.
+  it's both a clarity and an allocation rule.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="bounds-check-elision"><!--[--><!--[2-->Bounds check elision<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Let the compiler prove what you already know. Rust inserts a runtime
+bounds check on every <!--]--><!--[3--><!--[-1--><code><!--[-1-->vec[i]<!--]--><!----></code><!--]--><!--]--><!--[2--> access; inside tight loops these stall
+the pipeline and inhibit auto-vectorization. The tactics below give
+LLVM the invariants it needs to drop the check:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[2-->Iterators over indexing.<!--]--><!--]--><!----></strong><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code><!--[-1-->for x in &amp;v<!--]--><!----></code><!--]--><!--]--><!--[2--> — no check.
   <!--]--><!--[3--><!--[-1--><code><!--[-1-->for i in 0..v.len() { v[i] }<!--]--><!----></code><!--]--><!--]--><!--[2--> — check every iteration.
 - <!--]--><!--[4--><strong><!--[--><!--[2-->Hoist slice lengths.<!--]--><!--]--><!----></strong><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code><!--[-1-->let slice = &amp;v[..n];<!--]--><!----></code><!--]--><!--]--><!--[2--> *before* the loop. The
   compiler proves bounds once, elides per-iteration checks.
@@ -120,11 +125,13 @@ compiler prove safety so it can drop the check:<!--]--><!--]--><!----></p><!--]-
 crates. If a benchmark proves the bounds check is the bottleneck *and*
 iterator/assert rewrites can't eliminate it, isolate the hot kernel in a
 dedicated crate that overrides <!--]--><!--[3--><!--[-1--><code><!--[-1-->unsafe_code = "allow"<!--]--><!----></code><!--]--><!--]--><!--[2--> — see §Unsafe
-escape hatch.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="inlining"><!--[--><!--[2-->Inlining<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code><!--[-1-->#[inline]<!--]--><!----></code><!--]--><!--]--><!--[2--> is a hint; <!--]--><!--[3--><!--[-1--><code><!--[-1-->#[inline(always)]<!--]--><!----></code><!--]--><!--]--><!--[2--> is a mandate; <!--]--><!--[3--><!--[-1--><code><!--[-1-->#[inline(never)]<!--]--><!----></code><!--]--><!--]--><!--[2-->
-blocks it. Apply surgically:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->#[inline(always)]<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: tiny, hot, frequently-called helpers. The real
-  win isn't call-site overhead — it's giving the compiler a unified block
-  for constant-folding and dead-code elimination (e.g. branches collapsing
-  away when a callsite passes <!--]--><!--[3--><!--[-1--><code><!--[-1-->false<!--]--><!----></code><!--]--><!--]--><!--[2--> to a bool parameter).
+escape hatch.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="inlining"><!--[--><!--[2-->Inlining<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Inlining isn't primarily about saving call overhead — it's about giving
+the compiler a single block to optimize across, so constants fold,
+branches collapse, and dead code drops. <!--]--><!--[3--><!--[-1--><code><!--[-1-->#[inline]<!--]--><!----></code><!--]--><!--]--><!--[2--> is a hint;
+<!--]--><!--[3--><!--[-1--><code><!--[-1-->#[inline(always)]<!--]--><!----></code><!--]--><!--]--><!--[2--> is a mandate; <!--]--><!--[3--><!--[-1--><code><!--[-1-->#[inline(never)]<!--]--><!----></code><!--]--><!--]--><!--[2--> blocks it. Apply
+surgically:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->- <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->#[inline(always)]<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: tiny, hot, frequently-called helpers — e.g.
+  branches that collapse away when a callsite passes <!--]--><!--[3--><!--[-1--><code><!--[-1-->false<!--]--><!----></code><!--]--><!--]--><!--[2--> to a bool
+  parameter.
 - <!--]--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code><!--[-1-->#[inline(never)]<!--]--><!----></code><!--]--><!--]--><!--[2--> + <!--]--><!--[3--><!--[-1--><code><!--[-1-->#[cold]<!--]--><!----></code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: rare error formatters, panic
   builders, anything off the hot path. Pulls cold code out of the critical
   I-cache footprint, keeping the hot sequence dense.
@@ -175,7 +182,7 @@ the allocator can drop RSS and CPU substantially.<!--]--><!--]--><!----></p><!--
 | glibc     | Default, no setup                                      | Heavy fragmentation in long-running servers |
 | jemalloc  | Rock-stable RSS under chaotic load; great profiling    | Slightly higher CPU than mimalloc           |
 | mimalloc  | Best throughput / lowest CPU; aggressive <!--]--><!--[3--><!--[-1--><code><!--[-1-->munmap<!--]--><!----></code><!--]--><!--]--><!--[2-->      | RSS can spike during traffic bursts         |<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="rust" class="svelte-jqsy8a"><!--[0-->#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;<!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Candidates: long-running daemons (<!--]--><!--[3--><!--[-1--><code><!--[-1-->fuzd<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->zzz_server<!--]--><!----></code><!--]--><!--]--><!--[2-->). Not candidates:
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;<!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Candidates: long-running daemons (<!--]--><!--[3--><!--[-1--><code><!--[-1-->zzz_server<!--]--><!----></code><!--]--><!--]--><!--[2-->). Not candidates:
 CLIs and short-lived tools — startup cost matters more than fragmentation
 they'll never see. Bench per service before adopting; the right answer
 depends on workload shape.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->C-malloc gotcha<!--]--><!--]--><!----></strong><!--]--><!--[2-->: a dependency that links a C library calling raw
@@ -213,15 +220,15 @@ should be able to prove this," speed claims without measurements.<!--]--><!--]--
 			
 			<script>
 				{
-					__sveltekit_1fyr7cn = {
+					__sveltekit_eu0ubf = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.Brl_ijC6.js"),
-						import("/_app/immutable/entry/app.Ce6fAwAK.js")
+						import("/_app/immutable/entry/start.Cze-Hw3y.js"),
+						import("/_app/immutable/entry/app.KYnhsTLM.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 24],
