@@ -75,7 +75,11 @@ until proven otherwise.
 
 ## Allocation hygiene
 
-Cheap, idiomatic wins — apply without ceremony.
+Allocate on purpose, not by reflex. A deliberate allocation can be the
+right design — terminating a pipeline, decoupling lifetimes, batching
+work that would otherwise repeat. The tactics below target *incidental*
+allocations: heap traffic that snuck in by habit, not by choice. Cheap,
+idiomatic wins — apply without ceremony.
 
 - **`Vec::with_capacity(n)`** when `n` is known or estimable. Default
   growth is geometric reallocation + memcpy per resize.
@@ -95,9 +99,10 @@ Cheap, idiomatic wins — apply without ceremony.
 
 ## Bounds check elision
 
-Rust inserts a runtime bounds check on every `vec[i]` access. Inside tight
-loops these stall the pipeline and inhibit auto-vectorization. Help the
-compiler prove safety so it can drop the check:
+Let the compiler prove what you already know. Rust inserts a runtime
+bounds check on every `vec[i]` access; inside tight loops these stall
+the pipeline and inhibit auto-vectorization. The tactics below give
+LLVM the invariants it needs to drop the check:
 
 - **Iterators over indexing.** `for x in &v` — no check.
   `for i in 0..v.len() { v[i] }` — check every iteration.
@@ -114,13 +119,15 @@ escape hatch.
 
 ## Inlining
 
-`#[inline]` is a hint; `#[inline(always)]` is a mandate; `#[inline(never)]`
-blocks it. Apply surgically:
+Inlining isn't primarily about saving call overhead — it's about giving
+the compiler a single block to optimize across, so constants fold,
+branches collapse, and dead code drops. `#[inline]` is a hint;
+`#[inline(always)]` is a mandate; `#[inline(never)]` blocks it. Apply
+surgically:
 
-- **`#[inline(always)]`**: tiny, hot, frequently-called helpers. The real
-  win isn't call-site overhead — it's giving the compiler a unified block
-  for constant-folding and dead-code elimination (e.g. branches collapsing
-  away when a callsite passes `false` to a bool parameter).
+- **`#[inline(always)]`**: tiny, hot, frequently-called helpers — e.g.
+  branches that collapse away when a callsite passes `false` to a bool
+  parameter.
 - **`#[inline(never)]` + `#[cold]`**: rare error formatters, panic
   builders, anything off the hot path. Pulls cold code out of the critical
   I-cache footprint, keeping the hot sequence dense.
@@ -217,7 +224,7 @@ the allocator can drop RSS and CPU substantially.
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 ```
 
-Candidates: long-running daemons (`fuzd`, `zzz_server`). Not candidates:
+Candidates: long-running daemons (`zzz_server`). Not candidates:
 CLIs and short-lived tools — startup cost matters more than fragmentation
 they'll never see. Bench per service before adopting; the right answer
 depends on workload shape.

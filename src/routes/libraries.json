@@ -32794,7 +32794,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.63.0",
+			"version": "0.64.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -32909,7 +32909,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.63.0",
+			"version": "0.64.0",
 			"modules": [
 				{
 					"path": "actions/action_bridge.ts",
@@ -70230,7 +70230,7 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.4.5",
-				"@fuzdev/fuz_app": "^0.63.0",
+				"@fuzdev/fuz_app": "^0.64.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
 				"@fuzdev/fuz_ui": "^0.192.0",
