@@ -1,8 +1,8 @@
 # Rust Patterns for the Fuz Ecosystem
 
-**Applies to**: `fuz` (daemon + CLI), `tsv` (parser/formatter), `blake3` (WASM
-bindings), `zzz_server` (axum web server). All projects use **Rust edition
-2024**, resolver 2.
+**Applies to**: Rust workspaces across the ecosystem — CLIs and daemons
+(`fuz`, `fuzd`), WASM bindings (`blake3`), web servers (`zzz_server`).
+All use **Rust edition 2024**, resolver 2.
 
 Each project's `CLAUDE.md` is authoritative for project-specific conventions.
 This covers shared patterns.
@@ -60,16 +60,14 @@ unwrap_used = "warn"
 
 ### Project-specific lint differences
 
-- `missing_debug_implementations`: "warn" in fuz, "allow" in tsv (parser types
-  contain non-Debug fields like `Chars`, `RefCell<Interner>`), not set in blake3
-- tsv has additional pedantic/nursery allows for parser code:
-  `cast_possible_truncation`, `cast_lossless`, `cast_possible_wrap`,
-  `wildcard_imports`, `cognitive_complexity`, etc.
-- **Crate-level overrides**: `fuz_pty`, `tsv_napi`, and `blake3_component`
-  override `unsafe_code = "allow"` (FFI/N-API/wit-bindgen require unsafe).
-  These crates duplicate workspace lints since Cargo doesn't allow partial
-  overrides. `blake3_component` also allows `same_length_and_capacity` and
-  `use_self` (false positives from wit-bindgen generated code).
+- `missing_debug_implementations`: "warn" in `fuz`; "allow" where public
+  types contain non-Debug fields; not set in `blake3`.
+- **Crate-level overrides**: FFI and binding crates (`fuz_pty`,
+  `blake3_component`, and any N-API/C-FFI/wit-bindgen layer) override
+  `unsafe_code = "allow"` because Cargo doesn't allow partial overrides —
+  they duplicate workspace lints. `blake3_component` also allows
+  `same_length_and_capacity` and `use_self` (false positives from
+  wit-bindgen generated code).
 
 Each crate opts in with `[lints] workspace = true`.
 
@@ -89,18 +87,9 @@ and performance.
 **blake3 exception**: `opt-level = "s"` for smaller WASM. Individual builds
 override via `RUSTFLAGS`.
 
-tsv profiling profile:
-
-```toml
-[profile.profiling]
-inherits = "release"
-debug = true
-strip = false
-```
-
 ## Error Handling
 
-### fuz and tsv: `thiserror` for typed errors
+### Typed errors with `thiserror`
 
 ```rust
 use thiserror::Error;
@@ -164,11 +153,39 @@ impl SidecarError {
 }
 ```
 
-### Context enrichment (tsv)
+**Conventions** (observed across fuz crates):
+
+- **Helpers belong on the binary's top-level error**, not on every library
+  error. `fuz_client::ClientError` exposes `.hint()` because the message is
+  user-actionable. Library-level error types (parser errors, IO errors, etc.)
+  stay thin — variants only, no `.hint()` / `.exit_code()` — and the binary
+  wrapper adds the helpers when it composes them.
+- `.hint()` returns `Option<HintMessage>` when most variants lack a hint
+  (`CliError`), or `&'static str` with `""` for absent when all do
+  (`ClientError`). `HintMessage` (`Static | Owned`) handles the mixed case
+  where some hints interpolate runtime data (a PID, a path) and others are
+  pure constants.
+- `.exit_code()` returns `i32`; reserve 1 for generic failure, 2+ for
+  category-specific (e.g., auth/token errors). Match arms over variants.
+- `.is_transient()` / `.is_recoverable()` answer "should the caller retry or
+  restart?". Pure inspection, no side effects.
+- Use `#[source]` on `thiserror` variants to chain causes; the `Display` impl
+  shows only the variant's own message, while the source chain surfaces via
+  `e.source()` for structured logging. Real example from `fuz_client`:
 
 ```rust
-parser.parse().map_err(|e| e.with_context(source))
-// Adds line/column info + source snippet with caret pointer
+#[derive(Debug, Error)]
+pub enum ClientError {
+    #[error("failed to parse RPC result: {context}")]
+    ResultParse {
+        context: &'static str,
+        #[source]
+        source: serde_json::Error,
+    },
+
+    #[error("failed to parse response")]
+    ResponseParse(#[source] reqwest::Error),
+}
 ```
 
 ### WASM boundary errors (blake3)
@@ -185,6 +202,106 @@ pub fn keyed_hash(key: &[u8], data: &[u8]) -> Result<Vec<u8>, JsError> {
 ```
 
 For component model errors, see ./wasm-patterns.md.
+
+## Async Runtime & Graceful Shutdown
+
+Server/daemon crates use **tokio** with **tokio-util**'s `CancellationToken`
+for shutdown coordination. The pattern is consistent across `fuz_server`,
+`fuzd`, and `zzz_server`.
+
+### Shutdown token threading
+
+A single `CancellationToken` owned at the top level. Clone it into every task
+or component that needs to know about shutdown:
+
+```rust
+// fuzd/src/main.rs
+let shutdown = CancellationToken::new();
+
+// Spawn signal handler — flips the token on SIGINT/SIGTERM
+let signal_token = shutdown.clone();
+tokio::spawn(async move {
+    use tokio::signal::unix::{signal, SignalKind};
+    let mut sigterm = signal(SignalKind::terminate()).expect("install SIGTERM");
+    tokio::select! {
+        _ = tokio::signal::ctrl_c() => {}
+        _ = sigterm.recv() => {}
+    }
+    signal_token.cancel();
+});
+
+// Pass into the server, which threads it into request handlers
+let server = Server::new(addr, shutdown.clone(), /* ... */);
+
+tokio::select! {
+    res = server.serve() => res,
+    () = shutdown.cancelled() => Ok(()),
+}
+```
+
+### axum's `with_graceful_shutdown`
+
+axum integrates with `CancellationToken` directly. The server stops accepting
+new connections when the token fires, but lets in-flight requests finish:
+
+```rust
+// fuz_server/src/lib.rs
+let serve = axum::serve(listener, app).with_graceful_shutdown(async move {
+    shutdown.cancelled().await;
+});
+
+// Drain timeout: bound how long we wait for in-flight requests
+tokio::select! {
+    res = serve => res?,
+    () = tokio::time::sleep(DRAIN_TIMEOUT) => {
+        tracing::warn!("drain timeout exceeded; forcing shutdown");
+    }
+}
+```
+
+Drain timeout is essential — without it, a hung handler keeps the process
+alive indefinitely.
+
+### Per-task `select!` for cooperative cancellation
+
+Long-running tasks (log flusher, background workers) check the shutdown
+token via `tokio::select!`. The fuz_server log flusher uses `Notify` for
+event-driven wakeups rather than a fixed interval — flushes are debounced
+behind the most recent log call, so an idle daemon doesn't tick uselessly:
+
+```rust
+// fuz_server/src/logging.rs — notify-driven flush task
+loop {
+    tokio::select! {
+        () = logger.notify.notified() => {}
+        () = shutdown.cancelled() => {
+            logger.flush();  // final flush before exit
+            return;
+        }
+    }
+    // ... debounce/throttle inner loop, also selects on shutdown ...
+    logger.flush();
+}
+```
+
+The two takeaways: every `select!` arm includes `shutdown.cancelled()`, and
+every shutdown branch flushes pending work before returning.
+
+### When to use `TaskTracker`
+
+`tokio_util::task::TaskTracker` is for waiting on a known set of spawned
+tasks to finish. Use it when shutdown needs to verify "all worker tasks
+exited cleanly" before the process exits. Skip it when the task is
+short-lived or owned by an `Arc`-shared component that drops naturally.
+
+### Don't use
+
+- `std::process::exit()` from inside async code — bypasses Drop, leaks
+  file descriptors, skips graceful shutdown.
+- Bare `tokio::spawn` with no shutdown awareness for anything that holds
+  resources (sockets, child processes, file handles).
+- `tokio::sync::broadcast` as a poor-man's cancellation token. Use
+  `CancellationToken` — it's purpose-built and composes via `.clone()`.
 
 ## Naming Conventions
 
@@ -218,6 +335,64 @@ fn parse(source: &str) -> Result<Program> { ... }
 fn format(program: &Program, source: &str) -> String { ... }
 ```
 
+## Idioms
+
+Style guidance the lint config encodes (`clone_on_ref_ptr`, `panic`,
+`unwrap_used` warn). Ecosystem-specific bits are called out with examples.
+
+### Prefer enums for closed sets
+
+Fixed variant sets → enum, not `bool` or sentinel string. The exhaustiveness
+check turns every `match` into a contract that fires when variants change.
+
+```rust
+// Yes — exhaustive, named
+pub enum AuditOutcome { Success, Failure }
+
+// No — `bool` carries no name for what `true` means here
+let success: bool = ...;
+let kind: &str = "failure"; // typo-prone, no compiler help
+```
+
+### Zero-cost / low-cost abstractions
+
+Three patterns recur across the ecosystem:
+
+**Function pointers over trait objects** for statically-known dispatch.
+`fuz_sidecar::SpawnConfig` holds `command_builder: fn(&Path, Option<&Path>)
+-> Command` instead of `Box<dyn Fn(...)>` — no allocation, inlinable.
+
+**Callback resolution over allocating accessors** in hot paths. For interned
+data or pooled resources, expose both an allocating accessor for one-off
+lookups and a callback form for tight loops:
+
+```rust
+let owned: String = printer.resolve_symbol(sym);        // allocates
+printer.with_resolved_symbol(sym, |s| out.push_str(s)); // zero-alloc
+```
+
+**`Cow`-shaped wrappers** when some returns are pure constants and others
+need interpolation. `HintMessage` (`Static(&'static str) | Owned(String)`)
+keeps the constant case allocation-free — same idea as `Cow<'static, str>`,
+spelled out where API clarity matters more than terseness.
+
+### Avoid clone smells
+
+The `clone_on_ref_ptr` lint warns on `arc.clone()` — the workspace policy
+is to use `Arc::clone(&arc)` instead, so the call site signals a refcount
+bump rather than a deep copy. Other guidance:
+
+- **Don't clone to satisfy a borrow.** Take `&T` or `&str`. A function that
+  takes `String` when it only needs `&str` forces every caller to allocate.
+- **Don't clone large collections just to pass them** — take `&[T]` or
+  `&HashMap<K, V>`. Small, short-lived collections aren't worth Arc-wrapping
+  to dodge a single clone.
+
+Rough preference for inputs: `&str` >> `String`. Same shape for collections
+(`&[T]` >> `Vec<T>`). Reach for `Cow<'_, str>` only when callers genuinely
+have mixed-ownership data and the borrowed case is common — otherwise the
+cleverness isn't worth it.
+
 ## Project Structure
 
 ### Workspace Organization
@@ -231,12 +406,12 @@ project/
 │   ├── {proj}_cli/     # Production binary (or just {proj}/ — see below)
 │   ├── {proj}_debug/   # Dev binary (may use Deno sidecar)
 │   └── {proj}_wasm/    # Interface crates: WASM, FFI, N-API
-├── tests/              # Integration tests (tsv only; fuz uses unit tests)
+├── tests/              # Integration tests (where applicable; fuz uses unit tests)
 │   └── fixtures/       # Test fixtures (if applicable)
 └── docs/               # Architecture and reference documentation
 ```
 
-Crate naming: generally `{project}_{crate}` (`fuz_common`, `tsv_lang`,
+Crate naming: generally `{project}_{crate}` (`fuz_common`,
 `blake3_wasm_core`). Exceptions: fuz's CLI is just `fuz` (not `fuz_cli`) and
 its daemon is `fuzd` (not `fuz_daemon`) — short names for frequently-typed
 commands.
@@ -244,7 +419,7 @@ commands.
 ### Common crate patterns
 
 - **Foundation crate**: Shared types (Span, errors, config) with minimal deps
-  (`fuz_common`, `tsv_lang`, `blake3_wasm_core`)
+  (`fuz_common`, `blake3_wasm_core`)
 - **Feature crates**: Domain logic with `lib.rs` public API
 - **Debug crate**: Dev tooling, may embed external runtimes (Deno sidecars)
 - **Interface crates**: Binding layers (CLI, C FFI, N-API, WASM)
@@ -269,8 +444,6 @@ cargo build --workspace --release  # Optimized build
 - **Compile-time data** (fuz_crypto): Parse/validate public keys, generate
   constants
 - **Target triple** (fuz_release): `cargo:rustc-env=TARGET={triple}`
-- **HTML entity tables** (tsv_html): `phf::Map` via `phf_codegen`
-- **N-API build** (tsv_napi): `napi-build` bindings boilerplate
 
 ### xtask pattern (fuz)
 
@@ -280,9 +453,18 @@ cargo xtask install --new-token  # Regenerate auth token
 cargo xtask clean                # Remove ~/.fuz/, stop daemon
 ```
 
-### .cargo/config.toml (fuz only)
+### Environment configuration (fuz)
+
+fuz separates **dev config** from **prod config** by source:
+
+| Source                  | Sets                | Read by                  | Notes                              |
+| ----------------------- | ------------------- | ------------------------ | ---------------------------------- |
+| `.cargo/config.toml`    | `FUZ_PORT`          | `cargo run` / `cargo test` | Checked in. Dev port (3621) only |
+| `~/.fuz/config/env`     | `FUZ_PORT`, `FUZ_AUTH_TOKEN` | User shells (sourced)  | Generated by `cargo xtask install` |
+| systemd / Docker / etc. | `FUZ_AUTH_TOKEN`    | prod daemon              | Never sourced from `~/.fuz/config/env` in prod |
 
 ```toml
+# .cargo/config.toml
 [env]
 FUZ_PORT = "3621"    # Dev port override (avoids conflict with prod port 3620)
 
@@ -290,20 +472,25 @@ FUZ_PORT = "3621"    # Dev port override (avoids conflict with prod port 3620)
 xtask = "run --package xtask --"
 ```
 
-Does NOT set `FUZ_AUTH_TOKEN`. Dev config comes from `~/.fuz/config/env`,
-generated by `cargo xtask install`.
+**Rule: `.cargo/config.toml` does NOT set `FUZ_AUTH_TOKEN`.** Tokens are
+secrets — they don't belong in a checked-in file, and they shouldn't be
+silently inherited by every `cargo run` invocation. Dev tokens live in
+`~/.fuz/config/env` (gitignored, mode 0600); prod tokens come from
+systemd/Docker/secrets infrastructure.
+
+This pattern generalizes: anything in `.cargo/config.toml` should be a
+**non-secret dev override**. Anything secret or environment-dependent
+goes in a generated, gitignored config file.
 
 ## Testing
 
 - `cargo test --workspace` runs all tests
 - Unit tests in `#[cfg(test)] mod tests`
-- Integration tests in `tests/` (tsv only)
+- Integration tests in `tests/` where applicable
 - See each project's `CLAUDE.md` for specifics
 
 ### By project
 
-- **tsv**: Fixture-based TDD with Deno for canonical comparison against
-  Prettier and Svelte's parser. Integration tests in `tests/`.
 - **fuz**: Unit tests in modules. Covers error handling, serialization, auth,
   crypto, artifacts.
 - **blake3**: TypeScript correctness tests (WASM vs native reference). Rust
@@ -311,10 +498,8 @@ generated by `cargo xtask install`.
 
 ## CLI Patterns
 
-Both fuz and tsv use manual arg parsing (no clap) for binary size and compile
-times.
-
-**fuz** — simple match in `main.rs`:
+Manual arg parsing (no clap) is the default — keeps binary size and compile
+times down. The `fuz` shape is a simple `match` on the first arg in `main.rs`:
 
 ```rust
 fn main() {
@@ -338,16 +523,7 @@ async fn run() -> Result<(), CliError> {
 }
 ```
 
-**tsv** — `CommandRegistry` with trait objects and shared input modes:
-
-```rust
-fn main() {
-    let registry = cli::build_registry();
-    registry.run(args);
-}
-```
-
-Both share input modes: file path, `--content <string>`, `--stdin`.
+Shared input modes: file path, `--content <string>`, `--stdin`.
 
 ## Dependencies
 
@@ -358,95 +534,117 @@ without explicit request.
 
 | Crate                              | Purpose            | Used by                            |
 | ---------------------------------- | ------------------ | ---------------------------------- |
-| `serde`, `serde_json`              | Serialization      | fuz, tsv, zzz_server (blake3 bench crate only) |
-| `thiserror`                        | Error derivation   | fuz, tsv, zzz_server               |
+| `serde`, `serde_json`              | Serialization      | fuz, zzz_server (blake3 bench crate only) |
+| `thiserror`                        | Error derivation   | fuz, zzz_server                    |
 | `tracing`, `tracing-subscriber`    | Structured logging | fuz, zzz_server                    |
 
 ### Domain-specific
 
 **Async / networking** (fuz, zzz_server):
 
-| Crate         | Purpose                        |
-| ------------- | ------------------------------ |
-| `tokio`       | Async runtime                  |
-| `axum`        | HTTP server (built on hyper)   |
-| `reqwest`     | HTTP client (fuz only)         |
-| `tokio-util`  | CancellationToken, TaskTracker |
-| `parking_lot` | Faster mutex (no poisoning)    |
+| Crate         | Purpose                          |
+| ------------- | -------------------------------- |
+| `tokio`       | Async runtime                    |
+| `axum`        | HTTP server (built on hyper)     |
+| `reqwest`     | HTTP client (fuz only)           |
+| `tokio-util`  | CancellationToken, TaskTracker   |
+| `parking_lot` | **Default** for `Mutex`/`RwLock` (sync, no poisoning) |
+
+Use `std::sync::*` only when you need poisoning semantics, and
+`tokio::sync::*` only when the critical section needs to `.await`.
 
 **Database** (zzz_server):
 
-| Crate               | Purpose                        |
+| Crate                | Purpose                        |
 | -------------------- | ------------------------------ |
 | `tokio-postgres`     | Async PostgreSQL client        |
 | `deadpool-postgres`  | Connection pooling             |
 
-**Parsing** (tsv):
+**Auth / crypto**:
 
-| Crate                | Purpose                             |
-| -------------------- | ----------------------------------- |
-| `smallvec`           | Stack-allocated vectors             |
-| `string-interner`    | String interning for AST            |
-| `phf`                | Compile-time perfect hash maps      |
-| `unicode-ident`      | XID_Start/XID_Continue              |
-| `unicode-segmentation` | Grapheme cluster iteration        |
-| `unicode-width`      | Visual width calculation            |
+| Crate           | Purpose                                                | Used by    |
+| --------------- | ------------------------------------------------------ | ---------- |
+| `blake3`        | Content-addressed artifacts, session-token hashing     | fuz, zzz   |
+| `ed25519-dalek` | Signing/verification                                   | fuz        |
+| `subtle`        | Constant-time comparison                               | fuz        |
+| `zeroize`       | Secure memory clearing                                 | fuz        |
+| `argon2`        | Password hashing (with `rand` feature)                 | zzz_server |
+| `hmac`, `sha2`  | HMAC-SHA256 for signed cookies / keyring               | zzz_server |
+| `base64`        | URL-safe base64 for tokens                             | zzz_server |
 
-**Crypto / hashing** (fuz):
+**Filesystem / OS** (zzz_server):
 
-| Crate           | Purpose                      |
-| --------------- | ---------------------------- |
-| `blake3`        | Content-addressed artifacts  |
-| `ed25519-dalek` | Signing/verification         |
-| `subtle`        | Constant-time comparison     |
-| `zeroize`       | Secure memory clearing       |
+| Crate    | Purpose                                                      |
+| -------- | ------------------------------------------------------------ |
+| `notify` | File system watching (FSEvents on macOS, inotify on Linux)   |
 
-**WASM** (blake3, tsv):
+**WASM / JS bindings**:
 
-| Crate          | Purpose                     |
-| -------------- | --------------------------- |
-| `wasm-bindgen` | JS interop (wasm-pack)      |
-| `wit-bindgen`  | Component model (blake3)    |
-| `napi`         | N-API bindings (tsv)        |
+| Crate                 | Purpose                                            |
+| --------------------- | -------------------------------------------------- |
+| `wasm-bindgen`        | JS interop (wasm-pack)                             |
+| `serde-wasm-bindgen`  | Serde bridging at the JS boundary                  |
+| `wit-bindgen`         | Component model (blake3)                           |
+| `napi`, `napi-derive` | Node.js/Bun N-API bindings                         |
 
 See ./wasm-patterns.md for build targets, WIT design, and optimization
 profiles.
 
 ## Patterns
 
-### AST Architecture (tsv)
+### Sidecar Controller / Subprocess Multiplexing (fuz)
 
-- **Internal AST**: Clean, semantic. No `serde::Serialize`.
-- **Public AST**: Conversion layer matching external JSON output (Svelte's
-  parser format).
-- Raw strings extracted via `source[span.range()]`, never duplicated.
+`fuz_sidecar` hosts the pattern for managing long-running subprocesses that
+multiplex many concurrent requests. The shape:
 
 ```rust
-// Internal - clean and semantic
-struct Literal {
-    value: LiteralValue,  // Decoded
-    span: Span,
+// Generic controller, configured per runtime
+pub struct SpawnConfig {
+    pub command_builder: fn(script_path: &Path) -> Command,
+    pub script: &'static str,           // embedded via include_str!
+    pub tools: &'static [&'static str], // tool names this runtime exposes
 }
 
-// Public conversion - applies quirks at boundary
-fn to_json(lit: &Literal, source: &str) -> Value {
-    json!({
-        "value": lit.value,
-        "raw": &source[lit.span.range()],
-    })
+// Per-request flow inside SidecarController:
+// 1. Allocate a request ID
+// 2. Park a oneshot::Sender<Result<Value, _>> in a HashMap keyed by ID
+// 3. Send a WireRequest over the child's stdin
+// 4. Reader task parses WireResponses line-by-line, looks up ID, fires oneshot
+// 5. Caller awaits the oneshot::Receiver
+
+pub struct SidecarController {
+    pending: HashMap<u64, oneshot::Sender<Result<Value, SidecarError>>>,
+    // tx for outbound requests, child process handle, etc.
 }
 ```
 
-### Span Types (tsv)
+Key design choices worth lifting to similar systems:
 
-- **Span**: `u32` for start/end (memory efficient, max 4GB)
-- **Lexer/Parser**: `usize` (natural for indexing)
-- Convert at boundaries. Helpers: `span.extract(source)`, `span.range()`
+- **Function pointers in `SpawnConfig`** instead of trait objects — zero-cost,
+  no allocation per spawn. Works because runtime configs are statically known
+  at compile time.
+- **JSON-lines framing**: one JSON object per line over stdin/stdout. Simple
+  to parse with `tokio::io::AsyncBufReadExt::lines()`, no length prefixes,
+  trivially debuggable with `tee`.
+- **mpsc command channel + oneshot response channel**: callers don't share
+  the child's stdin directly; they send `ControllerCommand`s to a serializer
+  task that owns the stdin handle. Responses route back via per-request
+  `oneshot::channel()`.
+- **Embedded script via `include_str!`**: single-binary distribution. The
+  script is written to a tempfile at spawn (held alive via
+  `NamedTempFile` for the controller's lifetime) and passed to the child as a
+  path argument.
 
-### Comment Handling (tsv)
+When to use this pattern:
 
-Stored separately in flat `Vec<Comment>` at root. Printer finds comments via
-O(log n) binary search on span positions.
+- A long-running subprocess that handles many requests (vs. spawn-per-request)
+- The protocol is naturally request/response with correlation IDs
+- You want to keep the daemon's address space lean (no embedded runtime)
+
+When to skip it:
+
+- One-shot subprocess invocations — just use `tokio::process::Command`
+- Pure in-process work — use a regular `Arc<Mutex<...>>` pool
 
 ### Security Patterns (fuz)
 
@@ -462,13 +660,14 @@ O(log n) binary search on span positions.
 logging. axum integrates with `tracing` natively. Use `tracing::info!`,
 `tracing::error!`, etc.
 
-**CLIs / daemons** (fuz, tsv): `eprintln!` — simple, no framework. Batched
-request logging for performance. `--json` for machine-readable output.
+**CLIs / daemons** (`fuz`, `fuzd`): `eprintln!` — simple, no framework.
+Batched request logging for performance. `--json` for machine-readable
+output.
 
 ## Documentation
 
 - **Copious `// TODO:` comments** — expected and valued
-- `todo!()` macro: allowed in tsv, warned in fuz
+- `todo!()` macro: warned by default; allow per-crate with justification
 - Doc comments (`///`) for public API
 - Inline comments (`//`) for implementation notes
 

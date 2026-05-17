@@ -36,6 +36,40 @@ The same hierarchy applies to text: prefer `<small>` over
 `font-size: var(--font_size_sm)`, prefer `<h2>` over a custom heading style,
 prefer `<aside>` over a custom callout box.
 
+### Style tags vs utility classes — direction matters
+
+The ladder above describes how to **author** styling from scratch: pick the
+lowest rung that suffices. It does **not** mean "rewrite every existing
+`<style>` block as utility classes." Pushing styling up the ladder is
+neutral-to-good; pushing it down (style block → class soup) is usually
+churn.
+
+**Rule of thumb when reviewing or refactoring:**
+
+- **Replacing classes with the right semantic element** — good (e.g.,
+  `<div class="callout">` → `<aside>`, `<span class="muted-small">` →
+  `<small class="text_70">`).
+- **Replacing a tiny `<style>` block with a composite/token class** —
+  good only when the block is **trivially redundant**: a 2–4 line block
+  whose entire content is one of `display: flex; flex-direction: column;
+  gap: var(--space_md)` (→ `column gap_md`), `display: flex;
+  align-items: center; gap: …` (→ `row gap_*`), or a single hardcoded
+  spacing/color that maps to a token. The original intent must survive
+  the rewrite verbatim.
+- **Replacing a non-trivial `<style>` block with a long class string** —
+  **don't**. If the block has hover/focus/active states, animations,
+  `@media` queries, parent-child selectors, pseudo-elements with
+  content, sticky/absolute positioning, theming-API CSS variables, or
+  more than ~6 utility classes' worth of properties, leave it as a
+  `<style>` block. A `<style>` block with design tokens reads better
+  than a 12-class string, gets IDE autocomplete, and survives
+  conditional logic without `clsx` gymnastics.
+
+When in doubt: **don't churn an existing `<style>` block.** The author
+chose a style block because the styling exceeded "simple." Refactor
+only when the block is plainly redundant with a single composite or
+token, and the diff actually shrinks the file.
+
 ### Elements That Come Pre-Styled
 
 | Element                         | What you get without classes                                        |
@@ -667,30 +701,45 @@ classes were migrated from `snake_case` to `kebab-case`.
 
 ## When to Use Classes vs Styles
 
-| Need                   | Utility class | Style tag | Inline style |
-| ---------------------- | ------------- | --------- | ------------ |
-| Style own elements     | **Preferred** | Complex cases | OK        |
-| Style child components | **Yes**       | No        | Limited      |
-| Hover/focus/responsive | **Yes**       | Yes       | No           |
-| Runtime dynamic values | No            | No        | **Yes**      |
-| IDE autocomplete       | No            | **Yes**   | Partial      |
+| Need                                       | Utility class | Style tag      | Inline style |
+| ------------------------------------------ | ------------- | -------------- | ------------ |
+| Simple layout (`row`, `column`, `gap_*`)   | **Preferred** | Overkill       | No           |
+| Design tokens on own elements (1–4 props)  | **Yes**       | OK             | OK           |
+| Non-trivial own-element styling            | OK            | **Preferred**  | No           |
+| Style child components                     | **Yes**       | No             | Limited      |
+| Hover/focus/active state machines          | Limited       | **Preferred**  | No           |
+| `@media` responsive layout                 | Limited       | **Preferred**  | No           |
+| Animations, transitions, keyframes         | No            | **Preferred**  | No           |
+| Parent-child / sibling selectors           | No            | **Only option** | No          |
+| Theming API (CSS vars consumers override)  | No            | **Yes**        | Yes (override) |
+| Runtime dynamic values                     | No            | No             | **Yes**      |
 
 ### Rules of Thumb
 
-- **Literal classes for primary layout** — `display:flex`, `gap_md`,
-  `justify-content:center` appear in nearly every component
-- **`<style>` blocks for complex styling** — media queries, animations,
-  complex selectors, multi-property pseudo-elements
+- **Style tags are the default for non-trivial styling.** Two or three
+  composite/token classes (`row gap_md p_md`) are simpler than a `<style>`
+  block; six properties spread across hover/focus/responsive is not.
+  Reach for a `<style>` block as soon as the styling outgrows a short
+  class string — it's almost always more readable, gets IDE autocomplete,
+  and composes with conditional logic without `clsx` gymnastics.
+- **Literal/composite classes for primary layout** — `row`, `column`,
+  `gap_md`, `p_lg`, `justify-content:center` appear in nearly every
+  component. This is the "simple case" where classes win.
 - **Token classes for design system values** — spacing (`p_md`, `gap_lg`)
-  and colors (`color_a_50`) maintain consistency; avoid hardcoded values
+  and colors (`color_a_50`) maintain consistency; avoid hardcoded values.
+- **`<style>` blocks for complex styling** — media queries, animations,
+  hover/focus state machines, parent-child selectors, multi-property
+  pseudo-elements, sticky/absolute positioning. All belong in `<style>`.
 - **Inline `style:prop` for runtime values** — dynamic widths, computed
-  colors, CSS variable overrides
-- **Utility class strings are fine at length** — 6-12 classes per element is
-  common and works well. Only move to `<style>` when readability suffers
-  (complex responsive logic, multi-property pseudo-elements) not just because
-  the class list is long
-- **`<style>` for responsive layouts** — `@media` queries in component styles
-  are conventional; reserve responsive modifiers for simple one-off overrides
+  colors, CSS variable overrides exposed by a child component's theming API.
+- **Long class strings are a smell, not a virtue.** 4–6 classes is the
+  comfortable upper bound; 8+ classes with several literal `property:value`
+  classes usually reads worse than the equivalent `<style>` block with
+  design tokens.
+- **Don't refactor existing `<style>` blocks into class strings.** See
+  §Style tags vs utility classes — direction matters. The author picked
+  a `<style>` block deliberately; only collapse it when the block is
+  plainly redundant with a single composite/token class.
 
 ## Quick Reference
 
