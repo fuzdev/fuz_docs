@@ -186,6 +186,50 @@ Discipline:
 - One arena per logical phase (per-file parse, per-request render). Drop
   at phase end.
 
+## Zero-copy archives (rkyv)
+
+**Status**: not currently in use. Documented as a candidate for content-
+addressed object storage — blake3-hashed bodies and `{path → hash}`
+snapshot manifests that get read repeatedly without intervening mutation.
+The HTTP / SSE / JSON-RPC wire surfaces stay on `serde` + `serde_json`.
+
+`serde_json` parses bytes into freshly allocated structs on every read.
+`rkyv` skips the parse step entirely: the on-disk bytes *are* the in-
+memory layout. An archive is reached via a single offset calculation
+into the buffer, returning a `&Archived<T>` that aliases the buffer.
+Internal pointers are encoded as offsets relative to the field's own
+position, so the buffer is valid whether it was just mmap'd, read from
+disk, or received over a socket — no fixup pass needed.
+
+When it fits:
+
+- mmap'd or repeatedly-read on-disk artifacts (content-addressed bodies,
+  packed snapshot manifests, cached index pages)
+- the hot path is "decode → traverse → drop without mutating"
+- the schema is stable across versions, or evolution is rare enough to
+  warrant explicit migration
+
+When it doesn't:
+
+- HTTP / SSE / JSON-RPC wire surfaces — `serde_json` stays the right call
+- mutation-heavy workloads — writes go through `AlignedVec`, not in-place
+  edits; rkyv is for the read side
+- one-shot reads where the buffer is decoded once and thrown away —
+  `serde`'s cost is amortized away
+
+Discipline:
+
+- Pair archived reads from untrusted input with `bytecheck` (rkyv's
+  validation layer). Without it, a malformed buffer can dereference out-
+  of-bounds offsets — and validation is opt-in, not the default.
+- Treat the archived schema as a wire format. Renaming a field or
+  reordering enum variants breaks every existing file on disk. The
+  pre-stable workspace policy still applies — break in place and
+  migrate, no compat shims — but the migration is "re-archive every
+  file," not just "update callers."
+- Don't mix archived and `serde`-derived shapes for the same type. Pick
+  one per type so a reader doesn't have to guess.
+
 ## SIMD on stable
 
 Portable SIMD (`std::simd`) is nightly-only and out of scope. On stable:
@@ -277,3 +321,15 @@ Honest notes to prevent cargo-culting:
   justified — single-target builds suffice for the workloads here.
 - **Manual AVX intrinsics with hand-unrolled loops**: covered by §Unsafe
   escape hatch; rare in practice and almost never the right first move.
+- **Left-right concurrency** (`evmap` and similar): two synchronized
+  copies of a structure for fully lock-free reads at the cost of 2×
+  memory, eventual consistency, and writers blocked on slow readers.
+  Niche to workloads where reads outnumber writes by orders of magnitude
+  *and* `DashMap` / `RwLock` have been profiled as the bottleneck. Today
+  the read paths here haven't hit that wall.
+- **Hand-rolled lock-free structures with `crossbeam-epoch`**: epoch-
+  based reclamation is the standard answer for "free a node only once
+  no reader can still see it," but writing your own lock-free stack /
+  queue / skiplist is rarely the right move. `DashMap`, `tokio::sync`,
+  and `crossbeam::queue` already vendor the well-tested versions —
+  reach for those before reaching for the primitive.

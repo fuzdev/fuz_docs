@@ -617,6 +617,69 @@ When to skip it:
 - **Secure file permissions**: `0o600` for files, `0o700` for directories
 - **Environment isolation**: Strip sensitive env vars before spawning sidecars
 
+### Type State (compile-time state machines)
+
+When a value progresses through a sequence of states — parse → validate
+→ authorize → dispatch, or unauthenticated → authenticated → closed —
+encode the state as a type parameter rather than a runtime field. Each
+transition consumes the value and returns it under a new state type, so
+calling a method in the wrong phase is a compile error, not a runtime
+check.
+
+```rust
+use std::marker::PhantomData;
+
+pub struct Unauthenticated;
+pub struct Authenticated;
+
+pub struct Session<S> {
+    inner: SessionInner,
+    _state: PhantomData<S>,
+}
+
+impl Session<Unauthenticated> {
+    pub fn authenticate(self, token: &str) -> Result<Session<Authenticated>, AuthError> {
+        // verify token, then:
+        // Ok(Session { inner: self.inner, _state: PhantomData })
+    }
+}
+
+impl Session<Authenticated> {
+    pub fn send(&self, msg: Message) -> Result<(), SendError> { /* ... */ }
+}
+```
+
+Calling `send()` on `Session<Unauthenticated>` fails to compile — the
+method doesn't exist for that state. `PhantomData<S>` is zero-sized;
+the compiled binary is identical to a hand-written single-state API.
+
+When it fits:
+
+- ActionSpec-shaped dispatch pipelines (parse → auth → validate →
+  rate-limit → dispatch → respond): each phase produces a typed handle
+  the next phase consumes.
+- Builder APIs where `.build()` before required fields are set should
+  fail to compile, not at runtime.
+- Connection / socket lifecycles: `Closed` → `Connecting` →
+  `Handshaking` → `Established` → `Closing`.
+- Filesystem transaction phases: `Staged` → `Committed` / `RolledBack`.
+
+When to skip it:
+
+- The set of states is dynamic or driven by data — a runtime state
+  machine (enum) is clearer and supports collections of mixed states.
+- Only one transition exists — the ceremony outweighs the win; a plain
+  method that returns the next type is enough.
+- The API is meant to be ergonomic for casual callers — type-state
+  shows up in every signature and in compiler error messages.
+
+Type-state is primarily a **correctness pattern**, not a performance
+pattern. The runtime check it removes (an `if authenticated` branch)
+is usually well-predicted and not a hot-path cost. The real win is
+that invalid sequences become unrepresentable. Performance wins, when
+they exist, are downstream of the optimizer seeing dead branches at
+compile time.
+
 ### Logging
 
 **Servers** (zzz_server): `tracing` with `tracing-subscriber` for structured
