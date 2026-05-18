@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.Bs7uXS_1.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DYNlVVst.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.DBx3dg5n.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DxtPoxle.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DJKk3Zif.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BUp2y4-X.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/9i5sigsQ.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.CXTbj-5z.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Q-_KxS9i.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.QkGT8Fhm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DAfuroMG.js" rel="modulepreload">
@@ -33,22 +33,22 @@
 		<link href="/_app/immutable/chunks/DAQioxTK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dqx3-4jf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/GMbY26Pr.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.ClkqjSvm.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/q8-RR7CU.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.Cp09tn6s.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Cy80DKFG.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/SMcemH51.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BB1JoMeo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B1Aohb1R.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Bx9_rILL.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/lLmzCaeX.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/XMm32VaW.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CWnClp4F.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/4ZzQP7kQ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/QeaNnfvq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/C4St1o-G.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/25.Cij8O_m_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BtrYuliI.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/25.DR9XZtHn.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/ByT6FwjD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BhJn2AK0.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BCSE9QTm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/De76P45D.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DyLrJDPQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BLXts0eZ.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.iAmfJnGz.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.WXbxZC1L.css" rel="stylesheet">
@@ -317,8 +317,15 @@ systemd/Docker/secrets infrastructure.<!--]--><!--]--><!----></p><!--]--><!--[8-
 goes in a generated, gitignored config file.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="testing"><!--[--><!--[2-->Testing<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code><!--[-1-->cargo test --workspace<!--]--><!----></code><!--]--><!--]--><!--[2-->. Unit tests in <!--]--><!--[3--><!--[-1--><code><!--[-1-->#[cfg(test)] mod tests<!--]--><!----></code><!--]--><!--]--><!--[2-->,
 integration tests in <!--]--><!--[3--><!--[-1--><code><!--[-1-->tests/<!--]--><!----></code><!--]--><!--]--><!--[2--> where applicable. fuz uses unit tests in
 modules; blake3 tests correctness in TypeScript (WASM vs native) and uses
-Wasmtime for the component. See each project's <!--]--><!--[3--><!--[-1--><code><!--[-1-->CLAUDE.md<!--]--><!----></code><!--]--><!--]--><!--[2--> for specifics.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="cli-patterns"><!--[--><!--[2-->CLI Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Manual arg parsing (no clap) is the default — keeps binary size and compile
-times down. The <!--]--><!--[3--><!--[-1--><code><!--[-1-->fuz<!--]--><!----></code><!--]--><!--]--><!--[2--> shape is a simple <!--]--><!--[3--><!--[-1--><code><!--[-1-->match<!--]--><!----></code><!--]--><!--]--><!--[2--> on the first arg in <!--]--><!--[3--><!--[-1--><code><!--[-1-->main.rs<!--]--><!----></code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="rust" class="svelte-jqsy8a"><!--[0-->fn main() {
+Wasmtime for the component. See each project's <!--]--><!--[3--><!--[-1--><code><!--[-1-->CLAUDE.md<!--]--><!----></code><!--]--><!--]--><!--[2--> for specifics.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="cli-patterns"><!--[--><!--[2-->CLI Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Arg parsing tracks binary size. Three tiers:<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->| Use case | Parser | +bytes vs <!--]--><!--[3--><!--[-1--><code><!--[-1-->println!("hello")<!--]--><!----></code><!--]--><!--]--><!--[2--> |
+|----------|--------|-------------------------------|
+| Backend daemons, a few flags | manual <!--]--><!--[3--><!--[-1--><code><!--[-1-->std::env::args<!--]--><!----></code><!--]--><!--]--><!--[2--> | +5 KB |
+| User-facing CLIs with subcommands (fuz, xtask) | <!--]--><!--[4--><strong><!--[--><!--[2-->argh<!--]--><!--]--><!----></strong><!--]--><!--[2--> | +16 KB |
+| Needs env-var binding, shell completions, or <!--]--><!--[3--><!--[-1--><code><!--[-1-->wrap_help<!--]--><!----></code><!--]--><!--]--><!--[2--> | clap (<!--]--><!--[3--><!--[-1--><code><!--[-1-->derive<!--]--><!----></code><!--]--><!--]--><!--[2-->) | +340 KB |<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Default is <!--]--><!--[4--><strong><!--[--><!--[2-->manual<!--]--><!--]--><!----></strong><!--]--><!--[2--> for daemons and <!--]--><!--[4--><strong><!--[--><!--[2-->argh<!--]--><!--]--><!----></strong><!--]--><!--[2--> for subcommanded CLIs. argh
+is schema-driven (<!--]--><!--[3--><!--[-1--><code><!--[-1-->#[derive(FromArgs)]<!--]--><!----></code><!--]--><!--]--><!--[2-->) — same mental model as fuz_util's
+<!--]--><!--[3--><!--[-1--><code><!--[-1-->args_parse<!--]--><!----></code><!--]--><!--]--><!--[2--> (Zod). Where a CLI exists in both TS and Rust, align flag
+names and aliases (<!--]--><!--[3--><!--[-1--><code><!--[-1-->--port<!--]--><!----></code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code><!--[-1-->-p<!--]--><!----></code><!--]--><!--]--><!--[2-->).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Reach for clap only when env-var binding (<!--]--><!--[3--><!--[-1--><code><!--[-1-->#[arg(env = "FUZ_…")]<!--]--><!----></code><!--]--><!--]--><!--[2-->), shell
+completion generation, or terminal-width help wrapping is worth the +340 KB.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Manual daemon shape — <!--]--><!--[3--><!--[-1--><code><!--[-1-->match<!--]--><!----></code><!--]--><!--]--><!--[2--> on the first arg in <!--]--><!--[3--><!--[-1--><code><!--[-1-->main.rs<!--]--><!----></code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="rust" class="svelte-jqsy8a"><!--[0-->fn main() {
     if let Err(e) = run() {
         eprintln!("error: {e}");
         if let Some(hint) = e.hint() {
@@ -336,7 +343,8 @@ async fn run() -> Result&lt;(), CliError> {
         "status" => status::cmd_status(&amp;args[2..]).await,
         _ => { print_usage(); std::process::exit(1); }
     }
-}<!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Shared input modes: file path, <!--]--><!--[3--><!--[-1--><code><!--[-1-->--content &lt;string><!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->--stdin<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="dependencies"><!--[--><!--[2-->Dependencies<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Minimal dependency philosophy. Prefer workspace-level sharing. No new deps
+}<!--]--></code><!--]--><!--[8--><p><!--[--><!--[2-->Shared input modes: file path, <!--]--><!--[3--><!--[-1--><code><!--[-1-->--content &lt;string><!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->--stdin<!--]--><!----></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->See lore <!--]--><!--[3--><!--[-1--><code><!--[-1-->rust_conventions.md<!--]--><!----></code><!--]--><!--]--><!--[2--> for the argh code example, <!--]--><!--[3--><!--[-1--><code><!--[-1-->args_parse<!--]--><!----></code><!--]--><!--]--><!--[2-->
+parity notes, and the full escalation rationale.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="dependencies"><!--[--><!--[2-->Dependencies<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Minimal dependency philosophy. Prefer workspace-level sharing. No new deps
 without explicit request.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h3 id="shared"><!--[--><!--[2-->Shared<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->| Crate                              | Purpose            | Used by                            |
 | ---------------------------------- | ------------------ | ---------------------------------- |
 | <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde_json<!--]--><!----></code><!--]--><!--]--><!--[2-->              | Serialization      | fuz, zzz_server (blake3 bench crate only) |
@@ -369,7 +377,10 @@ await, or switch to <!--]--><!--[3--><!--[-1--><code><!--[-1-->tokio::sync::*<!-
 | <!--]--><!--[3--><!--[-1--><code><!--[-1-->serde-wasm-bindgen<!--]--><!----></code><!--]--><!--]--><!--[2-->  | Serde bridging at the JS boundary                  |
 | <!--]--><!--[3--><!--[-1--><code><!--[-1-->wit-bindgen<!--]--><!----></code><!--]--><!--]--><!--[2-->         | Component model (blake3)                           |
 | <!--]--><!--[3--><!--[-1--><code><!--[-1-->napi<!--]--><!----></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code><!--[-1-->napi-derive<!--]--><!----></code><!--]--><!--]--><!--[2--> | Node.js/Bun N-API bindings                         |<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->See <!--]--><!--[7--><!--[0--><!--[0--><a href="/skills/fuz-stack/references/wasm-patterns"><!--[--><!--[2-->./wasm-patterns<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> for build targets, WIT design, and optimization
-profiles.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="patterns"><!--[--><!--[2-->Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[10--><!----><h3 id="sidecar-controller-subprocess-multiplexing-fuz"><!--[--><!--[2-->Sidecar Controller / Subprocess Multiplexing (fuz)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code><!--[-1-->fuz_sidecar<!--]--><!----></code><!--]--><!--]--><!--[2--> hosts the pattern for managing long-running subprocesses that
+profiles.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->CLI / arg parsing<!--]--><!--]--><!----></strong><!--]--><!--[2--> (opt-in per binary):<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->| Crate       | Purpose                                  | Used by         |
+| ----------- | ---------------------------------------- | --------------- |
+| <!--]--><!--[3--><!--[-1--><code><!--[-1-->argh<!--]--><!----></code><!--]--><!--]--><!--[2-->      | Derive arg parser, optimized for size    | fuz CLI, xtask  |
+| <!--]--><!--[3--><!--[-1--><code><!--[-1-->pico-args<!--]--><!----></code><!--]--><!--]--><!--[2--> | Minimal argv parser, no help generation  | (fallback only) |<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Backend daemons use manual <!--]--><!--[3--><!--[-1--><code><!--[-1-->std::env::args()<!--]--><!----></code><!--]--><!--]--><!--[2--> (no dep). See §CLI Patterns.<!--]--><!--]--><!----></p><!--]--><!--[10--><!----><h2 id="patterns"><!--[--><!--[2-->Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[10--><!----><h3 id="sidecar-controller-subprocess-multiplexing-fuz"><!--[--><!--[2-->Sidecar Controller / Subprocess Multiplexing (fuz)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code><!--[-1-->fuz_sidecar<!--]--><!----></code><!--]--><!--]--><!--[2--> hosts the pattern for managing long-running subprocesses that
 multiplex many concurrent requests. The shape:<!--]--><!--]--><!----></p><!--]--><!--[11--><code data-lang="rust" class="svelte-jqsy8a"><!--[0-->// Generic controller, configured per runtime
 pub struct SpawnConfig {
     pub build_command: fn(script: &amp;Path, config: Option&lt;&amp;Path>) -> Command,
@@ -461,15 +472,15 @@ conventions.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></div><!----><!--]
 			
 			<script>
 				{
-					__sveltekit_rhf3b0 = {
+					__sveltekit_1f954sc = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.Bs7uXS_1.js"),
-						import("/_app/immutable/entry/app.CXTbj-5z.js")
+						import("/_app/immutable/entry/start.DBx3dg5n.js"),
+						import("/_app/immutable/entry/app.QkGT8Fhm.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 25],
