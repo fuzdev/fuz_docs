@@ -457,8 +457,23 @@ Wasmtime for the component. See each project's `CLAUDE.md` for specifics.
 
 ## CLI Patterns
 
-Manual arg parsing (no clap) is the default — keeps binary size and compile
-times down. The `fuz` shape is a simple `match` on the first arg in `main.rs`:
+Arg parsing tracks binary size. Three tiers:
+
+| Use case | Parser | +bytes vs `println!("hello")` |
+|----------|--------|-------------------------------|
+| Backend daemons, a few flags | manual `std::env::args` | +5 KB |
+| User-facing CLIs with subcommands (fuz, xtask) | **argh** | +16 KB |
+| Needs env-var binding, shell completions, or `wrap_help` | clap (`derive`) | +340 KB |
+
+Default is **manual** for daemons and **argh** for subcommanded CLIs. argh
+is schema-driven (`#[derive(FromArgs)]`) — same mental model as fuz_util's
+`args_parse` (Zod). Where a CLI exists in both TS and Rust, align flag
+names and aliases (`--port` / `-p`).
+
+Reach for clap only when env-var binding (`#[arg(env = "FUZ_…")]`), shell
+completion generation, or terminal-width help wrapping is worth the +340 KB.
+
+Manual daemon shape — `match` on the first arg in `main.rs`:
 
 ```rust
 fn main() {
@@ -483,6 +498,9 @@ async fn run() -> Result<(), CliError> {
 ```
 
 Shared input modes: file path, `--content <string>`, `--stdin`.
+
+See lore `rust_conventions.md` for the argh code example, `args_parse`
+parity notes, and the full escalation rationale.
 
 ## Dependencies
 
@@ -552,6 +570,15 @@ await, or switch to `tokio::sync::*`. See ./rust-perf.md §Async lock hygiene.
 
 See ./wasm-patterns.md for build targets, WIT design, and optimization
 profiles.
+
+**CLI / arg parsing** (opt-in per binary):
+
+| Crate       | Purpose                                  | Used by         |
+| ----------- | ---------------------------------------- | --------------- |
+| `argh`      | Derive arg parser, optimized for size    | fuz CLI, xtask  |
+| `pico-args` | Minimal argv parser, no help generation  | (fallback only) |
+
+Backend daemons use manual `std::env::args()` (no dep). See §CLI Patterns.
 
 ## Patterns
 
