@@ -32964,11 +32964,11 @@
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
 				"@fuzdev/fuz_ui": "^0.192.0",
-				"@fuzdev/fuz_util": "^0.59.0",
+				"@fuzdev/fuz_util": "^0.60.1",
 				"@fuzdev/gro": "^0.199.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@node-rs/argon2": "^2.0.2",
-				"@ryanatkn/eslint-config": "^0.11.0",
+				"@ryanatkn/eslint-config": "^0.12.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
 				"@sveltejs/adapter-static": "^3.0.10",
 				"@sveltejs/kit": "^2.55.0",
@@ -53690,7 +53690,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface for route iteration and error-coverage\nscoping. Must be `kind: 'inline'` in P1."
+									"doc_comment": "Source of the app surface for route iteration and error-coverage\nscoping. Currently requires `kind: 'inline'` — the cross-process\nsnapshot variant lands alongside the spawned-backend transport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -53734,7 +53734,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — admin"
 								}
 							],
-							"source_line": 136,
+							"source_line": 137,
 							"type_signature": "(options: StandardAdminIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -54729,7 +54729,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface. Must be `kind: 'inline'` in P1."
+									"doc_comment": "Source of the app surface. Currently requires `kind: 'inline'` —\nthe cross-process snapshot variant lands alongside the spawned-backend\ntransport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -54754,14 +54754,14 @@
 						{
 							"name": "describe_audit_completeness_tests",
 							"kind": "function",
-							"doc_comment": "Composable audit log completeness test suite.\n\nVerifies that every auth mutation route produces the correct audit log\nevent type. Exercises routes via HTTP requests against a real PGlite\ndatabase, then queries the `audit_log` table to verify events.",
+							"doc_comment": "Composable audit log completeness test suite.\n\nVerifies that every auth mutation route produces the correct audit log\nevent type. Exercises routes via HTTP requests against a real PGlite\ndatabase, then reads events back through the `audit_log_list` RPC\n(the production observation path the admin UI consumes).",
 							"throws": [
 								{
 									"type": "Error",
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 195,
+							"source_line": 200,
 							"type_signature": "(options: AuditCompletenessTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -55323,8 +55323,8 @@
 						{
 							"name": "default_in_process_setup",
 							"kind": "function",
-							"doc_comment": "Build a `SetupTest` that creates a fresh `TestApp` per call via\n`create_test_app` and projects it into the `TestFixture` shape.\n\nSame factory inputs `create_test_app` already takes — this helper\nis a projection layer, not a new lifecycle. fuz_app's own `src/test/`\nand the 41 external consumer call sites in zzz / visionesdelcaribe.org /\nmageguild / private_zap pass `default_in_process_setup({...factory_inputs})`\nin place of the old per-suite factory-input bundle.\n\nThe describe-level `auth_integration_truncate_tables` / pglite WASM\ncache lifecycle stays in `create_pglite_factory` / `create_describe_db`\n(`testing/db.js`) — `default_in_process_setup` doesn't manage db state\nbeyond what `create_test_app` already does.",
-							"source_line": 134,
+							"doc_comment": "Build a `SetupTest` that creates a fresh `TestApp` per call via\n`create_test_app` and projects it into the `TestFixture` shape.\n\nSame factory inputs `create_test_app` already takes — this helper\nis a projection layer, not a new lifecycle. fuz_app's own `src/test/`\nand consumer suites pass `default_in_process_setup({...factory_inputs})`\nin place of the old per-suite factory-input bundle.\n\nThe describe-level `auth_integration_truncate_tables` / pglite WASM\ncache lifecycle stays in `create_pglite_factory` / `create_describe_db`\n(`testing/db.js`) — `default_in_process_setup` doesn't manage db state\nbeyond what `create_test_app` already does.",
+							"source_line": 133,
 							"type_signature": "(options: CreateTestAppOptions): SetupTest",
 							"return_type": "SetupTest",
 							"parameters": [
@@ -55338,7 +55338,7 @@
 							"name": "DefaultInProcessSuiteOptions",
 							"kind": "type",
 							"doc_comment": "Consumer-facing options for `default_in_process_suite_options` — the\nminimal factory inputs both `default_in_process_setup` and\n`create_test_app_surface_spec` consume to produce the\n`{setup_test, surface_source, capabilities}` bundle.",
-							"source_line": 157,
+							"source_line": 156,
 							"type_signature": "DefaultInProcessSuiteOptions",
 							"properties": [
 								{
@@ -55378,14 +55378,14 @@
 						{
 							"name": "default_in_process_suite_options",
 							"kind": "function",
-							"doc_comment": "Build the `{setup_test, surface_source, capabilities}` bundle for any\nin-process Tier 1 suite call in a single helper invocation. Reduces\nthe new suite signature from \"three required fields composed by hand\"\nto a single spread.\n\n```ts\ndescribe_round_trip_validation({\n  ...default_in_process_suite_options({\n    session_options,\n    create_route_specs,\n    rpc_endpoints: [rpc_endpoint_spec],\n  }),\n  skip_routes,\n});\n```\n\nSuites with their own per-test app-construction needs\n(`describe_rate_limiting_tests`, `describe_rpc_round_trip_tests`)\nadditionally pass `session_options` / `rpc_endpoints` separately at\nthe same call site — the helper covers the shared `setup_test` /\n`surface_source` / `capabilities` triple.",
-							"source_line": 206,
-							"type_signature": "(options: DefaultInProcessSuiteOptions): { setup_test: SetupTest; surface_source: SurfaceSource; capabilities: BackendCapabilities; }",
-							"return_type": "{ setup_test: SetupTest; surface_source: SurfaceSource; capabilities: BackendCapabilities; }",
+							"doc_comment": "Build the full in-process suite bundle in a single helper invocation.\nOutput covers `{setup_test, surface_source, capabilities}` plus every\nfactory input the Tier 1 suites read at their top level\n(`session_options`, `create_route_specs`, `rpc_endpoints`) — so the\ncall site spreads once and adds only suite-specific extras\n(`roles`, `skip_routes`, `input_overrides`, `db_factories`, ...).\n\n```ts\n// Suite-extras-free call: helper output is the entire options bag.\ndescribe_round_trip_validation(default_in_process_suite_options({\n  session_options,\n  create_route_specs,\n  rpc_endpoints: [rpc_endpoint_spec],\n}));\n\n// With suite-specific extras: spread and add.\ndescribe_standard_admin_integration_tests({\n  ...default_in_process_suite_options({\n    session_options, create_route_specs, rpc_endpoints,\n    keeper_roles: [ROLE_KEEPER, ROLE_ADMIN],\n  }),\n  roles,\n});\n```\n\nSuites that don't read `session_options` / `rpc_endpoints` at their\ntop level (`round_trip`, `data_exposure`) accept the spread anyway —\nexcess properties on spread sources aren't checked by TS, and the\nuniform shape keeps consumer call sites mechanical.",
+							"source_line": 213,
+							"type_signature": "<const O extends DefaultInProcessSuiteOptions>(options: O): { setup_test: SetupTest; surface_source: SurfaceSource; capabilities: BackendCapabilities; session_options: O[\"session_options\"]; create_route_specs: O[\"create_route_specs\"]; rpc_endpoints: O[\"rpc_endpoints\"]; }",
+							"return_type": "{ setup_test: SetupTest; surface_source: SurfaceSource; capabilities: BackendCapabilities; session_options: O[\"session_options\"]; create_route_specs: O[\"create_route_specs\"]; rpc_endpoints: O[\"rpc_endpoints\"]; }",
 							"parameters": [
 								{
 									"name": "options",
-									"type": "DefaultInProcessSuiteOptions"
+									"type": "O"
 								}
 							]
 						}
@@ -55471,7 +55471,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface for schema-level + route-iteration checks.\nMust be `kind: 'inline'` in P1 — cross-process consumers (Phase 3)\nwill pass the snapshot variant."
+									"doc_comment": "Source of the app surface for schema-level + route-iteration checks.\nCurrently requires `kind: 'inline'` — the cross-process snapshot\nvariant lands alongside the spawned-backend transport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -56334,8 +56334,8 @@
 						{
 							"name": "KeeperHeaderProvider",
 							"kind": "type",
-							"doc_comment": "Header-builder triple shared by `TestApp` (legacy in-process shape) and\n`TestFixture` (cross-backend fixture protocol). Both satisfy this shape\nstructurally — `pick_auth_headers` accepts either without a cast.",
-							"source_line": 324,
+							"doc_comment": "Header-builder triple shared by `TestApp` (in-process) and `TestFixture`\n(cross-backend fixture protocol). Both satisfy this shape structurally —\n`pick_auth_headers` accepts either without a cast.",
+							"source_line": 314,
 							"type_signature": "KeeperHeaderProvider",
 							"properties": [
 								{
@@ -56358,6 +56358,7 @@
 						{
 							"name": "pick_auth_headers",
 							"kind": "function",
+							"doc_comment": "Pick request headers matching a route spec's auth requirement.\n\nMaps `RouteAuth` onto a test account's credentials:\n- `none` — origin headers only\n- `authenticated` — the authed account's session cookie\n- `role: admin` — the admin account's session cookie\n- `role: <other>` — the keeper provider's session\n- `keeper` — the keeper provider's daemon token",
 							"source_line": 330,
 							"type_signature": "(spec: RouteSpec, keeper: KeeperHeaderProvider, authed_account: TestAccount, admin_account: TestAccount): Record<...>",
 							"return_type": "Record<string, string>",
@@ -56420,7 +56421,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface for route iteration and error-coverage\nscoping. Must be `kind: 'inline'` in P1."
+									"doc_comment": "Source of the app surface for route iteration and error-coverage\nscoping. Currently requires `kind: 'inline'` — the cross-process\nsnapshot variant lands alongside the spawned-backend transport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -56439,6 +56440,12 @@
 									"kind": "variable",
 									"type_signature": "RpcEndpointsSuiteOption",
 									"doc_comment": "RPC endpoint specs — required. This suite dispatches\n`account_verify`, `account_session_*`, and `account_token_*` via\n`rpc_call_for_spec` (the `/api/account/verify` REST route is a\nstatus-only nginx shim with no payload). Hard-fails via\n`require_rpc_endpoint_path` on setup so consumer projects see a\nclear setup error instead of confusing test failures.\n\nAccepts either an array (eager) or a factory — see `rpc_helpers.ts`\nfor the union semantics. The factory must return the same endpoint\n`path` regardless of ctx — invoked once at setup with a stub ctx\nfor path lookup; the running backend handles live dispatch."
+								},
+								{
+									"name": "error_coverage_min",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Minimum error-coverage ratio to enforce on the scoped REST surface\n(login / logout / password / signup + the shared RPC endpoint).\nDefault `DEFAULT_INTEGRATION_ERROR_COVERAGE` (0.2). Set to `0` to\nskip the assertion entirely — useful for consumers with minimal\nroute sets whose declared error codes outpace the suite's\ndenial-path drivers."
 								}
 							]
 						},
@@ -56452,7 +56459,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 115,
+							"source_line": 125,
 							"type_signature": "(options: StandardIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -56855,27 +56862,9 @@
 							"name": "RateLimitingTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_rate_limiting_tests`.",
-							"source_line": 57,
+							"source_line": 54,
 							"type_signature": "RateLimitingTestOptions",
 							"properties": [
-								{
-									"name": "setup_test",
-									"kind": "variable",
-									"type_signature": "SetupTest",
-									"doc_comment": "Forward-compat slot for cross-backend uniformity — see module\ndocstring. The suite body constructs its own per-test `TestApp`\ndirectly to vary rate-limiter configs and ignores this field\nin P1; Phase 3 will replace it with `describe_with_backend_restart`."
-								},
-								{
-									"name": "surface_source",
-									"kind": "variable",
-									"type_signature": "SurfaceSource",
-									"doc_comment": "Forward-compat slot for cross-backend uniformity. Unused in P1."
-								},
-								{
-									"name": "capabilities",
-									"kind": "variable",
-									"type_signature": "BackendCapabilities",
-									"doc_comment": "Forward-compat slot for cross-backend uniformity. Unused in P1."
-								},
 								{
 									"name": "session_options",
 									"kind": "variable",
@@ -56924,7 +56913,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 118,
+							"source_line": 104,
 							"type_signature": "(options: RateLimitingTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -56935,7 +56924,7 @@
 							]
 						}
 					],
-					"module_comment": "Rate limiting integration test suite.\n\nVerifies that sensitive routes (login, bootstrap, token creation) enforce\nrate limits when rate limiters are enabled. Tests create a tight rate limiter\n(2 attempts / 1 minute) and fire requests until 429 is returned.\n\nConsumers call `describe_rate_limiting_tests` with their route factory and\nsession config — rate limit enforcement tests come for free.\n\nStructural exception (P1): each test body constructs its own `TestApp`\nwith a per-test rate limiter override in `app_options` — `setup_test`'s\nsingle-fixture model can't carry three different rate-limiter\nconfigurations. The `setup_test` / `surface_source` / `capabilities`\nfields are present for uniformity with the other Tier 1 suites and as\na forward-compat slot for Phase 3's `describe_with_backend_restart`\npattern, but the suite body bypasses them — see the cross-backend\nquest's §3.4 (rate-limiter state decision).",
+					"module_comment": "Rate limiting integration test suite.\n\nVerifies that sensitive routes (login, bootstrap, token creation) enforce\nrate limits when rate limiters are enabled. Tests create a tight rate limiter\n(2 attempts / 1 minute) and fire requests until 429 is returned.\n\nConsumers call `describe_rate_limiting_tests` with their route factory and\nsession config — rate limit enforcement tests come for free.\n\nEach test body constructs its own `TestApp` with a per-test rate limiter\noverride in `app_options`, so this suite reads its inputs directly from\nthe options bag instead of going through the per-test fixture protocol —\nthe single-fixture model can't carry three different rate-limiter\nconfigurations. Consumers pass `default_in_process_suite_options(...)`\nanyway for shape uniformity with the other Tier 1 suites; the extra\n`{setup_test, surface_source, capabilities}` fields from the helper\nspread are ignored by TS and the suite body alike.",
 					"dependencies": [
 						"auth/account_action_specs.ts",
 						"auth/migrations.ts",
@@ -57029,7 +57018,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface for route iteration. P1 requires\n`kind: 'inline'` — Phase 3's cross-process snapshot variant isn't\nwired through this suite yet."
+									"doc_comment": "Source of the app surface for route iteration. Currently requires\n`kind: 'inline'` — the cross-process snapshot variant lands alongside\nthe spawned-backend transport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -57536,7 +57525,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface for RPC endpoint enumeration. Must be `kind: 'inline'` in P1."
+									"doc_comment": "Source of the app surface for RPC endpoint enumeration. Currently\nrequires `kind: 'inline'` — the cross-process snapshot variant lands\nalongside the spawned-backend transport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -57574,7 +57563,7 @@
 							"name": "describe_rpc_round_trip_tests",
 							"kind": "function",
 							"doc_comment": "Run schema-driven round-trip validation for RPC endpoints.\n\nFor each method:\n1. Generate valid params from the action's input schema\n2. Fire a POST request with JSON-RPC envelope\n3. For `side_effects: false` methods, also fire a GET request\n4. Validate response is well-formed JSON-RPC; successful responses are\n   also validated against the method's declared output schema\n\nError responses (from missing DB state, etc.) are expected and validated\nas well-formed JSON-RPC errors. Successful responses are validated against\n`action.spec.output`.",
-							"source_line": 110,
+							"source_line": 114,
 							"type_signature": "(options: RpcRoundTripTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -58120,7 +58109,7 @@
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "SurfaceSource",
-									"doc_comment": "Source of the app surface. Must be `kind: 'inline'` in P1."
+									"doc_comment": "Source of the app surface. Currently requires `kind: 'inline'` —\nthe cross-process snapshot variant lands alongside the spawned-backend\ntransport plumbing."
 								},
 								{
 									"name": "capabilities",
@@ -58158,7 +58147,7 @@
 							"name": "describe_standard_tests",
 							"kind": "function",
 							"doc_comment": "Run both standard integration and admin integration test suites.\n\nAdmin tests are only included when `roles` is provided.",
-							"source_line": 58,
+							"source_line": 62,
 							"type_signature": "(options: StandardTestOptions): void",
 							"return_type": "void",
 							"parameters": [
