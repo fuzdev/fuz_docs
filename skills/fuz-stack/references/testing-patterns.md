@@ -900,7 +900,7 @@ harness drives the real `register_action_ws` dispatcher and
 per-action auth, input validation, `ctx.notify`, and broadcast fan-out
 all run through the real code paths.
 
-Convention (used in tx, zzz, undying.dealt.dev):
+Convention (used in zap, zzz):
 
 1. **All round-trip helpers live in fuz_app**
    (`@fuzdev/fuz_app/testing/ws_round_trip.js`):
@@ -928,12 +928,10 @@ Convention (used in tx, zzz, undying.dealt.dev):
    - `keeper_identity()` — default identity for keeper-authed connections.
 
 2. **Repo-local `ws_test_harness.ts` is only for project-specific
-   setup** — not a re-implementation of the above. undying has one
-   (memoized pglite+schema+seed+world_state init per worker, plus a
-   `make_client_tracker` that closes tracked clients in `afterEach`
-   because module-level world_state leaks between tests). tx and zzz
-   have no repo-local harness at all — tests import directly from
-   `@fuzdev/fuz_app/testing/ws_round_trip.js`.
+   setup** — not a re-implementation of the above. Repos with
+   memoized per-worker state (pglite + schema + seed) can add one;
+   zap and zzz have no repo-local harness at all and tests import
+   directly from `@fuzdev/fuz_app/testing/ws_round_trip.js`.
 
 3. **Split test files by aspect** (same as other test suites —
    see _Test File Naming_ above):
@@ -942,11 +940,10 @@ Convention (used in tx, zzz, undying.dealt.dev):
    - `ws.integration.broadcast.test.ts` — `create_broadcast_api`
      fan-out, close-removes-from-transport
 
-4. **DB-backed WS tests** (e.g. undying.dealt.dev) use the
-   `.db.test.ts` suffix and memoize the harness per worker since
-   `isolate: false` + `fileParallelism: false` means module-level state
-   (world_state globals, embodiments map) would otherwise double-init.
-   Non-DB WS tests (tx, zzz) build a fresh harness per test — setup
+4. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize
+   the harness per worker when `isolate: false` + `fileParallelism: false`
+   means module-level state would otherwise double-init.
+   Non-DB WS tests (zap, zzz) build a fresh harness per test — setup
    is cheap and each test can supply its own ad-hoc specs + handlers.
 
 ## Quick Reference

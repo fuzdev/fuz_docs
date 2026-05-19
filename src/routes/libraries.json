@@ -12,7 +12,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.59.1",
+			"version": "0.60.1",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
 			"logo": "logo.svg",
@@ -41,11 +41,12 @@
 				"deploy": "gro deploy",
 				"benchmark": "gro run src/benchmarks/run.ts",
 				"benchmark:save": "gro run src/benchmarks/run.ts --save",
-				"benchmark_slugify": "gro run src/benchmarks/slugify.benchmark.ts",
-				"benchmark_deep_equal": "gro run src/benchmarks/deep_equal.benchmark.ts",
-				"benchmark_deep_equal_comparison": "gro run src/benchmarks/deep_equal_comparison.benchmark.ts",
-				"benchmark_random": "gro run src/benchmarks/random.benchmark.ts",
-				"benchmark_random_quality": "gro run src/benchmarks/random_quality.ts"
+				"benchmark:clean": "rm -f src/benchmarks/baseline.json",
+				"benchmark:slugify": "gro run src/benchmarks/slugify.benchmark.ts",
+				"benchmark:deep_equal": "gro run src/benchmarks/deep_equal.benchmark.ts",
+				"benchmark:deep_equal_comparison": "gro run src/benchmarks/deep_equal_comparison.benchmark.ts",
+				"benchmark:random": "gro run src/benchmarks/random.benchmark.ts",
+				"benchmark:random_quality": "gro run src/benchmarks/random_quality.ts"
 			},
 			"type": "module",
 			"engines": {
@@ -147,7 +148,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.59.1",
+			"version": "0.60.1",
 			"modules": [
 				{
 					"path": "args.ts",
@@ -620,22 +621,22 @@
 						{
 							"name": "BenchmarkBaselineEntry",
 							"kind": "type",
-							"doc_comment": "Schema for a single benchmark entry in the baseline.",
-							"source_line": 28,
-							"type_signature": "ZodObject<{ name: ZodString; mean_ns: ZodNumber; p50_ns: ZodNumber; std_dev_ns: ZodNumber; min_ns: ZodNumber; max_ns: ZodNumber; ... 5 more ...; sample_size: ZodNumber; }, $strip>"
+							"doc_comment": "Schema for a single benchmark entry in the baseline.\n\n`outlier_ratio` is persisted as a noise signal independent of the\npost-cleaning `std_dev_ns`/cv: outlier removal *deflates* std_dev (the\ncleaned set is by construction less variable than the raw set), so cv\nalone misses runs where a third of the iterations were tail events.\n`benchmark_baseline_compare` OR-gates `noise_warning` on this field so\na noisy raw distribution gets flagged even when the cleaned cv looks tight.",
+							"source_line": 50,
+							"type_signature": "ZodObject<{ name: ZodString; mean_ns: ZodNumber; p50_ns: ZodNumber; std_dev_ns: ZodNumber; min_ns: ZodNumber; max_ns: ZodNumber; ... 7 more ...; budget: ZodObject<...>; }, $strip>"
 						},
 						{
 							"name": "BenchmarkBaseline",
 							"kind": "type",
-							"doc_comment": "Schema for the complete baseline file.",
-							"source_line": 47,
-							"type_signature": "ZodObject<{ version: ZodNumber; timestamp: ZodString; git_commit: ZodNullable<ZodString>; git_branch: ZodNullable<ZodString>; node_version: ZodString; entries: ZodArray<...>; }, $strip>"
+							"doc_comment": "Schema for the complete baseline file.\n\n`metadata` is an opt-in passthrough bag for context that applies to the whole\nrun but isn't part of the comparison math — corpus identity (file counts,\ntotal bytes), dependency versions, binary sizes, hardware notes, build flags.\nPass it on save and read it back on load; it's not interpreted by\n`benchmark_baseline_compare`. The intended use is to let consumers attach\n\"did this run measure the same thing as the baseline?\" context (e.g. corpus\nshape) without forking the schema, then surface mismatches in their own\nreporting. fuz_util doesn't surface metadata in comparison output because it\nhas no shape — consumers know what their metadata means and how to display\nthe diff.",
+							"source_line": 82,
+							"type_signature": "ZodObject<{ version: ZodNumber; timestamp: ZodString; git_commit: ZodNullable<ZodString>; git_branch: ZodNullable<ZodString>; node_version: ZodString; entries: ZodArray<...>; metadata: ZodOptional<...>; }, $strip>"
 						},
 						{
 							"name": "BenchmarkBaselineSaveOptions",
 							"kind": "type",
 							"doc_comment": "Options for saving a baseline.",
-							"source_line": 60,
+							"source_line": 96,
 							"type_signature": "BenchmarkBaselineSaveOptions",
 							"properties": [
 								{
@@ -655,6 +656,12 @@
 									"kind": "variable",
 									"type_signature": "string | null",
 									"doc_comment": "Git branch name (auto-detected if not provided)"
+								},
+								{
+									"name": "metadata",
+									"kind": "variable",
+									"type_signature": "Record<string, unknown>",
+									"doc_comment": "Opt-in passthrough for run-level context (corpus identity, dependency\nversions, binary sizes, hardware notes). Round-trips on `_load` and is\naccessible via `BenchmarkBaselineComparisonResult.baseline_metadata`, but\nis *not* interpreted by `_compare` — consumers decide what to do with\nmismatches. Keep values JSON-serializable; this is written verbatim to\nthe baseline file."
 								}
 							]
 						},
@@ -662,7 +669,7 @@
 							"name": "BenchmarkBaselineLoadOptions",
 							"kind": "type",
 							"doc_comment": "Options for loading a baseline.",
-							"source_line": 72,
+							"source_line": 117,
 							"type_signature": "BenchmarkBaselineLoadOptions",
 							"properties": [
 								{
@@ -677,7 +684,7 @@
 							"name": "BenchmarkBaselineCompareOptions",
 							"kind": "type",
 							"doc_comment": "Options for comparing against a baseline.",
-							"source_line": 80,
+							"source_line": 125,
 							"type_signature": "BenchmarkBaselineCompareOptions",
 							"extends": ["BenchmarkBaselineLoadOptions"],
 							"properties": [
@@ -698,6 +705,18 @@
 									"kind": "variable",
 									"type_signature": "number",
 									"doc_comment": "Minimum percentage difference to consider meaningful, as a ratio.\nPassed through to `benchmark_stats_compare`. See `BenchmarkCompareOptions`.\nDefault: 0.10 (10%)"
+								},
+								{
+									"name": "noise_warning_cv_threshold",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Coefficient of variation (`std_dev / mean`) at or above which a\ncomparison is flagged with `noise_warning: true`. Doesn't affect\nbucketing — the task still routes to regressions / improvements /\nunchanged as the Welch math dictates — but tells the formatter (and\nany custom consumer) that the underlying measurement is noisy enough\nthat a \"significant\" call should be read with skepticism. The default\nis calibrated for system-noise/thermal/background-load contamination,\nnot microbenchmark floor effects; lower it (e.g. 0.15) for\nsub-microsecond functions where any cv signal matters, raise it for\ninherently noisy workloads where 0.3 fires on every run.\nDefault: 0.30"
+								},
+								{
+									"name": "noise_warning_outlier_ratio_threshold",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Outlier ratio (fraction of iterations rejected by MAD outlier removal)\nat or above which the comparison is flagged with `noise_warning: true`,\nOR-gated with the cv check. Catches the case where the post-cleaning\ncv looks tight because outlier removal already deflated the spread —\na third of the iterations being tail events is itself a noise signal,\neven if the surviving samples cluster cleanly. Set higher (e.g. 0.2)\nfor benchmarks where outliers are expected (allocator-bound, async\nI/O), lower (e.g. 0.05) for tight CPU loops.\nDefault: 0.10"
 								}
 							]
 						},
@@ -705,7 +724,7 @@
 							"name": "BenchmarkBaselineComparisonResult",
 							"kind": "type",
 							"doc_comment": "Result of comparing current results against a baseline.",
-							"source_line": 103,
+							"source_line": 174,
 							"type_signature": "BenchmarkBaselineComparisonResult",
 							"properties": [
 								{
@@ -739,10 +758,34 @@
 									"doc_comment": "Whether the baseline is considered stale based on staleness_warning_days option"
 								},
 								{
+									"name": "baseline_node_version",
+									"kind": "variable",
+									"type_signature": "string | null",
+									"doc_comment": "Node.js version recorded in the baseline (null if no baseline)."
+								},
+								{
+									"name": "current_node_version",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Node.js version of the process that produced the current results."
+								},
+								{
+									"name": "node_version_changed",
+									"kind": "variable",
+									"type_signature": "boolean",
+									"doc_comment": "True if the baseline's node version differs from the current process.\nInformational only — surfaced in the comparison header so readers can\napply the caveat across all task comparisons; does not affect per-task\nclassification (Node bumps affect every task uniformly)."
+								},
+								{
+									"name": "baseline_metadata",
+									"kind": "variable",
+									"type_signature": "Record<string, unknown> | null",
+									"doc_comment": "The `metadata` bag persisted in the baseline file, or `null` if the\nbaseline didn't have one (or no baseline was found). Returned verbatim —\nfuz_util doesn't validate the shape or diff it against any \"current run\"\nmetadata. If the consumer needs a diff, they pass `options.metadata`\n(current-run context) and walk the two records themselves."
+								},
+								{
 									"name": "comparisons",
 									"kind": "variable",
 									"type_signature": "Array<BenchmarkBaselineTaskComparison>",
-									"doc_comment": "Individual task comparisons"
+									"doc_comment": "Individual task comparisons for tasks where Welch's math is meaningful —\ni.e., budget unchanged between baseline and current. Methodology-changed\ntasks are NOT in here; they live in `methodology_changed`. Excluding them\nhere keeps aggregate reads of `c.comparison.faster` /\n`c.comparison.speedup_ratio` / `c.comparison.recommendation` safe — those\nfields are still computed for methodology-changed rows but answer a\ncounterfactual question (the math is correct over mismatched sample\nsizes) and would mislead consumers iterating this array."
 								},
 								{
 									"name": "regressions",
@@ -763,6 +806,12 @@
 									"doc_comment": "Tasks with no significant change"
 								},
 								{
+									"name": "methodology_changed",
+									"kind": "variable",
+									"type_signature": "Array<BenchmarkBaselineTaskComparison>",
+									"doc_comment": "Tasks whose effective budget differs between baseline and current.\nExcluded from regressions/improvements/unchanged because the Welch\ncomparison is contaminated by sample-size or warmup differences — the\nmath is correct but answers a different question than the reader thinks.\nRe-save the baseline after intentional methodology changes to surface\nany genuine drift that was masked."
+								},
+								{
 									"name": "new_tasks",
 									"kind": "variable",
 									"type_signature": "Array<string>",
@@ -780,7 +829,7 @@
 							"name": "BenchmarkBaselineTaskComparison",
 							"kind": "type",
 							"doc_comment": "Comparison result for a single task.",
-							"source_line": 131,
+							"source_line": 239,
 							"type_signature": "BenchmarkBaselineTaskComparison",
 							"properties": [
 								{
@@ -801,14 +850,64 @@
 								{
 									"name": "comparison",
 									"kind": "variable",
-									"type_signature": "BenchmarkComparison"
+									"type_signature": "BenchmarkComparison",
+									"doc_comment": "Welch comparison of baseline vs. current means.\n\nWhen the row is in `methodology_changed`, **every field** of this object\nis contaminated by sample-size or warmup differences — not just\n`recommendation`. The Welch math runs end-to-end and populates `faster`,\n`speedup_ratio`, `significant`, `p_value`, `percent_difference`,\n`effect_size`, `effect_magnitude`, `ci_overlap`, and `recommendation`,\nbut it's comparing distributions produced under different methodologies.\nTreat the result as diagnostic (\"how dramatic is the contamination?\"),\nnot authoritative.\n\nThe built-in formatters (`benchmark_baseline_format`,\n`benchmark_baseline_format_json`) never render `comparison.*` for\nmethodology-changed rows for this reason — they show only the budget\ndiff. Custom consumers reading this field directly should check\n`methodology_changed` first."
+								},
+								{
+									"name": "methodology_changed",
+									"kind": "variable",
+									"type_signature": "boolean",
+									"doc_comment": "True if the effective time budget differs between baseline and current.\nWhen set, the task is routed to `methodology_changed` instead of\nregressions/improvements/unchanged, and the `comparison` field's contents\nbecome unreliable per the doc above."
+								},
+								{
+									"name": "noise_warning",
+									"kind": "variable",
+									"type_signature": "boolean",
+									"doc_comment": "True when measurement noise is high enough to undermine the\nsignificance call on this row. OR-gated across two signals:\n  - `max(baseline.cv, current.cv) >= noise_warning_cv_threshold`\n    where cv = `std_dev_ns / mean_ns` (post-outlier-removal).\n  - `max(baseline.outlier_ratio, current.outlier_ratio)\n    >= noise_warning_outlier_ratio_threshold`, since outlier removal\n    deflates cv — a high outlier ratio is itself a noise signal even\n    when the cleaned cv looks tight.\nIndependent of `methodology_changed`. The Welch math still ran; this\nflag tells the reader to take `comparison.significant` with skepticism\non this row. Cv is recomputed at comparison time from persisted\n`mean_ns`/`std_dev_ns`; `outlier_ratio` is persisted directly."
+								},
+								{
+									"name": "max_cv",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "The larger of the two coefficients of variation across baseline and\ncurrent, exposed so consumers can render the actual noise level.\nRecomputed at comparison time from persisted `mean_ns` and\n`std_dev_ns` — not a persisted field."
+								},
+								{
+									"name": "max_outlier_ratio",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "The larger of the two outlier ratios across baseline and current.\nRead directly from the persisted entries. Exposed so consumers can\nrender the actual outlier rate alongside `noise_warning`."
+								}
+							]
+						},
+						{
+							"name": "BenchmarkBudgetDiffEntry",
+							"kind": "type",
+							"doc_comment": "Per-field diff entry produced by `benchmark_budget_diff`. The `async_resolved`\nentry carries booleans; every other entry carries numbers. Consumers reading\n`baseline`/`current` should narrow on `field` before using the value\narithmetically.",
+							"source_line": 330,
+							"type_signature": "BenchmarkBudgetDiffEntry"
+						},
+						{
+							"name": "benchmark_budget_diff",
+							"kind": "function",
+							"doc_comment": "Compute the per-field diff between two effective budgets. Returns an empty\narray if budgets are identical — the formatters use the length as a quick\n\"methodology changed?\" check without re-deriving the boolean.",
+							"source_line": 343,
+							"type_signature": "(baseline: { duration_ms: number; warmup_iterations: number; min_iterations: number; max_iterations: number; async_resolved: boolean; }, current: { duration_ms: number; warmup_iterations: number; min_iterations: number; max_iterations: number; async_resolved: boolean; }): BenchmarkBudgetDiffEntry[]",
+							"return_type": "BenchmarkBudgetDiffEntry[]",
+							"parameters": [
+								{
+									"name": "baseline",
+									"type": "{ duration_ms: number; warmup_iterations: number; min_iterations: number; max_iterations: number; async_resolved: boolean; }"
+								},
+								{
+									"name": "current",
+									"type": "{ duration_ms: number; warmup_iterations: number; min_iterations: number; max_iterations: number; async_resolved: boolean; }"
 								}
 							]
 						},
 						{
 							"name": "benchmark_baseline_save",
 							"kind": "function",
-							"doc_comment": "Save benchmark results as the current baseline.",
+							"doc_comment": "Save benchmark results as the current baseline.\n\nEach entry's effective time-budget (`duration_ms`, `warmup_iterations`,\n`min_iterations`, `max_iterations`) is persisted alongside the stats so a\nlater `benchmark_baseline_compare` can detect methodology drift — a budget\nmismatch between baseline and current routes the task to the\n`methodology_changed` bucket instead of producing false regressions /\nimprovements. Suite-level config (`timer`, `cooldown_ms`) is *not*\npersisted; keep it stable across runs in the same baseline lineage.",
 							"examples": [
 								"```ts\nconst bench = new Benchmark();\nbench.add('test', () => fn());\nawait bench.run();\nawait benchmark_baseline_save(bench.results());\n```"
 							],
@@ -818,7 +917,7 @@
 									"description": "if creating the baseline directory or writing the file fails"
 								}
 							],
-							"source_line": 174,
+							"source_line": 403,
 							"type_signature": "(results: BenchmarkResult[], options?: BenchmarkBaselineSaveOptions): Promise<void>",
 							"return_type": "Promise<void>",
 							"parameters": [
@@ -840,9 +939,9 @@
 							"examples": [
 								"```ts\nconst baseline = await benchmark_baseline_load();\nif (baseline) {\n  console.log(`Baseline from ${baseline.timestamp}`);\n}\n```"
 							],
-							"source_line": 216,
-							"type_signature": "(options?: BenchmarkBaselineLoadOptions): Promise<{ version: number; timestamp: string; git_commit: string | null; git_branch: string | null; node_version: string; entries: { ...; }[]; } | null>",
-							"return_type": "Promise<{ version: number; timestamp: string; git_commit: string | null; git_branch: string | null; node_version: string; entries: { name: string; mean_ns: number; p50_ns: number; std_dev_ns: number; ... 7 more ...; sample_size: number; }[]; } | null>",
+							"source_line": 449,
+							"type_signature": "(options?: BenchmarkBaselineLoadOptions): Promise<{ version: number; timestamp: string; git_commit: string | null; git_branch: string | null; node_version: string; entries: { ...; }[]; metadata?: Record<...> | undefined; } | null>",
+							"return_type": "Promise<{ version: number; timestamp: string; git_commit: string | null; git_branch: string | null; node_version: string; entries: { name: string; mean_ns: number; p50_ns: number; std_dev_ns: number; ... 9 more ...; budget: { ...; }; }[]; metadata?: Record<...> | undefined; } | null>",
 							"return_description": "the baseline, or null if not found or invalid",
 							"parameters": [
 								{
@@ -859,7 +958,7 @@
 							"examples": [
 								"```ts\nconst bench = new Benchmark();\nbench.add('test', () => fn());\nawait bench.run();\n\nconst comparison = await benchmark_baseline_compare(bench.results(), {\n  regression_threshold: 1.05, // Only flag regressions 5% or more slower\n  staleness_warning_days: 7,  // Warn if baseline is older than 7 days\n});\nif (comparison.regressions.length > 0) {\n  console.log('Performance regressions detected!');\n  for (const r of comparison.regressions) {\n    console.log(`  ${r.name}: ${r.comparison.speedup_ratio.toFixed(2)}x slower`);\n  }\n  process.exit(1);\n}\n```"
 							],
-							"source_line": 278,
+							"source_line": 515,
 							"type_signature": "(results: BenchmarkResult[], options?: BenchmarkBaselineCompareOptions): Promise<BenchmarkBaselineComparisonResult>",
 							"return_type": "Promise<BenchmarkBaselineComparisonResult>",
 							"return_description": "comparison result with regressions, improvements, and unchanged tasks",
@@ -880,7 +979,7 @@
 							"name": "benchmark_baseline_format",
 							"kind": "function",
 							"doc_comment": "Format a baseline comparison result as a human-readable string.",
-							"source_line": 422,
+							"source_line": 723,
 							"type_signature": "(result: BenchmarkBaselineComparisonResult): string",
 							"return_type": "string",
 							"parameters": [
@@ -895,7 +994,7 @@
 							"name": "benchmark_baseline_format_json",
 							"kind": "function",
 							"doc_comment": "Format a baseline comparison result as JSON for programmatic consumption.",
-							"source_line": 507,
+							"source_line": 843,
 							"type_signature": "(result: BenchmarkBaselineComparisonResult, options?: { pretty?: boolean | undefined; }): string",
 							"return_type": "string",
 							"parameters": [
@@ -1000,7 +1099,7 @@
 						{
 							"name": "BenchmarkFormatJsonOptions",
 							"kind": "type",
-							"source_line": 290,
+							"source_line": 296,
 							"type_signature": "BenchmarkFormatJsonOptions",
 							"properties": [
 								{
@@ -1024,7 +1123,7 @@
 							"examples": [
 								"```ts\nconsole.log(format_json(results));\nconsole.log(format_json(results, {pretty: false}));\nconsole.log(format_json(results, {include_timings: true}));\n```"
 							],
-							"source_line": 307,
+							"source_line": 313,
 							"type_signature": "(results: BenchmarkResult[], options?: BenchmarkFormatJsonOptions | undefined): string",
 							"return_type": "string",
 							"parameters": [
@@ -1046,7 +1145,7 @@
 							"examples": [
 								"```ts\nconst groups = [\n  { name: 'FAST PATHS', filter: (r) => r.name.includes('fast') },\n  { name: 'SLOW PATHS', filter: (r) => r.name.includes('slow') },\n];\nconsole.log(benchmark_format_table_grouped(results, groups));\n// 📦 FAST PATHS\n// ┌────┬─────────────┬────────────┬...┐\n// │ 🐆 │ fast test 1 │ 1,237,144  │...│\n// │ 🐇 │ fast test 2 │   261,619  │...│\n// └────┴─────────────┴────────────┴...┘\n//\n// 📦 SLOW PATHS\n// ┌────┬─────────────┬────────────┬...┐\n// │ 🐢 │ slow test 1 │    10,123  │...│\n// └────┴─────────────┴────────────┴...┘\n```"
 							],
-							"source_line": 363,
+							"source_line": 369,
 							"type_signature": "(results: BenchmarkResult[], groups: BenchmarkGroup[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -1065,7 +1164,7 @@
 							"kind": "variable",
 							"doc_comment": "Format a number with fixed decimal places and thousands separators.",
 							"see_also": ["`format_number` in `maths.ts` for the underlying implementation."],
-							"source_line": 399,
+							"source_line": 405,
 							"type_signature": "(n: number, decimals?: number) => string"
 						}
 					],
@@ -1164,7 +1263,7 @@
 									"name": "ci_overlap",
 									"kind": "variable",
 									"type_signature": "boolean",
-									"doc_comment": "Whether the 95% confidence intervals overlap"
+									"doc_comment": "Whether the 95% confidence intervals of the two means overlap.\n\n**Informational only — do not use this field to infer significance.**\nTwo means with overlapping 95% CIs can still differ significantly at\np<0.05 (overlap of up to ~25% of CI width is consistent with\nsignificance); conversely, non-overlapping CIs are slightly *stronger*\nthan the standard p<0.05 bar but the relationship is not strict.\nUse `significant` and `p_value` for classification. This field is\nexposed for consumers who want to render CIs side-by-side and need\nthe visual overlap check.\n\nNote: the underlying CIs are computed with a z-score (1.96) rather\nthan the strict t-score, so at small n the CIs are slightly narrow\n— overlap is reported less often than a t-based CI would. Effect is\n~2-3% at the n=30 floor after Bessel's correction on `std_dev_ns`."
 								},
 								{
 									"name": "recommendation",
@@ -1178,7 +1277,7 @@
 							"name": "BenchmarkCompareOptions",
 							"kind": "type",
 							"doc_comment": "Options for benchmark comparison.",
-							"source_line": 66,
+							"source_line": 82,
 							"type_signature": "BenchmarkCompareOptions",
 							"properties": [
 								{
@@ -1199,7 +1298,7 @@
 							"name": "BenchmarkStats",
 							"kind": "class",
 							"doc_comment": "Complete statistical analysis of timing measurements.\nIncludes outlier detection, descriptive statistics, and performance metrics.\nAll timing values are in nanoseconds.",
-							"source_line": 90,
+							"source_line": 106,
 							"members": [
 								{
 									"name": "mean_ns",
@@ -1348,7 +1447,7 @@
 							"examples": [
 								"```ts\nconst comparison = benchmark_stats_compare(result_a.stats, result_b.stats);\nif (comparison.significant) {\n  console.log(`${comparison.faster} is ${comparison.speedup_ratio.toFixed(2)}x faster`);\n}\n```"
 							],
-							"source_line": 219,
+							"source_line": 254,
 							"type_signature": "(a: BenchmarkStatsComparable, b: BenchmarkStatsComparable, options?: BenchmarkCompareOptions | undefined): BenchmarkComparison",
 							"return_type": "BenchmarkComparison",
 							"return_description": "comparison result with significance, effect size, and recommendation",
@@ -1389,7 +1488,7 @@
 									"name": "duration_ms",
 									"kind": "variable",
 									"type_signature": "number",
-									"doc_comment": "Target duration to run each benchmark task in milliseconds.\nThe benchmark will run until this duration is reached or max_iterations is hit.\nDefault: 1000ms"
+									"doc_comment": "Target measurement duration per task in milliseconds. The loop runs\nat least `min_iterations` iterations *and* at least this long, with\n`max_iterations` and `on_iteration` `abort()` as hard ceilings.\nDefault: 1000ms"
 								},
 								{
 									"name": "warmup_iterations",
@@ -1401,19 +1500,19 @@
 									"name": "cooldown_ms",
 									"kind": "variable",
 									"type_signature": "number",
-									"doc_comment": "Cooldown time between tasks in milliseconds.\nHelps prevent interference between benchmarks.\nDefault: 100ms"
+									"doc_comment": "Cooldown time between tasks in milliseconds. Lets the runtime settle\nGC and (partially) thermal state between tasks. Fixed regardless of\nthe previous task's duration or allocation footprint — if a suite\nmixes heavy and light tasks, raise this so light tasks downstream\ndon't run in the prior task's GC shadow.\nDefault: 100ms"
 								},
 								{
 									"name": "min_iterations",
 									"kind": "variable",
 									"type_signature": "number",
-									"doc_comment": "Minimum number of iterations to run.\nDefault: 10"
+									"doc_comment": "Minimum number of iterations to run. The loop continues past\n`duration_ms` if needed to reach this floor, so raising it in a slow\nsuite extends wall-clock past `duration_ms`.\n\nThe default (30) is sized so the Welch's-t DOF approximation used by\n`benchmark_stats_compare` stays stable on the floor case. Lowering it\nbelow ~15 produces statistically unreliable significance calls on slow\ntasks that hit the floor exactly — the math still runs but\n`comparison.significant` becomes a coin flip on noisy outliers.\n\nDefault: 30"
 								},
 								{
 									"name": "max_iterations",
 									"kind": "variable",
 									"type_signature": "number",
-									"doc_comment": "Maximum number of iterations to run.\nPrevents infinite loops if function is extremely fast.\nDefault: 100000"
+									"doc_comment": "Maximum number of iterations to run. Prevents infinite loops on\nextremely fast functions, and also sizes the pre-allocated timings\narray — set this only as high as you expect to fill, since oversized\ncaps waste memory and add GC pressure during measurement.\nDefault: 100000"
 								},
 								{
 									"name": "timer",
@@ -1438,8 +1537,8 @@
 						{
 							"name": "BenchmarkTask",
 							"kind": "type",
-							"doc_comment": "A benchmark task to execute.",
-							"source_line": 112,
+							"doc_comment": "A benchmark task to execute.\n\nThe time-budget fields (`duration_ms`, `warmup_iterations`, `min_iterations`,\n`max_iterations`) override the suite-level `BenchmarkConfig` for this task\nonly. Use them when one task is much faster or slower than the others —\ne.g. raise `min_iterations` on a slow task so its percentile/CI math has\nenough samples without inflating the budget for the fast tasks.\n\n**Reading output across overrides:** when per-task overrides diverge\nacross rows in the same table, cross-row comparison weakens. Percentiles\n(`p50`, `p99`, …) become unreliable when sample counts differ — `p99` at\nn=30 and `p99` at n=50000 estimate different things. Means (and the\n`vs Best` column) stay reasonable only if `warmup_iterations` is held\ncomparable across tasks; asymmetric warmup biases the under-warmed task's\nmean upward. Per-task percentiles remain valid for that task alone.",
+							"source_line": 141,
 							"type_signature": "BenchmarkTask",
 							"properties": [
 								{
@@ -1458,7 +1557,7 @@
 									"name": "setup",
 									"kind": "variable",
 									"type_signature": "() => void | Promise<void>",
-									"doc_comment": "Optional setup function run before benchmarking this task.\nNot included in timing measurements."
+									"doc_comment": "Optional setup function run before benchmarking this task.\nNot included in timing measurements.\n\nMutations to `fn` and `name` made here are honored by the measurement\nloop — useful for dynamic configuration that depends on async state\nresolved during setup."
 								},
 								{
 									"name": "teardown",
@@ -1482,7 +1581,65 @@
 									"name": "async",
 									"kind": "variable",
 									"type_signature": "boolean",
-									"doc_comment": "Hint for whether the function is sync or async.\nIf not provided, automatically detected during warmup.\nSetting this explicitly skips per-iteration promise checking for sync functions."
+									"doc_comment": "Hint for whether the function is sync or async. Auto-detected during\nwarmup if not set; `async: false` skips per-iteration promise checking\nfor sync functions, while `async: true` forces an `await` on every\nmeasurement iteration.\n\nSetting `async: true` on a function that returns sync forces an\nunnecessary microtask per iteration — for sub-microsecond functions\nthis adds measurable bias. Prefer leaving `async` undefined (auto-\ndetected during warmup) unless the conditional-async hazard below\napplies.\n\n**Required for conditional-async fns** — without `async: true`, a\nfirst call that happens to return synchronously locks in the sync\ncode path and any later Promise returns leak as unhandled rejections."
+								},
+								{
+									"name": "duration_ms",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Override the suite's `duration_ms` for this task only.\nUseful when one task is much slower than others and needs a longer (or shorter)\nmeasurement window than the suite default."
+								},
+								{
+									"name": "warmup_iterations",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Override the suite's `warmup_iterations` for this task only.\nSlow tasks may want fewer warmup iterations to keep wall-clock reasonable;\ntight/complex functions may want more so TurboFan reaches steady state."
+								},
+								{
+									"name": "min_iterations",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Override the suite's `min_iterations` for this task only.\nRaise this on slow tasks so percentile and CI math have enough\nsamples. Wins over `duration_ms` (see the suite field) — a slow task\nwith a raised floor extends wall-clock until the count is reached.\n\nPrefer raising this over `duration_ms` when you need more samples:\nper-iteration noise (GC, scheduler, thermal) is a time-rate process,\nso a longer wall-clock window proportionally inflates exposure to\nrare tail events. Raising the sample floor fixes the statistical-power\nproblem without that inflation."
+								},
+								{
+									"name": "max_iterations",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Override the suite's `max_iterations` for this task only.\nCap a fast task to a fixed sample count, or raise the ceiling on a\nslow task that would otherwise be limited by the suite default. Also\nsizes the per-task pre-allocation — avoid extreme caps that won't\nactually be filled. When this differs sharply across tasks in the\nsame suite, the larger allocation can leak GC pressure into\nsubsequent tasks (`cooldown_ms` is fixed regardless of prior task\nfootprint)."
+								}
+							]
+						},
+						{
+							"name": "BenchmarkBudget",
+							"kind": "type",
+							"doc_comment": "Effective time-budget config used to produce a benchmark sample set.\nResolved from per-task overrides on top of suite defaults — what the\nmeasurement loop actually saw, not what was configured.\n\n`async_resolved` captures the boolean that `benchmark_warmup` actually\nreturned for the measurement run — *not* the user's `task.async` hint.\nThe two diverge when (a) the hint is `undefined` and the function is\nauto-detected sync vs. async, or (b) a conditional-async fn resolves\ndifferently between runs. Persisting the resolved value is what makes\nthe budget describe \"what the loop saw,\" not \"what was configured.\"",
+							"source_line": 247,
+							"type_signature": "BenchmarkBudget",
+							"properties": [
+								{
+									"name": "duration_ms",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "warmup_iterations",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "min_iterations",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "max_iterations",
+									"kind": "variable",
+									"type_signature": "number"
+								},
+								{
+									"name": "async_resolved",
+									"kind": "variable",
+									"type_signature": "boolean"
 								}
 							]
 						},
@@ -1490,7 +1647,7 @@
 							"name": "BenchmarkResult",
 							"kind": "type",
 							"doc_comment": "Result from running a single benchmark task.",
-							"source_line": 154,
+							"source_line": 258,
 							"type_signature": "BenchmarkResult",
 							"properties": [
 								{
@@ -1521,7 +1678,13 @@
 									"name": "timings_ns",
 									"kind": "variable",
 									"type_signature": "Array<number>",
-									"doc_comment": "Raw timing data for each iteration in nanoseconds.\nUseful for custom statistical analysis, histogram generation,\nor exporting to external tools."
+									"doc_comment": "Raw timing data for each iteration in nanoseconds.\nLength equals `iterations` (the array is right-sized after measurement).\nUseful for custom statistical analysis, histogram generation,\nor exporting to external tools."
+								},
+								{
+									"name": "budget",
+									"kind": "variable",
+									"type_signature": "BenchmarkBudget",
+									"doc_comment": "Effective per-task time budget after applying overrides to suite defaults.\nPersisted into baselines so `benchmark_baseline_compare` can detect\nmethodology drift — a `min_iterations` bump between baseline and current\nshifts Welch's DOF and produces \"regressions\" that are sample-size\nartifacts, not real drift."
 								}
 							]
 						},
@@ -1529,7 +1692,7 @@
 							"name": "BenchmarkFormatTableOptions",
 							"kind": "type",
 							"doc_comment": "Options for table formatting.",
-							"source_line": 178,
+							"source_line": 292,
 							"type_signature": "BenchmarkFormatTableOptions",
 							"properties": [
 								{
@@ -1544,7 +1707,7 @@
 							"name": "BenchmarkGroup",
 							"kind": "type",
 							"doc_comment": "A group definition for organizing benchmark results.",
-							"source_line": 188,
+							"source_line": 302,
 							"type_signature": "BenchmarkGroup",
 							"properties": [
 								{
@@ -1585,7 +1748,7 @@
 							"examples": [
 								"```ts\nconst is_async = await benchmark_warmup(() => expensive_operation(), 10);\n```"
 							],
-							"source_line": 98,
+							"source_line": 145,
 							"type_signature": "(fn: () => unknown, iterations: number, async_hint?: boolean | undefined): Promise<boolean>",
 							"return_type": "Promise<boolean>",
 							"return_description": "whether the function is async",
@@ -1611,7 +1774,7 @@
 							"name": "Benchmark",
 							"kind": "class",
 							"doc_comment": "Benchmark class for measuring and comparing function performance.",
-							"source_line": 136,
+							"source_line": 183,
 							"members": [
 								{
 									"name": "constructor",
@@ -1704,49 +1867,9 @@
 									]
 								},
 								{
-									"name": "skip",
-									"kind": "function",
-									"doc_comment": "Mark a task to be skipped during benchmark runs.",
-									"type_signature": "(name: string): this",
-									"return_type": "this",
-									"return_description": "this `Benchmark` instance for chaining",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "string"
-										}
-									],
-									"throws": [
-										{
-											"type": "Error",
-											"description": "if task with given name doesn't exist"
-										}
-									]
-								},
-								{
-									"name": "only",
-									"kind": "function",
-									"doc_comment": "Mark a task to run exclusively (along with other `only` tasks).",
-									"type_signature": "(name: string): this",
-									"return_type": "this",
-									"return_description": "this `Benchmark` instance for chaining",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "string"
-										}
-									],
-									"throws": [
-										{
-											"type": "Error",
-											"description": "if task with given name doesn't exist"
-										}
-									]
-								},
-								{
 									"name": "run",
 									"kind": "function",
-									"doc_comment": "Run all benchmark tasks.",
+									"doc_comment": "Run all benchmark tasks.\n\nTasks execute in `add()` order. The first task runs against a colder\nruntime than subsequent ones (uncompiled JS, cold caches) — a\nproperty of in-process benchmarking that matters more when an early\ntask has aggressive overrides like low `warmup_iterations` or\n`min_iterations`. If first-position bias is a concern, put a\nthrowaway warm-up task first, or call `run()` twice and use the\nsecond result set.",
 									"type_signature": "(): Promise<BenchmarkResult[]>",
 									"return_type": "Promise<BenchmarkResult[]>",
 									"parameters": []
@@ -9044,7 +9167,7 @@
 				"@fuzdev/fuz_ui": "^0.192.0",
 				"@fuzdev/fuz_util": "^0.59.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
-				"@ryanatkn/eslint-config": "^0.11.0",
+				"@ryanatkn/eslint-config": "^0.12.1",
 				"@sveltejs/acorn-typescript": "^1.0.9",
 				"@sveltejs/adapter-static": "^3.0.10",
 				"@sveltejs/kit": "^2.57.1",
@@ -22426,7 +22549,8 @@
 				"preview": "vite preview",
 				"deploy": "gro deploy",
 				"benchmark": "gro run src/benchmarks/mdz.benchmark.ts",
-				"benchmark:save": "gro run src/benchmarks/mdz.benchmark.ts --save"
+				"benchmark:save": "gro run src/benchmarks/mdz.benchmark.ts --save",
+				"benchmark:clean": "rm -f src/benchmarks/baseline.json"
 			},
 			"type": "module",
 			"engines": {
@@ -22479,7 +22603,7 @@
 				"@changesets/changelog-git": "^0.2.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
-				"@fuzdev/fuz_util": "^0.57.0",
+				"@fuzdev/fuz_util": "^0.60.1",
 				"@fuzdev/gro": "^0.198.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.11.0",
@@ -35229,7 +35353,7 @@
 							]
 						}
 					],
-					"module_comment": "Backend-initiated broadcast notification plumbing — generic across consumers.\n\nBuilds a typed `{method_name: (input) => Promise<void>}` object from a list\nof action specs. Each call validates input against the spec, wraps it in a\nJSON-RPC notification, and either broadcasts to every connection or\nfans out with a per-connection ACL predicate.\n\nCounterpart to `register_action_ws`: that handles request-scoped dispatch\n(frontend-initiated), this handles broadcast (backend-initiated). Together\nthey cover the two primitives fuz_app consumers share. Request-scoped\nstreaming (`completion_progress`, `zap_apply` events) stays on\n`ctx.notify` inside a handler — it's socket-scoped, not broadcast.\n\nExtracted from zzz's `backend_actions_api.ts` to stop the pattern from\ndrifting across zzz, zap, and undying.",
+					"module_comment": "Backend-initiated broadcast notification plumbing — generic across consumers.\n\nBuilds a typed `{method_name: (input) => Promise<void>}` object from a list\nof action specs. Each call validates input against the spec, wraps it in a\nJSON-RPC notification, and either broadcasts to every connection or\nfans out with a per-connection ACL predicate.\n\nCounterpart to `register_action_ws`: that handles request-scoped dispatch\n(frontend-initiated), this handles broadcast (backend-initiated). Together\nthey cover the two primitives fuz_app consumers share. Request-scoped\nstreaming (`completion_progress`, `zap_apply` events) stays on\n`ctx.notify` inside a handler — it's socket-scoped, not broadcast.\n\nExtracted from zzz's `backend_actions_api.ts` to stop the pattern from\ndrifting across consumers.",
 					"dependencies": ["actions/transports_ws_backend.ts", "http/jsonrpc_helpers.ts"],
 					"dependents": ["testing/ws_round_trip.ts"]
 				},
@@ -35331,7 +35455,7 @@
 							"name": "ConnectionCloser",
 							"kind": "type",
 							"doc_comment": "Narrow capability — three idempotent socket-close methods, each\nreturning the number of sockets actually closed (zero when none\nmatched). Callers typically ignore the return value (used by\ntelemetry / tests).",
-							"source_line": 48,
+							"source_line": 45,
 							"type_signature": "ConnectionCloser",
 							"properties": [
 								{
@@ -35355,7 +35479,7 @@
 							]
 						}
 					],
-					"module_comment": "Narrow structural capability for closing live WebSocket connections\ntied to a session token hash, API token id, or account id.\n\n**Why this exists.** Per-message authorization phase on WebSocket\n(`actions/perform_action.ts`) reloads role_grants from the DB on every\nmessage but does NOT re-query session / token validity — that\ntrade-off keeps chatty connections fast. The cost: revocation\ndoesn't actually disconnect open sockets unless something closes\nthem. `transports_ws_auth_guard.ts` is the listener-based seam\n(audit-event → close), but it only fires after the audit INSERT\nsucceeds — if the INSERT fails (DB error, pool exhausted, handler\ndies mid-flight) the listener never runs and the live socket keeps\nworking with a stale `RequestContext` until disconnect.\n\nUsed by self-service revocation handlers (`account_session_revoke` /\n`_revoke_all`, `account_token_revoke`, `logout`, `password`) and the\nadmin revoke-all handlers (`admin_session_revoke_all`,\n`admin_token_revoke_all`) to eagerly drop affected sockets BEFORE\nemitting the corresponding audit event. The audit listener stays as\na fail-safe for out-of-band emit sites (admin tools, scheduled\njobs, SSE-driven flows). `close_sockets_for_*` is idempotent so the\nsecond pass is a no-op.\n\nMirrors `zzz_server`'s `close_sockets_for_*` calls in\n`account.rs::logout_inner` / `_password_inner` /\n`handlers/account.rs::handle_account_session_revoke[_all]` /\n`_token_revoke` (landed 2026-05-16); see\n`~/dev/grimoire/lore/fuz_app/TODO_AUTH.md` §Audit-driven WS\nrevocation: handler-side belt+suspenders for the cross-backend\nparity record.\n\n`BackendWebsocketTransport` satisfies this interface structurally,\nso consumers pass their transport instance directly (same shape as\n`NotificationSender`). The interface stays local so handlers don't\ncouple to the concrete transport, and tests can inject a capturing\nstub with no WS machinery."
+					"module_comment": "Narrow structural capability for closing live WebSocket connections\ntied to a session token hash, API token id, or account id.\n\n**Why this exists.** Per-message authorization phase on WebSocket\n(`actions/perform_action.ts`) reloads role_grants from the DB on every\nmessage but does NOT re-query session / token validity — that\ntrade-off keeps chatty connections fast. The cost: revocation\ndoesn't actually disconnect open sockets unless something closes\nthem. `transports_ws_auth_guard.ts` is the listener-based seam\n(audit-event → close), but it only fires after the audit INSERT\nsucceeds — if the INSERT fails (DB error, pool exhausted, handler\ndies mid-flight) the listener never runs and the live socket keeps\nworking with a stale `RequestContext` until disconnect.\n\nUsed by self-service revocation handlers (`account_session_revoke` /\n`_revoke_all`, `account_token_revoke`, `logout`, `password`) and the\nadmin revoke-all handlers (`admin_session_revoke_all`,\n`admin_token_revoke_all`) to eagerly drop affected sockets BEFORE\nemitting the corresponding audit event. The audit listener stays as\na fail-safe for out-of-band emit sites (admin tools, scheduled\njobs, SSE-driven flows). `close_sockets_for_*` is idempotent so the\nsecond pass is a no-op.\n\nMirrors `zzz_server`'s `close_sockets_for_*` calls in\n`account.rs::logout_inner` / `_password_inner` /\n`handlers/account.rs::handle_account_session_revoke[_all]` /\n`_token_revoke` (landed 2026-05-16).\n\n`BackendWebsocketTransport` satisfies this interface structurally,\nso consumers pass their transport instance directly (same shape as\n`NotificationSender`). The interface stays local so handlers don't\ncouple to the concrete transport, and tests can inject a capturing\nstub with no WS machinery."
 				},
 				{
 					"path": "actions/frontend_rpc_client.ts",
@@ -35710,7 +35834,7 @@
 						{
 							"name": "SocketOpenContext",
 							"kind": "type",
-							"doc_comment": "Context passed to the `on_socket_open` hook.\n\nFires after the transport has registered the new connection (so\n`connection_id` is valid) but before any client message can dispatch.\nConsumers use this to bootstrap per-socket domain state — e.g. undying\nspawns the per-account spirit unit and pushes an initial state snapshot.",
+							"doc_comment": "Context passed to the `on_socket_open` hook.\n\nFires after the transport has registered the new connection (so\n`connection_id` is valid) but before any client message can dispatch.\nConsumers use this to bootstrap per-socket domain state — e.g.\nspawning a per-account unit and pushing an initial state snapshot.",
 							"source_line": 81,
 							"type_signature": "SocketOpenContext",
 							"properties": [
@@ -35937,7 +36061,7 @@
 									"name": "allowed_origins",
 									"kind": "variable",
 									"type_signature": "ReadonlyArray<RegExp>",
-									"doc_comment": "Origin allowlist regexes — typically parsed from the `ALLOWED_ORIGINS`\nenv var via `parse_allowed_origins`. Passed straight to\n`verify_request_source`."
+									"doc_comment": "Origin allowlist regexes — typically parsed from the `FUZ_ALLOWED_ORIGINS`\nenv var via `parse_allowed_origins`. Passed straight to\n`verify_request_source`."
 								},
 								{
 									"name": "required_roles",
@@ -36816,8 +36940,8 @@
 						{
 							"name": "create_ws_logout_closer",
 							"kind": "function",
-							"doc_comment": "Create an audit event handler that closes WebSocket connections on\nuser-initiated logout.\n\nSibling helper to `create_ws_auth_guard` — kept separate because\n`ws_disconnect_event_types` deliberately omits `logout` (admin-initiated\nrevocations use `session_revoke`, while `logout` is the user-initiated\ncase). Three consumers (tx, undying, zzz) hand-rolled this same branch\nbefore extraction.\n\nCompose with `create_ws_auth_guard` to handle both kinds of disconnect:\n\n```ts\nconst ws_guard = create_ws_auth_guard(transport, log);\nconst ws_logout_closer = create_ws_logout_closer(transport, log);\nconst on_audit_event = (event: AuditLogEvent): void => {\n  ws_guard(event);\n  ws_logout_closer(event);\n};\n```\n\nIgnores `outcome === 'failure'` events — failed logouts carry\nunauthenticated identifiers (no session to close anyway), and reacting\nto them would let an unauthenticated probe close the targeted account's\nsockets by submitting a logout for an arbitrary `account_id`.",
-							"source_line": 161,
+							"doc_comment": "Create an audit event handler that closes WebSocket connections on\nuser-initiated logout.\n\nSibling helper to `create_ws_auth_guard` — kept separate because\n`ws_disconnect_event_types` deliberately omits `logout` (admin-initiated\nrevocations use `session_revoke`, while `logout` is the user-initiated\ncase). Multiple consumers hand-rolled this same branch before extraction.\n\nCompose with `create_ws_auth_guard` to handle both kinds of disconnect:\n\n```ts\nconst ws_guard = create_ws_auth_guard(transport, log);\nconst ws_logout_closer = create_ws_logout_closer(transport, log);\nconst on_audit_event = (event: AuditLogEvent): void => {\n  ws_guard(event);\n  ws_logout_closer(event);\n};\n```\n\nIgnores `outcome === 'failure'` events — failed logouts carry\nunauthenticated identifiers (no session to close anyway), and reacting\nto them would let an unauthenticated probe close the targeted account's\nsockets by submitting a logout for an arbitrary `account_id`.",
+							"source_line": 160,
 							"type_signature": "(transport: BackendWebsocketTransport, log: Logger): AuditEventHandler",
 							"return_type": "AuditEventHandler",
 							"return_description": "an `on_audit_event` callback wireable alongside `create_ws_auth_guard`.\nThe returned callback mutates `transport` via `close_sockets_for_account`\non every successful `logout` event with a non-empty `account_id`.",
@@ -40870,21 +40994,21 @@
 							"name": "BootstrapInput",
 							"kind": "type",
 							"doc_comment": "Input for `POST /bootstrap`. `token` is the one-shot token file contents.",
-							"source_line": 37,
+							"source_line": 38,
 							"type_signature": "ZodObject<{ token: ZodString; username: ZodPipe<ZodString, ZodTransform<string, string>>; password: ZodString; }, $strict>"
 						},
 						{
 							"name": "BootstrapOutput",
 							"kind": "type",
 							"doc_comment": "Output for `POST /bootstrap`. Session cookie is the operative side effect.",
-							"source_line": 45,
-							"type_signature": "ZodObject<{ ok: ZodLiteral<true>; username: ZodString; }, $strict>"
+							"source_line": 46,
+							"type_signature": "ZodObject<{ ok: ZodLiteral<true>; account: ZodObject<{ id: $ZodBranded<ZodUUID, \"Uuid\", \"out\">; username: ZodPipe<ZodString, ZodTransform<string, string>>; }, $strict>; actor: ZodObject<...>; }, $strict>"
 						},
 						{
 							"name": "BootstrapStatus",
 							"kind": "type",
 							"doc_comment": "Bootstrap status — runtime state computed once at startup.",
-							"source_line": 54,
+							"source_line": 56,
 							"type_signature": "BootstrapStatus",
 							"properties": [
 								{
@@ -40903,7 +41027,7 @@
 							"name": "BootstrapRouteOptions",
 							"kind": "type",
 							"doc_comment": "Per-factory configuration for bootstrap route specs.\n\n`bootstrap_status` is runtime state (a mutable ref), not a dep or options value —\nit is passed through so the route handler can flip it on success.",
-							"source_line": 65,
+							"source_line": 67,
 							"type_signature": "BootstrapRouteOptions",
 							"properties": [
 								{
@@ -40935,7 +41059,7 @@
 							"name": "CheckBootstrapStatusDeps",
 							"kind": "type",
 							"doc_comment": "Dependencies for checking bootstrap status at startup.",
-							"source_line": 81,
+							"source_line": 83,
 							"type_signature": "CheckBootstrapStatusDeps",
 							"properties": [
 								{
@@ -40959,7 +41083,7 @@
 							"name": "check_bootstrap_status",
 							"kind": "function",
 							"doc_comment": "Check bootstrap availability at startup.\n\nBootstrap is available when:\n1. A token path is configured\n2. The token file exists on disk\n3. The `bootstrap_lock` table shows `bootstrapped = false`",
-							"source_line": 99,
+							"source_line": 101,
 							"type_signature": "(deps: CheckBootstrapStatusDeps, options: { token_path: string | null; }): Promise<BootstrapStatus>",
 							"return_type": "Promise<BootstrapStatus>",
 							"return_description": "an object with `available` (boolean) and `token_path` (string | null)",
@@ -40980,7 +41104,7 @@
 							"name": "create_bootstrap_route_specs",
 							"kind": "function",
 							"doc_comment": "Create bootstrap route specs for first-time account creation.",
-							"source_line": 135,
+							"source_line": 137,
 							"type_signature": "(deps: RouteFactoryDeps, options: BootstrapRouteOptions): RouteSpec[]",
 							"return_type": "RouteSpec[]",
 							"return_description": "route specs (not yet applied to Hono)",
@@ -41986,7 +42110,7 @@
 						{
 							"name": "create_keyring",
 							"kind": "function",
-							"doc_comment": "Create a keyring from environment variable.\n\nKeys are separated by `__` for rotation support. First key is used\nfor signing, all keys are tried for verification.\n\nCryptoKeys are cached on first use for performance.\n\n**Security: key rotation is an operational concern.** Old keys remain valid\nfor verification indefinitely — a leaked old key can forge session cookies\nuntil it is removed from `SECRET_COOKIE_KEYS`. After rotating to a new\nsigning key, remove the old key within a grace period (e.g. 24–48 hours,\nlong enough for active sessions to re-sign with the new key via cookie\nrefresh). Treat `SECRET_COOKIE_KEYS` changes as security-critical deploys.",
+							"doc_comment": "Create a keyring from environment variable.\n\nKeys are separated by `__` for rotation support. First key is used\nfor signing, all keys are tried for verification.\n\nCryptoKeys are cached on first use for performance.\n\n**Security: key rotation is an operational concern.** Old keys remain valid\nfor verification indefinitely — a leaked old key can forge session cookies\nuntil it is removed from `SECRET_FUZ_COOKIE_KEYS`. After rotating to a new\nsigning key, remove the old key within a grace period (e.g. 24–48 hours,\nlong enough for active sessions to re-sign with the new key via cookie\nrefresh). Treat `SECRET_FUZ_COOKIE_KEYS` changes as security-critical deploys.",
 							"source_line": 63,
 							"type_signature": "(env_value: string | undefined): Keyring | null",
 							"return_type": "Keyring | null",
@@ -41995,7 +42119,7 @@
 								{
 									"name": "env_value",
 									"type": "string | undefined",
-									"description": "the SECRET_COOKIE_KEYS environment variable"
+									"description": "the SECRET_FUZ_COOKIE_KEYS environment variable"
 								}
 							]
 						},
@@ -42011,7 +42135,7 @@
 								{
 									"name": "env_value",
 									"type": "string | undefined",
-									"description": "the SECRET_COOKIE_KEYS environment variable"
+									"description": "the SECRET_FUZ_COOKIE_KEYS environment variable"
 								}
 							]
 						},
@@ -42034,12 +42158,12 @@
 								{
 									"name": "env_value",
 									"type": "string | undefined",
-									"description": "the SECRET_COOKIE_KEYS environment variable"
+									"description": "the SECRET_FUZ_COOKIE_KEYS environment variable"
 								}
 							]
 						}
 					],
-					"module_comment": "Key ring for cookie signing.\n\nEncapsulates secret keys and crypto operations. Keys are never exposed -\nonly sign/verify operations are available. This prevents accidental\nlogging or leakage of secrets.\n\n@example\n```ts\nconst keyring = create_keyring(process.env.SECRET_COOKIE_KEYS);\nif (!keyring) throw new Error('No keys configured');\n\nconst signed = await keyring.sign('user:123:1700000000');\nconst result = await keyring.verify(signed);\n// result = { value: 'user:123:1700000000', key_index: 0 }\n```",
+					"module_comment": "Key ring for cookie signing.\n\nEncapsulates secret keys and crypto operations. Keys are never exposed -\nonly sign/verify operations are available. This prevents accidental\nlogging or leakage of secrets.\n\n@example\n```ts\nconst keyring = create_keyring(process.env.SECRET_FUZ_COOKIE_KEYS);\nif (!keyring) throw new Error('No keys configured');\n\nconst signed = await keyring.sign('user:123:1700000000');\nconst result = await keyring.verify(signed);\n// result = { value: 'user:123:1700000000', key_index: 0 }\n```",
 					"dependents": ["server/env.ts", "testing/app_server.ts"]
 				},
 				{
@@ -42155,14 +42279,8 @@
 					],
 					"dependents": [
 						"server/app_backend.ts",
-						"testing/admin_integration.ts",
 						"testing/app_server.ts",
-						"testing/audit_completeness.ts",
-						"testing/data_exposure.ts",
-						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts",
 						"testing/sse_round_trip.ts"
 					]
 				},
@@ -42963,6 +43081,7 @@
 						"auth/standard_action_specs.ts",
 						"testing/admin_integration.ts",
 						"testing/audit_completeness.ts",
+						"testing/role_grant_helpers.ts",
 						"ui/RoleGrantOfferForm.svelte"
 					]
 				},
@@ -43755,12 +43874,7 @@
 						"auth/role_grant_offer_ddl.ts",
 						"db/assert_row.ts"
 					],
-					"dependents": [
-						"auth/cleanup.ts",
-						"auth/role_grant_offer_actions.ts",
-						"testing/admin_integration.ts",
-						"testing/audit_completeness.ts"
-					]
+					"dependents": ["auth/cleanup.ts", "auth/role_grant_offer_actions.ts"]
 				},
 				{
 					"path": "auth/role_grant_offer_schema.ts",
@@ -44322,8 +44436,8 @@
 						"auth/role_grant_offer_actions.ts",
 						"auth/self_service_role_actions.ts",
 						"dev/setup.ts",
-						"testing/admin_integration.ts",
 						"testing/app_server.ts",
+						"testing/db_entities.ts",
 						"testing/middleware.ts"
 					]
 				},
@@ -46962,14 +47076,8 @@
 					"module_comment": "Identity-tracked database migration runner.\n\nMigrations are named `{name, up}` objects in ordered arrays, grouped by\nnamespace. A `schema_version` table records one row per applied migration —\n`(namespace, name, sequence, applied_at)` — and the runner verifies the\napplied list is a name-prefix of the code's migration array at boot.\n\n**Schema is not stabilized yet — append-only is NOT the rule.** While\nfuz_app is pre-stable, migration bodies, names, and positions can change\nfreely between versions; consumers upgrading across a schema change are\nexpected to drop and re-bootstrap their dev/test databases (production\ndeployments are not yet a supported use case). Once the schema is\ndeclared stable a hard append-only-after-publish rule will apply and the\ncliff will be called out in that release's notes; until then, body edits\nto a published migration slip past the runner (no content hashing) by\ndesign — they're the recommended way to evolve the schema.\n\n**Chain-level transactions**: All pending migrations in a namespace run in\na single transaction. Any failure rolls back every migration in that run —\nno partial-state recovery. This rules out non-transactional DDL (e.g.,\n`CREATE INDEX CONCURRENTLY`); run those out of band.\n\n**Chain idempotency, not migration idempotency**: the chain-tx wraps every\nmigration replayed in a single boot, so an individual migration may\ntemporarily produce intermediate state that a later migration reverses\n(e.g. v0's `ROLE_GRANT_INDEXES` recreates an index that v1 drops; chain-tx\nhides this from observers). What matters is that the *committed end state*\nmatches; the in-tx steps may not be individually idempotent against an\narbitrary mid-chain target.\n\n**Forward-only**: No down-migrations. Schema changes are additive.\n\n**Advisory locking**: Per-namespace `pg_advisory_lock` reduces contention\nin multi-instance deployments — best-effort, not load-bearing. The locks\nare session-scoped, but `Db.query` runs against a pool that may check out\na different backend per call, so two concurrent boots can both \"hold\"\nthe lock on different sessions. The real serialization comes from chain-\ntx atomicity + the `(namespace, name)` PK on `schema_version`: the\nloser's INSERT hits a PK violation, the chain-tx rolls back, and the\nnext boot reads the committed state and proceeds cleanly. Environments\nwithout `pg_advisory_lock` (some PGlite versions) silently fall through.",
 					"dependents": [
 						"server/app_backend.ts",
-						"testing/admin_integration.ts",
 						"testing/app_server.ts",
-						"testing/audit_completeness.ts",
-						"testing/data_exposure.ts",
-						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts",
 						"testing/sse_round_trip.ts"
 					]
 				},
@@ -47318,7 +47426,7 @@
 									"name": "replacements",
 									"kind": "variable",
 									"type_signature": "Record<string, () => Promise<string>>",
-									"doc_comment": "Extra env var replacements beyond the default `SECRET_COOKIE_KEYS`.\n\nKeys are env var names, values are async generators.\nReplaces `^KEY=$` (empty value) patterns in the env file."
+									"doc_comment": "Extra env var replacements beyond the default `SECRET_FUZ_COOKIE_KEYS`.\n\nKeys are env var names, values are async generators.\nReplaces `^KEY=$` (empty value) patterns in the env file."
 								},
 								{
 									"name": "set_permissions",
@@ -47459,7 +47567,7 @@
 						{
 							"name": "setup_env_file",
 							"kind": "function",
-							"doc_comment": "Create an env file from its example template, auto-generating `SECRET_COOKIE_KEYS`.\n\nIf the file already exists, backfills any empty values that have generators.\nIdempotent — safe to re-run.",
+							"doc_comment": "Create an env file from its example template, auto-generating `SECRET_FUZ_COOKIE_KEYS`.\n\nIf the file already exists, backfills any empty values that have generators.\nIdempotent — safe to re-run.",
 							"source_line": 181,
 							"type_signature": "(deps: FsReadDeps & FsWriteDeps & CommandDeps, env_path: string, example_path: string, options?: SetupEnvOptions | undefined): Promise<...>",
 							"return_type": "Promise<SetupEnvResult>",
@@ -49120,7 +49228,7 @@
 							"name": "IP_LITERAL_CHARS",
 							"kind": "variable",
 							"doc_comment": "Allowed character set for a bare IP literal.\n\nCovers the union of IPv4 (digits + `.`), IPv6 (hex digits + `:`), and\nIPv4-mapped IPv6 forms (`::ffff:127.0.0.1`). Anything outside this\nset — brackets, whitespace, control bytes, letters g–z — disqualifies\nthe input from parsing.\n\nSame regex `proxy.ts`'s `validate_ip_strict` uses; exported here so\nboth modules can share one source of truth.",
-							"source_line": 52,
+							"source_line": 50,
 							"type_signature": "RegExp"
 						},
 						{
@@ -49130,7 +49238,7 @@
 							"examples": [
 								"canonicalize_ip('::0001')                    // → '::1'\ncanonicalize_ip('0:0:0:0:0:0:0:1')           // → '::1'\ncanonicalize_ip('2001:0DB8::0001')           // → '2001:db8::1'\ncanonicalize_ip('::ffff:127.0.0.1')          // → '127.0.0.1'\ncanonicalize_ip('0:0:0:0:0:ffff:7f00:1')     // → '127.0.0.1'\ncanonicalize_ip('::ffff:1')                  // → '::ffff:1' (NOT IPv4-mapped — group[5] is 0, not ffff)\ncanonicalize_ip('127.0.0.1')                 // → '127.0.0.1'\ncanonicalize_ip('not-an-ip')                 // → 'not-an-ip' (passes through)\ncanonicalize_ip('::1\\n')                     // → '::1\\n' (fails char-set; passes through)\ncanonicalize_ip('203.0.113.1:8080')          // → '203.0.113.1:8080' (passes through; validate_ip_strict rejects)"
 							],
-							"source_line": 85,
+							"source_line": 83,
 							"type_signature": "(ip: string): string",
 							"return_type": "string",
 							"parameters": [
@@ -49144,7 +49252,7 @@
 							"name": "ipv6_bigint_to_canonical",
 							"kind": "function",
 							"doc_comment": "Convert a 128-bit IPv6 binary value into its RFC 5952 canonical string form.\n\n- IPv4-mapped (groups[0..5] = 0, groups[5] = 0xffff) emits the\n  `::ffff:a.b.c.d` dotted form per RFC 5952 §5.\n- Otherwise: lowercase hex with no leading zeros per group (§4.1),\n  the longest run of consecutive zero groups (≥ 2 groups) is\n  replaced with `::` (§4.2.1, §4.2.3), and on equal-length runs the\n  first one wins (§4.2.3). Single-zero groups stay as `0` (§4.2.2).\n\nPure helper exported for the test suite to exercise the\ncanonicalization invariants directly without a full\n`convertIPv6ToBinary` round-trip.",
-							"source_line": 138,
+							"source_line": 136,
 							"type_signature": "(bits: bigint): string",
 							"return_type": "string",
 							"parameters": [
@@ -49156,7 +49264,7 @@
 							]
 						}
 					],
-					"module_comment": "IP address canonicalization — collapse equivalent string forms into a\nsingle key per RFC 5952 (IPv6) plus the dotted form for IPv4-mapped\nIPv6 addresses.\n\n**Why this exists.** Without canonicalization, the four representations\n`::1`, `::01`, `::0001`, and `0:0:0:0:0:0:0:1` are the same IPv6 address\nbut produce four distinct strings — so an attacker rotating\nequivalent forms behind a trusted-passthrough proxy could defeat\nper-IP rate limiting (each form gets a fresh bucket) and pollute\n`audit_log.ip` forensics. The collision can extend to IPv4-mapped\nIPv6 forms (`::ffff:127.0.0.1` vs `0:0:0:0:0:ffff:7f00:1` vs the\nbare `127.0.0.1`) — three keys for one address.\n\nCanonicalization runs through {@link canonicalize_ip} which:\n\n1. Lowercases and char-set filters (`IP_LITERAL_CHARS`) — non-IP\n   strings (`'unknown'`, `'attacker:controlled'`, `'::1\\n'`) pass\n   through unchanged so downstream strict validators can still\n   reject them.\n2. Parses via Hono's `convertIPv*ToBinary` family.\n3. Re-emits the canonical RFC 5952 string (lowercase hex,\n   longest-zero-run compressed, IPv4-mapped emitted in the dotted\n   form mandated by RFC 5952 §5).\n4. Strips the `::ffff:` prefix from dotted IPv4-mapped forms so the\n   bucket collapses to plain IPv4 — the strip moves AFTER\n   canonicalization because the dotted form is the only form the\n   strip can recognize symmetrically.\n\nMirrors `zzz_server::proxy::normalize_ip` (landed 2026-05-16) which\nuses the same parse-then-canonicalize-then-strip ordering for the\nsame rate-limit-key-poisoning surface. See\n`~/dev/grimoire/lore/fuz_app/TODO_PROXY.md` §IPv6 String\nCanonicalization for the cross-backend parity record.",
+					"module_comment": "IP address canonicalization — collapse equivalent string forms into a\nsingle key per RFC 5952 (IPv6) plus the dotted form for IPv4-mapped\nIPv6 addresses.\n\n**Why this exists.** Without canonicalization, the four representations\n`::1`, `::01`, `::0001`, and `0:0:0:0:0:0:0:1` are the same IPv6 address\nbut produce four distinct strings — so an attacker rotating\nequivalent forms behind a trusted-passthrough proxy could defeat\nper-IP rate limiting (each form gets a fresh bucket) and pollute\n`audit_log.ip` forensics. The collision can extend to IPv4-mapped\nIPv6 forms (`::ffff:127.0.0.1` vs `0:0:0:0:0:ffff:7f00:1` vs the\nbare `127.0.0.1`) — three keys for one address.\n\nCanonicalization runs through {@link canonicalize_ip} which:\n\n1. Lowercases and char-set filters (`IP_LITERAL_CHARS`) — non-IP\n   strings (`'unknown'`, `'attacker:controlled'`, `'::1\\n'`) pass\n   through unchanged so downstream strict validators can still\n   reject them.\n2. Parses via Hono's `convertIPv*ToBinary` family.\n3. Re-emits the canonical RFC 5952 string (lowercase hex,\n   longest-zero-run compressed, IPv4-mapped emitted in the dotted\n   form mandated by RFC 5952 §5).\n4. Strips the `::ffff:` prefix from dotted IPv4-mapped forms so the\n   bucket collapses to plain IPv4 — the strip moves AFTER\n   canonicalization because the dotted form is the only form the\n   strip can recognize symmetrically.\n\nMirrors `zzz_server::proxy::normalize_ip` (landed 2026-05-16) which\nuses the same parse-then-canonicalize-then-strip ordering for the\nsame rate-limit-key-poisoning surface.",
 					"dependents": ["http/proxy.ts"]
 				},
 				{
@@ -49825,7 +49933,7 @@
 						{
 							"name": "parse_allowed_origins",
 							"kind": "function",
-							"doc_comment": "Parses ALLOWED_ORIGINS env var into regex matchers for request source verification.\nOrigin allowlisting for locally-running services — not the CSRF layer\n(that's `SameSite: strict` on session cookies).\n\nAccepts comma-separated patterns with limited wildcards:\n- Exact origins: `https://api.fuz.dev`\n- Wildcard subdomains: `https://*.fuz.dev` (matches exactly one subdomain level)\n- Multiple wildcards: `https://*.staging.*.fuz.dev` (for deep subdomains)\n- Wildcard ports: `http://localhost:*` (matches any port or no port)\n- IPv6 addresses: `http://[::1]:3000`, `https://[2001:db8::1]`\n- Combined: `https://*.fuz.dev:*`\n\nExamples:\n- `http://localhost:3000,https://prod.fuz.dev`\n- `https://*.api.fuz.dev,http://127.0.0.1:*`\n- `http://[::1]:*,https://*.*.corp.fuz.dev:*`",
+							"doc_comment": "Parses FUZ_ALLOWED_ORIGINS env var into regex matchers for request source verification.\nOrigin allowlisting for locally-running services — not the CSRF layer\n(that's `SameSite: strict` on session cookies).\n\nAccepts comma-separated patterns with limited wildcards:\n- Exact origins: `https://api.fuz.dev`\n- Wildcard subdomains: `https://*.fuz.dev` (matches exactly one subdomain level)\n- Multiple wildcards: `https://*.staging.*.fuz.dev` (for deep subdomains)\n- Wildcard ports: `http://localhost:*` (matches any port or no port)\n- IPv6 addresses: `http://[::1]:3000`, `https://[2001:db8::1]`\n- Combined: `https://*.fuz.dev:*`\n\nExamples:\n- `http://localhost:3000,https://prod.fuz.dev`\n- `https://*.api.fuz.dev,http://127.0.0.1:*`\n- `http://[::1]:*,https://*.*.corp.fuz.dev:*`",
 							"throws": [
 								{
 									"type": "Error",
@@ -51723,7 +51831,6 @@
 						"auth/bootstrap_routes.ts",
 						"auth/signup_routes.ts",
 						"server/app_server.ts",
-						"testing/integration.ts",
 						"testing/rate_limiting.ts"
 					]
 				},
@@ -53389,7 +53496,7 @@
 								{
 									"name": "field",
 									"kind": "variable",
-									"type_signature": "'SECRET_COOKIE_KEYS' | 'ALLOWED_ORIGINS'"
+									"type_signature": "'SECRET_FUZ_COOKIE_KEYS' | 'FUZ_ALLOWED_ORIGINS'"
 								},
 								{
 									"name": "errors",
@@ -53409,13 +53516,13 @@
 							"kind": "function",
 							"doc_comment": "Validate a loaded `BaseServerEnv` and produce the artifacts needed for server init.\n\nHandles keyring validation, origin parsing, and bootstrap token path extraction.\nReturns a Result so callers handle errors their own way (exit, logging, etc).",
 							"source_line": 92,
-							"type_signature": "(env: { NODE_ENV: \"development\" | \"production\"; PORT: number; HOST: string; DATABASE_URL: string; SECRET_COOKIE_KEYS: string; ALLOWED_ORIGINS: string; PUBLIC_API_URL: string; PUBLIC_WEBSOCKET_URL?: string | undefined; ... 4 more ...; SMTP_PASSWORD?: string | undefined; }): ServerEnvOptionsResult",
+							"type_signature": "(env: { NODE_ENV: \"development\" | \"production\"; PORT: number; HOST: string; DATABASE_URL: string; SECRET_FUZ_COOKIE_KEYS: string; FUZ_ALLOWED_ORIGINS: string; PUBLIC_FUZ_API_URL: string; ... 5 more ...; SMTP_PASSWORD?: string | undefined; }): ServerEnvOptionsResult",
 							"return_type": "ServerEnvOptionsResult",
 							"return_description": "`{ok: true, keyring, allowed_origins, bootstrap_token_path}` or `{ok: false, field, errors}`",
 							"parameters": [
 								{
 									"name": "env",
-									"type": "{ NODE_ENV: \"development\" | \"production\"; PORT: number; HOST: string; DATABASE_URL: string; SECRET_COOKIE_KEYS: string; ALLOWED_ORIGINS: string; PUBLIC_API_URL: string; PUBLIC_WEBSOCKET_URL?: string | undefined; ... 4 more ...; SMTP_PASSWORD?: string | undefined; }",
+									"type": "{ NODE_ENV: \"development\" | \"production\"; PORT: number; HOST: string; DATABASE_URL: string; SECRET_FUZ_COOKIE_KEYS: string; FUZ_ALLOWED_ORIGINS: string; PUBLIC_FUZ_API_URL: string; PUBLIC_FUZ_WEBSOCKET_URL?: string | undefined; ... 4 more ...; SMTP_PASSWORD?: string | undefined; }",
 									"description": "a loaded and Zod-validated `BaseServerEnv`"
 								}
 							]
@@ -53570,20 +53677,32 @@
 							"name": "StandardAdminIntegrationTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_standard_admin_integration_tests`.",
-							"source_line": 83,
+							"source_line": 75,
 							"type_signature": "StandardAdminIntegrationTestOptions",
 							"properties": [
+								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function. The admin suite calls this in\nevery `test()` body — auth_integration_truncate_tables clears\n`account`, so each test re-bootstraps the keeper."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface for route iteration and error-coverage\nscoping. Must be `kind: 'inline'` in P1."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations."
+								},
 								{
 									"name": "session_options",
 									"kind": "variable",
 									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for cookie-based auth."
-								},
-								{
-									"name": "create_route_specs",
-									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory — same one used in production."
+									"doc_comment": "Session config — needed for cookie_name + factory-form rpc_endpoints resolution."
 								},
 								{
 									"name": "roles",
@@ -53595,25 +53714,13 @@
 									"name": "rpc_endpoints",
 									"kind": "variable",
 									"type_signature": "RpcEndpointsSuiteOption",
-									"doc_comment": "RPC endpoint specs — the source `RpcAction` arrays. Required; role_grant\ngrant/revoke are RPC-only and the suite hard-fails without them.\n\nAccepts either an array (eager) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>` — the factory form\nis required when action handlers must close over the per-test\n`ctx.app_settings` / `ctx.deps` (e.g. the canonical\n`create_standard_rpc_actions(ctx.deps, {app_settings: ctx.app_settings})`\npattern). The factory must return the same endpoint `path` regardless\nof ctx — it is invoked once at setup with a stub ctx for path lookup\nand again per-test by `create_app_server` for live dispatch."
+									"doc_comment": "RPC endpoint specs — the source `RpcAction` arrays. Required; role_grant\ngrant/revoke are RPC-only and the suite hard-fails without them."
 								},
 								{
 									"name": "admin_prefix",
 									"kind": "variable",
 									"type_signature": "string",
 									"doc_comment": "Path prefix where admin routes are mounted (e.g., `'/api/admin'`).\nUsed by the 401/403 error-coverage probe to scope to fuz_app admin\nroutes only, avoiding app-specific admin-gated routes that may use\nstub deps. Default `'/api/admin'`."
-								},
-								{
-									"name": "app_options",
-									"kind": "variable",
-									"type_signature": "SuiteAppOptions",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only.\nPass consumer factories (e.g. `[pglite_factory, pg_factory]`) to also test against PostgreSQL."
 								}
 							]
 						},
@@ -53627,7 +53734,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — admin"
 								}
 							],
-							"source_line": 165,
+							"source_line": 136,
 							"type_signature": "(options: StandardAdminIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -53643,17 +53750,13 @@
 						"auth/account_action_specs.ts",
 						"auth/admin_action_specs.ts",
 						"auth/grant_path_schema.ts",
-						"auth/migrations.ts",
 						"auth/role_grant_offer_action_specs.ts",
-						"auth/role_grant_offer_queries.ts",
-						"auth/role_grant_queries.ts",
 						"auth/role_schema.ts",
-						"db/migrate.ts",
-						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/db.ts",
+						"testing/db_entities.ts",
 						"testing/error_coverage.ts",
 						"testing/integration_helpers.ts",
+						"testing/role_grant_helpers.ts",
 						"testing/rpc_helpers.ts"
 					],
 					"dependents": ["testing/standard.ts"]
@@ -54232,13 +54335,8 @@
 						"testing/db.ts"
 					],
 					"dependents": [
-						"testing/admin_integration.ts",
-						"testing/audit_completeness.ts",
-						"testing/data_exposure.ts",
-						"testing/integration.ts",
+						"testing/cross_backend/setup.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts",
 						"testing/sse_round_trip.ts"
 					]
 				},
@@ -54257,6 +54355,8 @@
 						"testing/audit_drift_guard.ts",
 						"testing/auth_apps.ts",
 						"testing/connection_closer_helpers.ts",
+						"testing/cross_backend/capabilities.ts",
+						"testing/cross_backend/setup.ts",
 						"testing/data_exposure.ts",
 						"testing/db.ts",
 						"testing/db_entities.ts",
@@ -54266,6 +54366,7 @@
 						"testing/integration_helpers.ts",
 						"testing/middleware.ts",
 						"testing/rate_limiting.ts",
+						"testing/role_grant_helpers.ts",
 						"testing/round_trip.ts",
 						"testing/rpc_attack_surface.ts",
 						"testing/rpc_helpers.ts",
@@ -54276,7 +54377,8 @@
 						"testing/sse_round_trip.ts",
 						"testing/standard.ts",
 						"testing/stubs.ts",
-						"testing/surface_invariants.ts"
+						"testing/surface_invariants.ts",
+						"testing/transports/surface_source.ts"
 					]
 				},
 				{
@@ -54614,38 +54716,38 @@
 							"name": "AuditCompletenessTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_audit_completeness_tests`.",
-							"source_line": 70,
+							"source_line": 75,
 							"type_signature": "AuditCompletenessTestOptions",
 							"properties": [
+								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface. Must be `kind: 'inline'` in P1."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations."
+								},
 								{
 									"name": "session_options",
 									"kind": "variable",
 									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for cookie-based auth."
-								},
-								{
-									"name": "create_route_specs",
-									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory — same one used in production."
+									"doc_comment": "Session config — needed for factory-form rpc_endpoints resolution."
 								},
 								{
 									"name": "rpc_endpoints",
 									"kind": "variable",
 									"type_signature": "RpcEndpointsSuiteOption",
-									"doc_comment": "RPC endpoint specs — the source `RpcAction` arrays. Required; the\nadmin role_grant flow is RPC-only and the suite hard-fails without it.\n\nAccepts either an array (eager) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>` — the factory form\nis required when action handlers must close over the per-test\n`ctx.app_settings` / `ctx.deps` (e.g. exercising `app_settings_update`).\nThe factory must return the same endpoint `path` regardless of ctx —\nit is invoked once at setup with a stub ctx for path lookup and again\nper-test by `create_app_server` for live dispatch."
-								},
-								{
-									"name": "app_options",
-									"kind": "variable",
-									"type_signature": "SuiteAppOptions",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only."
+									"doc_comment": "RPC endpoint specs — required. The admin role_grant flow is RPC-only\nand the suite hard-fails without it."
 								}
 							]
 						},
@@ -54659,7 +54761,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 177,
+							"source_line": 195,
 							"type_signature": "(options: AuditCompletenessTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -54670,20 +54772,16 @@
 							]
 						}
 					],
-					"module_comment": "Composable audit log completeness test suite.\n\nVerifies that every auth mutation route produces the expected audit log\nevent. Uses the real middleware stack and database — audit events are\nverified by querying the `audit_log` table after each request.\n\nBootstrap is excluded because it requires filesystem token state that\n`create_test_app` does not provide. Bootstrap audit logging is tested\nseparately in `bootstrap_account.db.test.ts`.",
+					"module_comment": "Composable audit log completeness test suite.\n\nVerifies that every auth mutation route produces the expected audit log\nevent. Uses the real middleware stack and database, then **reads back\nthrough the `audit_log_list` RPC** — the production observation path the\nadmin UI consumes. This is intentional end-to-end coverage: emit →\npersist → query → wire response, all in one round-trip.\n\nThe trade is a deliberate transport coupling: a regression in\n`audit_log_list_action_spec`'s auth or response shape can surface here as\na secondary failure. `describe_rpc_round_trip_tests` covers that RPC\ndirectly, so primary breakages localize there first. For *unit-level*\n\"did the handler emit?\" assertions without the persistence path, use\n`create_recording_audit_emitter` from `audit_drift_guard.ts` — that\ncaptures emits before they hit DB or transport.\n\nBootstrap is excluded because it requires filesystem token state that\n`create_test_app` does not provide. Bootstrap audit logging is tested\nseparately in `bootstrap_account.db.test.ts`.",
 					"dependencies": [
 						"auth/account_action_specs.ts",
 						"auth/admin_action_specs.ts",
 						"auth/audit_log_schema.ts",
-						"auth/migrations.ts",
 						"auth/role_grant_offer_action_specs.ts",
-						"auth/role_grant_offer_queries.ts",
 						"auth/role_schema.ts",
-						"db/migrate.ts",
-						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/db.ts",
 						"testing/integration_helpers.ts",
+						"testing/role_grant_helpers.ts",
 						"testing/rpc_helpers.ts"
 					]
 				},
@@ -55019,13 +55117,296 @@
 					"dependencies": ["testing/assert_dev_env.ts"]
 				},
 				{
+					"path": "testing/cross_backend/capabilities.ts",
+					"declarations": [
+						{
+							"name": "BackendCapabilities",
+							"kind": "type",
+							"doc_comment": "Optional behaviors a backend may support. Each flag's TSDoc names the\ntests that gate on it; add a new flag here before referencing it from\na suite body, and document the gating tests inline.",
+							"source_line": 25,
+							"type_signature": "BackendCapabilities",
+							"properties": [
+								{
+									"name": "bearer_auth",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean",
+									"doc_comment": "Bearer token auth (`Authorization: Bearer <token>`) is wired through\nthe backend's middleware stack. Gates the bearer-token cases in\n`describe_standard_integration_tests` and `describe_rate_limiting_tests`."
+								},
+								{
+									"name": "trusted_proxy",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean",
+									"doc_comment": "Trusted-proxy XFF parsing is wired (`X-Forwarded-For` etc.). Gates\nthe proxy-resolution cases in `describe_standard_integration_tests`\nand the future cross-process proxy integration suite."
+								},
+								{
+									"name": "login_rate_limit",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean",
+									"doc_comment": "Per-account login rate limiting is wired. Gates the per-account\nrate-limit cases in `describe_rate_limiting_tests`."
+								},
+								{
+									"name": "ws",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean",
+									"doc_comment": "WebSocket transport is reachable end-to-end. Gates the cross-process\nWS round-trip suite; the in-process `describe_ws_round_trip_tests`\nruns against `register_action_ws` directly and ignores this flag."
+								},
+								{
+									"name": "sse",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean",
+									"doc_comment": "SSE transport is reachable end-to-end. Gates the cross-process SSE\nclose-detection cases; in-process SSE uses the\n`on_audit_event` hook and ignores this flag."
+								},
+								{
+									"name": "in_process_only",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "boolean",
+									"doc_comment": "Test has direct access to backend-internal state (keyring for\nsigning cookies, DB pool for FK-structural raw queries). Always\n`true` for in-process Hono via `default_in_process_setup`; always\n`false` cross-process. Gates the 3 keyring reads in\n`describe_standard_integration_tests` (expired-cookie generation)\nand the FK-structural raw query in `describe_audit_completeness_tests`."
+								}
+							]
+						},
+						{
+							"name": "in_process_capabilities",
+							"kind": "variable",
+							"doc_comment": "Capability declarations for the in-process Hono transport. Every flag\nis `true` because in-process testing exercises the full backend with\nno missing optional behaviors. Cross-process consumers\ndeclare each flag explicitly per backend.",
+							"source_line": 72,
+							"type_signature": "BackendCapabilities"
+						},
+						{
+							"name": "test_if",
+							"kind": "function",
+							"doc_comment": "Conditional `test()` wrapper — registers a vitest case only when\n`cond` is true; otherwise registers it as `.skip` so the run still\nsurfaces the gated coverage in the report.\n\nThin wrapper around vitest's `test.skipIf(!cond)` with the argument\norder flipped to match the more readable `test_if(capabilities.bearer_auth, ...)`\ncall pattern.",
+							"source_line": 90,
+							"type_signature": "(cond: boolean, name: string, fn: () => void | Promise<void>): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "cond",
+									"type": "boolean"
+								},
+								{
+									"name": "name",
+									"type": "string"
+								},
+								{
+									"name": "fn",
+									"type": "() => void | Promise<void>"
+								}
+							]
+						}
+					],
+					"module_comment": "Capability vocabulary for cross-backend integration testing.\n\nBackends declare which optional behaviors they support; suite bodies\ncall `test_if(capabilities.X, ...)` to skip cases the backend doesn't\nimplement. No `if (config.name === 'rust')` branches anywhere — name-\nchecking is a code smell that says capability vocabulary is missing.\n\nIn-process Hono via `default_in_process_setup` declares every\ncapability `true` (see `in_process_capabilities`). Cross-process\nbackends opt in per-flag on their `BackendConfig`.",
+					"dependencies": ["testing/assert_dev_env.ts"],
+					"dependents": ["testing/cross_backend/setup.ts"]
+				},
+				{
+					"path": "testing/cross_backend/setup.ts",
+					"declarations": [
+						{
+							"name": "CreateTestAccountOptions",
+							"kind": "type",
+							"doc_comment": "Options for `TestFixture.create_account` — mints an additional\nbootstrapped account alongside the keeper. Matches the existing\n`TestApp.create_account` signature so the migration to fixture-style\nreads is a one-site call rewrite per use.",
+							"source_line": 51,
+							"type_signature": "CreateTestAccountOptions",
+							"properties": [
+								{
+									"name": "username",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "password_value",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "roles",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Array<string>"
+								}
+							]
+						},
+						{
+							"name": "TestAccountFixture",
+							"kind": "type",
+							"doc_comment": "Shape returned by `TestFixture.create_account`. Aliased to the\nexisting `TestAccount` interface from `app_server.ts` — same shape,\nstable name on the cross-backend testing surface so call sites read\n`fixture.create_account(...)` returning `TestAccountFixture` without\nimporting from the legacy module.",
+							"source_line": 64,
+							"type_signature": "TestAccount"
+						},
+						{
+							"name": "TestFixture",
+							"kind": "type",
+							"doc_comment": "The per-test bundle returned by `SetupTest`. Every Tier 1 suite body\nreads from this shape — no `test_app.backend.*` reads remain in\npost-migration suite bodies.\n\nThe two optional fields (`keyring`, `backend_internals`) are present\nonly when the underlying transport is in-process — gate reads on the\n`in_process_only` capability flag from\n`BackendCapabilities` rather than checking presence with `?.`. The\ncapability flag is the source of truth; the optional types follow.",
+							"source_line": 77,
+							"type_signature": "TestFixture",
+							"properties": [
+								{
+									"name": "transport",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "RpcTestTransport",
+									"doc_comment": "Transport for this test's HTTP requests (cookie-threaded cross-process)."
+								},
+								{
+									"name": "account",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "{readonly id: Uuid; readonly username: string}",
+									"doc_comment": "The freshly-bootstrapped keeper account."
+								},
+								{
+									"name": "actor",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "{readonly id: Uuid}",
+									"doc_comment": "The actor linked to the keeper account."
+								},
+								{
+									"name": "create_session_headers",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>",
+									"doc_comment": "Build request headers with the keeper's session cookie."
+								},
+								{
+									"name": "create_bearer_headers",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>",
+									"doc_comment": "Build request headers with the keeper's bearer token."
+								},
+								{
+									"name": "create_daemon_token_headers",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>",
+									"doc_comment": "Build request headers with the daemon token (keeper auth)."
+								},
+								{
+									"name": "create_account",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "(options?: CreateTestAccountOptions) => Promise<TestAccountFixture>",
+									"doc_comment": "Mint an additional bootstrapped account for cross-account / multi-user\ntests. In-process: re-uses `bootstrap_test_account` against the same DB;\ncross-process: goes through the consumer-supplied DB-admin\nchannel."
+								},
+								{
+									"name": "keyring",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Keyring",
+									"doc_comment": "Test-only keyring access — present in-process, absent cross-process.\nGated by `capabilities.in_process_only`. Used by 3 sites in\n`describe_standard_integration_tests` for expired-cookie generation."
+								},
+								{
+									"name": "backend_internals",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "TestAppServer",
+									"doc_comment": "Raw backend access (`deps.db`, etc.) — present in-process, absent\ncross-process. Gated by `capabilities.in_process_only`. Used by the\none FK-structural raw query in `describe_audit_completeness_tests`."
+								}
+							]
+						},
+						{
+							"name": "SetupTest",
+							"kind": "type",
+							"doc_comment": "Per-test fixture-producing function. Invoked once inside every\n`test()` body. The implementation captures factory inputs (in-process)\nor a long-running backend handle (cross-process) and creates\na fresh per-test bundle on each call.",
+							"source_line": 117,
+							"type_signature": "SetupTest"
+						},
+						{
+							"name": "default_in_process_setup",
+							"kind": "function",
+							"doc_comment": "Build a `SetupTest` that creates a fresh `TestApp` per call via\n`create_test_app` and projects it into the `TestFixture` shape.\n\nSame factory inputs `create_test_app` already takes — this helper\nis a projection layer, not a new lifecycle. fuz_app's own `src/test/`\nand the 41 external consumer call sites in zzz / visionesdelcaribe.org /\nmageguild / private_zap pass `default_in_process_setup({...factory_inputs})`\nin place of the old per-suite factory-input bundle.\n\nThe describe-level `auth_integration_truncate_tables` / pglite WASM\ncache lifecycle stays in `create_pglite_factory` / `create_describe_db`\n(`testing/db.js`) — `default_in_process_setup` doesn't manage db state\nbeyond what `create_test_app` already does.",
+							"source_line": 134,
+							"type_signature": "(options: CreateTestAppOptions): SetupTest",
+							"return_type": "SetupTest",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "CreateTestAppOptions"
+								}
+							]
+						},
+						{
+							"name": "DefaultInProcessSuiteOptions",
+							"kind": "type",
+							"doc_comment": "Consumer-facing options for `default_in_process_suite_options` — the\nminimal factory inputs both `default_in_process_setup` and\n`create_test_app_surface_spec` consume to produce the\n`{setup_test, surface_source, capabilities}` bundle.",
+							"source_line": 157,
+							"type_signature": "DefaultInProcessSuiteOptions",
+							"properties": [
+								{
+									"name": "session_options",
+									"kind": "variable",
+									"type_signature": "SessionOptions<string>"
+								},
+								{
+									"name": "create_route_specs",
+									"kind": "variable",
+									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>"
+								},
+								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "RpcEndpointsSuiteOption"
+								},
+								{
+									"name": "app_options",
+									"kind": "variable",
+									"type_signature": "SuiteAppOptions"
+								},
+								{
+									"name": "keeper_roles",
+									"kind": "variable",
+									"type_signature": "Array<string>",
+									"doc_comment": "Roles to grant the bootstrapped keeper. Threads through to\n`create_test_app`'s `roles` option. Default `[ROLE_KEEPER]`\n(matching `create_test_app_server`'s default).\n\nAdmin-suite consumers pass `[ROLE_KEEPER, ROLE_ADMIN]` so the\ndefault keeper can hit admin-gated RPC methods.\n`describe_standard_admin_integration_tests` and\n`describe_audit_completeness_tests` need this."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Pre-built `SurfaceSource` — overrides the default which calls\n`create_test_app_surface_spec` against the same factory inputs.\nPass when surface assembly needs fields outside the shared subset\n(e.g. `env_schema`, `event_specs`, `ws_endpoints`,\n`transform_middleware`, `bootstrap_route_prefix`)."
+								}
+							]
+						},
+						{
+							"name": "default_in_process_suite_options",
+							"kind": "function",
+							"doc_comment": "Build the `{setup_test, surface_source, capabilities}` bundle for any\nin-process Tier 1 suite call in a single helper invocation. Reduces\nthe new suite signature from \"three required fields composed by hand\"\nto a single spread.\n\n```ts\ndescribe_round_trip_validation({\n  ...default_in_process_suite_options({\n    session_options,\n    create_route_specs,\n    rpc_endpoints: [rpc_endpoint_spec],\n  }),\n  skip_routes,\n});\n```\n\nSuites with their own per-test app-construction needs\n(`describe_rate_limiting_tests`, `describe_rpc_round_trip_tests`)\nadditionally pass `session_options` / `rpc_endpoints` separately at\nthe same call site — the helper covers the shared `setup_test` /\n`surface_source` / `capabilities` triple.",
+							"source_line": 206,
+							"type_signature": "(options: DefaultInProcessSuiteOptions): { setup_test: SetupTest; surface_source: SurfaceSource; capabilities: BackendCapabilities; }",
+							"return_type": "{ setup_test: SetupTest; surface_source: SurfaceSource; capabilities: BackendCapabilities; }",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "DefaultInProcessSuiteOptions"
+								}
+							]
+						}
+					],
+					"module_comment": "Per-test fixture protocol shared by in-process and cross-process\ntransports.\n\nEach standard suite body takes a required\n`setup_test: () => Promise<TestFixture>` callback and invokes it once\nper test. The fixture carries everything a test needs to fire requests\nand assert on a single bootstrapped keeper account — transport,\naccount / actor identity, three header builders, a multi-account mint\nfactory, and (in-process only) the in-memory keyring + raw backend.\n\n`default_in_process_setup(options)` wraps `create_test_app` into the\n`SetupTest` contract. The cross-process sibling\n(`default_cross_process_setup`) lands alongside the spawn-a-backend\ntransport plumbing — it implements the same contract by spawning a\nbinary and bootstrapping over real HTTP.",
+					"dependencies": [
+						"testing/app_server.ts",
+						"testing/assert_dev_env.ts",
+						"testing/cross_backend/capabilities.ts",
+						"testing/rpc_helpers.ts",
+						"testing/stubs.ts"
+					]
+				},
+				{
 					"path": "testing/data_exposure.ts",
 					"declarations": [
 						{
 							"name": "collect_json_schema_property_names",
 							"kind": "function",
 							"doc_comment": "Recursively collect all property names from a JSON Schema.\n\nWalks `properties`, `items`, `allOf`/`anyOf`/`oneOf`, and\n`additionalProperties` to find every declared field name at any depth.",
-							"source_line": 45,
+							"source_line": 46,
 							"type_signature": "(schema: unknown): Set<string>",
 							"return_type": "Set<string>",
 							"parameters": [
@@ -55039,7 +55420,7 @@
 							"name": "assert_output_schemas_no_sensitive_fields",
 							"kind": "function",
 							"doc_comment": "Assert that no output schema in the surface contains sensitive field names.",
-							"source_line": 75,
+							"source_line": 76,
 							"type_signature": "(surface: AppSurface, sensitive_fields?: readonly string[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -55058,7 +55439,7 @@
 							"name": "assert_non_admin_schemas_no_admin_fields",
 							"kind": "function",
 							"doc_comment": "Assert that non-admin route output schemas don't contain admin-only fields.",
-							"source_line": 94,
+							"source_line": 95,
 							"type_signature": "(surface: AppSurface, admin_only_fields?: readonly string[]): void",
 							"return_type": "void",
 							"parameters": [
@@ -55077,26 +55458,26 @@
 							"name": "DataExposureTestOptions",
 							"kind": "type",
 							"doc_comment": "Options for `describe_data_exposure_tests`.",
-							"source_line": 116,
+							"source_line": 117,
 							"type_signature": "DataExposureTestOptions",
 							"properties": [
 								{
-									"name": "build",
+									"name": "setup_test",
 									"kind": "variable",
-									"type_signature": "() => AppSurfaceSpec",
-									"doc_comment": "Build the app surface spec (for schema-level checks)."
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function (per-describe cadence)."
 								},
 								{
-									"name": "session_options",
+									"name": "surface_source",
 									"kind": "variable",
-									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for runtime tests."
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface for schema-level + route-iteration checks.\nMust be `kind: 'inline'` in P1 — cross-process consumers (Phase 3)\nwill pass the snapshot variant."
 								},
 								{
-									"name": "create_route_specs",
+									"name": "capabilities",
 									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory for runtime tests."
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations."
 								},
 								{
 									"name": "sensitive_fields",
@@ -55111,18 +55492,6 @@
 									"doc_comment": "Fields that must not appear in non-admin responses. Default: `admin_only_field_blocklist`."
 								},
 								{
-									"name": "app_options",
-									"kind": "variable",
-									"type_signature": "Partial<\n\t\tOmit<AppServerOptions, 'backend' | 'session_options' | 'create_route_specs'>\n\t>",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only."
-								},
-								{
 									"name": "skip_routes",
 									"kind": "variable",
 									"type_signature": "Array<string>",
@@ -55134,7 +55503,7 @@
 							"name": "describe_data_exposure_tests",
 							"kind": "function",
 							"doc_comment": "Composable data exposure test suite.\n\nThree test groups:\n1. Schema-level — walk JSON Schema output/error schemas for sensitive field names\n2. Runtime — fire real requests and check response bodies against blocklists\n3. Cross-privilege — admin routes return 403 for non-admin, error responses\n   contain no sensitive fields",
-							"source_line": 146,
+							"source_line": 145,
 							"type_signature": "(options: DataExposureTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -55145,16 +55514,12 @@
 							]
 						}
 					],
-					"module_comment": "Composable data exposure test suite.\n\nVerifies that sensitive database fields never leak through HTTP responses:\n- Schema-level: walks JSON Schema output/error schemas for blocklisted property names\n- Runtime: fires real requests and checks response bodies against field blocklists\n- Cross-privilege: verifies admin routes return 403 for non-admin users,\n  and non-admin responses exclude admin-only fields",
+					"module_comment": "Composable data exposure test suite.\n\nVerifies that sensitive database fields never leak through HTTP responses:\n- Schema-level: walks JSON Schema output/error schemas for blocklisted property names\n- Runtime: fires real requests and checks response bodies against field blocklists\n- Cross-privilege: verifies admin routes return 403 for non-admin users,\n  and non-admin responses exclude admin-only fields\n\nCadence: per-describe `setup_test()` call (see `round_trip.ts` module\ndocstring). The runtime body manages its own request ordering (auth-free\n→ cross-privilege → 2xx) to avoid session-invalidation contamination\nbetween assertions, so per-test fixture re-creation isn't needed.",
 					"dependencies": [
-						"auth/migrations.ts",
 						"auth/role_schema.ts",
-						"db/migrate.ts",
 						"http/auth_shape.ts",
 						"http/schema_helpers.ts",
-						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/db.ts",
 						"testing/integration_helpers.ts",
 						"testing/schema_generators.ts"
 					]
@@ -55166,7 +55531,7 @@
 							"name": "TestAccountWithActor",
 							"kind": "type",
 							"doc_comment": "The `{account, actor}` row pair returned by `create_test_account_with_actor`.",
-							"source_line": 25,
+							"source_line": 26,
 							"type_signature": "TestAccountWithActor",
 							"properties": [
 								{
@@ -55185,7 +55550,7 @@
 							"name": "create_test_account_with_actor",
 							"kind": "function",
 							"doc_comment": "Create an `account` + `actor` row pair in the database for tests.\n\nWraps `query_create_account_with_actor` with a default `password_hash`\nso suites that don't exercise password verification can stay terse.\nReplaces the per-file `create_user` / `create_test_actor` /\n`create_test_account` helpers that had accumulated across the auth\ntest suite.",
-							"source_line": 39,
+							"source_line": 40,
 							"type_signature": "(db: Db, options: { username: string; password_hash?: string | undefined; }): Promise<TestAccountWithActor>",
 							"return_type": "Promise<TestAccountWithActor>",
 							"parameters": [
@@ -55198,10 +55563,33 @@
 									"type": "{ username: string; password_hash?: string | undefined; }"
 								}
 							]
+						},
+						{
+							"name": "create_test_role_grant_direct",
+							"kind": "function",
+							"doc_comment": "Materialize a role_grant directly via `query_create_role_grant`, bypassing\nthe production offer/accept consent flow. Use only when the test focuses on\nrevoke or isolation semantics rather than the consent path itself — the\nschema permits null `source_offer_id` for exactly this case\n(`account_schema.ts`). For tests that exercise the production grant flow,\ndrive `role_grant_offer_create_action_spec` + `role_grant_offer_accept_action_spec`\nover RPC instead.",
+							"source_line": 58,
+							"type_signature": "(db: Db, input: CreateRoleGrantInput): Promise<RoleGrant>",
+							"return_type": "Promise<RoleGrant>",
+							"parameters": [
+								{
+									"name": "db",
+									"type": "Db"
+								},
+								{
+									"name": "input",
+									"type": "CreateRoleGrantInput"
+								}
+							]
 						}
 					],
 					"module_comment": "DB-backed entity factories for tests that need real `account` + `actor`\nrows in the database.\n\nCompanion to `entities.ts` — that file ships in-memory factories\n(`create_test_account`, `create_test_actor`) for tests that mock the\nDB; this file ships factories that hit a real `Db` so query-level\ntests don't reimplement the same `query_create_account_with_actor`\nwrapper in every file.\n\nFor full-fledged test accounts that also need an API token + signed\nsession cookie + role_grants, use `bootstrap_test_account` from\n`app_server.ts` instead.",
-					"dependencies": ["auth/account_queries.ts", "testing/assert_dev_env.ts"]
+					"dependencies": [
+						"auth/account_queries.ts",
+						"auth/role_grant_queries.ts",
+						"testing/assert_dev_env.ts"
+					],
+					"dependents": ["testing/admin_integration.ts"]
 				},
 				{
 					"path": "testing/db.ts",
@@ -55376,14 +55764,8 @@
 						"testing/assert_dev_env.ts"
 					],
 					"dependents": [
-						"testing/admin_integration.ts",
 						"testing/app_server.ts",
-						"testing/audit_completeness.ts",
-						"testing/data_exposure.ts",
-						"testing/integration.ts",
 						"testing/rate_limiting.ts",
-						"testing/round_trip.ts",
-						"testing/rpc_round_trip.ts",
 						"testing/sse_round_trip.ts"
 					]
 				},
@@ -55950,11 +56332,34 @@
 							]
 						},
 						{
+							"name": "KeeperHeaderProvider",
+							"kind": "type",
+							"doc_comment": "Header-builder triple shared by `TestApp` (legacy in-process shape) and\n`TestFixture` (cross-backend fixture protocol). Both satisfy this shape\nstructurally — `pick_auth_headers` accepts either without a cast.",
+							"source_line": 324,
+							"type_signature": "KeeperHeaderProvider",
+							"properties": [
+								{
+									"name": "create_session_headers",
+									"kind": "variable",
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>"
+								},
+								{
+									"name": "create_bearer_headers",
+									"kind": "variable",
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>"
+								},
+								{
+									"name": "create_daemon_token_headers",
+									"kind": "variable",
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>"
+								}
+							]
+						},
+						{
 							"name": "pick_auth_headers",
 							"kind": "function",
-							"doc_comment": "Pick request headers matching a route spec's auth requirement.\n\nMaps `RouteAuth` onto a test account's credentials:\n- `none` — origin headers only\n- `authenticated` — the authed account's session cookie\n- `role: admin` — the admin account's session cookie\n- `role: <other>` — the test app's bootstrapped keeper session\n- `keeper` — the test app's daemon token",
-							"source_line": 319,
-							"type_signature": "(spec: RouteSpec, test_app: TestApp, authed_account: TestAccount, admin_account: TestAccount): Record<string, string>",
+							"source_line": 330,
+							"type_signature": "(spec: RouteSpec, keeper: KeeperHeaderProvider, authed_account: TestAccount, admin_account: TestAccount): Record<...>",
 							"return_type": "Record<string, string>",
 							"parameters": [
 								{
@@ -55962,8 +56367,8 @@
 									"type": "RouteSpec"
 								},
 								{
-									"name": "test_app",
-									"type": "TestApp"
+									"name": "keeper",
+									"type": "KeeperHeaderProvider"
 								},
 								{
 									"name": "authed_account",
@@ -56002,38 +56407,38 @@
 							"name": "StandardIntegrationTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_standard_integration_tests`.",
-							"source_line": 71,
+							"source_line": 61,
 							"type_signature": "StandardIntegrationTestOptions",
 							"properties": [
+								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function. The integration suite calls\nthis in every `test()` body — auth_integration_truncate_tables\nclears `account`, so each test re-bootstraps the keeper."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface for route iteration and error-coverage\nscoping. Must be `kind: 'inline'` in P1."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations — gates `fixture.keyring!` reads."
+								},
 								{
 									"name": "session_options",
 									"kind": "variable",
 									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for cookie-based auth."
-								},
-								{
-									"name": "create_route_specs",
-									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory — same one used in production."
-								},
-								{
-									"name": "app_options",
-									"kind": "variable",
-									"type_signature": "SuiteAppOptions",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only.\nPass consumer factories (e.g. `[pglite_factory, pg_factory]`) to also test against PostgreSQL."
+									"doc_comment": "Session config — needed to resolve factory-form `rpc_endpoints`\nagainst a stub `AppServerContext` at setup time and to read\n`cookie_name` for manual cookie composition in the origin-verify\ncases."
 								},
 								{
 									"name": "rpc_endpoints",
 									"kind": "variable",
 									"type_signature": "RpcEndpointsSuiteOption",
-									"doc_comment": "RPC endpoint specs — required. This suite dispatches\n`account_verify`, `account_session_*`, and `account_token_*` via\n`rpc_call_for_spec` (the `/api/account/verify` REST route is a\nstatus-only nginx shim with no payload). Hard-fails via\n`require_rpc_endpoint_path` on setup so consumer projects see a\nclear setup error instead of confusing test failures.\n\nAccepts either an array (eager) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>` — the factory form\nis required when action handlers must close over the per-test\n`ctx.app_settings` / `ctx.deps` (e.g. the canonical\n`create_standard_rpc_actions(ctx.deps, {app_settings: ctx.app_settings})`\npattern). The factory must return the same endpoint `path` regardless\nof ctx — it is invoked once at setup with a stub ctx for path lookup\nand again per-test by `create_app_server` for live dispatch."
+									"doc_comment": "RPC endpoint specs — required. This suite dispatches\n`account_verify`, `account_session_*`, and `account_token_*` via\n`rpc_call_for_spec` (the `/api/account/verify` REST route is a\nstatus-only nginx shim with no payload). Hard-fails via\n`require_rpc_endpoint_path` on setup so consumer projects see a\nclear setup error instead of confusing test failures.\n\nAccepts either an array (eager) or a factory — see `rpc_helpers.ts`\nfor the union semantics. The factory must return the same endpoint\n`path` regardless of ctx — invoked once at setup with a stub ctx\nfor path lookup; the running backend handles live dispatch."
 								}
 							]
 						},
@@ -56047,7 +56452,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 138,
+							"source_line": 115,
 							"type_signature": "(options: StandardIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -56062,14 +56467,9 @@
 					"dependencies": [
 						"auth/account_action_specs.ts",
 						"auth/admin_action_specs.ts",
-						"auth/migrations.ts",
-						"db/migrate.ts",
 						"http/auth_shape.ts",
 						"http/error_schemas.ts",
-						"rate_limiter.ts",
-						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/db.ts",
 						"testing/error_coverage.ts",
 						"testing/integration_helpers.ts",
 						"testing/rpc_helpers.ts"
@@ -56455,9 +56855,27 @@
 							"name": "RateLimitingTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_rate_limiting_tests`.",
-							"source_line": 45,
+							"source_line": 57,
 							"type_signature": "RateLimitingTestOptions",
 							"properties": [
+								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Forward-compat slot for cross-backend uniformity — see module\ndocstring. The suite body constructs its own per-test `TestApp`\ndirectly to vary rate-limiter configs and ignores this field\nin P1; Phase 3 will replace it with `describe_with_backend_restart`."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Forward-compat slot for cross-backend uniformity. Unused in P1."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Forward-compat slot for cross-backend uniformity. Unused in P1."
+								},
 								{
 									"name": "session_options",
 									"kind": "variable",
@@ -56506,7 +56924,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 95,
+							"source_line": 118,
 							"type_signature": "(options: RateLimitingTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -56517,7 +56935,7 @@
 							]
 						}
 					],
-					"module_comment": "Rate limiting integration test suite.\n\nVerifies that sensitive routes (login, bootstrap, token creation) enforce\nrate limits when rate limiters are enabled. Tests create a tight rate limiter\n(2 attempts / 1 minute) and fire requests until 429 is returned.\n\nConsumers call `describe_rate_limiting_tests` with their route factory and\nsession config — rate limit enforcement tests come for free.",
+					"module_comment": "Rate limiting integration test suite.\n\nVerifies that sensitive routes (login, bootstrap, token creation) enforce\nrate limits when rate limiters are enabled. Tests create a tight rate limiter\n(2 attempts / 1 minute) and fire requests until 429 is returned.\n\nConsumers call `describe_rate_limiting_tests` with their route factory and\nsession config — rate limit enforcement tests come for free.\n\nStructural exception (P1): each test body constructs its own `TestApp`\nwith a per-test rate limiter override in `app_options` — `setup_test`'s\nsingle-fixture model can't carry three different rate-limiter\nconfigurations. The `setup_test` / `surface_source` / `capabilities`\nfields are present for uniformity with the other Tier 1 suites and as\na forward-compat slot for Phase 3's `describe_with_backend_restart`\npattern, but the suite body bypasses them — see the cross-backend\nquest's §3.4 (rate-limiter state decision).",
 					"dependencies": [
 						"auth/account_action_specs.ts",
 						"auth/migrations.ts",
@@ -56532,38 +56950,92 @@
 					]
 				},
 				{
+					"path": "testing/role_grant_helpers.ts",
+					"declarations": [
+						{
+							"name": "RoleGrantOfferAndAcceptArgs",
+							"kind": "type",
+							"source_line": 28,
+							"type_signature": "RoleGrantOfferAndAcceptArgs",
+							"properties": [
+								{
+									"name": "app",
+									"kind": "variable",
+									"type_signature": "RpcCallArgs['app']"
+								},
+								{
+									"name": "rpc_path",
+									"kind": "variable",
+									"type_signature": "string"
+								},
+								{
+									"name": "grantor",
+									"kind": "variable",
+									"type_signature": "TestApp | TestAccount | TestFixture",
+									"doc_comment": "Account doing the granting. `TestApp` / `TestAccount` cover the\nlegacy in-process shape; `TestFixture` covers the cross-backend\nfixture protocol. All three carry `account.id` + `create_session_headers`."
+								},
+								{
+									"name": "recipient",
+									"kind": "variable",
+									"type_signature": "TestAccount"
+								},
+								{
+									"name": "role",
+									"kind": "variable",
+									"type_signature": "string"
+								}
+							]
+						},
+						{
+							"name": "role_grant_offer_and_accept",
+							"kind": "function",
+							"doc_comment": "Drive the full consent flow (grantor offer → recipient accept) over the\nproduction RPC surface and return the materialized role_grant id.\n\n`grantor` and `recipient` carry both the account id (for `to_account_id`\nderivation) and the `create_session_headers` factory (for cookie-threaded\nauth) — closing that loop on a single object per party rules out\ncaller-side header/account mismatch.",
+							"source_line": 50,
+							"type_signature": "(args: RoleGrantOfferAndAcceptArgs): Promise<{ offer_id: string & $brand<\"Uuid\">; role_grant_id: string & $brand<\"Uuid\">; }>",
+							"return_type": "Promise<{ offer_id: string & $brand<\"Uuid\">; role_grant_id: string & $brand<\"Uuid\">; }>",
+							"parameters": [
+								{
+									"name": "args",
+									"type": "RoleGrantOfferAndAcceptArgs"
+								}
+							]
+						}
+					],
+					"module_comment": "RPC-flow helpers for role_grant lifecycle in tests.\n\nSibling to `db_entities.ts`'s `create_test_role_grant_direct` — that one\nseeds a role_grant directly via `query_create_role_grant` (bypassing the\nconsent flow) for tests that focus on revoke or isolation semantics. This\nfile ships the RPC-driven complement: `role_grant_offer_and_accept`\nexercises the same `role_grant_offer_create` + `role_grant_offer_accept`\nspecs the admin UI consumes, so consumer tests pick up post-commit\nfan-out (audit, SSE broadcasts, `_supersede` notifications) end-to-end.",
+					"dependencies": [
+						"auth/role_grant_offer_action_specs.ts",
+						"testing/assert_dev_env.ts",
+						"testing/rpc_helpers.ts"
+					],
+					"dependents": ["testing/admin_integration.ts", "testing/audit_completeness.ts"]
+				},
+				{
 					"path": "testing/round_trip.ts",
 					"declarations": [
 						{
 							"name": "RoundTripTestOptions",
 							"kind": "type",
 							"doc_comment": "Options for `describe_round_trip_validation`.",
-							"source_line": 29,
+							"source_line": 32,
 							"type_signature": "RoundTripTestOptions",
 							"properties": [
 								{
-									"name": "session_options",
+									"name": "setup_test",
 									"kind": "variable",
-									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for cookie-based auth."
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function. `describe_round_trip_validation`\ninvokes this once in `beforeAll` (per-describe cadence — see module\ndocstring) to share a single bootstrapped keeper + accounts across\nevery route case."
 								},
 								{
-									"name": "create_route_specs",
+									"name": "surface_source",
 									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory — same one used in production."
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface for route iteration. P1 requires\n`kind: 'inline'` — Phase 3's cross-process snapshot variant isn't\nwired through this suite yet."
 								},
 								{
-									"name": "app_options",
+									"name": "capabilities",
 									"kind": "variable",
-									"type_signature": "Partial<\n\t\tOmit<AppServerOptions, 'backend' | 'session_options' | 'create_route_specs'>\n\t>",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only."
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations — see `cross_backend/capabilities.ts`."
 								},
 								{
 									"name": "skip_routes",
@@ -56582,8 +57054,8 @@
 						{
 							"name": "describe_round_trip_validation",
 							"kind": "function",
-							"doc_comment": "Run schema-driven round-trip validation tests.\n\nFor each route:\n1. Resolve URL with valid params\n2. Generate a valid request body (or use override)\n3. Pick auth headers matching the route's auth requirement\n4. Fire the request and validate the response against declared schemas\n\nSSE routes are skipped (Content-Type `text/event-stream`).\nRoutes returning non-2xx with valid input are still validated against\ntheir declared error schemas.",
-							"source_line": 59,
+							"doc_comment": "Run schema-driven round-trip validation tests.\n\nFor each route:\n1. Resolve URL with valid params\n2. Generate a valid request body (or use override)\n3. Pick auth headers matching the route's auth requirement\n4. Fire the request through `fixture.transport` and validate the response\n\nSSE routes are skipped by Content-Type sniff. Routes returning non-2xx\nwith valid input are still validated against their declared error schemas.",
+							"source_line": 66,
 							"type_signature": "(options: RoundTripTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -56594,17 +57066,12 @@
 							]
 						}
 					],
-					"module_comment": "Schema-driven round-trip validation test suite.\n\nFor every route spec, generates a valid request (auth, params, body)\nand validates the response against declared output or error schemas.\nDB-backed via `create_test_app` — exercises the full middleware stack.",
+					"module_comment": "Schema-driven round-trip validation test suite.\n\nFor every route spec in the supplied `surface_source`, generates a\nvalid request (auth, params, body) and validates the response against\ndeclared output or error schemas. DB-backed via the suite's\n`setup_test` fixture-producing callback.\n\nCadence: per-describe `setup_test()` call. Each test in the suite\nfires one HTTP request against a shared fixture — no test mutates\nstate in a way that contaminates the next, so the per-test cost of\nre-bootstrapping isn't justified here. Suites with state-isolation\nrequirements (integration, admin_integration, audit_completeness)\ncall `setup_test()` per test.",
 					"dependencies": [
-						"auth/migrations.ts",
 						"auth/role_schema.ts",
-						"db/migrate.ts",
-						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/db.ts",
 						"testing/integration_helpers.ts",
-						"testing/schema_generators.ts",
-						"testing/stubs.ts"
+						"testing/schema_generators.ts"
 					]
 				},
 				{
@@ -57040,8 +57507,10 @@
 					"dependents": [
 						"testing/admin_integration.ts",
 						"testing/audit_completeness.ts",
+						"testing/cross_backend/setup.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
+						"testing/role_grant_helpers.ts",
 						"testing/rpc_attack_surface.ts",
 						"testing/rpc_round_trip.ts",
 						"testing/sse_round_trip.ts"
@@ -57054,38 +57523,38 @@
 							"name": "RpcRoundTripTestOptions",
 							"kind": "type",
 							"doc_comment": "Options for `describe_rpc_round_trip_tests`.",
-							"source_line": 43,
+							"source_line": 42,
 							"type_signature": "RpcRoundTripTestOptions",
 							"properties": [
+								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function (per-describe cadence)."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface for RPC endpoint enumeration. Must be `kind: 'inline'` in P1."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations."
+								},
 								{
 									"name": "session_options",
 									"kind": "variable",
 									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for cookie-based auth."
-								},
-								{
-									"name": "create_route_specs",
-									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory — same one used in production."
+									"doc_comment": "Session config — only needed to resolve factory-form `rpc_endpoints`\nagainst a stub `AppServerContext` at setup time (the actions' input\nschemas drive params generation; auth/dispatch run against the real\nbackend through `fixture.transport`)."
 								},
 								{
 									"name": "rpc_endpoints",
 									"kind": "variable",
 									"type_signature": "RpcEndpointsSuiteOption",
-									"doc_comment": "RPC endpoint specs — the source `RpcAction` arrays for params generation.\n\nAccepts either an array (eager) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>` — the factory form\nis required when action handlers must close over the per-test\n`ctx.app_settings` / `ctx.deps`. The factory must return the same\nendpoint `path` and `spec.method` list regardless of ctx — it is\ninvoked once at setup (via a stub ctx) to enumerate methods and\nagain per-test by `create_app_server` for live dispatch."
-								},
-								{
-									"name": "app_options",
-									"kind": "variable",
-									"type_signature": "SuiteAppOptions",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only."
+									"doc_comment": "RPC endpoint specs — eager array or factory. The factory must return\nthe same endpoint `path` + `spec.method` list regardless of ctx\n(invoked once at setup with a stub ctx; the real per-test live\ndispatch goes through whatever the backend was started with)."
 								},
 								{
 									"name": "skip_methods",
@@ -57105,7 +57574,7 @@
 							"name": "describe_rpc_round_trip_tests",
 							"kind": "function",
 							"doc_comment": "Run schema-driven round-trip validation for RPC endpoints.\n\nFor each method:\n1. Generate valid params from the action's input schema\n2. Fire a POST request with JSON-RPC envelope\n3. For `side_effects: false` methods, also fire a GET request\n4. Validate response is well-formed JSON-RPC; successful responses are\n   also validated against the method's declared output schema\n\nError responses (from missing DB state, etc.) are expected and validated\nas well-formed JSON-RPC errors. Successful responses are validated against\n`action.spec.output`.",
-							"source_line": 109,
+							"source_line": 110,
 							"type_signature": "(options: RpcRoundTripTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -57116,15 +57585,11 @@
 							]
 						}
 					],
-					"module_comment": "Schema-driven round-trip validation for RPC endpoints.\n\nFor every RPC method, generates valid params and fires JSON-RPC requests\n(POST for all methods, GET for reads), validating that responses are\nwell-formed JSON-RPC. Successful responses are validated against the\nmethod's declared output schema. DB-backed via `create_test_app`.",
+					"module_comment": "Schema-driven round-trip validation for RPC endpoints.\n\nFor every RPC method, generates valid params and fires JSON-RPC requests\n(POST for all methods, GET for reads), validating that responses are\nwell-formed JSON-RPC. Successful responses are validated against the\nmethod's declared output schema. DB-backed via the suite's `setup_test`\nfixture-producing callback.\n\nCadence: per-describe `setup_test()` call (see `round_trip.ts` module\ndocstring). RPC round-trip tests fire one JSON-RPC envelope per\nmethod-direction and don't mutate state in a way that contaminates the\nnext case.",
 					"dependencies": [
-						"auth/migrations.ts",
 						"auth/role_schema.ts",
-						"db/migrate.ts",
 						"http/auth_shape.ts",
-						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/db.ts",
 						"testing/rpc_helpers.ts",
 						"testing/schema_generators.ts"
 					]
@@ -57646,28 +58111,28 @@
 							"type_signature": "StandardTestOptions",
 							"properties": [
 								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "SurfaceSource",
+									"doc_comment": "Source of the app surface. Must be `kind: 'inline'` in P1."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations."
+								},
+								{
 									"name": "session_options",
 									"kind": "variable",
 									"type_signature": "SessionOptions<string>",
-									"doc_comment": "Session config for cookie-based auth."
-								},
-								{
-									"name": "create_route_specs",
-									"kind": "variable",
-									"type_signature": "(ctx: AppServerContext) => Array<RouteSpec>",
-									"doc_comment": "Route spec factory — same one used in production."
-								},
-								{
-									"name": "app_options",
-									"kind": "variable",
-									"type_signature": "Partial<\n\t\tOmit<AppServerOptions, 'backend' | 'session_options' | 'create_route_specs'>\n\t>",
-									"doc_comment": "Optional overrides for `AppServerOptions`."
-								},
-								{
-									"name": "db_factories",
-									"kind": "variable",
-									"type_signature": "Array<DbFactory>",
-									"doc_comment": "Database factories to run tests against. Default: pglite only."
+									"doc_comment": "Session config — needed for cookie_name + factory-form rpc_endpoints resolution."
 								},
 								{
 									"name": "roles",
@@ -57679,7 +58144,7 @@
 									"name": "rpc_endpoints",
 									"kind": "variable",
 									"type_signature": "RpcEndpointsSuiteOption",
-									"doc_comment": "RPC endpoint specs — required. The standard integration tests drive\n`account_verify`, `account_session_*`, `account_token_*` through the\nRPC surface (and admin tests, when wired, drive role_grant grant/revoke\nthrough it too).\n\nAccepts either an array (eager) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>`. Round-tripped\nto both sub-suites unchanged — see their docstrings for the full\nfactory-form contract."
+									"doc_comment": "RPC endpoint specs — required. The standard integration tests drive\n`account_verify`, `account_session_*`, `account_token_*` through the\nRPC surface (and admin tests, when wired, drive role_grant grant/revoke\nthrough it too)."
 								},
 								{
 									"name": "admin_prefix",
@@ -57693,7 +58158,7 @@
 							"name": "describe_standard_tests",
 							"kind": "function",
 							"doc_comment": "Run both standard integration and admin integration test suites.\n\nAdmin tests are only included when `roles` is provided.",
-							"source_line": 67,
+							"source_line": 58,
 							"type_signature": "(options: StandardTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -57951,7 +58416,7 @@
 					],
 					"dependents": [
 						"testing/auth_apps.ts",
-						"testing/round_trip.ts",
+						"testing/cross_backend/setup.ts",
 						"testing/rpc_helpers.ts",
 						"testing/ws_round_trip.ts"
 					]
@@ -58464,6 +58929,40 @@
 						"testing/assert_dev_env.ts"
 					],
 					"dependents": ["testing/attack_surface.ts"]
+				},
+				{
+					"path": "testing/transports/surface_source.ts",
+					"declarations": [
+						{
+							"name": "SurfaceSource",
+							"kind": "type",
+							"doc_comment": "Where a suite reads the `AppSurface` from for its assertions.\n\nTwo variants. The `inline` variant carries the full `AppSurfaceSpec`\n(with route closures) — the only variant in-process suites can use\nfor route-iteration tests, since route closures aren't JSON-serializable.\nThe `snapshot` variant carries a path to a committed JSON file containing\nthe `AppSurface` shape only — cross-process consumers use this to assert\nagainst a backend that doesn't share TS handler closures.\n\nNo `'fetched'` (live `/api/surface` endpoint) variant: a dead union\ncase is dead weight and a code-shaped invitation to add a debug\nendpoint the design explicitly rejected; committed snapshot is the\ncontract.",
+							"source_line": 33,
+							"type_signature": "SurfaceSource"
+						},
+						{
+							"name": "resolve_surface_source",
+							"kind": "function",
+							"doc_comment": "Resolve a `SurfaceSource` to the underlying surface shape.\n\nThe `inline` variant returns the full `AppSurfaceSpec` (route closures\navailable). The `snapshot` variant returns the serialized `AppSurface`\nshape only. Asymmetric on purpose — suites that need `route_specs`\n(with closures) must use the `inline` variant; suites working on the\n`AppSurface` shape work with either.",
+							"throws": [
+								{
+									"type": "Error",
+									"description": "when called with `{kind: 'snapshot'}` — the snapshot"
+								}
+							],
+							"source_line": 50,
+							"type_signature": "(src: SurfaceSource): Promise<AppSurface | AppSurfaceSpec>",
+							"return_type": "Promise<AppSurface | AppSurfaceSpec>",
+							"parameters": [
+								{
+									"name": "src",
+									"type": "SurfaceSource"
+								}
+							]
+						}
+					],
+					"module_comment": "Discriminated source for the `AppSurface` a suite asserts against.\n\nIn-process callers pass `{kind: 'inline', spec}` — the full\n`AppSurfaceSpec` with route closures intact. Cross-process callers\npass `{kind: 'snapshot', path}` — a committed JSON file containing\nonly the JSON-serializable `AppSurface` shape.\n\nBacks the suite parameter that previously was `build: () => AppSurfaceSpec`.",
+					"dependencies": ["testing/assert_dev_env.ts"]
 				},
 				{
 					"path": "testing/ws_round_trip.ts",
@@ -62483,12 +62982,15 @@
 				"preview": "vite preview",
 				"deploy": "gro deploy",
 				"benchmark": "gro run benchmark/run_benchmarks.ts",
-				"benchmark:compare": "gro run benchmark/compare/run_compare.ts",
+				"benchmark:save": "gro run benchmark/run_benchmarks.ts --save",
+				"benchmark:clean": "rm -f benchmark/baseline.json",
+				"benchmark:vs": "gro run benchmark/compare/run_compare.ts",
+				"benchmark:vs:write": "gro run benchmark/compare/run_compare.ts --write",
 				"fixtures:update": "gro src/test/fixtures/update"
 			},
 			"type": "module",
 			"engines": {
-				"node": ">=22.15"
+				"node": ">=24.14"
 			},
 			"peerDependencies": {
 				"@fuzdev/fuz_css": ">=0.47.0",
@@ -62518,8 +63020,8 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@fuzdev/fuz_css": "^0.58.0",
-				"@fuzdev/fuz_ui": "^0.191.4",
-				"@fuzdev/fuz_util": "^0.57.0",
+				"@fuzdev/fuz_ui": "^0.192.0",
+				"@fuzdev/fuz_util": "^0.60.1",
 				"@fuzdev/gro": "^0.198.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.11.0",
@@ -70532,10 +71034,10 @@
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
 				"@fuzdev/fuz_ui": "^0.192.0",
-				"@fuzdev/fuz_util": "^0.59.0",
+				"@fuzdev/fuz_util": "^0.60.1",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@node-rs/argon2": "^2.0.2",
-				"@ryanatkn/eslint-config": "^0.11.0",
+				"@ryanatkn/eslint-config": "^0.12.0",
 				"@sveltejs/acorn-typescript": "^1.0.9",
 				"@sveltejs/adapter-static": "^3.0.10",
 				"@sveltejs/kit": "^2.58.0",
