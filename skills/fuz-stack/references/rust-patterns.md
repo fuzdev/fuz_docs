@@ -370,6 +370,160 @@ Rough preference for inputs: `&str` >> `String`. Same shape for collections
 have mixed-ownership data and the borrowed case is common — otherwise the
 cleverness isn't worth it.
 
+## Dependency Injection
+
+The TS `*Deps` discipline doesn't translate 1:1 — much of what TS solves
+with DI (runtime agnosticism, module mocking, capability bundles in
+signatures, deterministic clocks) Rust solves natively with the crate
+graph, trait bounds, monomorphization, test crates, and tokio's mock
+clock. Treat the pattern as an **escalation ladder**: start at the
+floor, climb a rung only when a concrete need requires it.
+
+### Active rungs
+
+**Floor — just import and call.** Pure utilities (crash-safe fs helpers,
+canonical JSON, parsers, validators, formatters, stateless helpers)
+don't enter the pattern at all. Import and call. Rust's modules + `use`
++ monomorphization are the DI for these cases; reaching for a trait or
+accessor adds ceremony with no win.
+
+**Default — concrete `*Options` struct + direct refs.** When a function
+operates on state owned by the app (keyring, pool, audit emitter), pass
+that state as a ref via a per-call-site `*Options` struct (or
+`*RouteState` for route-group-shared state) holding `Arc<T>` fields:
+
+```rust
+pub struct SignupOptions {
+    // Capabilities (swappable):
+    pub pool: Pool,
+    pub password_hasher: Arc<dyn PasswordHasher>,
+    pub audit: Arc<AuditEmitter>,
+    pub signup_ip_rate_limiter: Option<Arc<RateLimiter>>,
+    // Parameters (fixed):
+    pub signup_fail_floor_ms: u64,
+    pub signup_fail_jitter_ms: u64,
+}
+
+async fn signup_handler(
+    deps: &SignupOptions,
+    client_ip: Option<String>,
+    input: SignupInput,
+) -> Result<SignupSuccess, AuthError> { /* ... */ }
+```
+
+Capabilities + parameters collapse into one struct — Rust idiom; the TS
+three-category split (capabilities / options / runtime state) stays a
+useful *mental* model but doesn't shape the type. **No `*Deps` suffix in
+Rust** — that's the TS convention; Rust uses `*Options` for per-call
+bags and `*RouteState` for route-group shared state.
+
+**Capability traits** — `PasswordHasher`, `Storage`, `SocketRevoker`,
+`Keyring`, `BootstrapTokenStore`. Pure noun, no suffix. Climb to this
+rung when polymorphism is real: testability swap (production Argon2id ↔
+test fast hasher), multi-impl plug-in (file + object storage backends),
+or inversion of definition (the lower crate declares the need; a higher
+crate implements).
+
+### Deferred rungs
+
+Two further rungs stay **unbuilt** until concrete evidence forces them.
+Speculative trait scaffolding accumulates inertia — easier to add when
+a real signature names what it needs.
+
+**Composite traits per handler tier** — when an action-spec dispatcher
+in a spine crate must be generic over multiple App types
+(`zzz_server::App`, `zap_server::App`, ...), a composite trait per tier
+with accessor methods inline is the path. Descriptive name (`*Actions`,
+`*Runtime`, `*Handler`), never `*Deps`. Default to one composite; split
+into multiple only when a consumer genuinely opts out of part of the
+surface.
+
+**Granular `*Provider` accessor traits** — only when a function takes a
+narrow bound that a composite can't express. Don't proliferate
+speculatively.
+
+### Hot/cold dispatch rule
+
+| Path     | Dispatch                          | Why                                              |
+| -------- | --------------------------------- | ------------------------------------------------ |
+| **Hot**  | concrete `Arc<T>` or `<T: Trait>` | Per-request HMAC, rate-limit checks; vtable cost is measurable vs the op |
+| **Cold** | `Arc<dyn Trait>`                  | Argon2 hashing, audit fan-out, socket revocation; op cost dwarfs vtable, testability earns it |
+
+Choose by measurement, not aesthetic — when the op dominates, take the
+testability win. `Arc<dyn>` also buys *type erasure* (one field on the
+storing struct, no generic plumbing) — that's a separate axis that
+sometimes justifies it on a hot path too.
+
+### Async traits — RPITIT, with one carve-out
+
+Prefer return-position `impl Future` in traits (stable Rust 1.75+):
+
+```rust
+pub trait Storage: Send + Sync {
+    fn upload(&self, path: &str, data: &[u8])
+        -> impl Future<Output = Result<(), StorageError>> + Send;
+}
+```
+
+Monomorphizes, no boxed-future allocation. Use this for traits consumed
+as a generic bound or concrete type.
+
+**Carve-out**: traits consumed as `Arc<dyn Trait>` can't use RPITIT yet
+(no `dyn` support). For those, return `BoxFuture<'_, T>` manually rather
+than reaching for `#[async_trait]` — one line, explicit, no proc-macro:
+
+```rust
+pub trait BootstrapTokenStore: Send + Sync {
+    fn read_token(&self) -> futures::future::BoxFuture<'_, std::io::Result<Vec<u8>>>;
+    fn delete_token(&self) -> futures::future::BoxFuture<'_, std::io::Result<()>>;
+}
+```
+
+When RPITIT gains `dyn` support, migrate uniformly.
+
+### Object-safety annotation on the trait def
+
+Every deps-surface trait declares its object-safety status as an
+item-level `///` doc on the trait, by *consumption pattern* not shape:
+
+- **`**Object-safe**`** — dispatched dynamically anywhere (`Arc<dyn T>`,
+  `&dyn T`, `Box<dyn T>`). Shape locked: no generic methods, no
+  RPITIT (use `BoxFuture`).
+- **`**Not object-safe**`** — generic-bound / concrete-adapter use
+  only. Free to use generic methods, RPITIT, etc.
+
+The annotation tells future contributors *why* they can't add a
+generic method (or that they can). See the canonical spec for the
+dual-variant `*` + `*Dyn` companion pattern when both dispatch shapes
+are load-bearing.
+
+### Test injection — concrete impls in a separate crate
+
+Test-only crates ship alternate impls satisfying the production traits.
+Tests construct the app with the test impl plugged in; no `cfg(test)`
+shadows, no runtime branches in production. A release-time dep-graph
+audit (e.g. an `xtask check-release` step) gates that no production
+binary transitively depends on test crates.
+
+### Borrowed context, owned providers
+
+Per-request contexts borrow (`ActionContext<'a>` holding `&dyn Fn(&str,
+&Value)` notify, `&SignalToken`, `&tracing::Span`); the App struct owns
+the underlying `Arc<T>`s. Side effects queue via a deferred-effects
+channel rather than `&mut Ctx`. Notify seam stays `&dyn Fn`, not `Arc<dyn
+Fn>`, on hot paths — zero alloc, zero capture.
+
+### What stays concrete
+
+tokio, tracing, `std::fs`, `std::env`, `std::time` — concrete by default.
+Abstract only when a concrete reuse case appears.
+
+A few subsystem-specific notes:
+
+- **Clock**: tokio's `#[tokio::test(start_paused = true)]` + `tokio::time::advance(...)` already gives deterministic control over `Instant::now()` and `sleep_until` for anything in `tokio::time`. A `Clock` trait would wrap something tokio already abstracts — skip it. Reach for one only if a non-tokio consumer needs determinism.
+- **Filesystem**: prefer a **domain-scoped** trait (e.g. `BootstrapTokenStore` with `read_token` / `delete_token`) over a general `Fs`. Scope creep is the failure mode — narrow seams compose; wide ones accumulate methods.
+- **Logger / env**: abstract only when production noise blocks log-shape assertions, or a subsystem needs per-call env override without process-global state.
+
 ## Project Structure
 
 ### Workspace Organization
@@ -498,9 +652,6 @@ async fn run() -> Result<(), CliError> {
 ```
 
 Shared input modes: file path, `--content <string>`, `--stdin`.
-
-See lore `rust_conventions.md` for the argh code example, `args_parse`
-parity notes, and the full escalation rationale.
 
 ## Dependencies
 

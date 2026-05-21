@@ -502,7 +502,7 @@ fuz*ui uses this for contextmenu components with 8 factory modules
 ## Fixture-Based Testing
 
 For parsers, analyzers, and transformers. Used in fuz_ui (mdz, tsdoc, ts,
-svelte, svelte_preprocess_mdz) and private_svelte-docinfo.
+svelte, svelte_preprocess_mdz) and other static-analysis tooling.
 
 ### Directory Structure
 
@@ -882,14 +882,22 @@ Tests with dynamic expected values or extra assertions should stay standalone.
 | `describe_standard_attack_surface_tests`    | 5      | Snapshot, structure, adversarial auth/input/404 |
 | `describe_standard_integration_tests`       | 10     | Login, cookies, sessions, bearer, passwords     |
 | `describe_standard_admin_integration_tests` | 7      | Accounts, permits, sessions, audit log          |
+| `describe_audit_completeness_tests`         | varies | End-to-end audit emit → persist → query         |
+| `describe_bootstrap_success_tests`          | 3      | Bootstrap success path (empty DB, real flow)    |
 | `describe_rate_limiting_tests`              | 3      | IP, per-account, bearer rate limiting           |
 | `describe_round_trip_validation`            | varies | Schema-driven positive-path validation          |
+| `describe_rpc_round_trip_tests`             | varies | RPC schema-driven positive-path validation      |
 | `describe_data_exposure_tests`              | 6      | Schema-level + runtime field blocklists         |
 | `describe_standard_adversarial_headers`     | 7      | Header injection cases                          |
-| `describe_standard_tests`                   | -      | Convenience wrapper: integration + admin        |
+| `describe_rpc_attack_surface_tests`         | 3      | RPC adversarial auth/envelope/params            |
+| `describe_standard_tests`                   | 8      | Bundle: 8 DB-backed suites, relevant-config silent-skip gates |
 
 Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
-configuration with `session_options` and `create_route_specs`.
+configuration with `session_options`, `create_route_specs`, and `rpc_endpoints`.
+The `describe_standard_tests` bundle reads a top-level `bootstrap?:
+BootstrapServerOptions` (`{mode: 'disabled' | 'surface_only' | 'live'}`)
+that gates the bootstrap-success suite (`bootstrap.mode === 'live'`)
+alongside flowing to the surface + live app.
 
 ### WebSocket Round-Trip Tests
 

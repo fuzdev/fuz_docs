@@ -470,8 +470,7 @@ Uniform shape keeps the contract symmetric for a future Rust port where
 `Result<T, E>` is native; typed kinds replace the `{message}` structural
 shape that earlier code had to regex-match. Scope: L1 domain wrappers only.
 The L0 platform runtime (`FsReadDeps` in `fuz_app/runtime/deps.ts`) keeps
-throws-on-error to mirror `Deno.readTextFile` / `node:fs`. See the
-ops-layering quest in the grimoire for the migration history.
+throws-on-error to mirror `Deno.readTextFile` / `node:fs`.
 
 ### No `vi.mock` — plain objects instead
 
@@ -745,6 +744,16 @@ await some_function(runtime);
 assert.strictEqual(runtime.command_calls.length, 1);
 assert.deepStrictEqual(runtime.exit_calls, [0]);
 ```
+
+## Rust Analog
+
+The `*Deps` suffix is **TS-only**. Rust traits *are* capabilities —
+appending `Deps` imports TS shape into a language that doesn't need it.
+Rust uses pure-noun capability traits (`PasswordHasher`, `Storage`,
+`SocketRevoker`) and `*Options` structs for per-call parameter bags.
+For the full treatment — escalation ladder, hot/cold dispatch, RPITIT
+vs `BoxFuture` for async, object-safety annotation rules, what stays
+concrete — see ./rust-patterns.md#dependency-injection.
 
 ## Quick Reference
 

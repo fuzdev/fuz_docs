@@ -509,7 +509,6 @@ wasm-bindgen's deno target uses `fetch()` to load WASM, incompatible with
 | Resource                         | Link                                                                            |
 | -------------------------------- | ------------------------------------------------------------------------------- |
 | Blake3 WASM bindings             | [fuzdev/blake3](https://github.com/fuzdev/blake3)                               |
-| tsv WASM bindings                | `private_tsv/crates/tsv_wasm/`                                                  |
 | Component model spec — WIT       | [WebAssembly/component-model WIT](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md) |
 | Component model spec — Explainer | [WebAssembly/component-model Explainer](https://github.com/WebAssembly/component-model/blob/main/design/mvp/Explainer.md) |
 | Rust patterns (WASM errors)      | ./rust-patterns.md                                                              |
