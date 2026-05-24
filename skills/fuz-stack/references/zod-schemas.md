@@ -112,7 +112,7 @@ Export `z.input<>` when callers construct partial instances via `.parse()` —
 Cell instantiation, resource builders, config files. Skip it when the schema
 is only consumed internally (env loading, action spec `satisfies`).
 
-This is a **systematic pattern** in zzz and tx:
+This is a **systematic pattern** in zzz and zap:
 
 ```typescript
 // zzz — every Cell schema exports both types
@@ -124,7 +124,7 @@ export const ChatJson = CellJson.extend({
 export type ChatJson = z.infer<typeof ChatJson>;       // all fields present
 export type ChatJsonInput = z.input<typeof ChatJson>;   // defaults omittable
 
-// tx — every resource schema exports an input type
+// zap — every resource schema exports an input type
 export const PackageResource = ResourceBase.extend({
 	type: z.literal('package'),
 	from: PackageMapping,
@@ -146,11 +146,11 @@ Use `z.infer<>` (the default) for:
 
 ### Factory Functions with Input Types
 
-tx uses a systematic factory pattern — accept `z.input<>` without the
+zap uses a systematic factory pattern — accept `z.input<>` without the
 discriminant field, parse to get the validated output:
 
 ```typescript
-// tx/resources/types.ts
+// zap/resources/types.ts
 export const package_resource = (
 	config: Omit<PackageResourceInput, 'type'>,
 ): PackageResource => {
@@ -185,7 +185,7 @@ export const DiskfilePath = z
 	.brand('DiskfilePath');
 export type DiskfilePath = z.infer<typeof DiskfilePath>;
 
-// tx/types.ts — simple string + brand (generic syntax)
+// zap/types.ts — simple string + brand (generic syntax)
 export const ResourceId = z.string().min(1).brand<'ResourceId'>();
 export type ResourceId = z.infer<typeof ResourceId>;
 
@@ -225,7 +225,7 @@ email: Email.nullish(),  // fuz_app invite creation
 // .catch(fallback) — use fallback if present value fails validation.
 // Different from .default() (missing field). For graceful degradation of
 // stored data that may have been written by an older schema version.
-before: PackageCurrent.nullable().catch(null),  // tx change schemas
+before: PackageCurrent.nullable().catch(null),  // zap change schemas
 ```
 
 ## Field-Level Validation
@@ -280,7 +280,7 @@ z.custom<T>(check?)    // escape hatch for complex types without full Zod valida
   for action specs with no value
 - `z.void()` / `z.void().optional()` — action specs with no input or output
 - `z.custom<T>(check?)` — embeds complex types without full Zod validation;
-  use sparingly (e.g., `z.custom<Plan>()` in tx, `z.custom<z.ZodType>(...)` in
+  use sparingly (e.g., `z.custom<Plan>()` in zap, `z.custom<z.ZodType>(...)` in
   fuz_app action specs)
 - `z.instanceof(MyClass)` — runtime class instance check; used in zzz so
   action specs can reference Cell instances as typed values
@@ -319,7 +319,7 @@ for inspecting object schemas.
 `z.strictObject()`:
 
 ```typescript
-// tx/resources/types.ts — 16 resource types
+// zap/resources/types.ts — 16 resource types
 export const Resource = z.discriminatedUnion('type', [
 	PackageResource,
 	FileResource,
@@ -354,7 +354,7 @@ export const ActionAuth = z.union([
 	z.strictObject({role: z.string()}),
 ]);
 
-// tx/resources/types.ts — union with literal false for opt-out
+// zap/resources/types.ts — union with literal false for opt-out
 sudo: z.union([z.enum(['nopasswd', 'password']), z.literal(false)]).optional(),
 ```
 

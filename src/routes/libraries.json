@@ -44720,6 +44720,7 @@
 						"testing/app_server.ts",
 						"testing/audit_completeness.ts",
 						"testing/cross_backend/setup.ts",
+						"testing/cross_backend/testing_reset_actions.ts",
 						"testing/data_exposure.ts",
 						"testing/integration_helpers.ts",
 						"testing/round_trip.ts",
@@ -53833,7 +53834,7 @@
 							"name": "StandardAdminIntegrationTestOptions",
 							"kind": "type",
 							"doc_comment": "Configuration for `describe_standard_admin_integration_tests`.",
-							"source_line": 76,
+							"source_line": 75,
 							"type_signature": "StandardAdminIntegrationTestOptions",
 							"properties": [
 								{
@@ -53890,7 +53891,7 @@
 									"description": "at setup time when `options.rpc_endpoints` is empty — admin"
 								}
 							],
-							"source_line": 138,
+							"source_line": 137,
 							"type_signature": "(options: StandardAdminIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -53910,14 +53911,12 @@
 						"auth/role_schema.ts",
 						"testing/app_server.ts",
 						"testing/assert_dev_env.ts",
-						"testing/cross_backend/capabilities.ts",
-						"testing/db_entities.ts",
 						"testing/error_coverage.ts",
 						"testing/integration_helpers.ts",
 						"testing/role_grant_helpers.ts",
 						"testing/rpc_helpers.ts"
 					],
-					"dependents": ["testing/standard.ts"]
+					"dependents": ["testing/cross_backend/standard.ts", "testing/standard.ts"]
 				},
 				{
 					"path": "testing/adversarial_404.ts",
@@ -54651,6 +54650,7 @@
 						"testing/audit_completeness.ts",
 						"testing/bootstrap_success.ts",
 						"testing/cross_backend/setup.ts",
+						"testing/cross_backend/testing_reset_actions.ts",
 						"testing/integration.ts",
 						"testing/rate_limiting.ts",
 						"testing/sse_round_trip.ts"
@@ -54674,9 +54674,13 @@
 						"testing/connection_closer_helpers.ts",
 						"testing/cross_backend/backend_config.ts",
 						"testing/cross_backend/bootstrap_backend.ts",
+						"testing/cross_backend/build_test_backend_paths.ts",
 						"testing/cross_backend/capabilities.ts",
+						"testing/cross_backend/default_backend_configs.ts",
+						"testing/cross_backend/default_secrets.ts",
 						"testing/cross_backend/setup.ts",
 						"testing/cross_backend/spawn_backend.ts",
+						"testing/cross_backend/standard.ts",
 						"testing/cross_backend/testing_reset_actions.ts",
 						"testing/data_exposure.ts",
 						"testing/db.ts",
@@ -55514,7 +55518,7 @@
 							"name": "BackendBootstrapConfig",
 							"kind": "type",
 							"doc_comment": "Auth-bootstrap configuration for a spawnable test binary. The runner\nwrites `token` to `token_path` before launching the child, then POSTs\n`bootstrap_path` (default `/api/account/bootstrap`) with the token plus\nthe `username` / `password` to mint the keeper account and capture the\nsession cookie. After health-probe, the runner reads\n`daemon_token_path` to load the binary's deterministic daemon token,\nwhich `default_cross_process_setup` threads onto the per-test\n`TestFixture` for `_testing_reset` calls and other keeper-credential\noperations.",
-							"source_line": 34,
+							"source_line": 36,
 							"type_signature": "BackendBootstrapConfig",
 							"properties": [
 								{
@@ -55557,8 +55561,8 @@
 						{
 							"name": "BackendConfig",
 							"kind": "type",
-							"doc_comment": "Configuration for one spawnable test backend. Consumer factories\n(`deno_backend_config()`, `rust_backend_config()`) produce these and\nthe runner consumes them through `spawn_backend`.\n\nPath defaults match the standard fuz_app surface — Deno + Rust + future\nfuz_webui all converge on `/api/account/{bootstrap,login,logout,password}`,\n`/api/rpc`, `/api/ws`, `/health`. Override only when a backend\ndeliberately diverges (which it shouldn't, per the contract).",
-							"source_line": 63,
+							"doc_comment": "Configuration for one spawnable test backend. Consumer factories\n(`deno_backend_config()`, `rust_backend_config()`) produce these and\nthe runner consumes them through `spawn_backend`.\n\nPath defaults match the standard fuz_app surface — Deno + Rust spine\n(`zzz_server`, `zap_server`, `testing_spine_stub`) all converge on\n`/api/account/{bootstrap,login,logout,password}`,\n`/api/rpc`, `/api/ws`, `/health`. Override only when a backend\ndeliberately diverges (which it shouldn't, per the contract).",
+							"source_line": 66,
 							"type_signature": "BackendConfig",
 							"properties": [
 								{
@@ -55566,7 +55570,7 @@
 									"kind": "variable",
 									"modifiers": ["readonly"],
 									"type_signature": "string",
-									"doc_comment": "Diagnostic label (`\"deno\"`, `\"rust\"`, `\"fuz_webui\"`). Surfaces in test output."
+									"doc_comment": "Diagnostic label (`\"deno\"`, `\"rust\"`, `\"spine_stub\"`). Surfaces in test output."
 								},
 								{
 									"name": "start_command",
@@ -55648,7 +55652,7 @@
 							]
 						}
 					],
-					"module_comment": "Cross-process backend configuration.\n\n`BackendConfig` describes a spawnable test binary — argv, mount paths,\nenv vars, bootstrap credentials, daemon-token discovery path, declared\ncapabilities. Consumer projects ship per-backend factories\n(`deno_backend_config()`, `rust_backend_config()`,\n`fuz_webui_backend_config()`) that produce this shape; `spawn_backend`\nconsumes it.\n\nfuz_app ships only the interface — no preset factories live here.\nBackend-specific knowledge (binary paths, port choices, env vars) is a\nconsumer concern; fuz_app's testing library knows nothing about Deno,\nRust, Cargo, or any specific runtime.",
+					"module_comment": "Cross-process backend configuration.\n\n`BackendConfig` describes a spawnable test binary — argv, mount paths,\nenv vars, bootstrap credentials, daemon-token discovery path, declared\ncapabilities. Consumer projects ship per-backend factories\n(`deno_backend_config()`, `rust_backend_config()`,\n`spine_stub_backend_config()`) that produce this shape; `spawn_backend`\nconsumes it.\n\nfuz_app ships `spine_stub_backend_config()` as a convenience preset\n(operational dep on `testing_spine_stub` — path-based discovery, no\n`package.json` coupling to private_fuz). Otherwise backend-specific\nknowledge (binary paths, port choices, env vars) is a consumer\nconcern; fuz_app's testing library knows nothing about Deno, Cargo, or\nany specific runtime beyond that preset.",
 					"dependencies": ["testing/assert_dev_env.ts"]
 				},
 				{
@@ -55676,6 +55680,55 @@
 						"testing/transports/bootstrap.ts",
 						"testing/transports/fetch_transport.ts"
 					]
+				},
+				{
+					"path": "testing/cross_backend/build_test_backend_paths.ts",
+					"declarations": [
+						{
+							"name": "TestBackendPaths",
+							"kind": "type",
+							"doc_comment": "Generic per-backend paths every cross-process test binary needs.\nConsumers extend this with their own domain paths.\n\n- `root` — the per-backend subtree under `os.tmpdir()`. Compose\n  consumer-specific paths under here.\n- `bootstrap_token_path` — `FUZ_BOOTSTRAP_TOKEN_PATH`; harness writes\n  the bootstrap token here before spawn.\n- `daemon_token_path` — where `init_daemon_token` (Rust) and the TS\n  server's daemon-token writer land the token (under `{root}/run/`).",
+							"source_line": 33,
+							"type_signature": "TestBackendPaths",
+							"properties": [
+								{
+									"name": "root",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "bootstrap_token_path",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "daemon_token_path",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								}
+							]
+						},
+						{
+							"name": "build_test_backend_paths",
+							"kind": "function",
+							"doc_comment": "Build the generic path layout for a cross-process test backend.\n`prefix` is typically the `BackendConfig.name` (e.g. `'deno'`,\n`'rust'`, `'spine_stub'`).",
+							"source_line": 44,
+							"type_signature": "(prefix: string): TestBackendPaths",
+							"return_type": "TestBackendPaths",
+							"parameters": [
+								{
+									"name": "prefix",
+									"type": "string"
+								}
+							]
+						}
+					],
+					"module_comment": "Per-backend filesystem layout under `os.tmpdir()` for cross-process\ntests.\n\nIsolation matters because vitest projects can run in parallel — a\nshared `root` would mix daemon tokens across concurrently-running\nbackends. Each backend gets its own subtree via the `prefix` arg\n(typically the `BackendConfig.name`).\n\nConsumers compose: take the generic paths from\n`build_test_backend_paths(name)`, add domain-specific dirs (e.g.\n`zzz_dir`, `scoped_dir`) under the returned `root`.",
+					"dependencies": ["testing/assert_dev_env.ts"],
+					"dependents": ["testing/cross_backend/default_backend_configs.ts"]
 				},
 				{
 					"path": "testing/cross_backend/capabilities.ts",
@@ -55763,11 +55816,245 @@
 					],
 					"module_comment": "Capability vocabulary for cross-backend integration testing.\n\nBackends declare which optional behaviors they support; suite bodies\ncall `test_if(capabilities.X, ...)` to skip cases the backend doesn't\nimplement. No `if (config.name === 'rust')` branches anywhere — name-\nchecking is a code smell that says capability vocabulary is missing.\n\nIn-process Hono via `default_in_process_setup` declares every\ncapability `true` (see `in_process_capabilities`). Cross-process\nbackends opt in per-flag on their `BackendConfig`.",
 					"dependencies": ["testing/assert_dev_env.ts"],
-					"dependents": [
-						"testing/admin_integration.ts",
-						"testing/cross_backend/setup.ts",
-						"testing/integration.ts"
+					"dependents": ["testing/cross_backend/setup.ts", "testing/integration.ts"]
+				},
+				{
+					"path": "testing/cross_backend/default_backend_configs.ts",
+					"declarations": [
+						{
+							"name": "ts_default_capabilities",
+							"kind": "variable",
+							"doc_comment": "Capabilities shared by TS-family backends — same canonical\nimplementation, same feature set. No trusted-proxy phase (the test\nbinary doesn't enable proxy parsing) and no per-account login rate\nlimit (the TS canonical path leaves the limiter null in test mode).",
+							"source_line": 51,
+							"type_signature": "BackendCapabilities"
+						},
+						{
+							"name": "rust_default_capabilities",
+							"kind": "variable",
+							"doc_comment": "Capabilities for the Rust family. Adds `trusted_proxy: true` (the\nRust spine's client-IP middleware is always wired; the env-gate just\ncontrols whether XFF is consulted vs the TCP peer IP) and\n`login_rate_limit: true` (env-gated bucket on `/login` + `/password`).",
+							"source_line": 66,
+							"type_signature": "BackendCapabilities"
+						},
+						{
+							"name": "MakeDefaultTsBackendConfigOptions",
+							"kind": "type",
+							"source_line": 88,
+							"type_signature": "MakeDefaultTsBackendConfigOptions",
+							"properties": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Diagnostic label; also used as the tmpdir prefix when `paths` is omitted."
+								},
+								{
+									"name": "port",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "number",
+									"doc_comment": "TCP port the binary listens on."
+								},
+								{
+									"name": "start_command",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "ReadonlyArray<string>",
+									"doc_comment": "argv passed to the spawn (first entry is the binary)."
+								},
+								{
+									"name": "database_url",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Defaults to `'memory://'` (in-memory PGlite)."
+								},
+								{
+									"name": "extra_env",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Readonly<Record<string, string>>",
+									"doc_comment": "Merged on top of the generic env baseline; later keys win."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Defaults to `ts_default_capabilities`."
+								},
+								{
+									"name": "paths",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "TestBackendPaths",
+									"doc_comment": "Pre-computed paths; defaults to `build_test_backend_paths(name)`."
+								},
+								{
+									"name": "bootstrap_overrides",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Partial<BackendBootstrapConfig>",
+									"doc_comment": "Override individual bootstrap fields (username/password/token)."
+								},
+								{
+									"name": "port_env_var",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Env-var name the binary reads for its port. Defaults to `'PORT'`.\nConsumers whose binary reads a different name (e.g. `'ZZZ_PORT'`)\noverride."
+								}
+							]
+						},
+						{
+							"name": "make_default_ts_backend_config",
+							"kind": "function",
+							"doc_comment": "Shared builder for TS-family backends (Deno + Node). Owns the common\nenv baseline (NODE_ENV, HOST, PORT, in-memory PGlite, cookie keys,\nbootstrap token path) so per-backend factories only declare what\ngenuinely differs.",
+							"source_line": 119,
+							"type_signature": "(opts: MakeDefaultTsBackendConfigOptions): BackendConfig",
+							"return_type": "BackendConfig",
+							"parameters": [
+								{
+									"name": "opts",
+									"type": "MakeDefaultTsBackendConfigOptions"
+								}
+							]
+						},
+						{
+							"name": "MakeDefaultRustBackendConfigOptions",
+							"kind": "type",
+							"source_line": 158,
+							"type_signature": "MakeDefaultRustBackendConfigOptions",
+							"properties": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Diagnostic label; also used as the tmpdir prefix when `paths` is omitted."
+								},
+								{
+									"name": "port",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "number",
+									"doc_comment": "TCP port the binary listens on."
+								},
+								{
+									"name": "start_command",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "ReadonlyArray<string>",
+									"doc_comment": "argv passed to the spawn (first entry is the binary)."
+								},
+								{
+									"name": "database_url",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Required — Rust needs real Postgres (PGlite isn't reachable from\n`tokio-postgres`). Consumers typically supply\n`'postgres://localhost/{repo}_test_{name}'`."
+								},
+								{
+									"name": "extra_env",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Readonly<Record<string, string>>",
+									"doc_comment": "Merged on top of the generic env baseline; later keys win."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Defaults to `rust_default_capabilities`."
+								},
+								{
+									"name": "paths",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "TestBackendPaths",
+									"doc_comment": "Pre-computed paths; defaults to `build_test_backend_paths(name)`."
+								},
+								{
+									"name": "bootstrap_overrides",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Partial<BackendBootstrapConfig>",
+									"doc_comment": "Override individual bootstrap fields (username/password/token)."
+								},
+								{
+									"name": "port_env_var",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Env-var name the binary reads for its port. Defaults to `'PORT'`.\nConsumers whose binary reads a different name (e.g. `'ZZZ_PORT'`)\noverride."
+								},
+								{
+									"name": "rust_log",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string",
+									"doc_comment": "Initial value for `RUST_LOG`. Defaults to `'info'`. Consumers pass\ntheir binary-specific module filter\n(e.g. `'info,zzz_server=info,testing_zzz_server=info'`)."
+								}
+							]
+						},
+						{
+							"name": "make_default_rust_backend_config",
+							"kind": "function",
+							"doc_comment": "Shared builder for Rust-family backends. Owns the common env baseline\n(RUST_LOG, HOST, port, real Postgres, cookie keys, bootstrap token\npath, the `FUZ_TESTING_RESET_DB_ON_STARTUP=true` self-wipe gate) plus\nthe 120s startup window for cargo's first-run build cost.",
+							"source_line": 199,
+							"type_signature": "(opts: MakeDefaultRustBackendConfigOptions): BackendConfig",
+							"return_type": "BackendConfig",
+							"parameters": [
+								{
+									"name": "opts",
+									"type": "MakeDefaultRustBackendConfigOptions"
+								}
+							]
+						}
+					],
+					"module_comment": "Family-shared `BackendConfig` builders for cross-process test backends.\n\nTwo consumer-facing factories — {@link make_default_ts_backend_config}\nand {@link make_default_rust_backend_config} — own the common shape\nfor the JS-runtime (Deno/Node on V8) and Rust families respectively.\nPer-backend factories in consumer projects compose a small\ndeclaration against one of these and add consumer-specific env vars\nvia `extra_env`.\n\nDefaults baked in by family:\n\n- **TS** — `'memory://'` PGlite, 30s startup window, capabilities\n  without trusted_proxy/login_rate_limit. The TS canonical path\n  leaves these limiters null in test mode.\n- **Rust** — caller-supplied real Postgres URL (PGlite isn't reachable\n  from `tokio-postgres`), 120s startup window (cargo first-build cost),\n  capabilities including trusted_proxy + login_rate_limit + the\n  `FUZ_TESTING_RESET_DB_ON_STARTUP=true` self-wipe gate.\n\nBoth builders default `port_env_var` to `'PORT'`. Consumers whose\nbinary reads a different name (e.g. zzz's `ZZZ_PORT`) override.\n\nCommon across both families: `/api/rpc`, `/api/ws`, `/health`,\n`/api/account/bootstrap`, `cookie_name: 'fuz_session'`, the standard\nbootstrap block keyed off `default_test_*` constants. Builders call\n`build_test_backend_paths(name)` internally when the optional `paths`\nis omitted.",
+					"dependencies": [
+						"testing/assert_dev_env.ts",
+						"testing/cross_backend/build_test_backend_paths.ts",
+						"testing/cross_backend/default_secrets.ts"
 					]
+				},
+				{
+					"path": "testing/cross_backend/default_secrets.ts",
+					"declarations": [
+						{
+							"name": "default_test_bootstrap_token",
+							"kind": "variable",
+							"doc_comment": "Fixed bootstrap token written to each backend's `token_path` before\nspawn. The test binary reads + consumes this via its\n`*_BOOTSTRAP_TOKEN_PATH` env var; the harness POSTs the same token to\n`/api/account/bootstrap` to mint the keeper account. Any 32+ char\nstring works — the binary just compares bytes, no entropy required\nfor tests.",
+							"source_line": 30,
+							"type_signature": "\"test_bootstrap_token_for_cross_be\""
+						},
+						{
+							"name": "default_test_keeper_username",
+							"kind": "variable",
+							"doc_comment": "Keeper username used by every cross-process test fixture.",
+							"source_line": 33,
+							"type_signature": "\"keeper\""
+						},
+						{
+							"name": "default_test_keeper_password",
+							"kind": "variable",
+							"doc_comment": "Keeper password used by every cross-process test fixture.",
+							"source_line": 36,
+							"type_signature": "\"password_test_keeper\""
+						},
+						{
+							"name": "default_test_cookie_keys",
+							"kind": "variable",
+							"doc_comment": "Dev-only cookie keys (64+ chars). The test binary needs\n`SECRET_FUZ_COOKIE_KEYS` to construct its `Keyring`. Never used in\nproduction — the test binaries themselves throw on production load\nvia `assert_dev_env`.",
+							"source_line": 44,
+							"type_signature": "\"dev_only_cookie_keys_for_cross_backend_tests_not_for_prod_use_xx\""
+						}
+					],
+					"module_comment": "Default test secrets for cross-process backend bootstrap.\n\nEvery cross-backend consumer needs the same shape: a bootstrap token\nthe harness writes to disk before spawn, a keeper username/password\nthe harness POSTs to `/api/account/bootstrap`, and cookie keys the\nbinary uses to construct its `Keyring`. The literals here are dev-only\nand protected by `assert_dev_env`; the binaries themselves throw on\nproduction load.\n\nEach constant is exported individually so consumers can override one\nwithout re-deriving the rest. Builders in `default_backend_configs.ts`\nthread these defaults into the `BackendConfig.bootstrap` block and the\n`SECRET_FUZ_COOKIE_KEYS` env entry; callers compose the\n`bootstrap_overrides` knob when they need a non-default keeper.",
+					"dependencies": ["testing/assert_dev_env.ts"],
+					"dependents": ["testing/cross_backend/default_backend_configs.ts"]
 				},
 				{
 					"path": "testing/cross_backend/setup.ts",
@@ -55776,7 +56063,7 @@
 							"name": "CreateTestAccountOptions",
 							"kind": "type",
 							"doc_comment": "Options for `TestFixture.create_account` — mints an additional\nbootstrapped account alongside the keeper. Matches the existing\n`TestApp.create_account` signature so the migration to fixture-style\nreads is a one-site call rewrite per use.",
-							"source_line": 58,
+							"source_line": 59,
 							"type_signature": "CreateTestAccountOptions",
 							"properties": [
 								{
@@ -55803,14 +56090,86 @@
 							"name": "TestAccountFixture",
 							"kind": "type",
 							"doc_comment": "Shape returned by `TestFixture.create_account`. Aliased to the\nexisting `TestAccount` interface from `app_server.ts` — same shape,\nstable name on the cross-backend testing surface so call sites read\n`fixture.create_account(...)` returning `TestAccountFixture` without\ncrossing module boundaries.",
-							"source_line": 71,
+							"source_line": 72,
 							"type_signature": "TestAccount"
+						},
+						{
+							"name": "ExtraAccountSpec",
+							"kind": "type",
+							"doc_comment": "Spec for a bootstrap-time secondary account seeded alongside the\nkeeper by `_testing_reset` (cross-process) or `create_test_app`\n(in-process). Used for accounts whose required roles aren't\nadmin-grantable via offer/accept — primarily `ROLE_KEEPER` (whose\n`RoleSpec.grant_paths` is bootstrap-only), where the only way to\nland the grant is at the bootstrap-equivalent setup step.\n\nFor admin-grantable roles, prefer `fixture.create_account({roles})`\n— that goes through the production offer/accept handlers and\nobserves audit + WS fan-out. `extra_accounts` is the cradle-only\nbypass; the runtime has no equivalent action.",
+							"source_line": 87,
+							"type_signature": "ExtraAccountSpec",
+							"properties": [
+								{
+									"name": "username",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "password_value",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "roles",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "ReadonlyArray<string>"
+								}
+							]
+						},
+						{
+							"name": "ExtraAccountFixture",
+							"kind": "type",
+							"doc_comment": "Bootstrap-time-seeded secondary account exposed on the fixture.",
+							"source_line": 94,
+							"type_signature": "ExtraAccountFixture",
+							"properties": [
+								{
+									"name": "account",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "{readonly id: Uuid; readonly username: string}"
+								},
+								{
+									"name": "actor",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "{readonly id: Uuid}"
+								},
+								{
+									"name": "api_token",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "session_cookie",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "string"
+								},
+								{
+									"name": "create_session_headers",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>"
+								},
+								{
+									"name": "create_bearer_headers",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "(extra?: Record<string, string>) => Record<string, string>"
+								}
+							]
 						},
 						{
 							"name": "TestFixtureBase",
 							"kind": "type",
-							"doc_comment": "Fields shared by every `TestFixture` regardless of transport. The\ndiscriminated union below adds in-process-only fields conditionally.",
-							"source_line": 77,
+							"doc_comment": "Fields shared by every `TestFixture` regardless of transport. The\ndiscriminated union below adds in-process-only fields conditionally.\n\n**Keeper ≠ admin.** `fixture.account` / `fixture.actor` refer to the\n**fresh keeper** seeded per test. The keeper account holds\n`ROLE_KEEPER` + `ROLE_ADMIN` by default — matching the production\n`bootstrap_account` flow. The `ROLE_KEEPER` role itself does *not*\ngrant admin reach; the bootstrap account just happens to hold both as\nseparate grants. Tests probing the keeper-vs-admin separation (e.g.\n\"non-admin cannot list accounts\") declare a secondary at setup-time\nvia `extra_accounts: [{username, roles: [ROLE_KEEPER]}]` and read it\nfrom `fixture.extra_accounts[username]`.",
+							"source_line": 151,
 							"type_signature": "TestFixtureBase",
 							"properties": [
 								{
@@ -55868,6 +56227,13 @@
 									"modifiers": ["readonly"],
 									"type_signature": "(options?: CreateTestAccountOptions) => Promise<TestAccountFixture>",
 									"doc_comment": "Mint an additional bootstrapped account for cross-account / multi-user\ntests. In-process: re-uses `create_test_account_with_credentials` against the same DB;\ncross-process: goes through the consumer-supplied DB-admin\nchannel."
+								},
+								{
+									"name": "extra_accounts",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "Readonly<Record<string, ExtraAccountFixture>>",
+									"doc_comment": "Bootstrap-time-seeded secondaries, keyed by their declared\n`username`. Populated from the `extra_accounts` option passed to\n`default_in_process_setup` / `default_cross_process_setup`. Empty\nfor suites that don't declare any."
 								}
 							]
 						},
@@ -55875,26 +56241,44 @@
 							"name": "TestFixture",
 							"kind": "type",
 							"doc_comment": "The per-test bundle returned by `SetupTest`. Every Tier 1 suite body\nreads exclusively from this shape — no `test_app.backend.*` reads\nremain in the suite bodies.\n\nDiscriminated by `in_process`: when `true`, `keyring` and\n`backend_internals` are present (compile-time narrowed); when `false`,\nthey're absent and the suite body must either run via the public wire\n(cross-process) or gate the test with\n`test_if(capabilities.in_process_only, ...)`. The discriminant value\nmirrors `BackendCapabilities.in_process_only` — both source from the\nsame producer (`default_in_process_setup` vs. cross-process variant).\n\nSuite bodies narrow with `assert(fixture.in_process)` after\n`setup_test()`; sites that reach for `keyring` or `backend_internals`\nare in-process-only by structure and the assertion surfaces a clear\nfailure if a future cross-process consumer reaches them without a\n`test_if` gate.",
-							"source_line": 149,
+							"source_line": 230,
 							"type_signature": "TestFixture"
 						},
 						{
 							"name": "SetupTest",
 							"kind": "type",
 							"doc_comment": "Per-test fixture-producing function. Invoked once inside every\n`test()` body. The implementation captures factory inputs (in-process)\nor a long-running backend handle (cross-process) and creates\na fresh per-test bundle on each call.",
-							"source_line": 174,
+							"source_line": 260,
 							"type_signature": "SetupTest"
+						},
+						{
+							"name": "InProcessSetupOptions",
+							"kind": "type",
+							"doc_comment": "Options for `default_in_process_setup`. Extends `CreateTestAppOptions`\nwith the same `extra_accounts` slot the cross-process variant accepts\n— both transports observe the same bootstrap-time secondary set so\nsuite bodies can read `fixture.extra_accounts[username]` uniformly.",
+							"source_line": 281,
+							"type_signature": "InProcessSetupOptions",
+							"extends": ["CreateTestAppOptions"],
+							"properties": [
+								{
+									"name": "extra_accounts",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "ReadonlyArray<ExtraAccountSpec>",
+									"doc_comment": "Additional accounts seeded at this transport's bootstrap-equivalent\nstep. See `ExtraAccountSpec` for the cradle-only-bypass rationale.\nMost suites pass `undefined` / `[]`; the `ROLE_KEEPER` probe (in\n`describe_standard_admin_integration_tests`) is the primary user."
+								}
+							]
 						},
 						{
 							"name": "default_in_process_setup",
 							"kind": "function",
-							"source_line": 203,
-							"type_signature": "(options: CreateTestAppOptions): SetupTest",
+							"doc_comment": "Build a `SetupTest` that creates a fresh `TestApp` per call via\n`create_test_app` and projects it into the `TestFixture` shape.\n\nSame factory inputs `create_test_app` already takes — this helper\nis a projection layer, not a new lifecycle. fuz_app's own `src/test/`\nand consumer suites pass `default_in_process_setup({...factory_inputs})`\nin place of the old per-suite factory-input bundle. The `extra_accounts`\nslot (see `InProcessSetupOptions`) seeds bootstrap-time secondaries\ndirectly via `create_test_account_with_credentials` against the same\nDB the keeper just landed on — mirrors the cross-process\n`_testing_reset` cradle so suite bodies read\n`fixture.extra_accounts[username]` uniformly regardless of transport.\n\nThe describe-level `auth_integration_truncate_tables` / pglite WASM\ncache lifecycle stays in `create_pglite_factory` / `create_describe_db`\n(`testing/db.js`) — `default_in_process_setup` doesn't manage db state\nbeyond what `create_test_app` already does.",
+							"source_line": 310,
+							"type_signature": "(options: InProcessSetupOptions): SetupTest",
 							"return_type": "SetupTest",
 							"parameters": [
 								{
 									"name": "options",
-									"type": "CreateTestAppOptions"
+									"type": "InProcessSetupOptions"
 								}
 							]
 						},
@@ -55902,7 +56286,7 @@
 							"name": "BootstrappedBackendHandle",
 							"kind": "type",
 							"doc_comment": "Cross-process backend handle enriched with the bootstrapped keeper's\ncaptured credentials. Consumers compose this in vitest's\n`globalSetup`:\n\n```ts\nconst handle = await spawn_backend(config);\nconst keeper_transport = create_fetch_transport({base_url: config.base_url});\nconst keeper = await bootstrap({transport: keeper_transport, config});\nconst bootstrapped: BootstrappedBackendHandle = {\n  ...handle,\n  keeper_transport,\n  keeper_account: keeper.account,\n  keeper_actor: keeper.actor,\n  keeper_cookies: keeper.cookies,\n};\n```\n\n`default_cross_process_setup(bootstrapped, options)` reads from this\nshape — the per-test fixture closes over the keeper credentials so\ncross-process tests can drive admin-RPC / audit-observer flows\nagainst the long-lived bootstrapped admin alongside the per-test\nsignup+login account.",
-							"source_line": 249,
+							"source_line": 377,
 							"type_signature": "BootstrappedBackendHandle",
 							"extends": ["BackendHandle"],
 							"properties": [
@@ -55940,14 +56324,14 @@
 							"name": "ReconstructedBootstrappedBackendHandle",
 							"kind": "type",
 							"doc_comment": "`BootstrappedBackendHandle` minus the live `child` / `teardown` references\nthat only make sense in the `globalSetup` process. The cross-process\n`provide`/`inject` path strips them on serialization, and the per-test\nhelpers (`mint_account`, `fire_testing_reset`, `default_cross_process_setup`)\nnever read either field — so the test-worker view of the handle has this\nshape. Also the return type of `reconstruct_bootstrapped_handle`.",
-							"source_line": 268,
+							"source_line": 396,
 							"type_signature": "ReconstructedBootstrappedBackendHandle"
 						},
 						{
 							"name": "SerializableBootstrappedBackendHandle",
 							"kind": "type",
 							"doc_comment": "Serializable subset of {@link BootstrappedBackendHandle} suitable for\nvitest's `project.provide()` — vitest 4 hard-rejects non-serializable\nvalues, so the live `child: ChildProcess` + `teardown: () => Promise<void>`\n+ `keeper_transport: FetchTransport` (closure) must stay in the\n`globalSetup` process. The handful of fields tests actually read\n(`config`, `daemon_token`, `keeper_account`, `keeper_actor`,\n`keeper_cookies`) round-trip through structured clone fine.\n\n`globalSetup` calls {@link serialize_bootstrapped_handle} before\n`project.provide`; test files call {@link reconstruct_bootstrapped_handle}\non the injected value to rebuild a usable handle (without `child` /\n`teardown` — lifecycle stays with `globalSetup`).",
-							"source_line": 287,
+							"source_line": 415,
 							"type_signature": "SerializableBootstrappedBackendHandle",
 							"properties": [
 								{
@@ -55986,7 +56370,7 @@
 							"name": "serialize_bootstrapped_handle",
 							"kind": "function",
 							"doc_comment": "Strip the non-serializable members so the result can be passed to\nvitest's `project.provide`. Call in `globalSetup` before provide.",
-							"source_line": 299,
+							"source_line": 427,
 							"type_signature": "(handle: BootstrappedBackendHandle): SerializableBootstrappedBackendHandle",
 							"return_type": "SerializableBootstrappedBackendHandle",
 							"parameters": [
@@ -56000,7 +56384,7 @@
 							"name": "reconstruct_bootstrapped_handle",
 							"kind": "function",
 							"doc_comment": "Rebuild a usable handle from the serialized subset. Synthesizes a\nfresh {@link FetchTransport} primed with the keeper's `Set-Cookie`\nvalues so `_testing_reset` and other keeper-authenticated calls work.\nThe returned shape omits `child` and `teardown` — lifecycle stays\nwith `globalSetup`; tests that try to teardown themselves wouldn't\nhave a serializable reference anyway.",
-							"source_line": 317,
+							"source_line": 445,
 							"type_signature": "(serialized: SerializableBootstrappedBackendHandle): ReconstructedBootstrappedBackendHandle",
 							"return_type": "ReconstructedBootstrappedBackendHandle",
 							"parameters": [
@@ -56014,30 +56398,30 @@
 							"name": "CrossProcessSetupOptions",
 							"kind": "type",
 							"doc_comment": "Options for `default_cross_process_setup`.",
-							"source_line": 332,
+							"source_line": 460,
 							"type_signature": "CrossProcessSetupOptions",
 							"properties": [
-								{
-									"name": "reset",
-									"kind": "variable",
-									"modifiers": ["readonly"],
-									"type_signature": "boolean",
-									"doc_comment": "When `true`, every `setup_test()` call invokes the `_testing_reset`\naction before minting the per-test account. Cost: ~10ms on top of\nthe per-test signup+login. Default `false` — most tests use\naccount-scoped assertions and don't need fresh DB state between\ncases. Bootstrap-success suites, rate-limit-from-zero suites, and\nother tests with global-shape assertions opt in."
-								},
 								{
 									"name": "extra_keeper_roles",
 									"kind": "variable",
 									"modifiers": ["readonly"],
 									"type_signature": "ReadonlyArray<string>",
-									"doc_comment": "Additional roles to grant the per-test account after signup+login.\nEach role is granted via the production `role_grant_offer_create`\n(keeper transport) + `role_grant_offer_accept` (per-test transport)\nconsent flow — same RPCs production callers drive, so the per-test\naccount ends up with a real `role_grant` row indistinguishable from\na production grant.\n\nCross-process analog of the in-process `extra_keeper_roles` option on\n`default_in_process_suite_options`. In-process can grant arbitrary\nroles by direct-INSERT on `role_grant` (cheap, no consent flow); the\ncross-process harness has no DB access, so it drives the same offer/\naccept flow real users do. Per-test cost: ~30-50ms (2 RPCs × roles).\n\nThe offered role's `RoleSpec.grant_paths` must include `'admin'` —\n`role_grant_offer_create` rejects non-admin-grantable roles. The\nbootstrapped keeper holds `ROLE_KEEPER` + `ROLE_ADMIN` unconditionally\n(per `auth/bootstrap_account.ts`), so `ROLE_ADMIN` is always\ngrantable; consumer-defined roles depend on their `RoleSpec`.\n\nAdmin-suite consumers pass `[ROLE_ADMIN]` so the per-test account\ncan drive admin-gated RPC methods (`invite_create`, etc.).\n`describe_standard_admin_integration_tests`,\n`describe_audit_completeness_tests`, and the 2 signup-invite\nedge-case tests in `describe_standard_integration_tests` need this."
+									"doc_comment": "Additional roles to grant the fresh keeper on every per-test reset,\n*in addition to* the `[ROLE_KEEPER, ROLE_ADMIN]` defaults the\n`_testing_reset` action seeds. Cross-process mirror of in-process\n`extra_keeper_roles` on `default_in_process_suite_options`.\n\nCosts nothing extra per test — the `_testing_reset` action seeds\nthe keeper in a single transaction regardless of how many roles\nare in the list.\n\n`ROLE_ADMIN` is already in the default set, so admin-suite\nconsumers usually pass an empty / omitted array. Consumer-defined\nroles (e.g. `teacher`) are passed here when the keeper-acting test\nneeds them.\n\n**Keeper ≠ admin.** Tests that need a *non-admin* secondary\naccount with `ROLE_KEEPER` declare it via `extra_accounts` —\n`ROLE_KEEPER`'s `RoleSpec.grant_paths` is bootstrap-only, so it\ncan only be granted at the test-binary bootstrap-equivalent step."
+								},
+								{
+									"name": "extra_accounts",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "ReadonlyArray<ExtraAccountSpec>",
+									"doc_comment": "Bootstrap-time secondary accounts seeded alongside the keeper on\nevery per-test reset. See `ExtraAccountSpec` for why this is a\ncradle-only bypass. The reset action seeds them in the same\ntransaction as the keeper."
 								}
 							]
 						},
 						{
 							"name": "default_cross_process_setup",
 							"kind": "function",
-							"doc_comment": "Build a `SetupTest` that creates a fresh per-test account against a\nspawned + bootstrapped backend.\n\nPer-test body:\n\n1. (Optional) Fire `_testing_reset` via the keeper transport when\n   `options.reset` is true.\n2. POST `/api/account/signup` with a fresh username + password on a\n   new `FetchTransport` so the per-test session cookie lands in its\n   own jar.\n3. POST `/api/account/login` to refresh the cookie.\n4. Mint an API token via `account_token_create` RPC so the returned\n   fixture has both session + bearer credentials.\n5. Return a `TestFixture` with `in_process: false`, the per-test\n   transport / account / actor, and `create_*` helpers that route\n   through the per-test transport for session/bearer and through the\n   keeper handle for daemon-token operations.\n\nCross-account `create_account` mints additional accounts the same way —\nfresh transport, fresh signup, fresh token — so tests that drive\nmulti-account isolation cases keep the in-process call shape.\n\n`options.roles` on `create_account` is granted via the same\n`role_grant_offer_create` (keeper transport) + `role_grant_offer_accept`\n(new account's transport) consent flow used by `extra_keeper_roles`.\nEach role costs ~2 RPCs (~30-50ms); empty arrays no-op. Roles whose\n`RoleSpec.grant_paths` don't include `'admin'` reject at offer-create\ntime and surface a loud RPC error.",
-							"source_line": 691,
+							"doc_comment": "Build a `SetupTest` against a spawned + bootstrapped backend.\n\nPer-test body (unconditional reset — fresh keeper every test):\n\n1. Fire `_testing_reset` via the keeper's daemon-token channel. The\n   action wipes auth tables, seeds a fresh keeper (with\n   `extra_keeper_roles` applied), seeds any `extra_accounts`, and\n   returns the new credentials.\n2. Build the `TestFixture` closing over the new keeper as the\n   fixture's primary `account` / `actor` (matching in-process\n   semantics). `fixture.extra_accounts[username]` exposes any\n   bootstrap-time secondaries.\n3. `fixture.create_account()` mints additional *post-bootstrap*\n   accounts via the production signup + login flow (invite → signup\n   → login → token). Roles go through offer/accept (production\n   consent path).\n\nNo `reset: boolean` opt-in — every test runs against a freshly\nbootstrapped keeper. This converges in-process and cross-process\nkeeper lifetimes; mutation-cascade tests (password change,\nrevoke-all) and hardcoded-username signup tests work uniformly.",
+							"source_line": 877,
 							"type_signature": "(handle: ReconstructedBootstrappedBackendHandle, options?: CrossProcessSetupOptions | undefined): SetupTest",
 							"return_type": "SetupTest",
 							"parameters": [
@@ -56056,7 +56440,7 @@
 							"name": "DefaultInProcessSuiteOptions",
 							"kind": "type",
 							"doc_comment": "Consumer-facing options for `default_in_process_suite_options` — the\nminimal factory inputs both `default_in_process_setup` and\n`create_test_app_surface_spec` consume to produce the\n`{setup_test, surface_source, capabilities}` bundle.",
-							"source_line": 794,
+							"source_line": 995,
 							"type_signature": "DefaultInProcessSuiteOptions",
 							"properties": [
 								{
@@ -56092,6 +56476,12 @@
 									"doc_comment": "Additional roles to grant the bootstrapped keeper alongside\n`ROLE_KEEPER` — additive, never replaces. The keeper account\nalways holds `ROLE_KEEPER` (otherwise daemon-token auth breaks);\npass extras here for suites that need additional role coverage.\n\nAdmin-suite consumers pass `[ROLE_ADMIN]` so the default keeper\ncan hit admin-gated RPC methods.\n`describe_standard_admin_integration_tests` and\n`describe_audit_completeness_tests` need this."
 								},
 								{
+									"name": "extra_accounts",
+									"kind": "variable",
+									"type_signature": "ReadonlyArray<ExtraAccountSpec>",
+									"doc_comment": "Bootstrap-time secondary accounts seeded alongside the keeper. See\n`ExtraAccountSpec` for the cradle-only-bypass rationale. Same shape\nas the cross-process `extra_accounts` option — suites read seeded\naccounts from `fixture.extra_accounts[username]` regardless of\ntransport."
+								},
+								{
 									"name": "surface_source",
 									"kind": "variable",
 									"type_signature": "AppSurfaceSpec",
@@ -56103,7 +56493,7 @@
 							"name": "default_in_process_suite_options",
 							"kind": "function",
 							"doc_comment": "Build the full in-process suite bundle in a single helper invocation.\nOutput covers `{setup_test, surface_source, capabilities}` plus every\nfactory input the Tier 1 suites read at their top level\n(`session_options`, `create_route_specs`, `rpc_endpoints`) — so the\ncall site spreads once and adds only suite-specific extras\n(`roles`, `skip_routes`, `input_overrides`, `db_factories`, ...).\n\n```ts\n// Suite-extras-free call: helper output is the entire options bag.\ndescribe_round_trip_validation(default_in_process_suite_options({\n  session_options,\n  create_route_specs,\n  rpc_endpoints: [rpc_endpoint_spec],\n}));\n\n// With suite-specific extras: spread and add.\ndescribe_standard_admin_integration_tests({\n  ...default_in_process_suite_options({\n    session_options, create_route_specs, rpc_endpoints,\n    extra_keeper_roles: [ROLE_ADMIN],\n  }),\n  roles,\n});\n```\n\nSuites that don't read `session_options` / `rpc_endpoints` at their\ntop level (`round_trip`, `data_exposure`) accept the spread anyway —\nexcess properties on spread sources aren't checked by TS, and the\nuniform shape keeps consumer call sites mechanical.",
-							"source_line": 867,
+							"source_line": 1076,
 							"type_signature": "<const O extends DefaultInProcessSuiteOptions>(options: O): { setup_test: SetupTest; surface_source: AppSurfaceSpec; capabilities: BackendCapabilities; session_options: O[\"session_options\"]; create_route_specs: O[\"create_route_specs\"]; rpc_endpoints: O[\"rpc_endpoints\"]; }",
 							"return_type": "{ setup_test: SetupTest; surface_source: AppSurfaceSpec; capabilities: BackendCapabilities; session_options: O[\"session_options\"]; create_route_specs: O[\"create_route_specs\"]; rpc_endpoints: O[\"rpc_endpoints\"]; }",
 							"parameters": [
@@ -56187,37 +56577,136 @@
 					"dependents": ["testing/cross_backend/bootstrap_backend.ts"]
 				},
 				{
+					"path": "testing/cross_backend/standard.ts",
+					"declarations": [
+						{
+							"name": "StandardCrossProcessTestOptions",
+							"kind": "type",
+							"doc_comment": "Configuration for `describe_standard_cross_process_tests`.\n\nMirrors `StandardTestOptions` minus the in-process-only knobs\n(`create_route_specs`, `bootstrap`, `rate_limiting_app_options`,\n`bootstrap_token`) — those drive the three omitted suites.",
+							"source_line": 62,
+							"type_signature": "StandardCrossProcessTestOptions",
+							"properties": [
+								{
+									"name": "setup_test",
+									"kind": "variable",
+									"type_signature": "SetupTest",
+									"doc_comment": "Per-test fixture-producing function."
+								},
+								{
+									"name": "surface_source",
+									"kind": "variable",
+									"type_signature": "AppSurfaceSpec",
+									"doc_comment": "App surface. Constructed in TS by the consumer; same shape for\nin-process and cross-process tests."
+								},
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"type_signature": "BackendCapabilities",
+									"doc_comment": "Backend capability declarations."
+								},
+								{
+									"name": "session_options",
+									"kind": "variable",
+									"type_signature": "SessionOptions<string>",
+									"doc_comment": "Session config — needed for cookie_name + factory-form rpc_endpoints resolution."
+								},
+								{
+									"name": "rpc_endpoints",
+									"kind": "variable",
+									"type_signature": "RpcEndpointsSuiteOption",
+									"doc_comment": "RPC endpoint specs — required. The standard integration tests drive\n`account_verify`, `account_session_*`, `account_token_*` through the\nRPC surface (and admin tests, when wired, drive role_grant grant/revoke\nthrough it too)."
+								},
+								{
+									"name": "roles",
+									"kind": "variable",
+									"type_signature": "RoleSchemaResult",
+									"doc_comment": "Role schema result from `create_role_schema()`.\nWhen provided, the admin integration suite is included."
+								},
+								{
+									"name": "admin_prefix",
+									"kind": "variable",
+									"type_signature": "string",
+									"doc_comment": "Path prefix where admin routes are mounted.\nDefault `'/api/admin'`."
+								},
+								{
+									"name": "error_coverage_min",
+									"kind": "variable",
+									"type_signature": "number",
+									"doc_comment": "Forwarded to `describe_standard_integration_tests` — overrides the\ndefault error-coverage threshold on the scoped REST surface. Set to\n`0` to skip the assertion entirely."
+								}
+							]
+						},
+						{
+							"name": "describe_standard_cross_process_tests",
+							"kind": "function",
+							"doc_comment": "Run the cross-process standard test bundle — integration, admin (when\n`roles` provided), round trip, RPC round trip, data exposure. See the\nmodule doc for the suites omitted from this bundle and why.",
+							"source_line": 104,
+							"type_signature": "(options: StandardCrossProcessTestOptions): void",
+							"return_type": "void",
+							"parameters": [
+								{
+									"name": "options",
+									"type": "StandardCrossProcessTestOptions"
+								}
+							]
+						}
+					],
+					"module_comment": "Cross-process counterpart to `describe_standard_tests`.\n\nWires the cross-process-safe subset of the standard bundle — the five\nsuites whose option shape is `{setup_test, surface_source, capabilities, ...}`\nand whose bodies fire requests through `fixture.transport` rather than\ntouching the in-process `Backend`. Consumers wire one call against a\nspawned binary instead of repeating the five sibling calls per file.\n\n**Suites included** — always run:\n\n- `describe_standard_integration_tests`\n- `describe_round_trip_validation`\n- `describe_rpc_round_trip_tests`\n- `describe_data_exposure_tests`\n\n**Gated on `roles`** — included when the consumer supplies a\n`RoleSchemaResult`:\n\n- `describe_standard_admin_integration_tests`\n\n**Suites omitted** — the three that don't survive a process boundary,\ndocumented here so per-consumer files don't have to repeat the\nbookkeeping:\n\n- `describe_rate_limiting_tests` — builds a fresh `TestApp` per test to\n  inject tight per-test rate-limiter overrides. That path requires\n  in-process construction of `Backend` + rate limiter; the spawned\n  binary has neither knob nor restart-per-test budget.\n- `describe_audit_completeness_tests` — reaches into FK-structural\n  introspection that only the in-process backend exposes. Wire-level\n  audit observability lives in the consumer's own audit `.cross.test.ts`\n  driving `audit_log_list` / `audit_log_role_grant_history`.\n- `describe_bootstrap_success_tests` — bootstrap is one-shot per\n  backend lifecycle, and the consumer's `globalSetup` already consumed\n  it before the suite file loads. Re-running would 409.",
+					"dependencies": [
+						"testing/admin_integration.ts",
+						"testing/assert_dev_env.ts",
+						"testing/data_exposure.ts",
+						"testing/integration.ts",
+						"testing/round_trip.ts",
+						"testing/rpc_round_trip.ts"
+					]
+				},
+				{
 					"path": "testing/cross_backend/testing_reset_actions.ts",
 					"declarations": [
 						{
 							"name": "testing_reset_action_spec",
 							"kind": "variable",
-							"doc_comment": "The `_testing_reset` action spec. Registered on test binaries only.\n\n`auth` gates on the daemon-token credential — the keeper holds it\nexclusively, so this method is effectively keeper-only without the\n`actor: 'required'` ⟺ `acting?: ActingActor` biconditional that\n`roles: ['keeper']` would force.\n\nEmpty input + `{ok: true}` output: the test caller doesn't pass\nanything, the handler doesn't return anything useful. Failure surfaces\nas a JSON-RPC error envelope.",
-							"source_line": 70,
-							"type_signature": "{ readonly method: \"_testing_reset\"; readonly kind: \"request_response\"; readonly initiator: \"frontend\"; readonly auth: { readonly account: \"required\"; readonly actor: \"none\"; readonly credential_types: readonly [...]; }; ... 4 more ...; readonly description: \"Test-binary only — reset auth tables (preserving keeper) ..."
+							"doc_comment": "The `_testing_reset` action spec.\n\nInput:\n- `extra_keeper_roles` — roles to grant the fresh keeper *in addition\n  to* `[ROLE_KEEPER, ROLE_ADMIN]` (matching production bootstrap).\n- `extra_accounts` — additional accounts to seed at this same\n  bootstrap-equivalent step. Each entry's `roles` are direct-granted\n  (bypassing offer/accept) because the seed is *part of bootstrap*,\n  not a post-bootstrap action. Use this for accounts whose required\n  roles aren't admin-grantable via offer/accept (e.g. `ROLE_KEEPER`,\n  whose `RoleSpec.grant_paths` is bootstrap-only). For\n  admin-grantable roles, prefer `fixture.create_account({roles})`\n  (offer/accept production path).\n\nOutput: keeper credentials plus a parallel array of seeded\n`extra_accounts` (same order as input). The per-test fixture closes\nover the returned values; subsequent calls in the same test see the\nfresh keeper and any requested secondaries.\n\n`auth` gates on the daemon-token credential — the keeper holds it\nexclusively. The action is internally privileged (it runs direct\nDB writes the production wire never exposes); daemon-token auth is\nthe structural fence.",
+							"source_line": 101,
+							"type_signature": "{ readonly method: \"_testing_reset\"; readonly kind: \"request_response\"; readonly initiator: \"frontend\"; readonly auth: { readonly account: \"required\"; readonly actor: \"none\"; readonly credential_types: readonly [...]; }; ... 4 more ...; readonly description: \"Test-binary only — wipe auth tables, re-bootstrap a fresh..."
 						},
 						{
-							"name": "CreateTestingResetActionsOptions",
+							"name": "CreateTestingActionsOptions",
 							"kind": "type",
-							"doc_comment": "Options for `create_testing_reset_actions`.",
-							"source_line": 84,
-							"type_signature": "CreateTestingResetActionsOptions",
+							"doc_comment": "Options for `create_testing_actions`.",
+							"source_line": 128,
+							"type_signature": "CreateTestingActionsOptions",
 							"properties": [
+								{
+									"name": "session_options",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "SessionOptions<string>",
+									"doc_comment": "Session cookie options — the reset action uses these when signing\nthe fresh keeper's (and any extra accounts') session cookies.\nPass the same `SessionOptions` the live `create_app_server` call\nwas wired with."
+								},
+								{
+									"name": "daemon_token_state",
+									"kind": "variable",
+									"modifiers": ["readonly"],
+									"type_signature": "DaemonTokenState",
+									"doc_comment": "Daemon-token runtime state — the reset action mutates\n`state.keeper_account_id` to point at the freshly seeded keeper\nafter the old row is wiped. Pass the same `DaemonTokenState`\ninstance the daemon-token middleware reads."
+								},
 								{
 									"name": "reset_state",
 									"kind": "variable",
 									"modifiers": ["readonly"],
 									"type_signature": "() => Promise<void> | void",
-									"doc_comment": "Consumer-supplied callback invoked after the auth-table reset.\n`testing_zzz_server` clears workspace registry + terminals + the\nscoped FS scratch dir here; `testing_zap_server` clears its\nin-memory zap state; `testing_fuz_webui` no-ops while the binary\nis a hello-world stub. Runs inside the same RPC dispatch as the\nauth-table DELETEs, so a throw here surfaces to the caller as a\nJSON-RPC error and the per-test fixture short-circuits."
+									"doc_comment": "Consumer-supplied callback invoked after the auth-table reset.\n`testing_zzz_server` clears workspace registry + terminals + the\nscoped FS scratch dir here; `testing_spine_stub` has no domain\nlayer and passes a no-op (or omits the option). Runs inside the\nsame RPC dispatch as the auth-table writes, so a throw surfaces\nto the caller as a JSON-RPC error and the per-test fixture\nshort-circuits."
 								}
 							]
 						},
 						{
-							"name": "create_testing_reset_actions",
+							"name": "create_testing_actions",
 							"kind": "function",
-							"doc_comment": "Build the `_testing_reset` RPC action for a test binary's registry.\n\n`deps` is the binary's full `AppDeps` — only `log` is read directly,\nbut the action handler also reads `ctx.db` (per-request transaction)\nand `ctx.auth.account.id` (the keeper firing the reset). The\nfactory returns a single-element `Array<RpcAction>` for shape\nsymmetry with the other action factories\n(`create_admin_actions`, `create_account_actions`, etc.).\n\nThe set of auth tables touched here mirrors\n`auth_integration_truncate_tables` from `testing/db.ts` — the\ncanonical \"auth tables a between-test reset must clear\" list. The\nper-table scoping rule isn't uniform (some wipe wholesale, others\npreserve keeper-owned rows), so the SQL stays inline rather than\niterating the constant; `testing_reset_actions.coverage.test.ts`\nenforces the set-equality invariant statically so a future auth\nmigration that adds a table to `auth_integration_truncate_tables`\nwithout updating this handler fails CI.",
-							"source_line": 117,
-							"type_signature": "(deps: AppDeps, options?: CreateTestingResetActionsOptions | undefined): RpcAction[]",
+							"doc_comment": "Build the testing RPC actions for a test binary's registry.\n\nReturns `_testing_reset` — the single privileged action test binaries\nregister. The test binary calls this at server-assembly time and\nregisters the result on its dispatcher.\n\nThe reset action's table-wipe list mirrors\n`auth_integration_truncate_tables` from `testing/db.ts` — the\ncanonical \"auth tables a between-test reset must clear\" set.\n`testing_reset_actions.coverage.test.ts` enforces the set-equality\ninvariant so a future auth migration that adds a table to that list\nwithout updating this handler fails CI.",
+							"source_line": 169,
+							"type_signature": "(deps: AppDeps, options: CreateTestingActionsOptions): RpcAction[]",
 							"return_type": "RpcAction[]",
 							"parameters": [
 								{
@@ -56226,14 +56715,26 @@
 								},
 								{
 									"name": "options",
-									"type": "CreateTestingResetActionsOptions | undefined",
-									"optional": true
+									"type": "CreateTestingActionsOptions"
 								}
 							]
+						},
+						{
+							"name": "testing_reset_wiped_tables",
+							"kind": "variable",
+							"doc_comment": "Set of auth-namespace tables `_testing_reset` wipes. Mirrored by the coverage test.",
+							"source_line": 267,
+							"type_signature": "string[]"
 						}
 					],
-					"module_comment": "`_testing_reset` action — auth-table reset preserving keeper.\n\nTest binaries (`testing_zzz_server`, `testing_zap_server`,\n`testing_fuz_webui`) register the action returned by\n`create_testing_reset_actions` on their RPC endpoint. Tests opt in to\nthe reset between cases by passing `{reset: true}` to\n`default_cross_process_setup` — the per-test fixture fires\n`_testing_reset` over the keeper's daemon-token credential before\nminting the per-test signup+login account.\n\nReset semantics (in this order so FKs cascade cleanly):\n\n1. Wipe `audit_log` entirely. The table has no account FK and tests\n   care about per-test audit slices, not historical events.\n2. Per-table DELETEs scoped to non-keeper rows:\n   - `api_token` / `auth_session` filtered by `account_id != keeper`.\n   - `role_grant` filtered by `actor_id NOT IN keeper actors`.\n   - `role_grant_offer` + `invite` wiped (keeper rarely has either in\n     bootstrap-only state; wiping is the simplest cross-instance\n     behaviour).\n   - `actor` / `account` filtered by keeper id.\n3. Fire the consumer-supplied `reset_state` callback for domain-state\n   reset (zzz clears workspaces + terminals + scoped FS; zap clears\n   in-memory state; fuz_webui no-ops while it's a hello-world stub).\n\nOut of scope for this factory:\n\n- **Rate-limiter buckets.** The `RateLimiter` class only exposes\n  `reset(key)` for a single key; resetting all buckets requires either\n  a new `reset_all()` method on `RateLimiter` or a consumer that\n  tracks which keys it cares about. Tests that need bucket isolation\n  spawn a separate backend (per `_testing_reset` opt-in is a fast-path\n  for auth-state isolation, not full process isolation).\n- **Bootstrap lock + daemon-token cache.** Stay flipped — the keeper\n  survives the reset, so re-bootstrap is neither needed nor wanted\n  (it would invalidate in-memory caches and race the live binary's\n  state).\n\nProduction safety: this module lives under `cross_backend/` and starts\nwith `import '../assert_dev_env.js';` — production bundles either\ntree-shake the module out or throw at startup. The Rust mirror\n(`fuz_testing::create_testing_reset_actions`) ships in the\n`fuz_testing` crate, which `cargo xtask check-release` blocks from\nentering production dep graphs.",
-					"dependencies": ["actions/action_rpc.ts", "testing/assert_dev_env.ts"]
+					"module_comment": "Test-binary RPC actions for cross-process integration tests.\n\nSingle daemon-token-authed action: **`_testing_reset`** — full DB\nwipe + keeper re-seed + optional secondary-account seeding. The\nhandler wipes every auth-namespace row (no keeper-preserve filter),\nflips `bootstrap_lock` back to its post-bootstrap shape, seeds a\nfresh keeper account inline (reusing `create_test_account_with_credentials`\nso cross-process matches in-process write semantics), seeds any\ncaller-requested `extra_accounts` (also direct-inserted at this\nsetup step), refreshes the daemon-token cache to point at the new\nkeeper, and fires the consumer-supplied domain-state callback. The\nnew keeper + secondary credentials return as the action output so\nthe per-test fixture closes over them.\n\nThe redesign converges in-process and cross-process keeper\nlifetimes: both modes now run against a freshly bootstrapped keeper\nper test. Mutation-cascade tests (password change, revoke-all,\nhardcoded-username signup uniqueness) and direct keeper-vs-admin\nprobes work uniformly cross-process.\n\n**Keeper ≠ admin.** The `keeper` and `admin` roles are independent.\nKeeper authorizes daemon-token / bootstrap paths; admin authorizes\nthe user-facing admin RPC surface. `_testing_reset` seeds the keeper\naccount with `[ROLE_KEEPER, ROLE_ADMIN]` by default — matching the\nproduction `bootstrap_account` flow — plus any roles passed via\n`extra_keeper_roles`. Tests probing the keeper-vs-admin separation\n(a keeper-only account must 403 on admin RPCs) declare a secondary\nvia `extra_accounts: [{username, roles: [ROLE_KEEPER]}]` so the\naccount is seeded at this same bootstrap-equivalent step.\n\n**No free-form runtime bypass.** Earlier drafts considered a separate\n`_testing_seed_role_grant` action for arbitrary direct grants; that\nwas rejected because a runtime bypass would let tests skip the\nproduction consent flow's side-effects (audit emit, WS fan-out) and\nsilently mask bugs in those paths. The bypass that does exist —\n`extra_accounts` — is framed as bootstrap-time seeding, the same\nshape `bootstrap_account` itself uses to grant the initial\n`KEEPER` + `ADMIN` pair. Tests that want a role on a *post-bootstrap*\naccount must route through `role_grant_offer_create` +\n`role_grant_offer_accept` (the production path); they observe the\nfull event chain.\n\nProduction safety: this module lives under `cross_backend/` and starts\nwith `import '../assert_dev_env.js';` — production bundles either\ntree-shake the module out or throw at startup. The Rust mirror\n(`fuz_testing` crate) ships a parallel action; `cargo xtask\ncheck-release` blocks `fuz_testing` from entering production dep\ngraphs.",
+					"dependencies": [
+						"actions/action_rpc.ts",
+						"auth/role_schema.ts",
+						"testing/app_server.ts",
+						"testing/assert_dev_env.ts",
+						"testing/db.ts"
+					]
 				},
 				{
 					"path": "testing/data_exposure.ts",
@@ -56359,7 +56860,7 @@
 						"testing/integration_helpers.ts",
 						"testing/schema_generators.ts"
 					],
-					"dependents": ["testing/standard.ts"]
+					"dependents": ["testing/cross_backend/standard.ts", "testing/standard.ts"]
 				},
 				{
 					"path": "testing/db_entities.ts",
@@ -56404,8 +56905,8 @@
 						{
 							"name": "create_test_role_grant_direct",
 							"kind": "function",
-							"doc_comment": "Materialize a role_grant directly via `query_create_role_grant`, bypassing\nthe production offer/accept consent flow. Use only when the test focuses on\nrevoke or isolation semantics rather than the consent path itself — the\nschema permits null `source_offer_id` for exactly this case\n(`account_schema.ts`). For tests that exercise the production grant flow,\ndrive `role_grant_offer_create_action_spec` + `role_grant_offer_accept_action_spec`\nover RPC instead.",
-							"source_line": 59,
+							"doc_comment": "Materialize a `role_grant` directly via `query_create_role_grant`,\nbypassing the production offer/accept consent flow.\n\n**In-process only.** This helper takes a raw `Db` handle and seeds\nrows without firing audit fan-out, WebSocket broadcasts, or the\n`_supersede` notification chain a real grant emits. Cross-process\nsuites must instead drive `role_grant_offer_create_action_spec` +\n`role_grant_offer_accept_action_spec` via\n`role_grant_helpers.ts`'s `role_grant_offer_and_accept` so the\nfixture observes the full post-commit fan-out the way production\ndoes — otherwise tests would mask real divergence between the TS\nand Rust spines.\n\nUse this helper for query-level (`*.db.test.ts`) tests that\nexercise revoke or isolation semantics — not the consent path\nitself. The schema's `source_offer_id = null` shape is an\nintentional admin-direct escape; this helper exposes it so\nsuites don't reimplement the same direct-seed wrapper.",
+							"source_line": 70,
 							"type_signature": "(db: Db, input: CreateRoleGrantInput): Promise<RoleGrant>",
 							"return_type": "Promise<RoleGrant>",
 							"parameters": [
@@ -56425,8 +56926,7 @@
 						"auth/account_queries.ts",
 						"auth/role_grant_queries.ts",
 						"testing/assert_dev_env.ts"
-					],
-					"dependents": ["testing/admin_integration.ts"]
+					]
 				},
 				{
 					"path": "testing/db.ts",
@@ -56602,6 +57102,7 @@
 					],
 					"dependents": [
 						"testing/app_server.ts",
+						"testing/cross_backend/testing_reset_actions.ts",
 						"testing/rate_limiting.ts",
 						"testing/sse_round_trip.ts"
 					]
@@ -57289,14 +57790,14 @@
 						{
 							"name": "describe_standard_integration_tests",
 							"kind": "function",
-							"doc_comment": "Standard integration test suite for fuz_app auth routes.\n\nExercises login/logout, cookie attributes, session security, session\nrevocation, password change (incl. API token revocation), origin\nverification, bearer auth (incl. browser context discard on mutations),\ntoken revocation, cross-account isolation, expired credential rejection,\nsignup invite edge cases, and response body validation.\n\nEach test group asserts that required routes exist, failing with a descriptive\nmessage if the consumer's route specs are misconfigured.\n\nThe two signup-invite-edge-case tests call `invite_create_action_spec`\n(admin-gated) over the fixture's session, so consumers wiring signup +\nadmin actions must thread `extra_keeper_roles: [ROLE_ADMIN]` through\neither `default_in_process_suite_options` (in-process — keeper holds\nadmin) or `default_cross_process_setup(handle, {extra_keeper_roles:\n[ROLE_ADMIN]})` (cross-process — per-test account holds admin via\n`role_grant_offer_create` + `_accept`). The cross-process harness has\nno direct DB access, so admin role-grants must go through the\nproduction offer/accept consent flow rather than direct INSERT. The\ntests run against the production `open_signup: false` default — the\ncross-process per-test mint is invite-gated (keeper drives\n`invite_create` before signup) so the harness doesn't need to flip\nthe setting. Consumers that don't wire signup or `invite_create`\nsilently skip these two tests.",
+							"doc_comment": "Standard integration test suite for fuz_app auth routes.\n\nExercises login/logout, cookie attributes, session security, session\nrevocation, password change (incl. API token revocation), origin\nverification, bearer auth (incl. browser context discard on mutations),\ntoken revocation, cross-account isolation, expired credential rejection,\nsignup invite edge cases, and response body validation.\n\nEach test group asserts that required routes exist, failing with a descriptive\nmessage if the consumer's route specs are misconfigured.\n\nThe two signup-invite-edge-case tests call `invite_create_action_spec`\n(admin-gated) over the fixture's session, so consumers wiring signup +\nadmin actions must thread `extra_keeper_roles: [ROLE_ADMIN]` through\neither `default_in_process_suite_options` or\n`default_cross_process_setup(handle, {extra_keeper_roles:\n[ROLE_ADMIN]})`. In both modes the fixture's `fixture.account` is the\nfresh keeper, and the extra-keeper-roles list grants the bootstrapped\nkeeper additional roles inline (cross-process via `_testing_reset`'s\nbootstrap-time seeding; in-process via `bootstrap_test_keeper`) — no\nper-role RPC cost, no offer/accept round-trip. The tests run against\nthe production `open_signup: false` default — the cross-process\nper-test secondary mint via `fixture.create_account()` is\ninvite-gated (keeper drives `invite_create` before signup) so the\nharness doesn't need to flip the setting. Consumers that don't wire\nsignup or `invite_create` silently skip these two tests.",
 							"throws": [
 								{
 									"type": "Error",
 									"description": "at setup time when `options.rpc_endpoints` is empty — the"
 								}
 							],
-							"source_line": 146,
+							"source_line": 147,
 							"type_signature": "(options: StandardIntegrationTestOptions): void",
 							"return_type": "void",
 							"parameters": [
@@ -57320,7 +57821,7 @@
 						"testing/integration_helpers.ts",
 						"testing/rpc_helpers.ts"
 					],
-					"dependents": ["testing/standard.ts"]
+					"dependents": ["testing/cross_backend/standard.ts", "testing/standard.ts"]
 				},
 				{
 					"path": "testing/middleware.ts",
@@ -57902,7 +58403,7 @@
 						"testing/integration_helpers.ts",
 						"testing/schema_generators.ts"
 					],
-					"dependents": ["testing/standard.ts"]
+					"dependents": ["testing/cross_backend/standard.ts", "testing/standard.ts"]
 				},
 				{
 					"path": "testing/rpc_attack_surface.ts",
@@ -58430,7 +58931,7 @@
 						"testing/rpc_helpers.ts",
 						"testing/schema_generators.ts"
 					],
-					"dependents": ["testing/standard.ts"]
+					"dependents": ["testing/cross_backend/standard.ts", "testing/standard.ts"]
 				},
 				{
 					"path": "testing/schema_generators.ts",
@@ -72152,7 +72653,7 @@
 		"package_json": {
 			"name": "@fuzdev/zzz",
 			"version": "0.0.1",
-			"description": "local-first forge for power users and devs",
+			"description": "software garage for power users and devs",
 			"tagline": "nice web things for the tired",
 			"glyph": "💤",
 			"logo": "logo.svg",
@@ -72178,7 +72679,7 @@
 				"deploy": "gro deploy",
 				"serve": "gro build && npm run preview",
 				"test:server:node": "gro run src/lib/server/testing_server_node.ts",
-				"test:server:deno": "deno run --allow-net --allow-read --allow-env --allow-write --allow-sys --unstable-detect-cjs src/lib/server/testing_server_deno.ts"
+				"test:server:deno": "deno run --allow-net --allow-read --allow-env --allow-write --allow-sys --allow-ffi --allow-run --unstable-detect-cjs src/lib/server/testing_server_deno.ts"
 			},
 			"type": "module",
 			"engines": {
@@ -72191,7 +72692,7 @@
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
 				"@electric-sql/pglite": "^0.4.5",
-				"@fuzdev/fuz_app": "^0.64.0",
+				"@fuzdev/fuz_app": "^0.65.0",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
 				"@fuzdev/fuz_ui": "^0.192.0",
@@ -87552,7 +88053,7 @@
 							"name": "CreateZzzAppOptions",
 							"kind": "type",
 							"doc_comment": "Options for creating a zzz app.",
-							"source_line": 62,
+							"source_line": 64,
 							"type_signature": "CreateZzzAppOptions",
 							"properties": [
 								{
@@ -87582,8 +88083,8 @@
 								{
 									"name": "extra_rpc_actions_factory",
 									"kind": "variable",
-									"type_signature": "(deps: AppDeps, backend: Backend) => ReadonlyArray<RpcAction>",
-									"doc_comment": "Optional factory for additional RPC actions to register on the live\ndispatcher. Invoked after `app_backend` and the zzz domain `backend`\nare constructed, so the factory can close over both. Used by the\nNode test-binary entry (`testing_server_node.ts`) to inject the\n`_testing_reset` action from fuz_app's\n`create_testing_reset_actions` factory with a `reset_state` callback\nthat clears zzz domain state (workspaces, terminals, optional\nscoped-FS scratch).\n\nProduction entries leave this unset."
+									"type_signature": "(\n\t\tdeps: AppDeps,\n\t\tbackend: Backend,\n\t\truntime: {\n\t\t\t/**\n\t\t\t * Daemon-token runtime state, when `daemon_token_path` is wired.\n\t\t\t * `null` when daemon-token rotation isn't running. The test\n\t\t\t * binary's `_testing_reset` factory needs this to refresh\n\t\t\t * `keeper_account_id` after re-seeding the keeper.\n\t\t\t */\n\t\t\tdaemon_token_state: DaemonTokenState | null;\n\t\t\t/** Session cookie options the live server is wired with. */\n\t\t\tsession_options: SessionOptions<string>;\n\t\t},\n\t) => ReadonlyArray<RpcAction>",
+									"doc_comment": "Optional factory for additional RPC actions to register on the live\ndispatcher. Invoked after `app_backend` and the zzz domain `backend`\nare constructed, so the factory can close over both. Used by the\nNode test-binary entry (`testing_server_node.ts`) to inject the\n`_testing_reset` action from fuz_app's `create_testing_actions`\nfactory with a `reset_state` callback that clears zzz domain state\n(workspaces, terminals, optional scoped-FS scratch).\n\nProduction entries leave this unset."
 								},
 								{
 									"name": "daemon_token_path",
@@ -87603,7 +88104,7 @@
 							"name": "ZzzApp",
 							"kind": "type",
 							"doc_comment": "The created zzz app and related instances.",
-							"source_line": 122,
+							"source_line": 137,
 							"type_signature": "ZzzApp",
 							"properties": [
 								{
@@ -87660,7 +88161,7 @@
 							"name": "create_zzz_app",
 							"kind": "function",
 							"doc_comment": "Create the zzz Hono app with auth, database, Backend, providers, and endpoints.\n\nThis is the shared factory called by the server entry point.\nUses `create_app_backend` for database + auth, `create_app_server` for\nmiddleware assembly, and wires zzz's domain Backend through route deps.",
-							"source_line": 152,
+							"source_line": 167,
 							"type_signature": "(options: CreateZzzAppOptions): Promise<ZzzApp>",
 							"return_type": "Promise<ZzzApp>",
 							"parameters": [
@@ -87749,7 +88250,7 @@
 							"name": "is_ffi_available",
 							"kind": "function",
 							"doc_comment": "Check if the FFI library is available.",
-							"source_line": 100,
+							"source_line": 99,
 							"type_signature": "(): boolean",
 							"return_type": "boolean",
 							"parameters": []
@@ -87757,7 +88258,7 @@
 						{
 							"name": "PtySpawnResult",
 							"kind": "type",
-							"source_line": 113,
+							"source_line": 112,
 							"type_signature": "PtySpawnResult",
 							"properties": [
 								{
@@ -87776,7 +88277,7 @@
 							"name": "pty_spawn",
 							"kind": "function",
 							"doc_comment": "Spawn a process in a new PTY.",
-							"source_line": 121,
+							"source_line": 120,
 							"type_signature": "(command: string, args: string[], cwd?: string | undefined, cols?: number, rows?: number): PtySpawnResult",
 							"return_type": "PtySpawnResult",
 							"parameters": [
@@ -87809,7 +88310,7 @@
 							"name": "pty_read",
 							"kind": "function",
 							"doc_comment": "Read available data from the PTY. Returns null when no data (EAGAIN) or on EOF/error.",
-							"source_line": 163,
+							"source_line": 162,
 							"type_signature": "(master_fd: number): Uint8Array<ArrayBufferLike> | null",
 							"return_type": "Uint8Array<ArrayBufferLike> | null",
 							"parameters": [
@@ -87823,7 +88324,7 @@
 							"name": "pty_read_status",
 							"kind": "function",
 							"doc_comment": "Read from PTY, distinguishing EAGAIN (no data yet) from EOF/error.\nReturns: bytes read (Uint8Array), 'eagain', or 'eof'.",
-							"source_line": 174,
+							"source_line": 173,
 							"type_signature": "(master_fd: number): Uint8Array<ArrayBufferLike> | \"eagain\" | \"eof\"",
 							"return_type": "Uint8Array<ArrayBufferLike> | \"eagain\" | \"eof\"",
 							"parameters": [
@@ -87837,7 +88338,7 @@
 							"name": "pty_write",
 							"kind": "function",
 							"doc_comment": "Write data to the PTY.",
-							"source_line": 185,
+							"source_line": 184,
 							"type_signature": "(master_fd: number, data: Uint8Array<ArrayBufferLike>): number",
 							"return_type": "number",
 							"parameters": [
@@ -87855,7 +88356,7 @@
 							"name": "pty_resize",
 							"kind": "function",
 							"doc_comment": "Resize the PTY window.",
-							"source_line": 201,
+							"source_line": 200,
 							"type_signature": "(master_fd: number, cols: number, rows: number): void",
 							"return_type": "void",
 							"parameters": [
@@ -87877,7 +88378,7 @@
 							"name": "pty_close",
 							"kind": "function",
 							"doc_comment": "Close the PTY master fd.",
-							"source_line": 212,
+							"source_line": 211,
 							"type_signature": "(master_fd: number): void",
 							"return_type": "void",
 							"parameters": [
@@ -87891,7 +88392,7 @@
 							"name": "pty_kill",
 							"kind": "function",
 							"doc_comment": "Send a signal to a process. Defaults to SIGTERM.",
-							"source_line": 223,
+							"source_line": 222,
 							"type_signature": "(pid: number, signal?: number): void",
 							"return_type": "void",
 							"parameters": [
@@ -87909,7 +88410,7 @@
 						{
 							"name": "PtyWaitResult",
 							"kind": "type",
-							"source_line": 228,
+							"source_line": 227,
 							"type_signature": "PtyWaitResult",
 							"properties": [
 								{
@@ -87928,7 +88429,7 @@
 							"name": "pty_waitpid",
 							"kind": "function",
 							"doc_comment": "Non-blocking waitpid. Returns whether the process has exited and its status.",
-							"source_line": 236,
+							"source_line": 235,
 							"type_signature": "(pid: number): PtyWaitResult",
 							"return_type": "PtyWaitResult",
 							"parameters": [
@@ -87941,13 +88442,13 @@
 						{
 							"name": "SIGTERM",
 							"kind": "variable",
-							"source_line": 246,
+							"source_line": 245,
 							"type_signature": "15"
 						},
 						{
 							"name": "SIGKILL",
 							"kind": "variable",
-							"source_line": 246,
+							"source_line": 245,
 							"type_signature": "9"
 						}
 					],
@@ -88758,7 +89259,7 @@
 							]
 						}
 					],
-					"module_comment": "Runtime-agnostic test-binary core for the TS canonical zzz server.\n\nShared by the Deno (`testing_server_deno.ts`) and Node\n(`testing_server_node.ts`) test-binary adapters: same `create_zzz_app`\nfactory, same `_testing_reset` registration, same `reset_state`\nclosure, same daemon-info + shutdown discipline. The two runtime\nadapters only supply the boundary primitives that diverge between\nDeno and Node (HTTP serve, WS upgrade construction, signal\nregistration, pid, exit).\n\nProduction stays on Deno (`server.ts`). Both test entries register\n`_testing_reset` from fuz_app's `create_testing_reset_actions` factory\nwith a zzz `reset_state` closure that closes all workspaces, kills\nterminals via `PtyManager.kill_all`, and wipes the optional\n`ZZZ_TESTING_SCRATCH_DIR` tree.\n\n**NEVER ship in a release.** The module reaches into fuz_app's\n`testing/cross_backend/` modules which throw at production-bundle\nload via `assert_dev_env`. The `testing_` filename prefix mirrors the\nRust `testing_zzz_server` convention and is enforced for the Rust\nside by `cargo xtask check-release`'s dep-graph audit.",
+					"module_comment": "Runtime-agnostic test-binary core for the TS canonical zzz server.\n\nShared by the Deno (`testing_server_deno.ts`) and Node\n(`testing_server_node.ts`) test-binary adapters: same `create_zzz_app`\nfactory, same `_testing_reset` registration, same `reset_state`\nclosure, same daemon-info + shutdown discipline. The two runtime\nadapters only supply the boundary primitives that diverge between\nDeno and Node (HTTP serve, WS upgrade construction, signal\nregistration, pid, exit).\n\nProduction stays on Deno (`server.ts`). Both test entries register\n`_testing_reset` from fuz_app's `create_testing_actions` factory with\na zzz `reset_state` closure that closes all workspaces, kills\nterminals via `PtyManager.kill_all`, and wipes the optional\n`ZZZ_TESTING_SCRATCH_DIR` tree.\n\n**NEVER ship in a release.** The module reaches into fuz_app's\n`testing/cross_backend/` modules which throw at production-bundle\nload via `assert_dev_env`. The `testing_` filename prefix mirrors the\nRust `testing_zzz_server` convention and is enforced for the Rust\nside by `cargo xtask check-release`'s dep-graph audit.",
 					"dependencies": [
 						"server/constants.ts",
 						"server/create_zzz_app.ts",

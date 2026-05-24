@@ -755,7 +755,7 @@ pub struct SpawnConfig {
 
 pub struct SidecarController {
     pending: HashMap<u64, oneshot::Sender<Result<Value, SidecarError>>>,
-    // tx for outbound requests, child process handle, etc.
+    // zap for outbound requests, child process handle, etc.
 }
 ```
 

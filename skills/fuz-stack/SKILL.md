@@ -32,8 +32,8 @@ the same structure. When conventions are this consistent, AI can reliably
 bridge the gap between a person's intent and the stack's implementation.
 
 The stack composes: `fuz_util → fuz_css → fuz_ui → apps`, with `fuz_app`
-as the shared backend spine (auth, sessions, DB, SSE). zzz (local-first
-forge) and tx (cloud orchestrator) build on the same primitives. Understanding
+as the shared backend spine (auth, sessions, DB, SSE). zzz (the garage)
+and zap (machine-state convergence) build on the same primitives. Understanding
 one part transfers to understanding the others.
 
 ## Package Ecosystem
@@ -55,12 +55,12 @@ is authoritative for what it actually uses.
 | `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz           |
 | `fuz_gitops`   | a tool for managing many repos                                           |
 | `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`) |
-| `zzz`          | local-first forge — produce software with AI assistance                  |
-| `tx`           | system orchestrator — deploy and operate infrastructure                  |
+| `zzz`          | software garage — produce software with AI assistance                    |
+| `zap`          | convergence — deploy and operate infrastructure                          |
 
 `gro` is a temporary build tool, will be replaced by `fuz`.
 
-**Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_app -> zzz, tx, apps`
+**Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_app -> zzz, zap, apps`
 
 ## Coding Conventions
 

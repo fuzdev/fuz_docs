@@ -18,7 +18,7 @@ imports/exports via WIT interfaces for sandboxing and composition.
 
 ### When to use which
 
-- **Publishing to JSR/npm**: wasm-bindgen
+- **Publishing to npm**: wasm-bindgen
 - **Benchmarking across runtimes**: both
 - **Plugin systems** (speculative): component model
 

@@ -229,7 +229,7 @@ const result = await run_dag({
 });
 ```
 
-Used by tx for pipeline execution and resource detection.
+Used by zap for pipeline execution and resource detection.
 
 See ./async-patterns.md for the full DAG API (`DagOptions`, `DagResult`,
 `DagNode`) and concurrency primitives. See ./type-utilities.md for nominal

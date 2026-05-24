@@ -282,7 +282,7 @@ interface DagNodeResult {
 Failed dependency nodes cascade — dependents are skipped with reason
 `'dependency failed'`.
 
-Used by tx for pipeline execution and resource detection.
+Used by zap for pipeline execution and resource detection.
 
 ## Quick Reference
 

@@ -735,7 +735,7 @@ export const create_stub_app_deps = (): AppDeps => ({
 Full mock of `RuntimeDeps` with observable state for CLI testing:
 
 ```typescript
-const runtime = create_mock_runtime(['apply', 'tx.ts']);
+const runtime = create_mock_runtime(['apply', 'zap.ts']);
 runtime.mock_env.set('HOME', '/home/test');
 runtime.mock_fs.set('/home/test/.app/config.json', '{}');
 
