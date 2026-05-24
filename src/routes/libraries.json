@@ -22563,8 +22563,7 @@
 				"preview": "vite preview",
 				"deploy": "gro deploy",
 				"benchmark": "gro run src/benchmarks/mdz.benchmark.ts",
-				"benchmark:save": "gro run src/benchmarks/mdz.benchmark.ts --save",
-				"benchmark:clean": "rm -f src/benchmarks/baseline.json"
+				"benchmark:save": "gro run src/benchmarks/mdz.benchmark.ts --save"
 			},
 			"type": "module",
 			"engines": {
@@ -22617,7 +22616,7 @@
 				"@changesets/changelog-git": "^0.2.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.59.0",
-				"@fuzdev/fuz_util": "^0.60.1",
+				"@fuzdev/fuz_util": "^0.57.0",
 				"@fuzdev/gro": "^0.198.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.11.0",
@@ -22636,7 +22635,7 @@
 				"magic-string": "^0.30.21",
 				"prettier": "^3.7.4",
 				"prettier-plugin-svelte": "^3.5.1",
-				"svelte": "^5.55.2",
+				"svelte": "^5.55.0",
 				"svelte-check": "^4.4.5",
 				"svelte2tsx": "^0.7.52",
 				"tslib": "^2.8.1",
@@ -25535,7 +25534,7 @@
 						}
 					],
 					"dependencies": ["DeclarationLink.svelte", "ModuleLink.svelte", "library.svelte.ts"],
-					"dependents": ["MdzNodeView.svelte", "MdzStreamNodeView.svelte"]
+					"dependents": ["MdzNodeView.svelte"]
 				},
 				{
 					"path": "DocsList.svelte",
@@ -26476,7 +26475,7 @@
 							"source_line": 33,
 							"type_signature": "(homepage: string, declaration_name: string): string",
 							"return_type": "string",
-							"return_description": "full URL like 'https://fuz.dev/docs/api#declaration_name'",
+							"return_description": "full URL like 'https://example.com/docs/api#declaration_name'",
 							"parameters": [
 								{
 									"name": "homepage",
@@ -26533,7 +26532,7 @@
 							"kind": "function",
 							"doc_comment": "Convert a full URL to root-relative format by removing the origin.\n\nUses SvelteKit's page state for the current origin by default.",
 							"examples": [
-								"```ts\n// Assuming page.url.origin is 'https://fuz.dev'\nurl_to_root_relative('https://fuz.dev/docs/api')\n// => '/docs/api'\n```"
+								"```ts\n// Assuming page.url.origin is 'https://example.com'\nurl_to_root_relative('https://example.com/docs/api')\n// => '/docs/api'\n```"
 							],
 							"source_line": 76,
 							"type_signature": "(url: string, origin?: string): string",
@@ -27177,16 +27176,16 @@
 						{
 							"name": "mdz_components_context",
 							"kind": "variable",
-							"doc_comment": "Context for providing custom mdz components via a getter function.\nSet to a getter (e.g., `() => components`) so changes are reflected reactively.",
+							"doc_comment": "Context for providing custom mdz components.\nMust be set by the application using mdz.",
 							"source_line": 27,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => MdzComponents | undefined; get_maybe: () => (() => MdzComponents | undefined) | undefined; set: (value: () => MdzComponents | undefined) => () => MdzComponents | undefined; }"
+							"type_signature": "{ get: (error_message?: string | undefined) => MdzComponents; get_maybe: () => MdzComponents | undefined; set: (value: MdzComponents) => MdzComponents; }"
 						},
 						{
 							"name": "mdz_elements_context",
 							"kind": "variable",
-							"doc_comment": "Context for providing allowed HTML elements via a getter function.\nSet to a getter (e.g., `() => elements`) so changes are reflected reactively.\nBy default, no HTML elements are allowed.",
+							"doc_comment": "Context for providing allowed HTML elements.\nMust be set by the application using mdz.\nBy default, no HTML elements are allowed.",
 							"source_line": 34,
-							"type_signature": "{ get: (error_message?: string | undefined) => () => MdzElements | undefined; get_maybe: () => (() => MdzElements | undefined) | undefined; set: (value: () => MdzElements | undefined) => () => MdzElements | undefined; }"
+							"type_signature": "{ get: (error_message?: string | undefined) => MdzElements; get_maybe: () => MdzElements | undefined; set: (value: MdzElements) => MdzElements; }"
 						},
 						{
 							"name": "mdz_base_context",
@@ -27194,34 +27193,10 @@
 							"doc_comment": "Context for providing a base path getter for resolving relative links in mdz content.\nSet to a getter (e.g., `() => base`) so changes to the base prop are reflected\nwithout needing an effect. When the getter returns a path like `'/docs/mdz/'`,\nrelative paths like `./grammar` resolve to `/docs/mdz/grammar` before rendering.\nWhen not set, relative paths use raw hrefs (browser resolves them).",
 							"source_line": 43,
 							"type_signature": "{ get: (error_message?: string | undefined) => () => string | undefined; get_maybe: () => (() => string | undefined) | undefined; set: (value: () => string | undefined) => () => string | undefined; }"
-						},
-						{
-							"name": "set_mdz_context_with_fallback",
-							"kind": "function",
-							"doc_comment": "Set an mdz context to a getter that prefers the local `value_fn` and falls\nback to the ancestor's value when `value_fn()` returns `undefined`.\n\nPass `value_fn` as a getter (not a snapshot) so prop changes remain reactive.\nThe ancestor lookup happens once at component init — that's intentional, it\ncaptures the surrounding scope's context at mount time.",
-							"source_line": 58,
-							"type_signature": "<T>(context: MdzGetterContext<T>, value_fn: () => T | undefined): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "context",
-									"type": "MdzGetterContext<T>"
-								},
-								{
-									"name": "value_fn",
-									"type": "() => T | undefined"
-								}
-							]
 						}
 					],
 					"dependencies": ["context_helpers.ts"],
-					"dependents": [
-						"Mdz.svelte",
-						"MdzNodeView.svelte",
-						"MdzRoot.svelte",
-						"MdzStream.svelte",
-						"MdzStreamNodeView.svelte"
-					]
+					"dependents": ["Mdz.svelte", "MdzNodeView.svelte"]
 				},
 				{
 					"path": "mdz_helpers.ts",
@@ -27467,54 +27442,10 @@
 							"type_signature": "7"
 						},
 						{
-							"name": "H_LOWER",
-							"kind": "variable",
-							"source_line": 57,
-							"type_signature": "104"
-						},
-						{
-							"name": "H_UPPER",
-							"kind": "variable",
-							"source_line": 58,
-							"type_signature": "72"
-						},
-						{
-							"name": "ascii_to_lower",
-							"kind": "function",
-							"doc_comment": "Lowercase an ASCII letter code; passes other chars through.\nMirrors the `[A-Z] → [a-z]` shift without touching non-ASCII.",
-							"source_line": 64,
-							"type_signature": "(char_code: number): number",
-							"return_type": "number",
-							"parameters": [
-								{
-									"name": "char_code",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "match_url_prefix_case_insensitive",
-							"kind": "function",
-							"doc_comment": "Case-insensitive URL scheme prefix check. Returns the prefix length\n(8 for `https://`, 7 for `http://`) or 0 if neither matches at `pos`.\n\nURI schemes are case-insensitive per RFC 3986 §3.1, and mobile keyboards\nroutinely auto-capitalize the first letter of a sentence, producing\n`Https://` etc. The original case is preserved in the emitted reference —\nbrowsers normalize schemes themselves.",
-							"source_line": 76,
-							"type_signature": "(s: string, pos: number): 0 | 8 | 7",
-							"return_type": "0 | 8 | 7",
-							"parameters": [
-								{
-									"name": "s",
-									"type": "string"
-								},
-								{
-									"name": "pos",
-									"type": "number"
-								}
-							]
-						},
-						{
 							"name": "is_letter",
 							"kind": "function",
 							"doc_comment": "Check if character code is a letter (A-Z, a-z).",
-							"source_line": 109,
+							"source_line": 61,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27528,7 +27459,7 @@
 							"name": "is_tag_name_char",
 							"kind": "function",
 							"doc_comment": "Check if character code is valid for tag name (letter, number, hyphen, underscore).",
-							"source_line": 115,
+							"source_line": 67,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27541,8 +27472,8 @@
 						{
 							"name": "is_word_char",
 							"kind": "function",
-							"doc_comment": "Check if character is part of a word for word boundary detection.\nUsed to prevent intraword emphasis with `_` and `~` delimiters.\n\nOnly alphanumeric characters (A-Z, a-z, 0-9) are word characters.\nFormatting delimiters (`*`, `_`, `~`) fall outside all three ranges,\nso they're naturally excluded without explicit checks.\n\nThis prevents false positives with snake_case identifiers while allowing\nadjacent formatting like `**bold**_italic_`.",
-							"source_line": 132,
+							"doc_comment": "Check if character is part of a word for word boundary detection.\nUsed to prevent intraword emphasis with `_` and `~` delimiters.\n\nFormatting delimiters (`*`, `_`, `~`) are NOT word characters - they're transparent.\nOnly alphanumeric characters (A-Z, a-z, 0-9) are considered word characters.\n\nThis prevents false positives with snake_case identifiers while allowing\nadjacent formatting like `**bold**_italic_`.",
+							"source_line": 83,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27555,7 +27486,8 @@
 						{
 							"name": "is_valid_path_char",
 							"kind": "function",
-							"source_line": 182,
+							"doc_comment": "Check if character code is valid in URI path per RFC 3986.\nValidates against the `pchar` production plus path/query/fragment separators.\n\nValid characters:\n- unreserved: A-Z a-z 0-9 - . _ ~\n- sub-delims: ! $ & ' ( ) * + , ; =\n- path allowed: : @\n- separators: / ? #\n- percent-encoding: %",
+							"source_line": 103,
 							"type_signature": "(char_code: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27568,8 +27500,8 @@
 						{
 							"name": "trim_trailing_punctuation",
 							"kind": "function",
-							"doc_comment": "Trim trailing punctuation from URL/path per RFC 3986 and GFM rules.\n- Trims simple trailing: .,;:!?]\n- Balanced logic for () only (valid in path components)\n\nNote on `]`: the mdz parsers (`mdz.ts`, `mdz_stream_parser_url.ts`,\n`mdz_lexer.ts`) scan URL/path chars through `is_valid_path_char`, which\nalready rejects `]` — so it can never reach this function via parser flow.\nThe `]` branch here is for external callers using this helper directly on\narbitrary URL-ish input (it is part of the published `@fuzdev/fuz_ui`\nsurface, see `mdz_helpers.test.ts` for direct coverage).\n\nOptimized to avoid O(n²) string slicing - tracks end index and slices once at the end.",
-							"source_line": 199,
+							"doc_comment": "Trim trailing punctuation from URL/path per RFC 3986 and GFM rules.\n- Trims simple trailing: .,;:!?]\n- Balanced logic for () only (valid in path components)\n- Invalid chars like [] {} are already stopped by whitelist, but ] trimmed as fallback\n\nOptimized to avoid O(n²) string slicing - tracks end index and slices once at the end.",
+							"source_line": 137,
 							"type_signature": "(url: string): string",
 							"return_type": "string",
 							"parameters": [
@@ -27583,7 +27515,7 @@
 							"name": "is_at_absolute_path",
 							"kind": "function",
 							"doc_comment": "Check if position in text is the start of an absolute path (starts with `/`).\nMust be preceded by whitespace or be at the start of the string.\nRejects `//` (comments/protocol-relative) and slash followed by whitespace.",
-							"source_line": 257,
+							"source_line": 193,
 							"type_signature": "(text: string, index: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27601,7 +27533,7 @@
 							"name": "is_at_relative_path",
 							"kind": "function",
 							"doc_comment": "Check if position in text is the start of a relative path (`./` or `../`).\nMust be preceded by whitespace or be at the start of the string.\nRejects prefix followed by whitespace, slash, or end of string.",
-							"source_line": 273,
+							"source_line": 209,
 							"type_signature": "(text: string, index: number): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27619,7 +27551,7 @@
 							"name": "mdz_text_content",
 							"kind": "function",
 							"doc_comment": "Extracts plain text content from an array of mdz nodes, recursing into children.",
-							"source_line": 300,
+							"source_line": 236,
 							"type_signature": "(nodes: MdzNode[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -27633,7 +27565,7 @@
 							"name": "mdz_heading_id",
 							"kind": "function",
 							"doc_comment": "Generates a lowercase slug id for a heading from its child nodes.\nFollows standard markdown conventions (GitHub, etc.) where heading IDs are lowercased.\nFor case-preserving IDs (e.g. API declarations), see `docs_slugify` in `docs_helpers.svelte.ts`.",
-							"source_line": 310,
+							"source_line": 246,
 							"type_signature": "(nodes: MdzNode[]): string",
 							"return_type": "string",
 							"parameters": [
@@ -27644,23 +27576,9 @@
 							]
 						},
 						{
-							"name": "mdz_heading_id_from_text",
-							"kind": "function",
-							"doc_comment": "Generates a lowercase slug id for a heading from plain text content.\nUsed by the streaming parser which tracks text content directly\nrather than building `MdzNode[]` trees.",
-							"source_line": 318,
-							"type_signature": "(text: string): string",
-							"return_type": "string",
-							"parameters": [
-								{
-									"name": "text",
-									"type": "string"
-								}
-							]
-						},
-						{
 							"name": "mdz_is_url",
 							"kind": "function",
-							"source_line": 326,
+							"source_line": 255,
 							"type_signature": "(s: string): boolean",
 							"return_type": "boolean",
 							"parameters": [
@@ -27671,23 +27589,10 @@
 							]
 						},
 						{
-							"name": "mdz_is_safe_reference",
-							"kind": "function",
-							"source_line": 334,
-							"type_signature": "(reference: string): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "reference",
-									"type": "string"
-								}
-							]
-						},
-						{
 							"name": "resolve_relative_path",
 							"kind": "function",
 							"doc_comment": "Resolves a relative path (`./` or `../`) against a base path.\nThe base is treated as a directory regardless of trailing slash\n(`'/docs/mdz'` and `'/docs/mdz/'` behave identically).\nHandles embedded `.` and `..` segments within the reference\n(e.g., `'./a/../b'` → navigates up then down).\nClamps at root — excess `..` segments stop at `/` rather than escaping.",
-							"source_line": 349,
+							"source_line": 269,
 							"type_signature": "(reference: string, base: string): string",
 							"return_type": "string",
 							"return_description": "an absolute resolved path (e.g., `'/docs/mdz/grammar'`)",
@@ -27705,41 +27610,9 @@
 							]
 						},
 						{
-							"name": "mdz_push_merging_text",
-							"kind": "function",
-							"doc_comment": "Push a node into a children array, coalescing with the previous Text node.\nMutates `prev.content` and `prev.end` when both are Text, avoiding array growth\nand an extra allocation. Callers must own `dest` and not retain references to\nthe prior last element across the call.",
-							"source_line": 373,
-							"type_signature": "(dest: MdzNode[], node: MdzNode): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "dest",
-									"type": "MdzNode[]"
-								},
-								{
-									"name": "node",
-									"type": "MdzNode"
-								}
-							]
-						},
-						{
-							"name": "mdz_merge_adjacent_text",
-							"kind": "function",
-							"doc_comment": "Return a new array with adjacent Text nodes merged into single nodes.\nFast path: returns the original array when no merging is needed.",
-							"source_line": 389,
-							"type_signature": "(nodes: MdzNode[]): MdzNode[]",
-							"return_type": "MdzNode[]",
-							"parameters": [
-								{
-									"name": "nodes",
-									"type": "MdzNode[]"
-								}
-							]
-						},
-						{
 							"name": "extract_single_tag",
 							"kind": "function",
-							"source_line": 430,
+							"source_line": 287,
 							"type_signature": "(nodes: MdzNode[]): MdzElementNode | MdzComponentNode | null",
 							"return_type": "MdzElementNode | MdzComponentNode | null",
 							"parameters": [
@@ -27753,17 +27626,8 @@
 					"module_comment": "Shared constants and pure helper functions for mdz parsers.\n\nUsed by both the single-pass parser (`mdz.ts`) and the two-phase\nlexer+parser (`mdz_lexer.ts` + `mdz_token_parser.ts`).",
 					"dependents": [
 						"MdzNodeView.svelte",
-						"MdzStreamNodeView.svelte",
 						"mdz.ts",
 						"mdz_lexer.ts",
-						"mdz_opcodes_to_nodes.ts",
-						"mdz_stream_parser.ts",
-						"mdz_stream_parser_block.ts",
-						"mdz_stream_parser_inline.ts",
-						"mdz_stream_parser_link.ts",
-						"mdz_stream_parser_state.ts",
-						"mdz_stream_parser_text.ts",
-						"mdz_stream_parser_url.ts",
 						"mdz_to_svelte.ts",
 						"mdz_token_parser.ts",
 						"tsdoc_mdz.ts"
@@ -28177,1735 +28041,6 @@
 					"dependents": ["mdz_token_parser.ts"]
 				},
 				{
-					"path": "mdz_opcodes_to_nodes.ts",
-					"declarations": [
-						{
-							"name": "mdz_opcodes_to_nodes",
-							"kind": "function",
-							"doc_comment": "Convert an array of mdz opcodes to the `MdzNode[]` tree.\nProduces output identical to `mdz_parse()`.",
-							"source_line": 59,
-							"type_signature": "(opcodes: MdzOpcode[]): MdzNode[]",
-							"return_type": "MdzNode[]",
-							"parameters": [
-								{
-									"name": "opcodes",
-									"type": "MdzOpcode[]"
-								}
-							]
-						}
-					],
-					"module_comment": "Converts a stream of mdz opcodes to the `MdzNode[]` tree representation.\n\nStack-based replay: `open` pushes a frame, `close` pops and builds the node,\n`text`/`void` create leaf nodes, `append_text` extends the last text node,\n`revert` undoes an optimistic open and re-parents children.\n\nThe output is identical to `mdz_parse()` from `mdz.ts`, enabling\nvalidation of the streaming parser against the existing fixture suite.",
-					"dependencies": ["mdz_helpers.ts"]
-				},
-				{
-					"path": "mdz_opcodes.ts",
-					"declarations": [
-						{
-							"name": "MdzNodeId",
-							"kind": "type",
-							"doc_comment": "Unique monotonic identifier for each node created by the parser.\nIDs are never reused within a parser instance.",
-							"source_line": 19,
-							"type_signature": "number"
-						},
-						{
-							"name": "MdzContainerNodeType",
-							"kind": "type",
-							"doc_comment": "Node types that can be opened as containers.",
-							"source_line": 22,
-							"type_signature": "MdzContainerNodeType"
-						},
-						{
-							"name": "MdzVoidNodeType",
-							"kind": "type",
-							"doc_comment": "Node types for self-contained leaf elements.",
-							"source_line": 35,
-							"type_signature": "\"Hr\""
-						},
-						{
-							"name": "MdzTextNodeType",
-							"kind": "type",
-							"doc_comment": "Discriminant for leaf text nodes.",
-							"source_line": 38,
-							"type_signature": "MdzTextNodeType"
-						},
-						{
-							"name": "MdzOpcodeOpen",
-							"kind": "type",
-							"doc_comment": "Open a container node. The renderer starts a new element/wrapper.\nChildren are subsequent opcodes until the matching `close`.",
-							"source_line": 44,
-							"type_signature": "MdzOpcodeOpen",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'open'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "MdzContainerNodeType"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset in the full input where the opening delimiter begins."
-								},
-								{
-									"name": "level",
-									"kind": "variable",
-									"type_signature": "1 | 2 | 3 | 4 | 5 | 6",
-									"doc_comment": "Heading level (1-6). Present when `node_type` is `'Heading'`."
-								},
-								{
-									"name": "name",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Tag name. Present when `node_type` is `'Element'` or `'Component'`."
-								},
-								{
-									"name": "lang",
-									"kind": "variable",
-									"type_signature": "string | null",
-									"doc_comment": "Language hint. Present when `node_type` is `'Codeblock'`."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeClose",
-							"kind": "type",
-							"doc_comment": "Close a previously opened container node.\nCarries deferred metadata that wasn't known at open time.",
-							"source_line": 62,
-							"type_signature": "MdzOpcodeClose",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'close'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset in the full input immediately after the closing delimiter."
-								},
-								{
-									"name": "reference",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Link URL/path, resolved when `](url)` completes."
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "'external' | 'internal'",
-									"doc_comment": "Link type, resolved alongside `reference`."
-								},
-								{
-									"name": "heading_id",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Heading slug, computed from full heading content."
-								},
-								{
-									"name": "discard",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "If true, consumer drops this node and its descendants from the tree.\nUsed for whitespace-only paragraphs that match nothing in `mdz_parse`'s\noutput — the streaming parser emits open/text speculatively, then\nretroactively drops the empty wrapper at close."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeText",
-							"kind": "type",
-							"doc_comment": "Create a leaf text or code node.\nThe parent is implicit — the innermost open container on the renderer's stack.",
-							"source_line": 86,
-							"type_signature": "MdzOpcodeText",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'text'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "text_type",
-									"kind": "variable",
-									"type_signature": "MdzTextNodeType"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset where this node begins (for Code, the opening backtick)."
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset immediately after this node ends (for Code, after the closing backtick)."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeAppendText",
-							"kind": "type",
-							"doc_comment": "Append content to an existing text node.\nStreaming optimization — avoids creating a new node per chunk\nduring plain text runs.",
-							"source_line": 102,
-							"type_signature": "MdzOpcodeAppendText",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'append_text'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"type_signature": "string"
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeTrimText",
-							"kind": "type",
-							"doc_comment": "Trim `count` characters from the end of an existing text node.\nIf trimming empties the node, the consumer removes it from its parent.\n\nUsed by paragraph/codeblock close to drop the trailing newline that\nseparates inline content from the block boundary. Emitted instead of\nretroactively mutating the prior `text`/`append_text` opcode, so the\nopcode stream is append-only.",
-							"source_line": 117,
-							"type_signature": "MdzOpcodeTrimText",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'trim_text'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "count",
-									"kind": "variable",
-									"type_signature": "number"
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeVoid",
-							"kind": "type",
-							"doc_comment": "Create a self-contained leaf node (e.g., horizontal rule).\nInserted as a child of the innermost open container, or at root level.",
-							"source_line": 127,
-							"type_signature": "MdzOpcodeVoid",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'void'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "MdzVoidNodeType"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset in the full input where this element begins."
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset immediately after this element ends."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeRevert",
-							"kind": "type",
-							"doc_comment": "Undo an optimistic open. Removes the container wrapper,\ninserts `replacement_text` as literal text at the container's position,\nand re-parents the container's children to the grandparent.\n\nWhen `wrap_node_type` and `wrap_id` are set, the replacement text and\nre-parented children are wrapped in a new container of the given type\ninstead of being placed directly at the grandparent level. The wrapper\nis pushed onto the consumer's stack (open for future content). This is\nused for block-level reverts (e.g., codeblock → paragraph) where the\ngrandparent is root and content needs a container.",
-							"source_line": 149,
-							"type_signature": "MdzOpcodeRevert",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'revert'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "replacement_text",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "The delimiter text to emit as literal content (e.g., `\"**\"`, `\"[\"`, `\"<Tag>\"`)."
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset of the original opening delimiter in the full input."
-								},
-								{
-									"name": "wrap_node_type",
-									"kind": "variable",
-									"type_signature": "MdzContainerNodeType",
-									"doc_comment": "Wrap replacement text and re-parented children in a new container of this type."
-								},
-								{
-									"name": "wrap_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID for the wrapper node. Required when `wrap_node_type` is set."
-								}
-							]
-						},
-						{
-							"name": "MdzOpcodeWrap",
-							"kind": "type",
-							"doc_comment": "Retroactively wrap an existing text node in a container.\nUsed for text-first auto-links: URL/path text streams as plain text,\nthen gets wrapped in a Link when the URL boundary is found.\n\nWhen `trim_end` is set, trailing characters (punctuation) are trimmed\nfrom the target text node and placed in a new sibling Text node after\nthe Link wrapper, identified by `trim_id`.",
-							"source_line": 171,
-							"type_signature": "MdzOpcodeWrap",
-							"properties": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "'wrap'"
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID for the new Link container node."
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "'Link'",
-									"doc_comment": "Container type to wrap in (always `'Link'` for now)."
-								},
-								{
-									"name": "target_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID of the existing text node to wrap."
-								},
-								{
-									"name": "reference",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "Resolved URL or path reference."
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "'external' | 'internal'",
-									"doc_comment": "Whether the link is external (URL) or internal (path)."
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset where the URL/path begins."
-								},
-								{
-									"name": "end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Byte offset immediately after the URL/path (before any trimmed punctuation)."
-								},
-								{
-									"name": "trim_end",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Number of trailing chars to trim from target and place after the link."
-								},
-								{
-									"name": "trim_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId",
-									"doc_comment": "ID for the trimmed-text sibling node. Required when `trim_end` > 0."
-								}
-							]
-						},
-						{
-							"name": "MdzNodeType",
-							"kind": "type",
-							"doc_comment": "All node types that can appear in the mdz tree.",
-							"source_line": 194,
-							"type_signature": "MdzNodeType"
-						},
-						{
-							"name": "MdzOpcode",
-							"kind": "type",
-							"doc_comment": "Discriminated union of all mdz opcodes.",
-							"source_line": 197,
-							"type_signature": "MdzOpcode"
-						}
-					],
-					"module_comment": "Opcode types for the mdz streaming parser.\n\nOpcodes are serializable rendering instructions emitted by `MdzStreamParser`.\nThey tell a renderer what to do next — open a container, append text, close it,\nor revert an optimistic assumption. Target-agnostic: works for HTML, Svelte, PDF, etc.\n\nThe parser makes optimistic assumptions about ambiguous syntax (e.g., `**` is probably bold)\nand emits `revert` opcodes to correct when wrong. This enables true streaming rendering\nwithout ever re-parsing."
-				},
-				{
-					"path": "mdz_stream_parser_block.ts",
-					"declarations": [
-						{
-							"name": "try_heading",
-							"kind": "function",
-							"doc_comment": "Try to parse a heading at column 0.\nReturns true if consumed, false if needs more input, null if definitely not a heading.",
-							"source_line": 37,
-							"type_signature": "(state: MdzStreamParserState): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "try_hr",
-							"kind": "function",
-							"doc_comment": "Try to parse a horizontal rule at column 0.\nReturns true if consumed, false if needs more input, null if definitely not an HR.\nWhen `forced` is true, treats buffer end as EOF (no more input coming).",
-							"source_line": 92,
-							"type_signature": "(state: MdzStreamParserState, forced?: boolean): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "forced",
-									"type": "boolean",
-									"default_value": "false"
-								}
-							]
-						},
-						{
-							"name": "try_codeblock_open",
-							"kind": "function",
-							"doc_comment": "Try to open a code block at column 0.\n\nOpens the codeblock optimistically when possible. When the current paragraph\nhas no prior content, opens immediately on `\\`\\`\\`lang\\n` without lookahead,\nenabling streaming. When the paragraph has content (text before the fence on\na prior line), falls back to lookahead via `find_closing_fence` to avoid\nsplitting the paragraph on revert.",
-							"source_line": 156,
-							"type_signature": "(state: MdzStreamParserState): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "find_closing_fence",
-							"kind": "function",
-							"doc_comment": "Scan buffer from `start` for a valid closing fence with `backtick_count` backticks.\nUsed as a fallback when the current paragraph has prior content (to avoid\nsplitting the paragraph on revert). Returns 'found' if a valid closing fence\nexists, 'not_found' if the buffer ends before we can determine, 'invalid' if\nwe can see the full remaining content and there's no valid closing fence.",
-							"source_line": 225,
-							"type_signature": "(state: MdzStreamParserState, start: number, backtick_count: number): \"found\" | \"not_found\" | \"invalid\"",
-							"return_type": "\"found\" | \"not_found\" | \"invalid\"",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "start",
-									"type": "number"
-								},
-								{
-									"name": "backtick_count",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "emit_codeblock_text",
-							"kind": "function",
-							"doc_comment": "Emit codeblock content as `text` (first chunk) or `append_text` (subsequent\nchunks), updating `cb.text_id` on first emit. `content_start` is the local\nbuffer position where the content slice began — only used to compute the\nglobal byte offset for the first `text` opcode.",
-							"source_line": 279,
-							"type_signature": "(state: MdzStreamParserState, cb: CodeblockState, content: string, content_start: number): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "cb",
-									"type": "CodeblockState"
-								},
-								{
-									"name": "content",
-									"type": "string"
-								},
-								{
-									"name": "content_start",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "process_codeblock_forced",
-							"kind": "function",
-							"doc_comment": "Drain the remaining buffer as codeblock content at EOF, looking for a closing\nfence whose terminator is EOF rather than `\\n`. Matches `mdz_parse`'s\n`#match_code_block`, which allows a fence at the end of the document.\n\nIf a fence is found, the codeblock closes normally. Otherwise the remaining\nbuffer becomes content and `close_codeblock_at_eof` (in state.ts) handles\nthe revert-and-wrap dance after process completes.",
-							"source_line": 311,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "process_codeblock",
-							"kind": "function",
-							"doc_comment": "Process bytes while in codeblock mode.\nReturns true if processing should continue, false if more input needed.",
-							"source_line": 363,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "match_codeblock_close",
-							"kind": "function",
-							"doc_comment": "Check if the buffer at current position has a codeblock closing fence.\nReturns the position after the fence (including trailing newline) on success,\n`-1` when definitely not a fence, or `-2` when more input is needed to decide.\n\nWhen `forced` is true, EOF after the fence counts as a valid terminator\n(matches `mdz_parse`'s handling of code blocks at end of input).",
-							"source_line": 443,
-							"type_signature": "(state: MdzStreamParserState, backtick_count: number, forced?: boolean): number",
-							"return_type": "number",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "backtick_count",
-									"type": "number"
-								},
-								{
-									"name": "forced",
-									"type": "boolean",
-									"default_value": "false"
-								}
-							]
-						},
-						{
-							"name": "revert_empty_codeblock",
-							"kind": "function",
-							"doc_comment": "Revert an empty codeblock (closing fence found but no content was emitted).\nWraps the opening fence delimiter in a new paragraph and accumulates the\nclosing fence text for normal paragraph processing.",
-							"source_line": 485,
-							"type_signature": "(state: MdzStreamParserState, cb: CodeblockState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "cb",
-									"type": "CodeblockState"
-								}
-							]
-						}
-					],
-					"module_comment": "Block-element handlers for the streaming mdz parser.\n\nEach `try_*` returns {@link TryResult} so the orchestrator in\n{@link ./mdz_stream_parser.ts} can fall through or wait for more input.",
-					"dependencies": ["mdz_helpers.ts", "mdz_stream_parser_state.ts"],
-					"dependents": ["mdz_stream_parser.ts"]
-				},
-				{
-					"path": "mdz_stream_parser_inline.ts",
-					"declarations": [
-						{
-							"name": "try_bold",
-							"kind": "function",
-							"source_line": 23,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "close_bold",
-							"kind": "function",
-							"doc_comment": "Close a `Bold` container at the given stack index. The caller in\n`process_inline` already located the open via `find_open`, so we trust the\nindex rather than re-walking the stack.",
-							"source_line": 49,
-							"type_signature": "(state: MdzStreamParserState, stack_idx: number): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "stack_idx",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "try_italic",
-							"kind": "function",
-							"source_line": 75,
-							"type_signature": "(state: MdzStreamParserState, forced?: boolean): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "forced",
-									"type": "boolean",
-									"default_value": "false"
-								}
-							]
-						},
-						{
-							"name": "try_strikethrough",
-							"kind": "function",
-							"source_line": 139,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "check_close_word_boundary",
-							"kind": "function",
-							"source_line": 178,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "close_single_delimiter",
-							"kind": "function",
-							"source_line": 187,
-							"type_signature": "(state: MdzStreamParserState, stack_idx: number): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "stack_idx",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "scan_closer_boundary",
-							"kind": "function",
-							"doc_comment": "Scan for the first potential closing delimiter and check its word boundary.\nReturns a tri-state:\n- `'confirmed'`: closer found in buffer with valid word boundary\n- `'rejected'`: closer found but with invalid word boundary (greedy first-match fails)\n- `'pending'`: no closer in buffer yet, or can't determine boundary\n\nOptimistic constructs (strikethrough) treat `'pending'` as proceed.\nNon-optimistic constructs (italic) treat `'pending'` as text.\n\nUses native `indexOf` instead of a manual char loop for faster scanning.",
-							"source_line": 222,
-							"type_signature": "(state: MdzStreamParserState, delimiter: string): \"confirmed\" | \"rejected\" | \"pending\"",
-							"return_type": "\"confirmed\" | \"rejected\" | \"pending\"",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "delimiter",
-									"type": "string"
-								}
-							]
-						},
-						{
-							"name": "try_code",
-							"kind": "function",
-							"source_line": 244,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "code_search_limit",
-							"kind": "function",
-							"doc_comment": "Compute search limit for inline code scanning.\nFinds the closest closing delimiter for any open formatting on the stack.\nThis prevents backtick scanning from crossing bold/italic/etc boundaries.",
-							"source_line": 335,
-							"type_signature": "(state: MdzStreamParserState, from: number): number",
-							"return_type": "number",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "from",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "has_inline_formatting_on_stack",
-							"kind": "function",
-							"doc_comment": "Check if any inline formatting container (Bold, Italic, Strikethrough, Link)\nis on the stack above the current block boundary.\nUsed to decide whether backtick can go optimistic — when formatting is open,\nthe code span might cross the formatting boundary, so we hold instead.",
-							"source_line": 357,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "process_code_content",
-							"kind": "function",
-							"doc_comment": "Process content inside an optimistic inline Code container.\nScans raw text (no inline formatting) until closing backtick or newline.\nBacktick closes (or reverts if empty). Newline reverts (code can't span lines).",
-							"source_line": 371,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						}
-					],
-					"module_comment": "Inline-formatting handlers (bold, italic, strikethrough, inline code)\nfor the streaming mdz parser.",
-					"dependencies": ["mdz_helpers.ts", "mdz_stream_parser_state.ts"],
-					"dependents": ["mdz_stream_parser.ts"]
-				},
-				{
-					"path": "mdz_stream_parser_link.ts",
-					"declarations": [
-						{
-							"name": "try_link_open",
-							"kind": "function",
-							"source_line": 41,
-							"type_signature": "(state: MdzStreamParserState): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "abort_link_to_text",
-							"kind": "function",
-							"doc_comment": "Revert an optimistic Link container to its literal `[` and consume the\n`]` at `bracket_pos` as text. Used whenever a `]` doesn't form a valid\n`[text](url)` — missing `(`, empty url, invalid url char, etc.",
-							"source_line": 61,
-							"type_signature": "(state: MdzStreamParserState, link_stack_idx: number, bracket_pos: number): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "link_stack_idx",
-									"type": "number"
-								},
-								{
-									"name": "bracket_pos",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "try_complete_link",
-							"kind": "function",
-							"doc_comment": "Try to complete a link after seeing `]`.\nReturns false if more input is needed (leaves pos at `]`).",
-							"source_line": 81,
-							"type_signature": "(state: MdzStreamParserState, link_stack_idx: number): boolean",
-							"return_type": "boolean",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "link_stack_idx",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "try_tag_open",
-							"kind": "function",
-							"source_line": 157,
-							"type_signature": "(state: MdzStreamParserState): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "try_close_tag",
-							"kind": "function",
-							"source_line": 229,
-							"type_signature": "(state: MdzStreamParserState): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						}
-					],
-					"module_comment": "Markdown link `[text](url)` handlers and HTML-style tag handlers\n(`<tag>`, `<Tag />`, `</tag>`) for the streaming mdz parser.",
-					"dependencies": ["mdz_helpers.ts", "mdz_stream_parser_state.ts"],
-					"dependents": ["mdz_stream_parser.ts"]
-				},
-				{
-					"path": "mdz_stream_parser_state.ts",
-					"declarations": [
-						{
-							"name": "TryResult",
-							"kind": "type",
-							"doc_comment": "Tri-state result for `try_*` parser handlers.\n- `'consumed'`: input matched and the parser advanced\n- `'need_more'`: input is potentially valid but more bytes are required to decide\n- `'not_match'`: input definitely doesn't match — caller falls through to the next handler",
-							"source_line": 20,
-							"type_signature": "TryResult"
-						},
-						{
-							"name": "StackEntry",
-							"kind": "type",
-							"source_line": 22,
-							"type_signature": "StackEntry",
-							"properties": [
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "node_type",
-									"kind": "variable",
-									"type_signature": "MdzContainerNodeType"
-								},
-								{
-									"name": "optimistic",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether this was opened speculatively (will be reverted if not closed)."
-								},
-								{
-									"name": "delimiter",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "The opening delimiter text, used as `replacement_text` on revert."
-								},
-								{
-									"name": "tag_name",
-									"kind": "variable",
-									"type_signature": "string | undefined",
-									"doc_comment": "Tag name for Element/Component entries, `undefined` for all others."
-								},
-								{
-									"name": "has_children",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether any child content has been emitted inside this container."
-								},
-								{
-									"name": "has_non_whitespace_content",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether any non-whitespace text or non-text child has been emitted\ninside this container. Only tracked for `Paragraph` entries to detect\nwhitespace-only paragraphs that should be dropped at close."
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Global byte offset of the opening delimiter."
-								}
-							]
-						},
-						{
-							"name": "CodeblockState",
-							"kind": "type",
-							"source_line": 43,
-							"type_signature": "CodeblockState",
-							"properties": [
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "backtick_count",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "text_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId | null"
-								},
-								{
-									"name": "delimiter",
-									"kind": "variable",
-									"type_signature": "string",
-									"doc_comment": "The full opening fence line (e.g. \"```ts\\n\"), used as `replacement_text` on revert."
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Global byte offset of the opening fence."
-								}
-							]
-						},
-						{
-							"name": "PendingUrl",
-							"kind": "type",
-							"doc_comment": "Pending auto-link URL/path state for text-first rendering.\nWhen set, URL chars flow as visible text. On terminator, a `wrap` opcode\nretroactively wraps the text node in a Link.\n\nFor URLs, `confirmed` starts false during speculative prefix matching\n(chars stream as text while we verify `https://` or `http://`).\nFor paths, `confirmed` starts true (prefix already validated by hold).",
-							"source_line": 62,
-							"type_signature": "PendingUrl",
-							"properties": [
-								{
-									"name": "url_text",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "start",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "'external' | 'internal'"
-								},
-								{
-									"name": "confirmed",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether the URL/path prefix has been fully confirmed."
-								},
-								{
-									"name": "viable_https",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Prefix match tracking — only used when `!confirmed`."
-								},
-								{
-									"name": "viable_http",
-									"kind": "variable",
-									"type_signature": "boolean"
-								}
-							]
-						},
-						{
-							"name": "MdzStreamParserState",
-							"kind": "type",
-							"doc_comment": "Mutable state for the streaming parser. One instance per `MdzStreamParser`.\nHandlers in sibling modules take this as their first parameter — the streaming\nparser uses free functions, not class methods, so state crosses module\nboundaries.",
-							"source_line": 79,
-							"type_signature": "MdzStreamParserState",
-							"properties": [
-								{
-									"name": "buffer",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "pos",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "opcodes",
-									"kind": "variable",
-									"type_signature": "Array<MdzOpcode>"
-								},
-								{
-									"name": "next_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "stack",
-									"kind": "variable",
-									"type_signature": "Array<StackEntry>"
-								},
-								{
-									"name": "column",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "prev_char",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "active_text_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId | null"
-								},
-								{
-									"name": "accumulated_text",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "accumulated_text_start",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "codeblock",
-									"kind": "variable",
-									"type_signature": "CodeblockState | null"
-								},
-								{
-									"name": "base_offset",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Global byte offset of the start of `buffer`."
-								},
-								{
-									"name": "in_heading",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether we're inside a heading (newline ends it)."
-								},
-								{
-									"name": "in_code",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether we're inside an optimistic inline Code container."
-								},
-								{
-									"name": "in_paragraph",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Cached flag: whether a Paragraph is open on the stack."
-								},
-								{
-									"name": "pending_url",
-									"kind": "variable",
-									"type_signature": "PendingUrl | null"
-								},
-								{
-									"name": "heading_text_parts",
-									"kind": "variable",
-									"type_signature": "Array<string>",
-									"doc_comment": "Stack of text segments for heading ID computation.\nEach open container inside a heading pushes a new segment.\nOn close: pop and append to parent (children's text is part of heading).\nOn revert: pop, prepend replacement_text, append to parent\n(document order: delimiter text comes before children's text)."
-								},
-								{
-									"name": "skip_leading_newlines",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "When true, skip leading newlines at the start of the next processing pass.\nSet after block element closes (codeblock, heading, HR) when trailing\nnewlines couldn't be absorbed within the same buffer — needed for\nchar-by-char streaming where post-block newlines arrive in later chunks."
-								},
-								{
-									"name": "paragraph_stack_idx",
-									"kind": "variable",
-									"type_signature": "number",
-									"doc_comment": "Stack index of the innermost open `Paragraph`, or `-1` when none.\nLets `mark_paragraph_non_whitespace` skip the stack walk that runs on\nevery non-whitespace emit. Updated only on Paragraph push/pop (block\nboundaries — only one of `Paragraph`/`Heading` can be on the stack\nat a time, so the cache is stable across inline pushes/pops)."
-								},
-								{
-									"name": "last_text_id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId | null",
-									"doc_comment": "Id of the most-recent `text`/`append_text` emission, used by\n`trim_trailing_newline` to target the right opcode after `take_opcodes()`\nhas drained the queue. `null` after a structural emit (open/close/revert)\nsealed the prior text run."
-								},
-								{
-									"name": "last_text_ended_with_newline",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether the most recent text emission's content ended in `'\\n'`."
-								},
-								{
-									"name": "last_text_was_singleton_newline",
-									"kind": "variable",
-									"type_signature": "boolean",
-									"doc_comment": "Whether the most recent text emission was a `text` opcode (not\n`append_text`) with content exactly `'\\n'` — trimming the trailing \\n\nwould leave the text node empty, so `active_text_id` must be cleared\nto keep subsequent content from merging into a deleted node."
-								}
-							]
-						},
-						{
-							"name": "create_state",
-							"kind": "function",
-							"source_line": 141,
-							"type_signature": "(): MdzStreamParserState",
-							"return_type": "MdzStreamParserState",
-							"parameters": []
-						},
-						{
-							"name": "alloc_id",
-							"kind": "function",
-							"source_line": 168,
-							"type_signature": "(state: MdzStreamParserState): number",
-							"return_type": "number",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "push_stack_entry",
-							"kind": "function",
-							"doc_comment": "Push a new container frame onto the stack. Fills the boilerplate fields\n(`has_children`, `has_non_whitespace_content`) so call sites only spell out\nwhat varies per container type. Keeping the object literal in one place\nalso gives V8 a single monomorphic creation site for `StackEntry`.",
-							"source_line": 197,
-							"type_signature": "(state: MdzStreamParserState, id: number, node_type: MdzContainerNodeType, start: number, optimistic?: boolean, delimiter?: string, tag_name?: string | undefined): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "id",
-									"type": "number"
-								},
-								{
-									"name": "node_type",
-									"type": "MdzContainerNodeType"
-								},
-								{
-									"name": "start",
-									"type": "number"
-								},
-								{
-									"name": "optimistic",
-									"type": "boolean",
-									"default_value": "false"
-								},
-								{
-									"name": "delimiter",
-									"type": "string",
-									"default_value": "''"
-								},
-								{
-									"name": "tag_name",
-									"type": "string | undefined",
-									"default_value": "undefined"
-								}
-							]
-						},
-						{
-							"name": "offset",
-							"kind": "function",
-							"doc_comment": "Global byte offset for a local buffer position.",
-							"source_line": 235,
-							"type_signature": "(state: MdzStreamParserState, pos?: number): number",
-							"return_type": "number",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "pos",
-									"type": "number",
-									"default_value": "state.pos"
-								}
-							]
-						},
-						{
-							"name": "emit",
-							"kind": "function",
-							"source_line": 238,
-							"type_signature": "(state: MdzStreamParserState, op: MdzOpcode): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "op",
-									"type": "MdzOpcode"
-								}
-							]
-						},
-						{
-							"name": "accumulate_text",
-							"kind": "function",
-							"doc_comment": "Accumulate text, tracking the start offset for the first character.",
-							"source_line": 305,
-							"type_signature": "(state: MdzStreamParserState, text: string, start_offset: number): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "text",
-									"type": "string"
-								},
-								{
-									"name": "start_offset",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "flush_text",
-							"kind": "function",
-							"doc_comment": "Flush accumulated text as a text or append_text opcode.",
-							"source_line": 319,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "ensure_paragraph",
-							"kind": "function",
-							"source_line": 344,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "find_open",
-							"kind": "function",
-							"doc_comment": "Find the innermost open container of a given type.\nReturns stack index, or -1 if not found.\nDoes not cross block boundaries (Paragraph, Heading).",
-							"source_line": 358,
-							"type_signature": "(state: MdzStreamParserState, type: MdzContainerNodeType): number",
-							"return_type": "number",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "type",
-									"type": "MdzContainerNodeType"
-								}
-							]
-						},
-						{
-							"name": "revert_above",
-							"kind": "function",
-							"doc_comment": "Revert all stack entries above the given index.",
-							"source_line": 371,
-							"type_signature": "(state: MdzStreamParserState, target_idx: number): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "target_idx",
-									"type": "number"
-								}
-							]
-						},
-						{
-							"name": "revert_all_optimistic",
-							"kind": "function",
-							"doc_comment": "Revert all optimistic inline containers in the current block context.",
-							"source_line": 392,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "trim_trailing_newline",
-							"kind": "function",
-							"doc_comment": "Trim a trailing newline from paragraph content.\nChecks unflushed accumulated text first; otherwise emits a `trim_text`\nopcode targeting the most recent text/append_text via the tracking fields\non `state` (which survive `take_opcodes()` drains). The opcode stream\nstays append-only — no retroactive opcode mutation.",
-							"source_line": 419,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "close_paragraph",
-							"kind": "function",
-							"source_line": 437,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "close_heading",
-							"kind": "function",
-							"source_line": 473,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "close_codeblock_at_eof",
-							"kind": "function",
-							"doc_comment": "Close an unclosed codeblock at EOF by reverting it to a paragraph wrapper.\n\nUnlike `revert_empty_codeblock` (which pushes the wrapper onto the stack\nbecause parsing continues), this is terminal — called only from `finish()`\nafter no further emits happen — so it skips the `push_stack_entry` /\n`in_paragraph` / `paragraph_stack_idx` bookkeeping. The wrapper exists only\nin the opcode stream; the parser state's stack stays untouched.",
-							"source_line": 504,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "handle_paragraph_break",
-							"kind": "function",
-							"source_line": 522,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						}
-					],
-					"module_comment": "Streaming parser state and low-level operations.\n\nFree functions take a `MdzStreamParserState` first parameter so handlers can\nlive in separate sibling modules — JS private (`#`) fields can't cross\nmodule boundaries.",
-					"dependencies": ["mdz_helpers.ts"],
-					"dependents": [
-						"mdz_stream_parser.ts",
-						"mdz_stream_parser_block.ts",
-						"mdz_stream_parser_inline.ts",
-						"mdz_stream_parser_link.ts",
-						"mdz_stream_parser_text.ts",
-						"mdz_stream_parser_url.ts"
-					]
-				},
-				{
-					"path": "mdz_stream_parser_text.ts",
-					"declarations": [
-						{
-							"name": "consume_text_run",
-							"kind": "function",
-							"doc_comment": "Consume a run of plain text characters. Scans ahead to the next\nstructurally interesting character and accumulates the whole run\nas a single slice, avoiding per-character string concatenation\nand dispatch overhead.",
-							"source_line": 39,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						}
-					],
-					"module_comment": "Plain-text run consumption for the streaming mdz parser.",
-					"dependencies": ["mdz_helpers.ts", "mdz_stream_parser_state.ts"],
-					"dependents": ["mdz_stream_parser.ts"]
-				},
-				{
-					"path": "mdz_stream_parser_url.ts",
-					"declarations": [
-						{
-							"name": "try_auto_url_forced",
-							"kind": "function",
-							"doc_comment": "Forced-mode URL detection: the full prefix must be in the buffer.\nUsed at EOF when speculative prefix matching isn't needed.\nScheme match is case-insensitive (RFC 3986).",
-							"source_line": 47,
-							"type_signature": "(state: MdzStreamParserState): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "try_auto_path_absolute",
-							"kind": "function",
-							"source_line": 61,
-							"type_signature": "(state: MdzStreamParserState, forced?: boolean): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "forced",
-									"type": "boolean",
-									"default_value": "false"
-								}
-							]
-						},
-						{
-							"name": "try_auto_path_relative",
-							"kind": "function",
-							"source_line": 84,
-							"type_signature": "(state: MdzStreamParserState, forced?: boolean): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "forced",
-									"type": "boolean",
-									"default_value": "false"
-								}
-							]
-						},
-						{
-							"name": "start_pending_url",
-							"kind": "function",
-							"doc_comment": "Start confirmed text-first mode for paths. Prefix already validated by hold.\nFlushes prior text, resets active_text_id, sets pending_url with confirmed=true.",
-							"source_line": 131,
-							"type_signature": "(state: MdzStreamParserState, link_type: \"external\" | \"internal\"): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "link_type",
-									"type": "\"external\" | \"internal\""
-								}
-							]
-						},
-						{
-							"name": "start_speculative_url",
-							"kind": "function",
-							"doc_comment": "Start speculative text-first mode for URL prefixes.\nChars stream as visible text while we verify `https://` or `http://`.\nCancels if prefix doesn't match (text stays as plain text).",
-							"source_line": 154,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "process_url_prefix",
-							"kind": "function",
-							"doc_comment": "Speculative URL prefix matching. Checks each char against viable prefixes,\nstreaming as text. Confirms on full match, cancels on mismatch.\n\nScheme letters (`h`, `t`, `p`, `s`) are matched case-insensitively (RFC 3986);\nthe `:` and `//` portion remains literal. Original casing is preserved in\nthe emitted reference.",
-							"source_line": 176,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "process_url_content",
-							"kind": "function",
-							"doc_comment": "Process URL/path chars in text-first mode. Scans path chars,\naccumulates as visible text. Terminates on space/newline/non-path-char\nand emits a `wrap` opcode.",
-							"source_line": 223,
-							"type_signature": "(state: MdzStreamParserState, forced: boolean): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "forced",
-									"type": "boolean"
-								}
-							]
-						},
-						{
-							"name": "complete_pending_url",
-							"kind": "function",
-							"doc_comment": "Complete a pending URL: compute reference with trimmed punctuation,\nemit a `wrap` opcode to retroactively wrap the text node in a Link.",
-							"source_line": 265,
-							"type_signature": "(state: MdzStreamParserState): void",
-							"return_type": "void",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								}
-							]
-						},
-						{
-							"name": "scan_auto_link_forced",
-							"kind": "function",
-							"doc_comment": "Forced-mode auto-link: scan the full URL/path inline (no streaming needed\nat EOF). Used when forced=true — the entire URL must be in the buffer.",
-							"source_line": 319,
-							"type_signature": "(state: MdzStreamParserState, link_type: \"external\" | \"internal\"): TryResult",
-							"return_type": "TryResult",
-							"parameters": [
-								{
-									"name": "state",
-									"type": "MdzStreamParserState"
-								},
-								{
-									"name": "link_type",
-									"type": "\"external\" | \"internal\""
-								}
-							]
-						}
-					],
-					"module_comment": "Auto-URL and auto-path handlers (text-first scanning) for the streaming\nmdz parser. Operates in two phases:\n\n 1. Speculative prefix matching: chars stream as visible text while we\n    verify a `https://` / `http://` prefix.\n 2. Confirmed mode: chars stream as text and on terminator a `wrap`\n    opcode retroactively wraps the text node in a Link.\n\nPaths (`/...`, `./...`, `../...`) skip phase 1 — their prefix is validated\nby hold (require enough lookahead).",
-					"dependencies": ["mdz_helpers.ts", "mdz_stream_parser_state.ts"],
-					"dependents": ["mdz_stream_parser.ts"]
-				},
-				{
-					"path": "mdz_stream_parser.ts",
-					"declarations": [
-						{
-							"name": "MdzStreamParser",
-							"kind": "class",
-							"doc_comment": "Streaming opcode parser for mdz content.\nFeed chunks via `feed()`, retrieve opcodes via `take_opcodes()`, call `finish()` at end.\n\nThe opcode sequence is not deterministic across chunk boundaries — the same input\nfed in different chunk sizes may produce different `text`/`append_text` splits and\ndifferent optimistic/revert sequences. The final tree (via `mdz_opcodes_to_nodes`)\nmatches the one-shot result for all input except one case: italic (`_..._`) where\nthe opening and closing delimiters straddle a chunk boundary. Italic is\nnon-optimistic — it requires a confirmed closer in the buffer — so when the\ncloser arrives only in a later chunk, the opening `_` has already been emitted\nas text and italic cannot apply retroactively. See `try_italic` in\n`mdz_stream_parser_inline.ts`.",
-							"source_line": 115,
-							"members": [
-								{
-									"name": "feed",
-									"kind": "function",
-									"doc_comment": "Feed a chunk of text to the parser.\nOpcodes are accumulated and retrieved via `take_opcodes()`.",
-									"type_signature": "(chunk: string): void",
-									"return_type": "void",
-									"parameters": [
-										{
-											"name": "chunk",
-											"type": "string"
-										}
-									]
-								},
-								{
-									"name": "finish",
-									"kind": "function",
-									"doc_comment": "Signal end of input. Resolves all pending state: closes open blocks,\nreverts unclosed optimistic opens, trims trailing newlines.\n\nTrailing-newline trimming is handled in one place: `trim_trailing_newline()`\ncalled at the top of `close_paragraph()` and `close_codeblock_at_eof()`,\nbefore either function reverts its inner stack. The trim sees the\njust-flushed text node's `last_text_id` (or a still-accumulated `\\n`) and\nemits a `trim_text` opcode. Revert opcodes only fire after.\n\nOptimistic-container revert is handled by `close_paragraph` and\n`close_heading` (each pops its own inner stack), so no separate\n`revert_all_optimistic` is needed — optimistic containers can only exist\ninside an open Paragraph or Heading (parser invariant).",
-									"type_signature": "(): void",
-									"return_type": "void",
-									"parameters": []
-								},
-								{
-									"name": "take_opcodes",
-									"kind": "function",
-									"doc_comment": "Drain and return all accumulated opcodes.\nDestructive — empties the internal queue. The returned array is owned by the caller.",
-									"type_signature": "(): MdzOpcode[]",
-									"return_type": "MdzOpcode[]",
-									"parameters": []
-								}
-							]
-						}
-					],
-					"module_comment": "Streaming opcode parser for mdz.\n\nFed chunks of text (e.g., from LLM output), emits opcodes as rendering\ninstructions. Makes optimistic assumptions about ambiguous syntax and\nemits `revert` opcodes to correct when wrong. Never re-parses.\n\nThe design was independently arrived at but shares goals with\n{@link https://bsky.app/profile/pngwn.at/post/3mi527zntb22n @pngwn.at}'s\nPenguin-Flavoured Markdown (PFM): restrict the syntax so streaming is tractable,\nrender optimistically and correct when wrong, emit serializable opcodes\nto avoid re-parsing, and keep the opcodes target-agnostic so any renderer\ncan consume them. mdz diverges in one respect: the Svelte consumer\n(`MdzStreamState`) does build a reactive tree from opcodes — the platform\ndictates this — but mutations are fine-grained via `$state`, not diffed.\n\nThe parser is split across sibling modules: this file holds the public\n`MdzStreamParser` class and the `process_loop` / `process_inline`\norchestrators. Per-category handlers (block / inline / link / url / text)\nlive in `mdz_stream_parser_*.ts` as free functions taking the shared\n`MdzStreamParserState` as first argument.\n\nUsage:\n```ts\nconst parser = new MdzStreamParser();\nparser.feed('hello **bold');\nconst ops1 = parser.take_opcodes(); // open Paragraph, text \"hello \", open Bold, text \"bold\"\nparser.feed('** world');\nconst ops2 = parser.take_opcodes(); // close Bold, text \" world\"\nparser.finish();\nconst ops3 = parser.take_opcodes(); // close Paragraph\n```",
-					"dependencies": [
-						"mdz_helpers.ts",
-						"mdz_stream_parser_block.ts",
-						"mdz_stream_parser_inline.ts",
-						"mdz_stream_parser_link.ts",
-						"mdz_stream_parser_state.ts",
-						"mdz_stream_parser_text.ts",
-						"mdz_stream_parser_url.ts"
-					]
-				},
-				{
-					"path": "mdz_stream_state.svelte.ts",
-					"declarations": [
-						{
-							"name": "MdzStreamNode",
-							"kind": "class",
-							"doc_comment": "A reactive node in the stream renderer tree.\nFields are `$state` so Svelte re-renders only what changes.",
-							"source_line": 19,
-							"members": [
-								{
-									"name": "id",
-									"kind": "variable",
-									"type_signature": "MdzNodeId"
-								},
-								{
-									"name": "type",
-									"kind": "variable",
-									"type_signature": "MdzNodeType"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "children",
-									"kind": "variable",
-									"type_signature": "Array<MdzStreamNode>"
-								},
-								{
-									"name": "level",
-									"kind": "variable",
-									"type_signature": "number"
-								},
-								{
-									"name": "reference",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "link_type",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "name",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "lang",
-									"kind": "variable",
-									"type_signature": "string | null"
-								},
-								{
-									"name": "heading_id",
-									"kind": "variable",
-									"type_signature": "string"
-								},
-								{
-									"name": "constructor",
-									"kind": "constructor",
-									"type_signature": "(id: number, type: MdzNodeType): MdzStreamNode",
-									"parameters": [
-										{
-											"name": "id",
-											"type": "number"
-										},
-										{
-											"name": "type",
-											"type": "MdzNodeType"
-										}
-									]
-								}
-							]
-						},
-						{
-							"name": "MdzStreamState",
-							"kind": "class",
-							"doc_comment": "Reactive state manager for streaming mdz content.\nApply opcodes to incrementally build and update the render tree.",
-							"source_line": 42,
-							"members": [
-								{
-									"name": "root",
-									"kind": "variable",
-									"type_signature": "Array<MdzStreamNode>"
-								},
-								{
-									"name": "apply",
-									"kind": "function",
-									"doc_comment": "Apply a single opcode.",
-									"type_signature": "(opcode: MdzOpcode): void",
-									"return_type": "void",
-									"parameters": [
-										{
-											"name": "opcode",
-											"type": "MdzOpcode"
-										}
-									]
-								},
-								{
-									"name": "apply_batch",
-									"kind": "function",
-									"doc_comment": "Apply a batch of opcodes.",
-									"type_signature": "(opcodes: MdzOpcode[]): void",
-									"return_type": "void",
-									"parameters": [
-										{
-											"name": "opcodes",
-											"type": "MdzOpcode[]"
-										}
-									]
-								}
-							]
-						}
-					],
-					"module_comment": "Reactive state for the mdz streaming renderer.\n\nMaintains a reactive tree of `MdzStreamNode` objects that Svelte 5 can\nefficiently update. Opcodes from `MdzStreamParser` are applied via\n`apply()` or `apply_batch()`, mutating the tree in place."
-				},
-				{
 					"path": "mdz_to_svelte.ts",
 					"declarations": [
 						{
@@ -29978,7 +28113,7 @@
 							"name": "mdz_parse_lexer",
 							"kind": "function",
 							"doc_comment": "Parses text to an array of `MdzNode` using a two-phase lexer+parser approach.",
-							"source_line": 44,
+							"source_line": 39,
 							"type_signature": "(text: string): MdzNode[]",
 							"return_type": "MdzNode[]",
 							"parameters": [
@@ -30032,7 +28167,7 @@
 							"name": "mdz_parse",
 							"kind": "function",
 							"doc_comment": "Parses text to an array of `MdzNode`.",
-							"source_line": 75,
+							"source_line": 74,
 							"type_signature": "(text: string): MdzNode[]",
 							"return_type": "MdzNode[]",
 							"parameters": [
@@ -30045,13 +28180,13 @@
 						{
 							"name": "MdzNode",
 							"kind": "type",
-							"source_line": 77,
+							"source_line": 76,
 							"type_signature": "MdzNode"
 						},
 						{
 							"name": "MdzBaseNode",
 							"kind": "type",
-							"source_line": 91,
+							"source_line": 90,
 							"type_signature": "MdzBaseNode",
 							"properties": [
 								{
@@ -30074,7 +28209,7 @@
 						{
 							"name": "MdzTextNode",
 							"kind": "type",
-							"source_line": 97,
+							"source_line": 96,
 							"type_signature": "MdzTextNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30093,7 +28228,7 @@
 						{
 							"name": "MdzCodeNode",
 							"kind": "type",
-							"source_line": 102,
+							"source_line": 101,
 							"type_signature": "MdzCodeNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30112,7 +28247,7 @@
 						{
 							"name": "MdzCodeblockNode",
 							"kind": "type",
-							"source_line": 107,
+							"source_line": 106,
 							"type_signature": "MdzCodeblockNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30136,7 +28271,7 @@
 						{
 							"name": "MdzBoldNode",
 							"kind": "type",
-							"source_line": 113,
+							"source_line": 112,
 							"type_signature": "MdzBoldNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30155,7 +28290,7 @@
 						{
 							"name": "MdzItalicNode",
 							"kind": "type",
-							"source_line": 118,
+							"source_line": 117,
 							"type_signature": "MdzItalicNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30174,7 +28309,7 @@
 						{
 							"name": "MdzStrikethroughNode",
 							"kind": "type",
-							"source_line": 123,
+							"source_line": 122,
 							"type_signature": "MdzStrikethroughNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30193,7 +28328,7 @@
 						{
 							"name": "MdzLinkNode",
 							"kind": "type",
-							"source_line": 128,
+							"source_line": 127,
 							"type_signature": "MdzLinkNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30222,7 +28357,7 @@
 						{
 							"name": "MdzParagraphNode",
 							"kind": "type",
-							"source_line": 135,
+							"source_line": 134,
 							"type_signature": "MdzParagraphNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30241,7 +28376,7 @@
 						{
 							"name": "MdzHrNode",
 							"kind": "type",
-							"source_line": 140,
+							"source_line": 139,
 							"type_signature": "MdzHrNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30255,7 +28390,7 @@
 						{
 							"name": "MdzHeadingNode",
 							"kind": "type",
-							"source_line": 144,
+							"source_line": 143,
 							"type_signature": "MdzHeadingNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30284,7 +28419,7 @@
 						{
 							"name": "MdzElementNode",
 							"kind": "type",
-							"source_line": 151,
+							"source_line": 150,
 							"type_signature": "MdzElementNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30308,7 +28443,7 @@
 						{
 							"name": "MdzComponentNode",
 							"kind": "type",
-							"source_line": 157,
+							"source_line": 156,
 							"type_signature": "MdzComponentNode",
 							"extends": ["MdzBaseNode"],
 							"properties": [
@@ -30333,7 +28468,7 @@
 							"name": "MdzParser",
 							"kind": "class",
 							"doc_comment": "Parser for mdz format.\nSingle-pass lexer/parser with text accumulation for efficiency.\nUsed by `mdz_parse`, which should be preferred for simple usage.",
-							"source_line": 168,
+							"source_line": 167,
 							"members": [
 								{
 									"name": "constructor",
@@ -30411,93 +28546,6 @@
 						}
 					],
 					"module_comment": "Wrapper for precompiled mdz content. Used by `svelte_preprocess_mdz`.\nNot intended for direct use."
-				},
-				{
-					"path": "MdzRoot.svelte",
-					"declarations": [
-						{
-							"name": "MdzRoot",
-							"kind": "component",
-							"props": [
-								{
-									"name": "base",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "components",
-									"type": "MdzComponents",
-									"optional": true
-								},
-								{
-									"name": "elements",
-									"type": "MdzElements",
-									"optional": true
-								},
-								{
-									"name": "children",
-									"type": "Snippet"
-								}
-							],
-							"source_line": 1
-						}
-					],
-					"dependencies": ["mdz_components.ts"]
-				},
-				{
-					"path": "MdzStream.svelte",
-					"declarations": [
-						{
-							"name": "MdzStream",
-							"kind": "component",
-							"props": [
-								{
-									"name": "state",
-									"type": "MdzStreamState"
-								},
-								{
-									"name": "inline",
-									"type": "boolean",
-									"optional": true
-								},
-								{
-									"name": "nowrap",
-									"type": "boolean",
-									"optional": true
-								},
-								{
-									"name": "base",
-									"type": "string",
-									"optional": true
-								}
-							],
-							"source_line": 1
-						}
-					],
-					"dependencies": ["MdzStreamNodeView.svelte", "mdz_components.ts"]
-				},
-				{
-					"path": "MdzStreamNodeView.svelte",
-					"declarations": [
-						{
-							"name": "MdzStreamNodeView",
-							"kind": "component",
-							"props": [
-								{
-									"name": "node",
-									"type": "MdzStreamNode"
-								}
-							],
-							"source_line": 1
-						}
-					],
-					"dependencies": [
-						"DocsLink.svelte",
-						"MdzStreamNodeView.svelte",
-						"mdz_components.ts",
-						"mdz_helpers.ts"
-					],
-					"dependents": ["MdzStream.svelte", "MdzStreamNodeView.svelte"]
 				},
 				{
 					"path": "module_contextmenu.ts",
@@ -32874,7 +30922,7 @@
 							"kind": "function",
 							"doc_comment": "Convert raw TSDoc `@see` content to mdz format for rendering.\n\nHandles TSDoc link syntax:\n- `{@link url|text}` → `[text](url)` (markdown link)\n- `{@link https://...}` → `https://...` (bare URL, auto-linked by mdz)\n- `{@link identifier}` → `` `identifier` `` (code formatting)\n- Bare URLs → returned as-is\n- Bare identifiers → wrapped in backticks\n- `identifier description text` → `` `identifier` description text `` (first token is the reference)",
 							"examples": [
-								"```ts\ntsdoc_see_to_mdz('{@link https://fuz.dev|API Docs}')\n// → '[API Docs](https://fuz.dev)'\n\ntsdoc_see_to_mdz('{@link SomeType}')\n// → '`SomeType`'\n\ntsdoc_see_to_mdz('https://fuz.dev')\n// → 'https://fuz.dev'\n\ntsdoc_see_to_mdz('library_gen.ts for Gro-specific integration')\n// → '`library_gen.ts` for Gro-specific integration'\n```"
+								"```ts\ntsdoc_see_to_mdz('{@link https://fuz.dev|API Docs}')\n// → '[API Docs](https://fuz.dev)'\n\ntsdoc_see_to_mdz('{@link SomeType}')\n// → '`SomeType`'\n\ntsdoc_see_to_mdz('https://example.com')\n// → 'https://example.com'\n\ntsdoc_see_to_mdz('library_gen.ts for Gro-specific integration')\n// → '`library_gen.ts` for Gro-specific integration'\n```"
 							],
 							"source_line": 45,
 							"type_signature": "(content: string): string",
@@ -66003,6 +64051,7 @@
 				"@sveltejs/kit": "^2.60.1",
 				"@sveltejs/vite-plugin-svelte": "^6.2.4",
 				"@types/estree": "^1.0.8",
+				"@types/node": "^24.12.4",
 				"@webref/css": "^8.2.0",
 				"eslint": "^9.39.1",
 				"eslint-plugin-svelte": "^3.13.1",
@@ -66794,6 +64843,7 @@
 				"@sveltejs/package": "^2.5.7",
 				"@sveltejs/vite-plugin-svelte": "^6.2.4",
 				"@types/estree": "^1.0.8",
+				"@types/node": "^24.12.4",
 				"@webref/css": "^8.2.0",
 				"date-fns": "^4.1.0",
 				"eslint": "^9.39.1",
@@ -67062,7 +65112,7 @@
 							"name": "fetch_mastodon_status_context",
 							"kind": "function",
 							"source_line": 72,
-							"type_signature": "(host: string, id: string, cache?: Map<string, { key: string; url: string; params: any; value: any; etag: string | null; last_modified: string | null; }> | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<...>) | undefined): Promise<...>",
+							"type_signature": "(host: string, id: string, cache?: Map<string, { key: string; url: string; params: any; value: any; etag: string | null; last_modified: string | null; }> | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: { ...; } | undefined): Promise<...>",
 							"return_type": "Promise<MastodonStatusContext | null>",
 							"parameters": [
 								{
@@ -67095,7 +65145,7 @@
 								},
 								{
 									"name": "fetch",
-									"type": "((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>) | undefined",
+									"type": "{ (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>; (input: string | Request | URL, init?: RequestInit | undefined): Promise<...>; } | undefined",
 									"optional": true
 								}
 							]
@@ -67104,7 +65154,7 @@
 							"name": "fetch_mastodon_status",
 							"kind": "function",
 							"source_line": 94,
-							"type_signature": "(host: string, id: string, cache?: Map<string, { key: string; url: string; params: any; value: any; etag: string | null; last_modified: string | null; }> | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<...>) | undefined): Promise<...>",
+							"type_signature": "(host: string, id: string, cache?: Map<string, { key: string; url: string; params: any; value: any; etag: string | null; last_modified: string | null; }> | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: { ...; } | undefined): Promise<...>",
 							"return_type": "Promise<MastodonStatus | null>",
 							"parameters": [
 								{
@@ -67137,7 +65187,7 @@
 								},
 								{
 									"name": "fetch",
-									"type": "((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>) | undefined",
+									"type": "{ (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>; (input: string | Request | URL, init?: RequestInit | undefined): Promise<...>; } | undefined",
 									"optional": true
 								}
 							]
@@ -67146,7 +65196,7 @@
 							"name": "fetch_mastodon_favourites",
 							"kind": "function",
 							"source_line": 116,
-							"type_signature": "(host: string, status_id: string, cache?: Map<string, { key: string; url: string; params: any; value: any; etag: string | null; last_modified: string | null; }> | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<...>) | undefined): Promise<...>",
+							"type_signature": "(host: string, status_id: string, cache?: Map<string, { key: string; url: string; params: any; value: any; etag: string | null; last_modified: string | null; }> | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: { ...; } | undefined): Promise<...>",
 							"return_type": "Promise<MastodonFavourite[] | null>",
 							"parameters": [
 								{
@@ -67179,7 +65229,7 @@
 								},
 								{
 									"name": "fetch",
-									"type": "((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>) | undefined",
+									"type": "{ (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>; (input: string | Request | URL, init?: RequestInit | undefined): Promise<...>; } | undefined",
 									"optional": true
 								}
 							]

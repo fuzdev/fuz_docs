@@ -86,9 +86,9 @@
 			"glyph": "🧶",
 			"homepage_url": "https://ui.fuz.dev/",
 			"published": true,
-			"module_count": 124,
-			"exported_module_count": 124,
-			"export_count": 471,
+			"module_count": 111,
+			"exported_module_count": 111,
+			"export_count": 385,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
