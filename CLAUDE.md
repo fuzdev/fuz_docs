@@ -142,6 +142,7 @@ skills/
 │   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
 │   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
+│   │   ├── rust-dependencies.md       # Approved external crate allowlist for Rust workspaces
 │   │   ├── rust-patterns.md           # Rust workspace, lint, error, CLI patterns (fuz, tsv, blake3)
 │   │   ├── rust-perf.md               # Rust perf: profiling, allocators, locks, arenas, SIMD, false sharing
 │   │   ├── svelte-patterns.md         # Svelte 5 runes, contexts, snippets, attachments

@@ -282,7 +282,7 @@ leak. Fix: use mimalloc's symbol-override mode or `LD_PRELOAD` it so C
 
 Workspace lints `forbid` `unsafe_code`. A specific crate can override to
 `"allow"` when justified — existing precedent is FFI/binding crates
-(`blake3_component`, N-API bindings; see ./rust-patterns.md §Lints).
+(`blake3_component`, `tsv_ffi`; see ./rust-patterns.md §Lints).
 
 Performance can also justify it, but conservatively:
 

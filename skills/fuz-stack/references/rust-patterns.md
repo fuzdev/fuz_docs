@@ -1,8 +1,9 @@
 # Rust Patterns for the Fuz Ecosystem
 
 **Applies to**: Rust workspaces across the ecosystem — CLIs and daemons
-(`fuz`, `fuzd`), WASM bindings (`blake3`), web servers (`zzz_server`).
-All use **Rust edition 2024**, resolver 2.
+(`fuz`, `fuzd`, `zap`), WASM bindings (`blake3`), and web servers with
+their spine crates (`zzz_server`, `fuz_forge_server`). All use **Rust
+edition 2024**, resolver 2.
 
 Each project's `CLAUDE.md` is authoritative for project-specific conventions.
 This covers shared patterns.
@@ -64,12 +65,19 @@ unwrap_used = "warn"
 - `missing_debug_implementations`: "warn" in `fuz` and `zzz`; "allow" in
   `tsv` (public types hold `Chars`, `RefCell<Interner>`, etc.); not set
   in `blake3`.
-- **Crate-level overrides**: FFI and binding crates (`fuz_pty`,
-  `blake3_component`, and any N-API/C-FFI/wit-bindgen layer) override
-  `unsafe_code = "allow"` because Cargo doesn't allow partial overrides —
-  they duplicate workspace lints. `blake3_component` also allows
-  `same_length_and_capacity` and `use_self` (false positives from
-  wit-bindgen generated code).
+- **Crate-level overrides**: a crate that needs `unsafe_code` (a C-FFI ABI
+  layer, a wit-bindgen component, a PTY/syscall wrapper — `tsv_ffi`,
+  `blake3_component`, `fuz_pty`)
+  can't *partially* override the workspace `forbid`. Cargo replaces the
+  whole `[lints]` table, so relaxing one lint means **re-declaring all the
+  others** in the crate's own `[lints]`. The trap: a crate that overrides
+  only `unsafe_code = "allow"` silently drops the restriction-lint floor
+  (`unwrap_used`, `panic`, `expect_used`) for itself. Re-paste the full
+  workspace block and change only what must change. A binding crate that
+  doesn't actually emit unsafe should instead keep `[lints] workspace =
+  true` and inherit `forbid` — many wit-bindgen/wasm-bindgen crates do.
+  `blake3_component` additionally allows `same_length_and_capacity` and
+  `use_self` (false positives from generated code).
 
 Each crate opts in with `[lints] workspace = true`.
 
@@ -169,8 +177,13 @@ impl SidecarError {
   pure constants.
 - `.exit_code()` returns `i32`; reserve 1 for generic failure, 2+ for
   category-specific (e.g., auth/token errors). Match arms over variants.
-- `.is_transient()` / `.is_recoverable()` answer "should the caller retry or
-  restart?". Pure inspection, no side effects.
+- `.is_transient()` / `.is_recoverable()` are instances of a broader family:
+  small `&self -> bool` (or `-> Option<_>`) **classifiers** the caller
+  branches on — `.is_recoverable()` (restart?), `.needs_daemon_start()`
+  (auto-start then retry?), `.is_tool_error()` (a tool-level failure vs
+  infrastructure?). Each answers one dispatch question by matching variants;
+  all are pure inspection, no side effects. Name them for the decision, not
+  the variant.
 - Use `#[source]` on `thiserror` variants to chain causes; the `Display` impl
   shows only the variant's own message, while the source chain surfaces via
   `e.source()` for structured logging. Real example from `fuz_client`:
@@ -331,6 +344,43 @@ let success: bool = ...;
 let kind: &str = "failure"; // typo-prone, no compiler help
 ```
 
+**At a deserialization boundary this is also validation.** A `String` field for a
+closed set (`method`, `policy`) accepts typos and bogus values. They then fail at a late
+runtime guard — or worse, silently do the wrong thing. A `#[serde(rename_all = "...")]`
+enum rejects them at parse with `unknown variant 'x', expected one of ...`:
+
+```rust
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FirewallPolicy { Allow, Deny, Reject } // `"denyy"` fails at parse, not at apply
+```
+
+Valid values deserialize identically, so **existing config files keep working
+unchanged** — the enum only starts rejecting inputs that were always bugs. (Code that
+compared the field against string literals does have to switch to matching.) Even a
+single-variant enum earns its keep: it rejects unknown values at parse, and the next
+variant forces every `match` to handle it.
+
+**Leniency is only for genuine extensibility.** Keep a `String` (or add a catch-all
+variant) *only* when the value is passed through verbatim to an external system whose
+set is genuinely open or evolving and you don't dispatch on it. For a set your own code
+defines, or a stable external contract, "parse anything" buys nothing and costs safety.
+
+### Make impossible states unrepresentable
+
+The umbrella principle behind enums-for-closed-sets: model so the type system rejects
+nonsense — don't lean on a runtime check or a comment.
+
+- **Mutually-exclusive → enum; co-present → struct.** If exactly one of several states
+  holds, an enum says so; if several can hold at once, a struct of `Option`s is right.
+- **A field that's only meaningful for some variants belongs inside that variant**, not
+  as a sibling `Option` the type permits when it's meaningless. A tar `strip_components`
+  belongs in the tar variant of an extract-mode enum — so the no-extract variant cannot
+  carry one — rather than a `strip_components: Option<u32>` beside the mode that gets
+  silently ignored for non-tar.
+- **Carry the payload on the variant**, so "this combination can't happen" is a compile
+  fact, not a convention the constructor has to remember.
+
 ### Zero-cost / low-cost abstractions
 
 Three patterns recur across the ecosystem:
@@ -341,11 +391,11 @@ Three patterns recur across the ecosystem:
 
 **Callback resolution over allocating accessors** in hot paths. For interned
 data or pooled resources, expose both an allocating accessor for one-off
-lookups and a callback form for tight loops:
+lookups and a callback form for tight loops. tsv's string interner does this:
 
 ```rust
-let owned: String = printer.resolve_symbol(sym);        // allocates
-printer.with_resolved_symbol(sym, |s| out.push_str(s)); // zero-alloc
+let owned: String = interner.resolve_symbol(sym);        // allocates
+interner.with_resolved_symbol(sym, |s| out.push_str(s)); // zero-alloc
 ```
 
 **`Cow`-shaped wrappers** when some returns are pure constants and others
@@ -454,6 +504,18 @@ testability win. `Arc<dyn>` also buys *type erasure* (one field on the
 storing struct, no generic plumbing) — that's a separate axis that
 sometimes justifies it on a hot path too.
 
+### Enum dispatch before trait objects
+
+Before reaching for *any* trait — `impl Trait` bound or `Arc<dyn Trait>` —
+ask whether the set of implementations is closed and known at compile time.
+If it is (a connection that is local, SSH, or a test mock; a backend that is
+one of three known kinds), an **enum with a method that matches on `self`**
+dispatches statically, needs no vtable, and keeps the variants exhaustively
+checked. A trait earns its place only when the impl set is genuinely open or
+crosses a crate boundary the lower crate can't name (see the capability-trait
+rung above). This is the §Idioms "enums for closed sets" rule applied to
+dispatch.
+
 ### Async traits — RPITIT, with one carve-out
 
 Prefer return-position `impl Future` in traits (stable Rust 1.75+):
@@ -505,6 +567,17 @@ shadows, no runtime branches in production. A release-time dep-graph
 audit (e.g. an `xtask check-release` step) gates that no production
 binary transitively depends on test crates.
 
+The concrete shape is **two binaries over one runtime entry point**. The
+production binary (`{proj}_server`) wires the real impls; a sibling
+`testing_{proj}_server` wires the fast/deterministic ones (e.g. a cheap
+password hasher in place of Argon2id) and is the target cross-process
+integration tests launch. Both call the same `run_app(opts)` — only the
+injected `*Options` differ, so the tested lifecycle is the real one. The
+`check-release` audit is what makes this safe: it proves the test hasher
+can't reach a shipped binary. Closures in the options struct
+(`ExtraActionSpecsFactory`, a `PreMigrationHook`) let the test binary add
+test-only actions or DB setup without the library taking a test dependency.
+
 ### Borrowed context, owned providers
 
 Per-request contexts borrow (`ActionContext<'a>` holding `&dyn Fn(&str,
@@ -536,7 +609,7 @@ project/
 │   ├── {proj}_*/       # Feature-specific crates
 │   ├── {proj}_cli/     # Production binary (or just {proj}/ — see below)
 │   ├── {proj}_debug/   # Dev binary (may use Deno sidecar)
-│   └── {proj}_wasm/    # Interface crates: WASM, FFI, N-API
+│   └── {proj}_wasm/    # Interface crates: WASM, C FFI
 ├── tests/              # Integration tests (where applicable; fuz uses unit tests)
 │   └── fixtures/       # Test fixtures (if applicable)
 └── docs/               # Architecture and reference documentation
@@ -553,7 +626,7 @@ commands.
   (`fuz_common`, `blake3_wasm_core`)
 - **Feature crates**: Domain logic with `lib.rs` public API
 - **Debug crate**: Dev tooling, may embed external runtimes (Deno sidecars)
-- **Interface crates**: Binding layers (CLI, C FFI, N-API, WASM)
+- **Interface crates**: Binding layers (CLI, C FFI, WASM)
 - **xtask crate**: Dev automation (`cargo xtask install`), used by fuz
 
 ## Build Configuration
@@ -655,81 +728,26 @@ Shared input modes: file path, `--content <string>`, `--stdin`.
 
 ## Dependencies
 
-Minimal dependency philosophy. Prefer workspace-level sharing. No new deps
-without explicit request.
+Minimal dependency philosophy: prefer the standard library, then the
+approved allowlist, before reaching for anything new. Share at the
+workspace level (`[workspace.dependencies]`) so member crates pin one
+version. New deps need explicit approval.
 
-### Shared
+**The approved crate list — crate by crate, with purpose — lives in
+./rust-dependencies.md.** This section keeps only the lock-hygiene rule,
+which is a correctness constraint rather than a catalog entry.
 
-| Crate                              | Purpose            | Used by                            |
-| ---------------------------------- | ------------------ | ---------------------------------- |
-| `serde`, `serde_json`              | Serialization      | fuz, zzz_server (blake3 bench crate only) |
-| `thiserror`                        | Error derivation   | fuz, zzz_server                    |
-| `tracing`, `tracing-subscriber`    | Structured logging | fuz, zzz_server                    |
+### Lock hygiene
 
-### Domain-specific
-
-**Async / networking** (fuz, zzz_server):
-
-| Crate         | Purpose                          |
-| ------------- | -------------------------------- |
-| `tokio`       | Async runtime                    |
-| `axum`        | HTTP server (built on hyper)     |
-| `reqwest`     | HTTP client (fuz_client, fuz_storage, zzz_server) |
-| `tokio-util`  | CancellationToken, TaskTracker   |
-| `parking_lot` | **Default** for `Mutex`/`RwLock` (sync, no poisoning) |
-
-Use `std::sync::*` only when you need poisoning semantics, and
-`tokio::sync::*` only when the critical section needs to `.await`.
+`parking_lot` is the workspace's lock for **sync-only** critical sections
+(no poisoning, smaller, faster). Reach for `tokio::sync::{Mutex, RwLock}`
+when the section must hold a guard across an `.await`, and `std::sync::*`
+only when you specifically need poisoning semantics. A single server often
+uses all three deliberately — pick per critical section, not per project.
 
 **Never hold a `parking_lot` or `std::sync` guard across `.await`** — it
 blocks the executor thread and risks deadlock. Drop the guard before the
 await, or switch to `tokio::sync::*`. See ./rust-perf.md §Async lock hygiene.
-
-**Database** (zzz_server):
-
-| Crate                | Purpose                        |
-| -------------------- | ------------------------------ |
-| `tokio-postgres`     | Async PostgreSQL client        |
-| `deadpool-postgres`  | Connection pooling             |
-
-**Auth / crypto**:
-
-| Crate           | Purpose                                                | Used by    |
-| --------------- | ------------------------------------------------------ | ---------- |
-| `blake3`        | Content-addressed artifacts, session-token hashing     | fuz, zzz   |
-| `ed25519-dalek` | Signing/verification                                   | fuz        |
-| `subtle`        | Constant-time comparison                               | fuz        |
-| `zeroize`       | Secure memory clearing                                 | fuz        |
-| `argon2`        | Password hashing (with `rand` feature)                 | zzz_server |
-| `hmac`, `sha2`  | HMAC-SHA256 for signed cookies / keyring               | zzz_server |
-| `base64`        | URL-safe base64 for tokens                             | zzz_server |
-
-**Filesystem / OS** (zzz_server):
-
-| Crate    | Purpose                                                      |
-| -------- | ------------------------------------------------------------ |
-| `notify` | File system watching (FSEvents on macOS, inotify on Linux)   |
-
-**WASM / JS bindings**:
-
-| Crate                 | Purpose                                            |
-| --------------------- | -------------------------------------------------- |
-| `wasm-bindgen`        | JS interop (wasm-pack)                             |
-| `serde-wasm-bindgen`  | Serde bridging at the JS boundary                  |
-| `wit-bindgen`         | Component model (blake3)                           |
-| `napi`, `napi-derive` | Node.js/Bun N-API bindings                         |
-
-See ./wasm-patterns.md for build targets, WIT design, and optimization
-profiles.
-
-**CLI / arg parsing** (opt-in per binary):
-
-| Crate       | Purpose                                  | Used by         |
-| ----------- | ---------------------------------------- | --------------- |
-| `argh`      | Derive arg parser, optimized for size    | fuz CLI, xtask  |
-| `pico-args` | Minimal argv parser, no help generation  | (fallback only) |
-
-Backend daemons use manual `std::env::args()` (no dep). See §CLI Patterns.
 
 ## Patterns
 
@@ -741,9 +759,11 @@ multiplex many concurrent requests. The shape:
 ```rust
 // Generic controller, configured per runtime
 pub struct SpawnConfig {
-    pub build_command: fn(script: &Path, config: Option<&Path>) -> Command,
+    pub runtime: &'static str,          // identifier, e.g. "deno" / "python"
     pub script: &'static str,           // embedded via include_str!
-    pub tools: &'static [&'static str], // tool names this runtime exposes
+    pub config: Option<&'static str>,   // optional config file content (e.g. deno.json)
+    pub tools: &'static [ToolDef],      // tools this runtime exposes ({name, description})
+    pub build_command: fn(script: &Path, config: Option<&Path>) -> Command,
 }
 
 // Per-request flow inside SidecarController:
@@ -787,13 +807,50 @@ When to skip it:
 - One-shot subprocess invocations — just use `tokio::process::Command`
 - Pure in-process work — use a regular `Arc<Mutex<...>>` pool
 
-### Security Patterns (fuz)
+### Security Patterns
 
-- **Constant-time token comparison** via `subtle::ConstantTimeEq`
-- **TOCTOU-safe file operations**: Open with `O_NOFOLLOW`, check permissions
-  on fd not path
-- **Secure file permissions**: `0o600` for files, `0o700` for directories
-- **Environment isolation**: Strip sensitive env vars before spawning sidecars
+- **Constant-time token comparison** via `subtle::ConstantTimeEq`.
+- **TOCTOU-safe file operations**: open with `O_NOFOLLOW`, check permissions
+  on the fd, not the path.
+- **Secure file permissions**: `0o600` for files, `0o700` for directories.
+- **Subprocess env allowlist, not inheritance**: spawn with an explicit
+  env map (`PATH`, and only the vars the child needs) rather than letting it
+  inherit the parent's environment. Cap the child's output and kill it on
+  overrun (`PayloadTooLarge`) so a runaway subprocess can't exhaust memory.
+  Stronger than stripping known-sensitive vars after the fact — the child
+  starts from nothing.
+- **Sandboxed config evaluation**: when config is executable (a TS builder
+  run under `deno`), evaluate it in a subprocess with fine-grained
+  permission grants — `--allow-read` scoped to the config dir, no
+  `--allow-net`/`--allow-env`/`--allow-write`. Pipe the wrapper over stdin
+  rather than writing a temp file. The sandbox is the trust boundary for
+  untrusted-but-local scripts.
+
+### Transactional state files
+
+State that several invocations mutate (a lock ledger, an intent file) needs
+serialization and atomicity, not just careful writing:
+
+- **Advisory file locking** via `nix::fcntl::Flock` serializes concurrent
+  writers to the same file across processes — acquire the lock before
+  read-modify-write.
+- **Atomic temp + rename**: write the new contents to a sibling tempfile,
+  then `rename` over the target. A reader never sees a half-written file,
+  and a crash mid-write leaves the old version intact.
+
+### Content-addressed storage with size-based routing
+
+For a store of immutable blobs keyed by content hash (`blake3`), route by
+size rather than picking one backend:
+
+- Small blobs (below an embed threshold, e.g. 1 MiB) live inline in the
+  database row — one round trip, transactional with their metadata.
+- Large blobs spill to disk at `<root>/<hash>/content` via the atomic
+  temp+rename above; the row stores a `file:<hash>` pointer.
+- **Verify on read** for the external path (re-hash, treat a mismatch as
+  unavailable); the inline path trusts the database as authoritative.
+- Idempotent writes: content-addressed filenames plus `INSERT … ON CONFLICT
+  (hash) DO NOTHING` make a re-store a no-op, not a duplicate.
 
 ### Type State (compile-time state machines)
 

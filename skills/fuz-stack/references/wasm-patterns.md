@@ -426,17 +426,26 @@ wasm-opt = false  # Disabled until wasm-opt supports Rust 2024's bulk memory
 
 ## Multiple Binding Crates (tsv pattern)
 
-| Crate      | Technology     | Target              | Error type           |
-| ---------- | -------------- | -------------------- | -------------------- |
-| `tsv_wasm` | wasm-bindgen   | Deno, browsers, Node | `Result<T, JsError>` |
-| `tsv_napi` | napi-rs        | Node.js, Bun         | `napi::Result<T>`    |
-| `tsv_ffi`  | C ABI          | Deno FFI, Python     | JSON error objects    |
+A library targeting several runtimes keeps one binding crate per technology,
+all exporting identical signatures so consumers choose by runtime:
 
-All export identical signatures. Consumers choose by runtime.
+| Crate      | Technology   | Target               | Error type           |
+| ---------- | ------------ | -------------------- | -------------------- |
+| `tsv_wasm` | wasm-bindgen | Deno, browsers, Node | `Result<T, JsError>` |
+| `tsv_ffi`  | C ABI        | Deno FFI, Python     | JSON error objects   |
+| `tsv_napi` | napi-rs      | Node.js, Bun         | `napi::Result<T>`    |
+
+**Published surface is WASM and C-FFI only.** npm gets the wasm-bindgen
+package; the C-FFI `cdylib` serves Deno FFI and Python. `tsv_napi` stays
+in-tree as a reference for consumers who want a Node-native build, but the
+project does not publish it — the deliberate stance is a clean break from
+Node-native, WASM-to-npm.
 
 - `parse_internal_*()` benchmarks skip serialization via `black_box()`
-- N-API requires `unsafe_code = "allow"`
-- FFI uses raw pointers with `tsv_free(ptr, len)` for memory management
+- `tsv_ffi` (and the unpublished `tsv_napi`) require `unsafe_code = "allow"`
+  (raw pointers / ABI stubs); re-declare the rest of the workspace lints —
+  see ./rust-patterns.md §Lints
+- `tsv_ffi` uses raw pointers with `tsv_free(ptr, len)` for memory management
 
 ## Two Packages, Not Two Profiles
 
