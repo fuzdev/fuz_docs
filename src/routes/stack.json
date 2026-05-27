@@ -101,7 +101,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.67.1",
+			"version": "0.68.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -109,7 +109,7 @@
 			"published": true,
 			"module_count": 292,
 			"exported_module_count": 291,
-			"export_count": 1751,
+			"export_count": 1754,
 			"peer_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
