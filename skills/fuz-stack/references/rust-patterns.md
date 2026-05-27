@@ -733,8 +733,8 @@ approved allowlist, before reaching for anything new. Share at the
 workspace level (`[workspace.dependencies]`) so member crates pin one
 version. New deps need explicit approval.
 
-**The approved crate list — crate by crate, with purpose — lives in
-./rust-dependencies.md.** This section keeps only the lock-hygiene rule,
+The approved crate list — crate by crate, with purpose — lives in
+./rust-dependencies.md. This section keeps only the lock-hygiene rule,
 which is a correctness constraint rather than a catalog entry.
 
 ### Lock hygiene
