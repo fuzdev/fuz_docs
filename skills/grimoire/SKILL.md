@@ -267,11 +267,17 @@ system works" is lore; "why autonomy matters for software design" is writing.
 Writing docs may reference each other and link to lore entries, but lore entries
 should not depend on writing docs for implementation context.
 
-A grimoire may also include `scripts/` for experimental linting — checking index
-sync, dead links, stale files — `scries/` for persisting findings across runs,
-and `surveys/` for cross-repo observations (read-only stats and pattern audits
-across the repos a grimoire coordinates). These are still taking shape and
-aren't prescribed here.
+A grimoire can also observe itself. Because lore and indexes make claims about
+the repos a grimoire coordinates, those claims can be checked against reality —
+surfacing drift between what the grimoire says and what the repos actually
+contain. A single declarative registry of repo metadata — read by the checks
+rather than hardcoded into each one — gives this teeth: scope lives in one
+place, and because the registry is itself a claim, it too can be validated
+against the repos. Some observations are strict enough to block (a broken invariant),
+others just inform (a trend worth watching). How a grimoire structures this —
+`scripts/` for the checks, `scries/` for persisted findings, `surveys/` for
+read-only cross-repo observations — is still taking shape and isn't prescribed
+here; the durable idea is that a self-observing meta-repo can keep itself honest.
 
 ## Work Loop
 
