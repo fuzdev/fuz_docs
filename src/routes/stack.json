@@ -58,7 +58,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.61.0",
+			"version": "0.61.1",
 			"path": "fuz_css",
 			"description": "CSS framework and design system for semantic HTML",
 			"glyph": "🪴",
@@ -228,7 +228,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.70.0",
+			"version": "0.70.1",
 			"path": "fuz_gitops",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
