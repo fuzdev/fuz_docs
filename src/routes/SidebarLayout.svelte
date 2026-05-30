@@ -15,7 +15,7 @@
 <div class="sidebar_layout">
 	<header class="primary_nav">
 		<nav>
-			<Breadcrumb>📜</Breadcrumb>
+			<Breadcrumb />
 		</nav>
 	</header>
 	<aside class="sidebar unstyled">

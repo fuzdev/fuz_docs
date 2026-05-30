@@ -3,13 +3,13 @@
 	import {logo_fuz} from '@fuzdev/fuz_ui/logos.js';
 	import {resolve} from '$app/paths';
 	import DocsFooter from '@fuzdev/fuz_ui/DocsFooter.svelte';
+	import {site_context} from '@fuzdev/fuz_ui/site.svelte.js';
+	import {FUZ_DEV_URL, MAIN_HEADER_MARGIN_TOP} from '@fuzdev/fuz_ui/constants.js';
 	import ProjectLinks from '@fuzdev/fuz_ui/ProjectLinks.svelte';
-	import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
-	import {MAIN_HEADER_MARGIN_TOP} from '@fuzdev/fuz_ui/constants.js';
 	import Card from '@fuzdev/fuz_ui/Card.svelte';
 	import {DOCS_PATH} from '@fuzdev/fuz_ui/docs_helpers.svelte.js';
 
-	const library = library_context.get();
+	const site = site_context.get();
 </script>
 
 <main class="box width:100%">
@@ -56,7 +56,7 @@
 			<ProjectLinks />
 		</section>
 		<section>
-			<DocsFooter {library} root_url="https://www.fuz.dev/">
+			<DocsFooter repo_url={site.repo_url} root_url={FUZ_DEV_URL}>
 				{#snippet logo_header()}
 					<a href={resolve('/about')} class="mb_xs">about</a>
 				{/snippet}
