@@ -2,12 +2,12 @@
 	import TomeContent from '@fuzdev/fuz_ui/TomeContent.svelte';
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 
 	import {stack} from '$routes/stack.js';
 	import {SvelteMap} from 'svelte/reactivity';
 
-	const tome = get_tome_by_name('stack');
+	const tome = tome_get_by_slug('stack');
 
 	const packages = stack.libraries.filter((lib) => lib.kind === 'package');
 	const crates = stack.libraries.filter((lib) => lib.kind === 'crate');

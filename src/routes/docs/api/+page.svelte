@@ -2,13 +2,13 @@
 	import TomeContent from '@fuzdev/fuz_ui/TomeContent.svelte';
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 	import {resolve} from '$app/paths';
 
 	import {stack} from '$routes/stack.js';
 	import {libraries_map} from '$routes/libraries.js';
 
-	const tome = get_tome_by_name('api');
+	const tome = tome_get_by_slug('api');
 
 	// Only show packages that have library data (modules to document)
 	const packages_with_docs = stack.libraries.filter(

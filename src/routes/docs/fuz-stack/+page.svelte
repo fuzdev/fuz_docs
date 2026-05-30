@@ -5,11 +5,11 @@
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeLink from '@fuzdev/fuz_ui/TomeLink.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 
 	import {skills} from '$routes/skills/skills_manifest.js';
 
-	const tome = get_tome_by_name('fuz-stack');
+	const tome = tome_get_by_slug('fuz-stack');
 
 	const fuz_stack = skills.find((s) => s.name === 'fuz-stack')!;
 
@@ -182,11 +182,11 @@ export interface FsDeps {
 		<p>
 			<code>gro</code> is a temporary build tool, to be replaced by <code>fuz</code> (Rust daemon +
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			CLI). See <TomeLink name="stack" /> for the full dependency graph and package details.
+			CLI). See <TomeLink slug="stack" /> for the full dependency graph and package details.
 		</p>
 		<p>
 			For cross-repo coordination patterns — planning, TODOs, and multi-repo goals — see
-			<TomeLink name="grimoire" />.
+			<TomeLink slug="grimoire" />.
 		</p>
 	</TomeSection>
 </TomeContent>

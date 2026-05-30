@@ -6,11 +6,10 @@ JSDoc/TSDoc conventions for `@fuzdev` packages.
 
 Doc comments flow through a three-stage pipeline:
 
-1. **fuz_ui analysis** — `tsdoc_helpers.ts`, `ts_helpers.ts`,
-   `svelte_helpers.ts` extract JSDoc/TSDoc from the TypeScript AST into
-   per-declaration metadata
-2. **Gro gen tasks** — `library.gen.ts` emits `library.json` and
-   `library.ts` with module and declaration metadata
+1. **`svelte-docinfo` analysis** — extracts JSDoc/TSDoc from the TypeScript AST
+   into per-declaration metadata
+2. **`svelte-docinfo` Vite plugin** — exposes module and declaration metadata
+   through the `virtual:svelte-docinfo` module at build/dev time
 3. **`mdz`** renders docs with auto-linking — backticked identifiers become
    clickable API-doc links
 
@@ -205,8 +204,8 @@ Skip:
 When a symbol has non-obvious semantics — wire shape, invariants, ordering
 constraints, failure modes — the explanation belongs on the symbol's TSDoc
 (or its return type's), not in downstream CLAUDE.md or architecture docs.
-mdz renders TSDoc through the `library.json` pipeline, so the detail stays
-one hop from the code and moves when the code moves.
+mdz renders TSDoc through the `virtual:svelte-docinfo` pipeline, so the detail
+stays one hop from the code and moves when the code moves.
 
 CLAUDE.md entries should read as one-line pointers: symbol name plus a
 short hook. If you're writing three sentences about what a function returns

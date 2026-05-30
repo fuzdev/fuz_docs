@@ -4,10 +4,10 @@
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeLink from '@fuzdev/fuz_ui/TomeLink.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 	import GithubLink from '@fuzdev/fuz_ui/GithubLink.svelte';
 
-	const tome = get_tome_by_name('introduction');
+	const tome = tome_get_by_slug('introduction');
 </script>
 
 <TomeContent {tome}>
@@ -40,12 +40,12 @@
 			</thead>
 			<tbody>
 				<tr
-					><td><TomeLink name="fuz-stack" /></td><td
+					><td><TomeLink slug="fuz-stack" /></td><td
 						>Coding conventions and patterns for TypeScript and Svelte 5 projects</td
 					></tr
 				>
 				<tr
-					><td><TomeLink name="grimoire" /></td><td
+					><td><TomeLink slug="grimoire" /></td><td
 						>Cross-repo coordination with lore, quests, and skills</td
 					></tr
 				>
@@ -65,16 +65,16 @@
 			</thead>
 			<tbody>
 				<tr
-					><td><TomeLink name="stack" /></td><td
+					><td><TomeLink slug="stack" /></td><td
 						>Toolchain versions, all packages, dependency graph</td
 					></tr
 				>
 				<tr
-					><td><TomeLink name="api" /></td><td
+					><td><TomeLink slug="api" /></td><td
 						>Auto-generated TypeScript and Svelte API documentation</td
 					></tr
 				>
-				<tr><td><TomeLink name="library" /></td><td>Package metadata and exports</td></tr>
+				<tr><td><TomeLink slug="library" /></td><td>Package metadata and exports</td></tr>
 			</tbody>
 		</table>
 	</TomeSection>
@@ -84,7 +84,7 @@
 		<pre>fuz_util → gro + fuz_css → fuz_ui → fuz_* apps</pre>
 		<p>
 			<code>gro</code> is a temporary build tool, to be replaced by <code>fuz</code> (Rust daemon +
-			CLI). See <TomeLink name="stack" /> for details.
+			CLI). See <TomeLink slug="stack" /> for details.
 		</p>
 	</TomeSection>
 </TomeContent>

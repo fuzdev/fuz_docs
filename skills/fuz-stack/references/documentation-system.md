@@ -6,42 +6,26 @@ docs. For TSDoc/JSDoc authoring conventions, see ./tsdoc-comments.md.
 ## Pipeline Overview
 
 ```
-source files → library_generate() → library.json + library.ts → Library class → Tome pages + API routes
+source files → svelte-docinfo Vite plugin → virtual:svelte-docinfo (modules) → library_json_parse() → Library class → Tome pages + API routes
 ```
 
 | Stage             | What                          | Key details                                                                                            |
 | ----------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Analysis**      | fuz_ui analysis modules       | `ts_helpers.ts`, `svelte_helpers.ts`, `tsdoc_helpers.ts` extract metadata via TypeScript compiler API. `library_analysis.ts` dispatches to the appropriate analyzer based on file type |
-| **Generation**    | `library_gen()` in fuz_ui     | Wraps `library_generate()` with Gro `Gen` format. `library_pipeline.ts` handles collection, validation, dedup, re-export merging. Run via `gro gen` |
-| **Serialization** | `library.json` + `library.ts` | `library_output.ts` produces JSON and a typed TS wrapper. `LibraryJson` (from `@fuzdev/fuz_util/library_json.js`) combines `PackageJson` + `SourceJson` with computed properties |
+| **Analysis**      | `svelte-docinfo`              | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata |
+| **Generation**    | `svelte-docinfo/vite.js`      | Vite plugin runs the analysis at build/dev time and exposes the result through the `virtual:svelte-docinfo` virtual module (no committed `library.json`/`library.ts` files) |
+| **Serialization** | `library_json_parse()`        | `library_json_parse()` (from `@fuzdev/fuz_util/library_json.js`) combines `package.json` + the virtual module's `modules` into a `LibraryJson` (`PackageJson` + `SourceJson` with computed properties) at runtime |
 | **Runtime**       | `Library` class               | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps |
 | **Rendering**     | Tome pages + API routes       | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts` |
 
-### Analysis Modules
+### Analysis
 
-| Module                | Purpose                                                                |
-| --------------------- | ---------------------------------------------------------------------- |
-| `library_gen.ts`      | Gro-specific entry point — adapts Gro's `Disknode` to `SourceFileInfo` |
-| `library_generate.ts` | Build-tool agnostic entry point — orchestrates the full pipeline       |
-| `library_analysis.ts` | Unified dispatcher — routes to `ts_analyze_module` or `svelte_analyze_module` based on file type |
-| `library_pipeline.ts` | Pipeline helpers — collect source files, find duplicates, merge re-exports, sort modules |
-| `library_output.ts`   | Output generation — produces `library.json` and `library.ts` files     |
-| `ts_helpers.ts`       | TypeScript compiler API utilities — analyzes TS/JS module exports      |
-| `svelte_helpers.ts`   | Svelte component analysis — uses svelte2tsx + TypeScript compiler API  |
-| `tsdoc_helpers.ts`    | JSDoc/TSDoc parsing — extracts `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`, `@since`, `@nodocs`, `@mutates` |
-| `module_helpers.ts`   | Path utilities — file type detection, path extraction, `SourceFileInfo` type |
-| `analysis_context.ts` | Diagnostic collection — structured error/warning accumulation          |
-
-### Two-Phase Analysis
-
-1. **Phase 1**: Analyze each module, collecting declarations and re-export
-   information. Dispatches to `ts_analyze_module` (.ts/.js) or
-   `svelte_analyze_module` (.svelte) via `library_analyze_module`.
-2. **Phase 2**: Merge re-exports via `library_merge_re_exports` to build
-   `also_exported_from` arrays on canonical declarations.
-
-After both phases: sort modules, check for duplicate names in the flat
-namespace, and generate output files.
+The `svelte-docinfo` package owns module analysis end to end: it walks the
+project's source files, dispatches per file type (`.ts`/`.js` vs `.svelte`),
+parses TSDoc/JSDoc (`@param`, `@returns`, `@throws`, `@example`, `@deprecated`,
+`@see`, `@since`, `@nodocs`, `@mutates`), merges re-exports into
+`also_exported_from`, sorts modules, and checks for duplicate names in the flat
+namespace. It ships a CLI, a Vite plugin (`svelte-docinfo/vite.js`), and a
+build-tool-agnostic API. fuz_ui consumes its output but does not depend on it.
 
 ## Tome System
 
@@ -114,29 +98,51 @@ From `@fuzdev/fuz_ui/docs_helpers.svelte.js`:
 
 ## Setting Up Docs in a Project
 
-Six files, following the pattern in fuz_ui and fuz_css.
+Following the pattern in fuz_ui and fuz_css.
 
-### 1. Library generation
+### 1. Library analysis (Vite plugin)
 
-`src/routes/library.gen.ts`:
+Add the `svelte-docinfo` Vite plugin in `vite.config.ts` so the
+`virtual:svelte-docinfo` module is available at build/dev time:
 
 ```typescript
-import {library_gen} from '@fuzdev/fuz_ui/library_gen.js';
-import {library_throw_on_duplicates} from '@fuzdev/fuz_ui/library_generate.js';
+import {defineConfig} from 'vite';
+import {sveltekit} from '@sveltejs/kit/vite';
+import svelte_docinfo from 'svelte-docinfo/vite.js';
 
-export const gen = library_gen({on_duplicates: library_throw_on_duplicates});
+export default defineConfig({
+	plugins: [sveltekit(), svelte_docinfo()],
+});
 ```
 
-Run `gro gen` to produce `library.json` and `library.ts`.
+Register the ambient types in `src/app.d.ts`:
+
+```typescript
+/// <reference types="svelte-docinfo/virtual-svelte-docinfo.js" />
+```
+
+There are no committed `library.gen.ts`, `library.json`, or `library.ts` files
+— the module data is produced by the plugin at runtime.
 
 ### 2. Root layout
 
-In `src/routes/+layout.svelte`, create a `Library` instance and provide it:
+In `src/routes/+layout.svelte`, build a `LibraryJson` from `package.json` plus
+the virtual module's `modules`, then create a `Library` instance and provide it:
 
 ```svelte
 <script lang="ts">
 	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.js';
-	import {library_json} from '$routes/library.js';
+	import {library_json_parse} from '@fuzdev/fuz_util/library_json.js';
+	import type {PackageJson} from '@fuzdev/fuz_util/package_json.js';
+	import {modules} from 'virtual:svelte-docinfo';
+
+	import package_json from '../../package.json' with {type: 'json'};
+
+	const library_json = library_json_parse(package_json as PackageJson, {
+		name: package_json.name,
+		version: package_json.version,
+		modules,
+	});
 
 	library_context.set(new Library(library_json));
 </script>
@@ -345,18 +351,17 @@ import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 ```
 
 Layout structure is identical — only tomes, categories, and breadcrumb
-branding differ. `library_gen()` with fuz_ui's built-in analysis is the shared
-generation engine.
+branding differ. The `svelte-docinfo` Vite plugin and `virtual:svelte-docinfo`
+are the shared analysis engine across projects.
 
 ## See Also
 
 - **`svelte_preprocess_mdz`** — build-time compilation of static `<Mdz>` content
   to pre-rendered Svelte markup, eliminating runtime parsing for known-static
   doc strings
-- **`vite_plugin_library_well_known`** — publishes library metadata at
-  `.well-known/library.json` (RFC 8615) for external tool discovery
-- **`svelte-docinfo`** (`@fuzdev/svelte-docinfo`) — standalone package with the
-  same TypeScript/Svelte analysis as fuz_ui, with CLI, Vite plugin, and
-  build-tool agnostic API. fuz_ui does not depend on it.
+- **`svelte-docinfo`** — standalone package providing the TypeScript/Svelte
+  module analysis, with a CLI, a Vite plugin (`svelte-docinfo/vite.js` exposing
+  `virtual:svelte-docinfo`), and a build-tool-agnostic API. fuz_ui consumes its
+  output but does not depend on it.
 - ./tsdoc-comments.md — TSDoc/JSDoc authoring conventions, tag reference,
   mdz auto-linking, and documentation auditing

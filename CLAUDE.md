@@ -40,7 +40,7 @@ ground, not polished documentation. Some content is plain slop.
 gro check      # typecheck, test, lint, format check (run before committing)
 gro typecheck  # typecheck only (faster iteration)
 gro test       # run tests with vitest
-gro gen        # regenerate .gen files (library.json, fuz.css, skill docs)
+gro gen        # regenerate .gen files (skill docs)
 gro build      # build for production (static adapter)
 gro deploy     # build, commit, and push to deploy branch
 ```

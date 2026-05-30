@@ -52,8 +52,8 @@ churn.
 - **Replacing a tiny `<style>` block with a composite/token class** —
   good only when the block is **trivially redundant**: a 2–4 line block
   whose entire content is one of `display: flex; flex-direction: column;
-  gap: var(--space_md)` (→ `column gap_md`), `display: flex;
-  align-items: center; gap: …` (→ `row gap_*`), or a single hardcoded
+gap: var(--space_md)` (→ `column gap_md`), `display: flex;
+align-items: center; gap: …` (→ `row gap_*`), or a single hardcoded
   spacing/color that maps to a token. The original intent must survive
   the rewrite verbatim.
 - **Replacing a non-trivial `<style>` block with a long class string** —
@@ -72,29 +72,29 @@ token, and the diff actually shrinks the file.
 
 ### Elements That Come Pre-Styled
 
-| Element                         | What you get without classes                                        |
-| ------------------------------- | ------------------------------------------------------------------- |
-| `<h1>`–`<h6>`                   | Serif font, tiered sizes/weights, balanced text wrap, flow margins  |
-| `<a>`                           | Link color, focus outline, `.selected` state                        |
-| `<button>`                      | Fill, border, hover/active/focus/disabled/selected states           |
-| `<button class="color_a">`      | Hue variants `color_a` through `color_j` (intent/status colors)     |
+| Element                           | What you get without classes                                                             |
+| --------------------------------- | ---------------------------------------------------------------------------------------- |
+| `<h1>`–`<h6>`                     | Serif font, tiered sizes/weights, balanced text wrap, flow margins                       |
+| `<a>`                             | Link color, focus outline, `.selected` state                                             |
+| `<button>`                        | Fill, border, hover/active/focus/disabled/selected states                                |
+| `<button class="color_a">`        | Hue variants `color_a` through `color_j` (intent/status colors)                          |
 | `<input>`/`<textarea>`/`<select>` | Padding, border, focus outline, hover/disabled states; range, checkbox, radio all styled |
-| `<aside>`                       | Left border, tinted background, padding — callout/info box          |
-| `<blockquote>`                  | Thick left border, padding                                          |
-| `<code>`                        | Monospace, tinted background, padding; auto-inlines inside `<p>`    |
-| `<pre>`                         | Monospace, overflow handling                                        |
-| `<details>`/`<summary>`         | Pointer cursor, hover/active backgrounds                            |
-| `<table>`/`<th>`/`<td>`/`<tr>`  | Border-collapse, header alignment, cell padding, row hover          |
-| `<small>`                       | `font-size: var(--font_size_sm)` — for metadata, secondary text     |
-| `<kbd>`/`<samp>`                | Monospace font                                                      |
-| `<abbr title="...">`            | Dotted underline                                                    |
-| `<sub>`/`<sup>`                 | Baseline-aware sub/superscript                                      |
-| `<hr>`                          | Themed double border with vertical spacing                          |
-| `<img>`/`<svg>`/`<video>` etc.  | `display: block`, `max-width: 100%`, `height: auto`                 |
-| `<ul>`/`<ol>`/`<menu>`          | Indented padding (`.unstyled` removes bullets and indent)           |
-| `<label>`                       | Block layout, cursor pointer, `.selected`/`.disabled` states        |
-| `<label> .title`                | Bold, small bottom margin — field label inside a `<label>`          |
-| `<fieldset>`/`<legend>`         | Column flex layout, larger legend text                              |
+| `<aside>`                         | Left border, tinted background, padding — callout/info box                               |
+| `<blockquote>`                    | Thick left border, padding                                                               |
+| `<code>`                          | Monospace, tinted background, padding; auto-inlines inside `<p>`                         |
+| `<pre>`                           | Monospace, overflow handling                                                             |
+| `<details>`/`<summary>`           | Pointer cursor, hover/active backgrounds                                                 |
+| `<table>`/`<th>`/`<td>`/`<tr>`    | Border-collapse, header alignment, cell padding, row hover                               |
+| `<small>`                         | `font-size: var(--font_size_sm)` — for metadata, secondary text                          |
+| `<kbd>`/`<samp>`                  | Monospace font                                                                           |
+| `<abbr title="...">`              | Dotted underline                                                                         |
+| `<sub>`/`<sup>`                   | Baseline-aware sub/superscript                                                           |
+| `<hr>`                            | Themed double border with vertical spacing                                               |
+| `<img>`/`<svg>`/`<video>` etc.    | `display: block`, `max-width: 100%`, `height: auto`                                      |
+| `<ul>`/`<ol>`/`<menu>`            | Indented padding (`.unstyled` removes bullets and indent)                                |
+| `<label>`                         | Block layout, cursor pointer, `.selected`/`.disabled` states                             |
+| `<label> .title`                  | Bold, small bottom margin — field label inside a `<label>`                               |
+| `<fieldset>`/`<legend>`           | Column flex layout, larger legend text                                                   |
 
 Most block elements (`p`, `ul`, `ol`, `form`, `fieldset`, `table`, `details`,
 `textarea`, `select`, `label`, `pre`, `blockquote`, `aside`, `nav`, `legend`)
@@ -107,16 +107,16 @@ to 0; use `gap_*` instead.
 These are state/variant classes that fuz_css's semantic styles recognize —
 no utility classes needed:
 
-| Class                  | Where it applies                | Effect                                       |
-| ---------------------- | ------------------------------- | -------------------------------------------- |
-| `.selected`            | `button`, `a`, `label`, `.menuitem` | Filled selected appearance, non-interactive |
-| `.deselectable`        | `button.selected`               | Keeps interactivity on a selected button     |
-| `.disabled`            | `label`                         | Muted color, default cursor                  |
-| `.color_a`–`.color_j`  | `button`                        | Hue variants (a=blue, b=green, c=red, etc.)  |
-| `.inline`              | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for inline use |
-| `.unstyled`            | Most elements                   | Opts out of opinionated styling, keeps normalizations |
-| `.sm`                  | Any container                   | Tighter sizing (overrides `--font_size`, `--input_height`) |
-| `.md`                  | Any container                   | Resets to default sizing (reverses cascaded `.sm`) |
+| Class                 | Where it applies                                | Effect                                                     |
+| --------------------- | ----------------------------------------------- | ---------------------------------------------------------- |
+| `.selected`           | `button`, `a`, `label`, `.menuitem`             | Filled selected appearance, non-interactive                |
+| `.deselectable`       | `button.selected`                               | Keeps interactivity on a selected button                   |
+| `.disabled`           | `label`                                         | Muted color, default cursor                                |
+| `.color_a`–`.color_j` | `button`                                        | Hue variants (a=blue, b=green, c=red, etc.)                |
+| `.inline`             | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for inline use                        |
+| `.unstyled`           | Most elements                                   | Opts out of opinionated styling, keeps normalizations      |
+| `.sm`                 | Any container                                   | Tighter sizing (overrides `--font_size`, `--input_height`) |
+| `.md`                 | Any container                                   | Resets to default sizing (reverses cascaded `.sm`)         |
 
 Reach for these before custom CSS. A `<button class="color_c selected">` is
 already a "selected destructive action" — no hand-rolled state styling
@@ -130,45 +130,48 @@ Import CSS in `+layout.svelte` (`src/routes`). First import is universal;
 others as needed:
 
 ```typescript
-import '$routes/fuz.css'; // generated bundled CSS (all projects)
+import 'virtual:fuz.css'; // generated bundled CSS (all projects)
 import '@fuzdev/fuz_code/theme.css'; // package-specific themes (if any)
 import '$routes/style.css'; // project-specific global styles (app projects)
 ```
 
 `$routes` resolves to `src/routes` in SvelteKit. Library/tool repos
-(fuz_css, fuz_ui, `gro`, etc.) often import only `fuz.css`. Application repos
-(fuz_template, fuz_blog, zzz, etc.) typically use all three.
+(fuz_css, fuz_ui, `gro`, etc.) often import only `virtual:fuz.css`. Application
+repos (fuz_template, fuz_blog, zzz, etc.) typically use all three.
 
 ### CSS Generation
 
-Most consumer projects have an identical `src/routes/fuz.gen.css.ts`:
-
-```typescript
-import {gen_fuz_css} from '@fuzdev/fuz_css/gen_fuz_css.js';
-
-export const gen = gen_fuz_css();
-```
-
-No custom options needed — default bundled mode with tree-shaking handles
-everything. Run `gro gen` to regenerate after adding new classes.
-
-fuz_css itself uses `gen_fuz_css({additional_variables: 'all'})` to include all
-variables for its docs site demos.
-
-**Vite plugin alternative**: For non-SvelteKit projects (Svelte, React, Preact,
-Solid):
+The CSS is generated on demand by the `vite_plugin_fuz_css` Vite plugin and
+imported as the `virtual:fuz.css` module — no committed `fuz.css` file. This is
+the default across the ecosystem (SvelteKit and any other Vite project):
 
 ```typescript
 // vite.config.ts
 import {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.js';
 export default defineConfig({plugins: [vite_plugin_fuz_css()]});
 
-// main.ts
+// src/routes/+layout.svelte (or main.ts)
 import 'virtual:fuz.css';
 ```
 
-The Vite plugin supports HMR — source changes automatically trigger CSS
-regeneration.
+For TypeScript, declare the module's type once in `src/app.d.ts`:
+
+```typescript
+declare module 'virtual:fuz.css' {
+	const css: string;
+	export default css;
+}
+```
+
+The plugin supports HMR — source changes automatically regenerate the CSS.
+Default bundled mode with tree-shaking handles everything; no custom options
+needed. fuz_css itself passes `{additional_variables: 'all'}` to include all
+variables for its docs site demos.
+
+**Gro generator alternative**: a `src/routes/fuz.gen.css.ts` exporting
+`gen_fuz_css()` writes a committed `fuz.css` genfile (regenerated via
+`gro gen`). The Vite plugin is preferred; reach for this only when a project
+can't run the plugin.
 
 ### Project `style.css`
 
@@ -182,11 +185,11 @@ Keep minimal — most apps have near-empty `style.css` files.
 
 ## Three-Layer Architecture
 
-| Layer              | File        | Purpose                                                   |
-| ------------------ | ----------- | --------------------------------------------------------- |
-| 1. Semantic styles | `style.css` | Reset + element defaults (buttons, inputs, forms, tables) |
-| 2. Style variables | `theme.css` | 600+ design tokens as CSS custom properties               |
-| 3. Utility classes | `fuz.css`   | Optional, generated per-project with only used classes    |
+| Layer              | File              | Purpose                                                   |
+| ------------------ | ----------------- | --------------------------------------------------------- |
+| 1. Semantic styles | `style.css`       | Reset + element defaults (buttons, inputs, forms, tables) |
+| 2. Style variables | `theme.css`       | 600+ design tokens as CSS custom properties               |
+| 3. Utility classes | `virtual:fuz.css` | Optional, generated per-project with only used classes    |
 
 ### Semantic Styles
 
@@ -249,14 +252,14 @@ values.
 
 ### Color-Scheme Variants
 
-| Prefix      | Behavior                                          | Use case                      |
-| ----------- | ------------------------------------------------- | ----------------------------- |
-| `fg_*`      | Toward contrast (darkens light, lightens dark)     | Foreground overlays that stack |
-| `bg_*`      | Toward surface (lightens light, darkens dark)      | Background overlays that stack |
-| `darken_*`  | Always darkens (agnostic, alpha-based)             | Shadows, backdrops            |
-| `lighten_*` | Always lightens (agnostic, alpha-based)            | Highlights                    |
-| `text_*`    | Opaque, scheme-aware (low=subtle, high=bold)       | Text (alpha hurts performance) |
-| `shade_*`   | Opaque, tinted neutrals (00→100), scheme-aware     | Backgrounds, surfaces         |
+| Prefix      | Behavior                                       | Use case                       |
+| ----------- | ---------------------------------------------- | ------------------------------ |
+| `fg_*`      | Toward contrast (darkens light, lightens dark) | Foreground overlays that stack |
+| `bg_*`      | Toward surface (lightens light, darkens dark)  | Background overlays that stack |
+| `darken_*`  | Always darkens (agnostic, alpha-based)         | Shadows, backdrops             |
+| `lighten_*` | Always lightens (agnostic, alpha-based)        | Highlights                     |
+| `text_*`    | Opaque, scheme-aware (low=subtle, high=bold)   | Text (alpha hurts performance) |
+| `shade_*`   | Opaque, tinted neutrals (00→100), scheme-aware | Backgrounds, surfaces          |
 
 `fg_*`/`bg_*` overlays use alpha and stack when nested (alpha accumulates),
 unlike opaque `shade_*`. Both `shade_*` and `text_*` include `_min`/`_max`
@@ -325,27 +328,27 @@ Map directly to style variable values:
 
 ### Composite Classes
 
-| Class         | What it does                                                     |
-| ------------- | ---------------------------------------------------------------- |
-| `box`         | Flex column, items centered, justify centered                    |
-| `row`         | Flex row, align-items centered (overrides `box` direction)       |
-| `column`      | Flex column (like `box` but uncentered)                          |
-| `panel`       | Embedded container with tinted background and border-radius      |
-| `pane`        | Floating container with opaque background and shadow             |
-| `ellipsis`    | Block with text truncation (nowrap, overflow hidden, ellipsis)   |
+| Class         | What it does                                                       |
+| ------------- | ------------------------------------------------------------------ |
+| `box`         | Flex column, items centered, justify centered                      |
+| `row`         | Flex row, align-items centered (overrides `box` direction)         |
+| `column`      | Flex column (like `box` but uncentered)                            |
+| `panel`       | Embedded container with tinted background and border-radius        |
+| `pane`        | Floating container with opaque background and shadow               |
+| `ellipsis`    | Block with text truncation (nowrap, overflow hidden, ellipsis)     |
 | `clickable`   | Hover/focus/active scale transform effects (includes state styles) |
-| `selectable`  | Button-like fill with hover/active/selected states               |
-| `chip`        | Inline label with padding and `color_X` hue variants             |
-| `menuitem`    | Full-width list item with icon, title, and selected state        |
-| `icon_button` | Square button sized to `--input_height` (flex-shrink: 0)         |
-| `plain`       | Transparent border/fill/shadow when not hovered                  |
-| `pixelated`   | Crisp pixel-art image rendering                                  |
-| `circular`    | `border-radius: 50%`                                             |
-| `chevron`     | Small right-pointing arrow via CSS border trick                  |
+| `selectable`  | Button-like fill with hover/active/selected states                 |
+| `chip`        | Inline label with padding and `color_X` hue variants               |
+| `menuitem`    | Full-width list item with icon, title, and selected state          |
+| `icon_button` | Square button sized to `--input_height` (flex-shrink: 0)           |
+| `plain`       | Transparent border/fill/shadow when not hovered                    |
+| `pixelated`   | Crisp pixel-art image rendering                                    |
+| `circular`    | `border-radius: 50%`                                               |
+| `chevron`     | Small right-pointing arrow via CSS border trick                    |
 | `sm`          | Tighter sizing by overriding `--font_size`, `--input_height`, etc. |
-| `md`          | Default sizing reset (reverses `sm` in a cascade)                |
-| `mb_flow`     | Flow-aware `margin-bottom` (responds to `--flow_margin`)         |
-| `mt_flow`     | Flow-aware `margin-top` (responds to `--flow_margin`)            |
+| `md`          | Default sizing reset (reverses `sm` in a cascade)                  |
+| `mb_flow`     | Flow-aware `margin-bottom` (responds to `--flow_margin`)           |
+| `mt_flow`     | Flow-aware `margin-top` (responds to `--flow_margin`)              |
 
 **Gotcha**: Composites with rulesets (`clickable`, `selectable`, `menuitem`,
 `plain`, `chip`) already include state styles. `hover:clickable` is redundant.
@@ -548,11 +551,11 @@ pseudo-states. Shared traits:
 ```svelte
 <!-- GOOD: No <style> block needed — semantic HTML + utility classes -->
 <aside class="column gap_md">
-  <h2>{title}</h2>
-  <small class="text_50">{subtitle}</small>
-  <p>{description}</p>
-  <button class="color_a">Confirm</button>
-  <button class="color_c" class:selected={destructive}>Delete</button>
+	<h2>{title}</h2>
+	<small class="text_50">{subtitle}</small>
+	<p>{description}</p>
+	<button class="color_a">Confirm</button>
+	<button class="color_c" class:selected={destructive}>Delete</button>
 </aside>
 ```
 
@@ -570,23 +573,32 @@ These patterns indicate a component is doing too much styling work:
 ```svelte
 <!-- BAD: rebuilding what <small> already does -->
 <span class="subtitle">{text}</span>
-<style>
-  .subtitle { color: var(--text_70); font-size: var(--font_size_sm); }
-</style>
 
 <!-- GOOD: the element does the work -->
 <small class="text_70">{text}</small>
+
+<style>
+	.subtitle {
+		color: var(--text_70);
+		font-size: var(--font_size_sm);
+	}
+</style>
 ```
 
 ```svelte
 <!-- BAD: rebuilding what <aside> already does -->
 <div class="info-box">{message}</div>
-<style>
-  .info-box { border-left: 3px solid var(--border_color); padding: var(--space_md); background: var(--fg_10); }
-</style>
 
 <!-- GOOD: the element is the callout -->
 <aside>{message}</aside>
+
+<style>
+	.info-box {
+		border-left: 3px solid var(--border_color);
+		padding: var(--space_md);
+		background: var(--fg_10);
+	}
+</style>
 ```
 
 #### Writing flex layout in `<style>` instead of using composites
@@ -595,14 +607,22 @@ These patterns indicate a component is doing too much styling work:
 <!-- BAD: manual flex in <style> -->
 <div class="container">...</div>
 <div class="header">...</div>
-<style>
-  .container { display: flex; flex-direction: column; gap: var(--space_md); }
-  .header { display: flex; align-items: center; }
-</style>
 
 <!-- GOOD: utility classes -->
 <div class="column gap_md">...</div>
 <div class="row">...</div>
+
+<style>
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space_md);
+	}
+	.header {
+		display: flex;
+		align-items: center;
+	}
+</style>
 ```
 
 #### Custom button colors/states when class conventions work
@@ -610,13 +630,19 @@ These patterns indicate a component is doing too much styling work:
 ```svelte
 <!-- BAD: hand-rolled destructive button -->
 <button class="delete-btn" class:active={pending}>Delete</button>
-<style>
-  .delete-btn { color: var(--color_c_50); border-color: var(--color_c_50); }
-  .delete-btn.active { background: var(--color_c_40); }
-</style>
 
 <!-- GOOD: built-in conventions handle it -->
 <button class="color_c" class:selected={pending}>Delete</button>
+
+<style>
+	.delete-btn {
+		color: var(--color_c_50);
+		border-color: var(--color_c_50);
+	}
+	.delete-btn.active {
+		background: var(--color_c_40);
+	}
+</style>
 ```
 
 #### Repeating the same layout patterns across components
@@ -687,12 +713,18 @@ Two naming systems coexist:
 ```svelte
 <!-- snake_case = fuz_css utility, kebab-case = component-local -->
 <div class="column gap_md site-header">
-  <nav class="row gap_sm nav-links">...</nav>
+	<nav class="row gap_sm nav-links">...</nav>
 </div>
 
 <style>
-  .site-header { position: sticky; top: 0; z-index: 10; }
-  .nav-links { border-bottom: var(--border_width_1) var(--border_style) var(--border_color); }
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
+	}
+	.nav-links {
+		border-bottom: var(--border_width_1) var(--border_style) var(--border_color);
+	}
 </style>
 ```
 
@@ -701,18 +733,18 @@ classes were migrated from `snake_case` to `kebab-case`.
 
 ## When to Use Classes vs Styles
 
-| Need                                       | Utility class | Style tag      | Inline style |
-| ------------------------------------------ | ------------- | -------------- | ------------ |
-| Simple layout (`row`, `column`, `gap_*`)   | **Preferred** | Overkill       | No           |
-| Design tokens on own elements (1–4 props)  | **Yes**       | OK             | OK           |
-| Non-trivial own-element styling            | OK            | **Preferred**  | No           |
-| Style child components                     | **Yes**       | No             | Limited      |
-| Hover/focus/active state machines          | Limited       | **Preferred**  | No           |
-| `@media` responsive layout                 | Limited       | **Preferred**  | No           |
-| Animations, transitions, keyframes         | No            | **Preferred**  | No           |
-| Parent-child / sibling selectors           | No            | **Only option** | No          |
-| Theming API (CSS vars consumers override)  | No            | **Yes**        | Yes (override) |
-| Runtime dynamic values                     | No            | No             | **Yes**      |
+| Need                                      | Utility class | Style tag       | Inline style   |
+| ----------------------------------------- | ------------- | --------------- | -------------- |
+| Simple layout (`row`, `column`, `gap_*`)  | **Preferred** | Overkill        | No             |
+| Design tokens on own elements (1–4 props) | **Yes**       | OK              | OK             |
+| Non-trivial own-element styling           | OK            | **Preferred**   | No             |
+| Style child components                    | **Yes**       | No              | Limited        |
+| Hover/focus/active state machines         | Limited       | **Preferred**   | No             |
+| `@media` responsive layout                | Limited       | **Preferred**   | No             |
+| Animations, transitions, keyframes        | No            | **Preferred**   | No             |
+| Parent-child / sibling selectors          | No            | **Only option** | No             |
+| Theming API (CSS vars consumers override) | No            | **Yes**         | Yes (override) |
+| Runtime dynamic values                    | No            | No              | **Yes**        |
 
 ### Rules of Thumb
 
@@ -745,13 +777,13 @@ classes were migrated from `snake_case` to `kebab-case`.
 
 ### Common Spacing
 
-| Class     | CSS                                                            |
-| --------- | -------------------------------------------------------------- |
-| `p_md`    | `padding: var(--space_md)`                                     |
+| Class     | CSS                                                             |
+| --------- | --------------------------------------------------------------- |
+| `p_md`    | `padding: var(--space_md)`                                      |
 | `px_lg`   | `padding-left: var(--space_lg); padding-right: var(--space_lg)` |
-| `mt_xl`   | `margin-top: var(--space_xl)`                                  |
-| `mx_auto` | `margin-left: auto; margin-right: auto`                        |
-| `gap_sm`  | `gap: var(--space_sm)`                                         |
+| `mt_xl`   | `margin-top: var(--space_xl)`                                   |
+| `mx_auto` | `margin-left: auto; margin-right: auto`                         |
+| `gap_sm`  | `gap: var(--space_sm)`                                          |
 
 ### Common Layout
 

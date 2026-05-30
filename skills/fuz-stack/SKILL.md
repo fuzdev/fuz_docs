@@ -1,6 +1,6 @@
 ---
 name: fuz-stack
-description: Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript and Svelte 5 projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, library.gen.ts, API routes, docs layout).
+description: Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript and Svelte 5 projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, svelte-docinfo, API routes, docs layout).
 license: MIT
 metadata:
   author: ryanatkn
@@ -41,22 +41,22 @@ one part transfers to understanding the others.
 `@fuzdev/*` packages draw from these conventions. Each package's `CLAUDE.md`
 is authoritative for what it actually uses.
 
-| Package        | Description                                                              |
-| -------------- | ------------------------------------------------------------------------ |
-| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types        |
-| `gro`          | task runner and toolkit extending SvelteKit (temporary, until `fuz`)     |
-| `fuz_css`      | CSS framework and design system — apps look good by default              |
-| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs               |
-| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon           |
-| `fuz_docs`     | experimental AI-generated docs and skills for Fuz                        |
-| `fuz_template` | a static web app and Node library template                               |
+| Package        | Description                                                                        |
+| -------------- | ---------------------------------------------------------------------------------- |
+| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                  |
+| `gro`          | task runner and toolkit extending SvelteKit (temporary, until `fuz`)               |
+| `fuz_css`      | CSS framework and design system — apps look good by default                        |
+| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                         |
+| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                     |
+| `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                  |
+| `fuz_template` | a static web app and Node library template                                         |
 | `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more |
-| `fuz_blog`     | blog software from scratch with SvelteKit                                |
-| `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz           |
-| `fuz_gitops`   | a tool for managing many repos                                           |
-| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`) |
-| `zzz`          | software garage — produce software with AI assistance                    |
-| `zap`          | convergence — deploy and operate infrastructure                          |
+| `fuz_blog`     | blog software from scratch with SvelteKit                                          |
+| `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                     |
+| `fuz_gitops`   | a tool for managing many repos                                                     |
+| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`)      |
+| `zzz`          | software garage — produce software with AI assistance                              |
+| `zap`          | convergence — deploy and operate infrastructure                                    |
 
 `gro` is a temporary build tool, will be replaced by `fuz`.
 
@@ -142,13 +142,12 @@ File names often signal which: `git.ts` → `git_*`, `string.ts` → action-firs
 
 All exported identifiers must have **unique names across all modules**:
 
-- `library.gen.ts` uses `library_throw_on_duplicates` (from fuz_ui) to detect
-  conflicts during `gro gen` — every project opts in via
-  `library_gen({on_duplicates: library_throw_on_duplicates})`
+- The `svelte-docinfo` analysis detects duplicate export names across modules
+  in the flat namespace
 - Error shows all conflicts with module paths and kinds
 - Resolution: rename one following the domain_action pattern, or add
   `/** @nodocs */` to exclude from validation
-- **Which side to rename** — rename the side that is *not* the primary
+- **Which side to rename** — rename the side that is _not_ the primary
   public API. `@nodocs` is the wrong tool when external consumers depend
   on the hidden symbol (it vanishes from docs and tomes).
   - Component is primary (class is a state/helper): suffix the class with
@@ -293,9 +292,11 @@ pattern in filenames. Naming: `foo.gen.ts` → `foo.ts`, `foo.gen.css.ts` →
 `foo.css`. Return `string`, `{content, filename?, format?}`, `Array`, or
 `null`.
 
-Common gen patterns: `library.gen.ts` (library metadata for docs),
-`fuz.gen.css.ts` (bundled fuz_css for a project), `theme.gen.css.ts`
-(theme CSS from style variables).
+Common gen pattern: `theme.gen.css.ts` (theme CSS from style variables).
+Two outputs that used to be gen tasks no longer are: fuz_css utility classes
+come from the `vite_plugin_fuz_css` Vite plugin (the `virtual:fuz.css` module),
+and library/API metadata comes from the `svelte-docinfo` Vite plugin — so most
+projects run `gro gen` rarely, if ever.
 
 See ./references/code-generation.md for the full API, dependencies, and
 examples.
@@ -344,8 +345,9 @@ doc page).
 
 Projects use **tomes** (not "stories") with auto-generated API docs.
 
-**Pipeline**: source files → `library_generate()` → `library.json` +
-`library.ts` → `Library` class → Tome pages + API routes.
+**Pipeline**: source files → `svelte-docinfo` Vite plugin →
+`virtual:svelte-docinfo` → `library_json_parse()` → `Library` class → Tome
+pages + API routes.
 
 See ./references/documentation-system.md for setup, the full pipeline, Tome
 system, layout architecture, and component reference. TSDoc authoring
@@ -360,7 +362,7 @@ conventions: ./references/tsdoc-comments.md.
 | Code                   | "`code`"                                                                            |
 | Bold / italic / strike | `**bold**`, `_italic_`, `~strike~`                                                  |
 | Links                  | auto-detected URLs, `/internal/path`, `[text](url)`                                 |
-| Headings               | `# Heading` (column 0 required, gets lowercase slugified `id` for fragment links)    |
+| Headings               | `# Heading` (column 0 required, gets lowercase slugified `id` for fragment links)   |
 | Code blocks            | fenced with language hints                                                          |
 | Components             | `<Alert status="warning">content</Alert>` (registered via `mdz_components_context`) |
 
@@ -445,7 +447,7 @@ safe bare in web context — mdz doesn't auto-linkify those prefixes.
   `[../README.md](../README.md)` is redundant; bare `../README.md` already
   auto-links. Same for `[~/dev/foo](~/dev/foo)` — collapse to bare
   `~/dev/foo`. Reserve `[text](url)` for cases where the visible token
-  *isn't* the path — e.g. a package-name-as-link:
+  _isn't_ the path — e.g. a package-name-as-link:
   `[@fuzdev/fuz_app](../../fuz_app)`.
 
 **Formatter cautions** (Prettier in particular — these have bitten real docs):
@@ -511,6 +513,7 @@ inputs, headings, links, lists, code, tables, `<aside>`, `<blockquote>`,
 block at all.
 
 **Layered styling ladder**: Stop at the first rung that suffices —
+
 1. Semantic HTML (right element, no class needed)
 2. Built-in class conventions (`.selected`, `.color_a`–`.color_j` on buttons,
    `.inline`, `.unstyled`, `.sm`/`.md`)
@@ -526,11 +529,11 @@ Component-local classes use `kebab-case` (`site-header`, `nav-links`).
 
 ### 3-Layer Architecture
 
-| Layer              | File        | Purpose                                                   |
-| ------------------ | ----------- | --------------------------------------------------------- |
-| 1. Semantic styles | `style.css` | Reset + element defaults (buttons, inputs, forms, tables) |
-| 2. Style variables | `theme.css` | 600+ design tokens as CSS custom properties               |
-| 3. Utility classes | `fuz.css`   | Optional, generated per-project with only used classes    |
+| Layer              | File              | Purpose                                                   |
+| ------------------ | ----------------- | --------------------------------------------------------- |
+| 1. Semantic styles | `style.css`       | Reset + element defaults (buttons, inputs, forms, tables) |
+| 2. Style variables | `theme.css`       | 600+ design tokens as CSS custom properties               |
+| 3. Utility classes | `virtual:fuz.css` | Optional, generated per-project with only used classes    |
 
 ### CSS Classes
 
@@ -545,13 +548,13 @@ Component-local classes use `kebab-case` (`site-header`, `nav-links`).
 
 ### When to Use Classes vs Styles
 
-| Need                   | Utility class | Style tag | Inline style |
-| ---------------------- | ------------- | --------- | ------------ |
-| Style own elements     | **Preferred** | Complex cases | OK        |
-| Style child components | **Yes**       | No        | Limited      |
-| Hover/focus/responsive | **Yes**       | Yes       | No           |
-| Runtime dynamic values | No            | No        | **Yes**      |
-| IDE autocomplete       | No            | **Yes**   | Partial      |
+| Need                   | Utility class | Style tag     | Inline style |
+| ---------------------- | ------------- | ------------- | ------------ |
+| Style own elements     | **Preferred** | Complex cases | OK           |
+| Style child components | **Yes**       | No            | Limited      |
+| Hover/focus/responsive | **Yes**       | Yes           | No           |
+| Runtime dynamic values | No            | No            | **Yes**      |
+| IDE autocomplete       | No            | **Yes**       | Partial      |
 
 ## Dependency Injection
 

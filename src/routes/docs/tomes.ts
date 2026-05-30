@@ -8,7 +8,7 @@ import StackPage from '$routes/docs/stack/+page.svelte';
 
 export const tomes: Array<Tome> = [
 	{
-		name: 'introduction',
+		slug: 'introduction',
 		category: 'guide',
 		Component: IntroductionPage,
 		related_tomes: ['fuz-stack', 'grimoire', 'stack'],
@@ -16,7 +16,7 @@ export const tomes: Array<Tome> = [
 		related_declarations: [],
 	},
 	{
-		name: 'fuz-stack',
+		slug: 'fuz-stack',
 		category: 'skills',
 		Component: FuzStackPage,
 		related_tomes: ['stack'],
@@ -24,7 +24,7 @@ export const tomes: Array<Tome> = [
 		related_declarations: [],
 	},
 	{
-		name: 'grimoire',
+		slug: 'grimoire',
 		category: 'skills',
 		Component: GrimoirePage,
 		related_tomes: ['fuz-stack'],
@@ -32,7 +32,7 @@ export const tomes: Array<Tome> = [
 		related_declarations: [],
 	},
 	{
-		name: 'stack',
+		slug: 'stack',
 		category: 'reference',
 		Component: StackPage,
 		related_tomes: ['api', 'library'],
@@ -40,7 +40,7 @@ export const tomes: Array<Tome> = [
 		related_declarations: [],
 	},
 	{
-		name: 'api',
+		slug: 'api',
 		category: 'reference',
 		Component: ApiPage,
 		related_tomes: ['stack', 'library'],
@@ -48,7 +48,7 @@ export const tomes: Array<Tome> = [
 		related_declarations: [],
 	},
 	{
-		name: 'library',
+		slug: 'library',
 		category: 'reference',
 		Component: LibraryPage,
 		related_tomes: ['api', 'stack'],

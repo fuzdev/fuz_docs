@@ -5,9 +5,9 @@
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeLink from '@fuzdev/fuz_ui/TomeLink.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 
-	const tome = get_tome_by_name('grimoire');
+	const tome = tome_get_by_slug('grimoire');
 </script>
 
 <TomeContent {tome}>
@@ -165,7 +165,7 @@
 			For full conventions — lore structure, quest format, creating new artifacts, common pitfalls —
 			see the
 			<a href={resolve('/skills/grimoire' as any)}>grimoire skill</a>. For coding conventions across
-			the <code>@fuzdev</code> ecosystem, see <TomeLink name="fuz-stack" />.
+			the <code>@fuzdev</code> ecosystem, see <TomeLink slug="fuz-stack" />.
 		</p>
 	</TomeSection>
 </TomeContent>

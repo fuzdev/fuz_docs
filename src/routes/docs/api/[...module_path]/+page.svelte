@@ -2,14 +2,14 @@
 	import ApiIndex from '@fuzdev/fuz_ui/ApiIndex.svelte';
 	import ApiModule from '@fuzdev/fuz_ui/ApiModule.svelte';
 	import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 	import {resolve} from '$app/paths';
 
 	import {get_library} from '$routes/libraries.ts';
 
 	const {params} = $props();
 
-	const tome = get_tome_by_name('api');
+	const tome = tome_get_by_slug('api');
 
 	// Parse the path: first segment is repo_path, remainder is module_path.
 	// Computed at init — Docs.svelte re-keys on pathname so this recreates on navigation.
