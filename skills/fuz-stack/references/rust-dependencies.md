@@ -73,6 +73,7 @@ dependencies in this sense and never appear here.
 | ----- | ------- |
 | `blake3` | Content-addressed hashing, token hashing |
 | `argon2` | Password hashing |
+| `ed25519-dalek` | Ed25519 signing/verification (artifact + release signatures) |
 | `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring) |
 | `subtle` | Constant-time comparison |
 | `zeroize` | Secure memory clearing |
@@ -84,6 +85,7 @@ dependencies in this sense and never appear here.
 | Crate | Purpose |
 | ----- | ------- |
 | `nix` | POSIX syscalls (advisory `flock`, permissions) |
+| `libc` | Raw libc FFI for syscalls/types beyond `nix` (PTY, signals) |
 | `notify` | Filesystem watching (inotify / FSEvents) |
 | `tar` | tar archives |
 | `flate2` | gzip / deflate |

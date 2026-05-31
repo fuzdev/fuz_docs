@@ -107,7 +107,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.78.0",
+			"version": "0.78.1",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
