@@ -40,6 +40,7 @@ dependencies in this sense and never appear here.
 | `tempfile` | Temp files/dirs (`NamedTempFile`) |
 | `smallvec` | Stack-allocated small vectors |
 | `string-interner` | String interning |
+| `phf` | Compile-time perfect-hash maps/sets (keyword tables) |
 | `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling |
 
 ## Async runtime & networking
