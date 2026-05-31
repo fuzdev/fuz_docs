@@ -27732,7 +27732,7 @@
 						{
 							"name": "resolve",
 							"kind": "function",
-							"typeSignature": "<T extends RouteIdWithSearchOrHash | PathnameWithSearchOrHash>(...args: ResolveArgs<T>): \"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/library\" | \"/history\" | `${`/docs/api/${string}` & {}}` | ... 6 more ... | `/${string}${`/docs/api/${string}` & {}}`",
+							"typeSignature": "<T extends RouteIdWithSearchOrHash | PathnameWithSearchOrHash>(...args: ResolveArgs<T>): \"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/introduction\" | \"/docs/library\" | ... 9 more ... | `/${string}${`/docs/api/${string}` & {}}`",
 							"modifiers": [],
 							"sourceLine": 24,
 							"genericParams": [],
@@ -27750,12 +27750,12 @@
 								}
 							],
 							"overloads": [],
-							"returnType": "\"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/library\" | \"/history\" | `${`/docs/api/${string}` & {}}` | `/${string}/` | `/${string}/about` | `/${string}/docs` | `/${string}/docs/api` | `/${string}/docs/library` | `/${string}/history` | `/${string}${`/docs/api/${string}` & {}}`"
+							"returnType": "\"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/introduction\" | \"/docs/library\" | \"/history\" | `${`/docs/api/${string}` & {}}` | `/${string}/` | `/${string}/about` | `/${string}/docs` | `/${string}/docs/api` | `/${string}/docs/introduction` | `/${string}/docs/library` | `/${string}/history` | `/${string}${`/docs/api..."
 						},
 						{
 							"name": "resolveRoute",
 							"kind": "variable",
-							"typeSignature": "<T extends RouteIdWithSearchOrHash | PathnameWithSearchOrHash>(...args: ResolveArgs<T>) => \"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/library\" | \"/history\" | `${`/docs/api/${string}` & {}}` | ... 6 more ... | `/${string}${`/docs/api/${string}` & {}}`",
+							"typeSignature": "<T extends RouteIdWithSearchOrHash | PathnameWithSearchOrHash>(...args: ResolveArgs<T>) => \"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/introduction\" | \"/docs/library\" | ... 9 more ... | `/${string}${`/docs/api/${string}` & {}}`",
 							"modifiers": [],
 							"sourceLine": 26,
 							"genericParams": [],
@@ -27815,7 +27815,7 @@
 						{
 							"name": "page",
 							"kind": "variable",
-							"typeSignature": "Page<{ module_path?: string | undefined; }, \"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/api/[...module_path]\" | \"/docs/library\" | \"/history\" | null>",
+							"typeSignature": "Page<{ module_path?: string | undefined; }, \"/\" | \"/about\" | \"/docs\" | \"/docs/api\" | \"/docs/api/[...module_path]\" | \"/docs/introduction\" | \"/docs/library\" | \"/history\" | null>",
 							"modifiers": [],
 							"sourceLine": 20,
 							"genericParams": [],

@@ -1,8 +1,7 @@
 # Task Patterns
 
 Gro's task system for project automation in `@fuzdev/gro`. Tasks are TypeScript
-modules with a `.task.ts` suffix that export a `task` object with a `run`
-function.
+modules with a `.task.ts` suffix exporting a `task` object with a `run` function.
 
 ## Task Interface
 
@@ -20,11 +19,10 @@ interface Task<
 
 - `run` — entry point, receives `TaskContext`
 - `summary` — shown in `gro` task listing and `--help`
-- `Args` — optional Zod schema for CLI argument parsing and validation
-  (see ./zod-schemas.md)
+- `Args` — optional Zod schema for CLI arg parsing and validation (see ./zod-schemas.md)
 
 `TArgsSchema` and `TReturn` are rarely customized — tasks are either
-`Task` (default args) or `Task<Args>` (with a custom Zod-inferred `Args` type).
+`Task` (default args) or `Task<Args>` (custom Zod-inferred `Args` type).
 
 ### Basic task example
 
@@ -65,8 +63,8 @@ export const task: Task<Args> = {
 };
 ```
 
-Run with `gro greet --name Claude`. `gro greet --help` shows auto-generated
-help from the Zod schema.
+Run with `gro greet --name Claude`. `gro greet --help` shows help auto-generated
+from the Zod schema.
 
 ## TaskContext
 
@@ -98,7 +96,7 @@ interface TaskContext<TArgs = object> {
 type InvokeTask = (task_name: string, args?: Args, config?: GroConfig) => Promise<void>;
 ```
 
-Omitting `config` passes the current config. Respects the override system —
+Omitting `config` passes the current config. Respects the override system:
 `invoke_task('test')` runs the user's override if one exists.
 
 ```typescript
@@ -123,8 +121,7 @@ execution via `--no-*` flags).
 - Export both Zod schema and inferred type as `Args` at module level
 - Use `z.strictObject()` (not `z.object()`)
 - `.meta({description: '...'})` for CLI help text
-- `.default(...)` for defaults — required fields without defaults must be
-  passed via CLI
+- `.default(...)` for defaults — required fields without defaults must be passed via CLI
 - `/** @nodocs */` to exclude from docs generation
 
 ### Positional arguments
@@ -161,15 +158,14 @@ when a `no-*` dual exists, showing only the `no-*` entry.
 
 ### TaskError
 
-Known failure with clean message (no stack trace):
+Known failure with clean message (no stack trace). Use when the message is
+sufficient for the user to fix the problem:
 
 ```typescript
 import {TaskError} from '@fuzdev/gro';
 
 throw new TaskError('Missing required config file: gro.config.ts');
 ```
-
-Use when the message is sufficient for the user to fix the problem.
 
 ### SilentError
 
@@ -193,8 +189,8 @@ throw new SilentError();
 
 ## Task Discovery
 
-Task files use `.task.ts` (or `.task.js`) suffix. Gro searches `task_root_dirs`
-in order (default: `src/lib/` then `./` then `gro/dist/`):
+Task files use the `.task.ts` (or `.task.js`) suffix. Gro searches
+`task_root_dirs` in order (default: `src/lib/`, `./`, `gro/dist/`):
 
 ```
 src/lib/greet.task.ts      -> gro greet
@@ -211,7 +207,7 @@ Local tasks override Gro builtins with the same name:
 - `src/lib/test.task.ts` overrides Gro's builtin `test` task
 - Run the builtin explicitly: `gro gro/test`
 
-Common override pattern wraps the builtin:
+The common pattern wraps the builtin:
 
 ```typescript
 import type {Task} from '@fuzdev/gro';
@@ -244,7 +240,7 @@ await test_task.run(ctx);
 
 ### Args forwarding
 
-CLI args forwarded to composed tasks via `--` separators:
+CLI args forward to composed tasks via `--` separators:
 
 ```bash
 gro check -- gro test --coverage

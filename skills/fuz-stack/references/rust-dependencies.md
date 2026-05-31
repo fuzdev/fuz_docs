@@ -12,7 +12,7 @@ their own deps and are out of scope here.
 **Source of truth**: each repo's root `[workspace.dependencies]`. This doc
 mirrors the union of those for human and agent audit; it is not generated.
 Verify it against the workspaces periodically — an automated audit parses
-this list and reports any workspace dep that is missing from it.
+this list and reports any workspace dep missing from it.
 
 Crates internal to a workspace (declared with `path = ...`) are not
 dependencies in this sense and never appear here.
@@ -58,7 +58,7 @@ dependencies in this sense and never appear here.
 
 | Crate | Purpose |
 | ----- | ------- |
-| `parking_lot` | `Mutex`/`RwLock` for sync-only critical sections (no poisoning). See rust-patterns.md §Async lock hygiene for when to use `tokio::sync` or `std::sync` instead. |
+| `parking_lot` | `Mutex`/`RwLock` for sync-only critical sections (no poisoning). See rust-perf.md §Async lock hygiene for when to use `tokio::sync` or `std::sync` instead. |
 
 ## Database
 
@@ -77,8 +77,8 @@ dependencies in this sense and never appear here.
 | `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring) |
 | `subtle` | Constant-time comparison |
 | `zeroize` | Secure memory clearing |
-| `getrandom` | OS randomness |
-| `rand` | RNG |
+| `getrandom` | OS randomness — the spine standard for new randomness (`fuz_common::rand`, `fuz_auth`, `fuz_storage`) |
+| `rand` | RNG — pinned `0.8` **crate-level inside `fuz_sign` only** (the `ed25519-dalek` → `rand_core 0.6` constraint), not a general workspace dep. Prefer `getrandom` for new code. |
 
 ## Filesystem & OS
 
@@ -115,6 +115,54 @@ dependencies in this sense and never appear here.
 See rust-patterns.md §WASM boundary errors and wasm-patterns.md for the
 binding-layer conventions these support.
 
+## Crate-vs-feature isolation (supply-chain)
+
+When a capability must be kept **out of** a binary's dependency graph for
+security or trust reasons, make it a **separate crate, not a cargo feature**.
+Cargo unifies features across a `--workspace` build, so a feature-gated
+"signing" or "test-hasher" path can be silently turned on by an unrelated
+crate's feature selection. A separate crate can't be: it is either in the
+dependency graph or it is not, and that is auditable.
+
+- `fuz_sign` is a separate crate (not a `fuz_crypto` feature) so signing stays
+  out of the `fuz` consumer graph — `fuz` links verification-only `fuz_crypto`.
+- `fuz_testing` is a separate crate (not a `fuz_auth` feature) so the weakened
+  test Argon2 params can't reach a production binary.
+- Enforcement is the `cargo xtask check-release` dep-graph audit (`fuz_audit`),
+  which fails if any non-`testing_`-prefixed binary transitively links a
+  forbidden crate. Workspaces add per-workspace extra-forbidden crates
+  (`fuz_sign`) and per-binary forbids (`fuz`/`fuzd` must not link `fuzi_*`) via
+  the `check_release_with`/`check_release_with_rules` entry points. See
+  rust-patterns.md §CLI Patterns for the xtask wiring.
+
+## Shared low-level leaves (consolidation candidates)
+
+A few pure, IO-light utilities are independently reimplemented across
+workspaces and are candidates for a single leaf crate (kept spine-free — no
+`tokio`/HTTP/DB — so even `zap`, which takes no spine, can consume it):
+
+- a minimal dotenv (`KEY=VALUE`) parser (reimplemented in `zap_core` + `zzz`),
+- an env-isolating subprocess harness (`fuz_subprocess`: `SpawnOptions` +
+  `spawn_collect`/`spawn_streaming` with a capped output drain — already
+  prototyped in `fuz_forge_server`),
+- an exponential-backoff retry combinator (a generic one exists in
+  `fuz_storage`; `fuz_sidecar` hand-rolls a second).
+
+Signal-crate convention: prefer `nix` for syscall wrappers; reserve `libc` for
+types/constants `nix` doesn't expose (PTY). Avoid pulling both into one
+workspace for the same job.
+
+## Feature hygiene
+
+- **`default-features = false` + explicit feature lists** for deps with heavy
+  optional trees — `reqwest`, `nix`, `notify`, `futures-util` all do. Opt into
+  exactly what the workspace uses; don't inherit a crate's default surface.
+- **`multiple_crate_versions = "allow"`** (rust-patterns.md §Lints) tolerates
+  *forced* duplicate majors from the dep graph — e.g. `tsv` carries hashbrown
+  0.15 (via `string-interner`) and 0.16 (via `serde_json` → `indexmap`),
+  unresolvable until `string-interner` bumps upstream. Not a license to ignore
+  version drift you control.
+
 ## Adding a dependency
 
 New crates are added deliberately, not incidentally:
@@ -124,5 +172,5 @@ New crates are added deliberately, not incidentally:
   replaces or enables, and its transitive footprint.
 - Add it at the workspace level (`[workspace.dependencies]`) so member
   crates share one version, then record it here.
-- Removing the last user of a crate? Drop it from the workspace and from
-  this list in the same change.
+- Removing the last user of a crate? Drop it from the workspace and this
+  list in the same change.

@@ -12,7 +12,7 @@ export const skills: Array<Skill_Meta> = [
 		name: 'fuz-stack',
 		title: 'Fuz stack conventions',
 		description:
-			'Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript and Svelte 5 projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, svelte-docinfo, API routes, docs layout).',
+			"Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript, Svelte 5, and Rust projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, svelte-docinfo, API routes, docs layout). Also covers the ecosystem's Rust workspaces — cargo and clippy lints, thiserror error handling, the dependency-injection escalation ladder, enum-dispatch and make-impossible-states idioms, spine-consumer servers (zzz_server, fuz_forge_server), daemon lifecycle, and CLI and xtask patterns. Triggers include running cargo or clippy, editing Cargo.toml, naming or organizing Rust crates, or working on the fuz and fuzd daemon, the zap convergence engine, or the spine crates.",
 		references: [
 			{slug: 'async-patterns', title: 'Async Patterns'},
 			{slug: 'code-generation', title: 'Code Generation'},
@@ -20,6 +20,8 @@ export const skills: Array<Skill_Meta> = [
 			{slug: 'css-patterns', title: 'CSS Patterns'},
 			{slug: 'dependency-injection', title: 'Dependency Injection'},
 			{slug: 'documentation-system', title: 'Documentation System'},
+			{slug: 'file-organization', title: 'File Organization'},
+			{slug: 'path-references', title: 'Path References in Documentation'},
 			{slug: 'rust-dependencies', title: 'Approved Rust Dependencies'},
 			{slug: 'rust-patterns', title: 'Rust Patterns for the Fuz Ecosystem'},
 			{slug: 'rust-perf', title: 'Rust Performance Patterns'},

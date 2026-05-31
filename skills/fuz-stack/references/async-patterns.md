@@ -1,7 +1,7 @@
 # Async Patterns
 
 Async concurrency utilities in `@fuzdev/fuz_util/async.js` and
-`@fuzdev/fuz_util/dag.js`. Controlled concurrency for file I/O, network
+`@fuzdev/fuz_util/dag.js` — controlled concurrency for file I/O, network
 requests, task execution, and DAG scheduling.
 
 ## AsyncStatus
@@ -34,7 +34,7 @@ if (is_promise(value)) {
 ## Deferred Pattern
 
 Separates promise creation from resolution — external control over when and
-how a promise resolves.
+how a promise resolves. Create with `create_deferred()`:
 
 ```typescript
 interface Deferred<T> {
@@ -43,8 +43,6 @@ interface Deferred<T> {
 	reject: (reason: any) => void;
 }
 ```
-
-Create with `create_deferred()`:
 
 ```typescript
 const deferred = create_deferred<string>();
@@ -67,7 +65,8 @@ Used internally by `run_dag()` and `throttle`.
 ## Concurrent Operations
 
 Three functions for bounded concurrency over iterables. All require
-`concurrency >= 1` and accept an optional `AbortSignal`.
+`concurrency >= 1`, accept an optional `AbortSignal`, and pass both item and
+index to `fn` (which may return synchronously).
 
 ### Choosing the right function
 
@@ -100,12 +99,12 @@ await each_concurrent(
 );
 ```
 
-**Fail-fast**: On first rejection, stops spawning new workers and rejects.
-With `signal`, aborts immediately.
+**Fail-fast**: On first rejection, stops spawning new workers and rejects;
+with `signal`, aborts immediately.
 
 ### map_concurrent
 
-Like `each_concurrent` but collects results in input order:
+Like `each_concurrent`, collecting results in input order:
 
 ```typescript
 const map_concurrent: <T, R>(
@@ -165,13 +164,11 @@ All three use the same internal pattern:
 3. On completion, decrement `active_count` and call `run_next()`
 4. `run_next()` spawns more if slots are available
 
-Empty iterables resolve immediately. The `fn` callback receives both item
-and index, and may return synchronously.
+Empty iterables resolve immediately.
 
 ## AsyncSemaphore
 
-Class-based concurrency limiter for more flexible control than concurrent
-map/each:
+Class-based concurrency limiter — more flexible than concurrent map/each:
 
 ```typescript
 const semaphore = new AsyncSemaphore(3); // max 3 concurrent
@@ -202,7 +199,7 @@ Used by `run_dag()` for controlling node execution concurrency.
 
 ## DAG Execution
 
-`run_dag()` in `@fuzdev/fuz_util/dag.js` executes nodes in a dependency graph
+`run_dag()` in `@fuzdev/fuz_util/dag.js` executes dependency-graph nodes
 concurrently. Nodes declare dependencies via `depends_on`; independent nodes
 run in parallel up to `max_concurrency`. Uses `AsyncSemaphore` for concurrency
 and `Deferred` for dependency signaling.

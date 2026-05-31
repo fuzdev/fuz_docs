@@ -9,12 +9,12 @@ defaults, metadata, CLI help text, and serialization.
 
 - **`.meta({description})`** — introspectable metadata for CLI help and runtime
   reflection
-- **Runtime-inspectable** — walkable (`zod_to_schema_properties`), exportable
-  as JSON Schema (`z.toJSONSchema`)
+- **Runtime-inspectable** — walkable (`zod_to_schema_properties`), exportable as
+  JSON Schema (`z.toJSONSchema`)
 - **JSON-native** — branded strings for timestamps (`Datetime`), IDs (`Uuid`),
   paths (`FilePath`) eliminate serialization friction
-- **Composition cascades** — `.extend()` for hierarchies, `.brand()` for
-  domain safety, `.default()` for partial construction
+- **Composition cascades** — `.extend()` for hierarchies, `.brand()` for domain
+  safety, `.default()` for partial construction
 
 ### Schema helpers by layer
 
@@ -31,19 +31,16 @@ defaults, metadata, CLI help text, and serialization.
 
 1. **`z.strictObject()`** — default for all object schemas, including inside
    `z.discriminatedUnion()` and `z.union()`. Rejects unknown keys.
-   **Exceptions**: external data (`z.looseObject()` or `z.object()` with
+   **Exceptions**: external data (`z.looseObject()` or `z.object()` with a
    comment explaining why); response/error schemas consumed by clients
-   (`z.looseObject()` — allows adding fields without breaking consumers);
-   protocol schemas where the other side may add fields per spec (e.g.,
-   JSON-RPC messages).
+   (`z.looseObject()` — add fields without breaking consumers); protocol schemas
+   where the other side may add fields per spec (e.g., JSON-RPC messages).
 2. **PascalCase naming** — schema and inferred type share the same name.
 3. **`.meta({description: '...'})`** — not `.describe()`. `.meta()` supports
    additional keys (`aliases`, `sensitivity`).
-4. **`safeParse` at boundaries** — graceful errors for external input (HTTP
-   requests, API responses). `parse` for internal assertions, CLI args, and
-   factory functions where failure is fatal. `safeParse` + custom throw when
-   you need better error context than `parse` provides (e.g., env loading).
-   `safeParse` + return null for optional config files that may be absent.
+4. **`safeParse` for external input, `parse` for fail-fast** — full guidance
+   (external input, internal assertions/CLI args, custom-throw for error
+   context, return-null for optional config) in §Validation at Boundaries.
 
 ### The Canonical Pattern
 
@@ -105,12 +102,12 @@ const Action = z.discriminatedUnion('type', [
 ## Input vs Output Types
 
 Schemas with `.default()` or `.transform()` have different input and output
-types. `z.infer<>` gives the output (post-parse) type. `z.input<>` gives the
+types. `z.infer<>` gives the output (post-parse) type; `z.input<>` gives the
 pre-parse type — what callers provide before defaults are applied.
 
-Export `z.input<>` when callers construct partial instances via `.parse()` —
-Cell instantiation, resource builders, config files. Skip it when the schema
-is only consumed internally (env loading, action spec `satisfies`).
+Export `z.input<>` when callers construct partial instances via `.parse()`; skip
+it when the schema is only consumed internally (env loading, action spec
+`satisfies`).
 
 This is a **systematic pattern** in zzz and zap:
 
@@ -134,20 +131,17 @@ export type PackageResource = z.infer<typeof PackageResource>;
 export type PackageResourceInput = z.input<typeof PackageResource>;
 ```
 
-Use `z.input<>` for:
-- Constructor/factory parameters (Cell instantiation, resource builders)
-- Config file shapes (before defaults are applied)
-- Form inputs and partial data from storage
+Use `z.input<>` for: constructor/factory parameters (Cell instantiation,
+resource builders), config file shapes (before defaults applied), form inputs
+and partial data from storage.
 
-Use `z.infer<>` (the default) for:
-- Runtime data after parsing
-- Function return types
-- Validated state
+Use `z.infer<>` (the default) for: runtime data after parsing, function return
+types, validated state.
 
 ### Factory Functions with Input Types
 
-zap uses a systematic factory pattern — accept `z.input<>` without the
-discriminant field, parse to get the validated output:
+zap uses a systematic factory pattern: accept `z.input<>` without the
+discriminant field, parse to get validated output:
 
 ```typescript
 // zap/resources/types.ts
@@ -161,8 +155,8 @@ export const package_resource = (
 const pkg = package_resource({id: 'nginx', name: 'nginx', from: {apt: 'nginx'}});
 ```
 
-This works because `parse` applies defaults and validates, while `Omit<Input, 'type'>`
-lets callers skip the discriminant.
+`parse` applies defaults and validates; `Omit<Input, 'type'>` lets callers skip
+the discriminant.
 
 ## Branded Types
 
@@ -193,10 +187,10 @@ export const FilePath = z.string().min(1).brand<'FilePath'>();
 export type FilePath = z.infer<typeof FilePath>;
 ```
 
-Use branded types for values that should not be accidentally swapped.
-Dynamic defaults use factory functions (`Uuid.default(create_uuid)`,
-`Datetime.default(get_datetime_now)`). For TypeScript-only nominal typing
-without runtime validation, see `Flavored` in ./type-utilities.md.
+Use branded types for values that should not be accidentally swapped. Dynamic
+defaults use factory functions (`Uuid.default(create_uuid)`,
+`Datetime.default(get_datetime_now)`). For TypeScript-only nominal typing without
+runtime validation, see `Flavored` in ./type-utilities.md.
 
 ## Defaults and Optionality
 
@@ -275,10 +269,9 @@ z.record(K, V)         // key-value maps (env vars, resource maps)
 z.custom<T>(check?)    // escape hatch for complex types without full Zod validation
 ```
 
-- `z.null()` — no request body in route specs (`input: z.null()`). Distinct
-  from `z.void()` — use `z.null()` for HTTP input (JSON `null`), `z.void()`
-  for action specs with no value
-- `z.void()` / `z.void().optional()` — action specs with no input or output
+- `z.null()` vs `z.void()` — `z.null()` for HTTP input (JSON `null`, e.g.
+  `input: z.null()` for no request body in route specs); `z.void()` /
+  `z.void().optional()` for action specs with no input or output value
 - `z.custom<T>(check?)` — embeds complex types without full Zod validation;
   use sparingly (e.g., `z.custom<Plan>()` in zap, `z.custom<z.ZodType>(...)` in
   fuz_app action specs)
@@ -306,16 +299,15 @@ schema._zod.def  // works but prefer schema.def
 
 See `@fuzdev/fuz_util/zod.ts` for unwrapping utilities (`zod_unwrap_def`,
 `zod_get_base_type`, `zod_to_subschema`, `zod_get_innermost_type`,
-`zod_get_innermost_type_name`, `zod_unwrap_to_object`) that handle wrappers
-like optional, nullable, default, transform, and pipe; and field helpers
-(`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`)
-for inspecting object schemas.
+`zod_get_innermost_type_name`, `zod_unwrap_to_object`) that handle wrappers like
+optional, nullable, default, transform, and pipe; and object-field helpers
+(`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`).
 
 ## Unions and Enums
 
 ### Discriminated Unions
 
-`z.discriminatedUnion()` when a type field determines the shape. Members use
+Use `z.discriminatedUnion()` when a type field determines the shape; members use
 `z.strictObject()`:
 
 ```typescript
@@ -338,7 +330,7 @@ export const FileContent = z.discriminatedUnion('type', [
 
 ### Plain Unions
 
-`z.union()` when there's no single discriminant field, or when mixing shapes
+Use `z.union()` when there's no single discriminant field, or when mixing shapes
 with literals:
 
 ```typescript
@@ -431,8 +423,8 @@ export const DeployArgs = z.strictObject({
 
 ### Sensitivity Metadata (fuz_app)
 
-`SchemaFieldMeta` (from `@fuzdev/fuz_app/schema_meta.js`) extends `.meta()`
-with a `sensitivity` key:
+`SchemaFieldMeta` (from `@fuzdev/fuz_app/schema_meta.js`) extends `.meta()` with
+a `sensitivity` key:
 
 ```typescript
 DATABASE_URL: z.string().min(1).meta({
@@ -449,8 +441,8 @@ PORT: z.coerce.number().default(4040)
 
 ### safeParse for External Input
 
-Use `safeParse` when invalid data is a normal condition and you need to
-respond gracefully:
+Use `safeParse` when invalid data is a normal condition needing a graceful
+response:
 
 ```typescript
 // fuz_app/http/route_spec.ts — input validation middleware
@@ -480,7 +472,7 @@ const parsed = this.schema.parse(v);                     // Cell field update
 
 ### safeParse with Custom Error Handling
 
-`safeParse` + custom throw gives better error context than bare `parse`.
+`safeParse` + custom throw gives better error context than bare `parse`;
 `safeParse` + return null handles optional data that may be absent or invalid:
 
 ```typescript

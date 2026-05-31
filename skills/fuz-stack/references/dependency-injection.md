@@ -1,8 +1,8 @@
 # Dependency Injection
 
-Typed interfaces for side effects, real implementations as defaults, accepted
-as parameters, tested with plain object mocks. No `vi.mock` — dependencies
-flow through function signatures.
+Typed interfaces for side effects, real implementations as defaults, accepted as
+params, tested with plain object mocks. No `vi.mock` — dependencies flow through
+function signatures.
 
 ## Convention
 
@@ -11,9 +11,9 @@ flow through function signatures.
 
 ### Bottom-up composition
 
-Define small focused interfaces. Leaf functions import them directly. App-level
-composites assemble them for wiring — the entry point builds the composite
-and threads it down, but leaf functions never take the composite as a param.
+Define small focused interfaces; leaf functions import them directly. The entry
+point assembles app-level composites for wiring and threads them down, but leaf
+functions never take the composite as a param.
 
 ```typescript
 // Small standalone interfaces in fuz_app/runtime/deps.ts
@@ -72,6 +72,9 @@ Small standalone interfaces avoid this:
 - **Composable**: `FsReadDeps & CommandDeps` for multi-dep functions
 - **Self-documenting**: the interface IS the dependency contract
 
+`Pick<>` on a *small* `*Deps` interface is fine (minimal coupling); the
+anti-pattern is `Pick<GodType>`. See "Narrowing with `Pick<>`" below.
+
 ### Where shared interfaces live
 
 - **fuz_app `auth/deps.ts`**: `AppDeps` (server capabilities), `RouteFactoryDeps` (`Omit<AppDeps, 'db'>`)
@@ -119,10 +122,7 @@ Three suffixes for single-object parameters, each with distinct test behavior:
 
 The `*Deps` / `*Options` boundary is validated by testing patterns: deps get
 mock factories with per-test overrides; options are plain objects reused
-across test cases.
-
-`*Context` is the world available within a bounded scope — may contain both
-deps and data:
+across test cases. `*Context` examples:
 
 - `RouteContext` — per-request: `{db, background_db, pending_effects}`
 - `AppServerContext` — per-setup-callback: `{deps, backend, session_options, ...}`
@@ -135,8 +135,8 @@ data).
 
 ## Grouped Operations Pattern (fuz_gitops)
 
-Composite interface grouping I/O by domain, injected as an optional parameter
-with a production default.
+Composite interface grouping I/O by domain, injected as an optional param with a
+production default.
 
 ### Interface definition
 
@@ -210,8 +210,7 @@ export const default_gitops_operations: GitopsOperations = {
 
 ## CacheDeps Pattern (fuz_css)
 
-Focused deps interface for cache file I/O. Files: `deps.ts` +
-`deps_defaults.ts`.
+Focused deps interface for cache file I/O. Files: `deps.ts` + `deps_defaults.ts`.
 
 ```typescript
 // deps.ts
@@ -247,8 +246,8 @@ export const default_cache_deps: CacheDeps = {
 };
 ```
 
-Internal functions take `deps: CacheDeps` as a required first parameter.
-Public APIs default to `default_cache_deps`:
+Internal functions take `deps: CacheDeps` as a required first param; public APIs
+default to `default_cache_deps`:
 
 ```typescript
 // gen_fuz_css.ts (public API)
@@ -299,8 +298,8 @@ export interface QueryDeps {
 export const query_account_by_id = async (deps: QueryDeps, id: string) => { /* ... */ };
 ```
 
-Route handlers pass `route` (the `RouteContext`) directly to query functions
-because `RouteContext` structurally satisfies `QueryDeps`.
+Route handlers pass `route` (the `RouteContext`) directly to query functions —
+it structurally satisfies `QueryDeps`.
 
 ### Route factory signatures
 
@@ -376,7 +375,8 @@ password: Pick<PasswordHashDeps, 'hash_password'>;
 
 ### Two-step init
 
-Create backend (DB + deps), then assemble the HTTP server:
+Create backend (DB + deps), then assemble the HTTP server. `AppBackend` wraps
+the deps with metadata:
 
 ```typescript
 // server/app_backend.ts
@@ -386,7 +386,6 @@ export const create_app_backend = async (
 	// creates db, runs auth migrations, bundles into AppDeps
 };
 
-// AppBackend wraps deps with metadata
 export interface AppBackend {
 	deps: AppDeps;
 	db_type: DbType;
@@ -398,8 +397,8 @@ export interface AppBackend {
 
 ## RuntimeDeps Pattern (fuz_app)
 
-The 8 small `*Deps` interfaces and `RuntimeDeps` composite shown in
-"Bottom-up composition" above live in `runtime/deps.ts`. Platform factories:
+The 8 small `*Deps` interfaces and the `RuntimeDeps` composite (see "Bottom-up
+composition") live in `runtime/deps.ts`. Platform factories:
 
 - `create_deno_runtime(args)` — Deno implementation
 - `create_node_runtime(args)` — Node.js implementation
@@ -417,7 +416,7 @@ checkout: (options: {branch: string; cwd?: string}) => Promise<Result<...>>;
 checkout: (branch: string, cwd?: string) => Promise<Result<...>>;
 ```
 
-General utility functions may use positional parameters for simple signatures.
+General utility functions may use positional params for simple signatures.
 
 ### Result returns, never throw
 
@@ -431,9 +430,9 @@ export interface GitOperations {
 
 L1 domain filesystem wrappers (`CacheDeps`, `FsOperations`, mageguild's
 `FsOperations`) use a uniform shape from `@fuzdev/fuz_util/fs.js`: reads,
-writes, and queries all return `Result<{value: T}, FsError>` — no mix of
-`string | null` reads with `Result` writes. Implementations route thrown
-errors through `fs_classify_error(error)`, which maps Node `code`
+writes, and queries all return `Result<{value: T}, FsError>` — no mixing
+`string | null` reads with `Result` writes. Implementations route thrown errors
+through `fs_classify_error(error)`, which maps Node `code`
 (ENOENT/EACCES/EPERM/EEXIST) to a discriminated `kind`:
 
 ```typescript
@@ -466,17 +465,16 @@ if (!r.ok) throw new Error(`read failed: ${r.message}`);
 if (!r.ok && r.kind !== 'not_found') throw new Error(r.message);
 ```
 
-Uniform shape keeps the contract symmetric for a future Rust port where
-`Result<T, E>` is native; typed kinds replace the `{message}` structural
-shape that earlier code had to regex-match. Scope: L1 domain wrappers only.
-The L0 platform runtime (`FsReadDeps` in `fuz_app/runtime/deps.ts`) keeps
-throws-on-error to mirror `Deno.readTextFile` / `node:fs`.
+The uniform shape keeps the contract symmetric for a future Rust port where
+`Result<T, E>` is native; typed kinds replace the `{message}` shape that earlier
+code had to regex-match. Scope: L1 domain wrappers only. The L0 platform runtime
+(`FsReadDeps` in `fuz_app/runtime/deps.ts`) keeps throws-on-error to mirror
+`Deno.readTextFile` / `node:fs`.
 
 ### No `vi.mock` — plain objects instead
 
-Plain objects implementing interfaces. No `vi.mock()`, no Sinon. Individual
-`vi.fn()` for call tracking is acceptable, but DI interfaces are satisfied
-by plain objects:
+DI interfaces are satisfied by plain objects implementing them — no `vi.mock()`,
+no Sinon. Individual `vi.fn()` for call tracking is acceptable:
 
 ```typescript
 const mock_git: GitOperations = {
@@ -510,7 +508,7 @@ Deps are stateless functions and instances — never mutable state. Mutable refs
 ### Runtime agnosticism
 
 Never import env at module level in server code that might run outside
-SvelteKit — breaks Deno compilation. Load env via deps parameters.
+SvelteKit — breaks Deno compilation. Load env via deps params instead.
 
 ## File Naming Convention
 
@@ -642,7 +640,7 @@ export const create_mock_fs_ops = (): FsOperations & {
 	return {
 		readFile: async (options) => {
 			const content = files.get(options.path);
-			if (content === undefined) return {ok: false, message: `File not found`};
+			if (content === undefined) return {ok: false, kind: 'not_found', message: `File not found`};
 			return {ok: true, value: content};
 		},
 		writeFile: async (options) => { files.set(options.path, options.content); return {ok: true}; },
@@ -660,7 +658,12 @@ export const create_mock_fs_state = (): MockFsState => ({
 });
 
 export const create_mock_cache_deps = (state: MockFsState): CacheDeps => ({
-	read_text: async ({path}) => state.files.get(path) ?? null,
+	read_text: async ({path}) => {
+		const content = state.files.get(path);
+		return content === undefined
+			? {ok: false, kind: 'not_found', message: `not found: ${path}`}
+			: {ok: true, value: content};
+	},
 	write_text_atomic: async ({path, content}) => { state.files.set(path, content); return {ok: true}; },
 	unlink: async ({path}) => { state.files.delete(path); return {ok: true}; },
 });
@@ -693,8 +696,8 @@ export const create_tracking_process_ops = (): {
 
 ### Stub and throwing proxy (fuz_app)
 
-Two safety levels for surface testing (simplified — actual code handles
-additional JS internals):
+Two safety levels for surface testing (simplified — actual code also handles JS
+internals):
 
 ```typescript
 // Throwing stub — catches unexpected access with descriptive errors

@@ -3,8 +3,8 @@
 Gro's code generation system (`.gen.*` files) in `@fuzdev/gro`.
 
 Gen files produce source code at build time. Discovered by the `.gen.`
-pattern in filenames, executed by `gro gen`, output committed alongside
-source. `gro gen --check` verifies no drift.
+filename pattern, executed by `gro gen`, output committed alongside source.
+`gro gen --check` verifies no drift.
 
 ## File Naming
 
@@ -23,8 +23,7 @@ between `.gen.` and `.ts` overrides the output extension.
 ### Naming rules
 
 - Exactly one `.gen.` segment per filename (duplicates are invalid)
-- At most one additional extension after `.gen.` (e.g., `.gen.css.ts` is valid,
-  `.gen.foo.bar.ts` is not)
+- At most one extension after `.gen.` (`.gen.css.ts` is valid, `.gen.foo.bar.ts` is not)
 - Output filename cannot equal the gen filename
 
 ## Gen Types
@@ -88,7 +87,7 @@ export const gen: Gen = {
 | `invoke_task`     | `InvokeTask`          | invoke other Gro tasks                                          |
 | `changed_file_id` | `PathId \| undefined` | set during dependency resolution; `undefined` during generation |
 
-Most commonly used: `origin_path` (generated-by banners), `log`, and `filer`
+Most used: `origin_path` (generated-by banners), `log`, and `filer`
 (reading source files).
 
 ## Return Values
@@ -147,16 +146,15 @@ export const gen: Gen = () => {
 };
 ```
 
-Duplicate output file IDs within a single gen file are invalid.
-
-A single gen file can produce many output files — e.g., `skill_docs.gen.ts`
-generates a manifest, per-skill data files, and per-page `+page.svelte` routes.
+Duplicate output file IDs within a single gen file are invalid. A single gen
+file can produce many output files — e.g., `skill_docs.gen.ts` generates a
+manifest, per-skill data files, and per-page `+page.svelte` routes.
 
 ## Dependencies
 
-Control when a gen file re-runs during watch mode. Without `dependencies`,
-re-runs only when the gen file or its imports change (tracked by filer).
-Use `GenConfig` for broader triggers:
+Control when a gen file re-runs during watch mode. Without `dependencies`, it
+re-runs only when the gen file or its imports change (tracked by filer). Use
+`GenConfig` for broader triggers:
 
 ```typescript
 type GenDependencies = 'all' | GenDependenciesConfig | GenDependenciesResolver;
@@ -164,8 +162,7 @@ type GenDependencies = 'all' | GenDependenciesConfig | GenDependenciesResolver;
 
 ### 'all' — re-run on any change
 
-Used when a gen task depends on the entire source tree rather than specific
-files:
+For gen tasks that depend on the entire source tree rather than specific files:
 
 ```typescript
 export const gen: Gen = {
@@ -219,9 +216,9 @@ gro gen --check      # verify no drift (used by gro check and CI)
 | `--root_dirs` | `[process.cwd()]` | root directories to resolve input paths against  |
 | `--check`     | `false`           | exit nonzero if any generated files have changed |
 
-`gro gen --check` compares generated output against existing files. If any
-file is new or changed, it fails with a message to run `gro gen`. Called by
-`gro check` as part of CI.
+`gro gen --check` compares generated output against existing files; if any is
+new or changed, it fails with a message to run `gro gen`. Called by `gro check`
+as part of CI.
 
 ## Common Patterns
 
@@ -233,9 +230,9 @@ via AST, and exposes a bundled `virtual:fuz.css` module (with HMR) containing
 only the classes, base styles, and theme variables actually used. See
 ./css-patterns.md §Project Setup.
 
-The Gro generator equivalent, `gen_fuz_css()` in a `fuz.gen.css.ts`, still
-exists as an alternative that writes a committed `fuz.css` file (accepts
-`GenFuzCssOptions`), but the plugin is preferred.
+The Gro generator equivalent, `gen_fuz_css()` in a `fuz.gen.css.ts` (accepts
+`GenFuzCssOptions`), still writes a committed `fuz.css` file, but the plugin is
+preferred.
 
 ### Theme CSS generation
 
@@ -263,9 +260,9 @@ export const gen: Gen = ({origin_path}) => {
 
 API documentation metadata is no longer produced by a gen task. Instead the
 `svelte-docinfo` Vite plugin analyzes TypeScript and Svelte source files at
-build/dev time and exposes the result through the `virtual:svelte-docinfo`
-module. Add the plugin in `vite.config.ts` and build a `LibraryJson` at runtime
-with `library_json_parse` — see ./documentation-system.md for the full setup.
+build/dev time and exposes the result through `virtual:svelte-docinfo`. Add the
+plugin in `vite.config.ts` and build a `LibraryJson` at runtime with
+`library_json_parse` — see ./documentation-system.md for the full setup.
 
 ```typescript
 // vite.config.ts
@@ -283,7 +280,7 @@ There is no committed `library.gen.ts`, `library.json`, or `library.ts`.
 export * from '@fuzdev/fuz_blog/blog.gen.js';
 ```
 
-Consumer projects re-export the gen. Returns an array with `feed.xml` (at an
+Consumer projects re-export the gen. Returns an array of `feed.xml` (at an
 absolute path in `static/`), `feed.ts`, and one `+page.svelte` per slug route.
 
 ### Fixture generation
@@ -304,7 +301,7 @@ export const gen: Gen = () => {
 ### Action codegen (zzz)
 
 Gen files can generate TypeScript types from runtime registries. zzz reads
-action specs and produces typed collections, metatypes, and handler interfaces:
+action specs to produce typed collections, metatypes, and handler interfaces:
 
 ```typescript
 import type {Gen} from '@fuzdev/gro/gen.js';
@@ -327,8 +324,7 @@ export const gen: Gen = ({origin_path}) => {
 ### Multi-file route generation
 
 A single gen file can generate entire route trees. `skill_docs.gen.ts`
-auto-discovers skills and generates manifests, data files, and `+page.svelte`
-routes:
+auto-discovers skills and generates manifests, data files, and `+page.svelte` routes:
 
 ```typescript
 import type {Gen} from '@fuzdev/gro/gen.js';

@@ -13,19 +13,19 @@ source files → svelte-docinfo Vite plugin → virtual:svelte-docinfo (modules)
 | ----------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
 | **Analysis**      | `svelte-docinfo`              | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata |
 | **Generation**    | `svelte-docinfo/vite.js`      | Vite plugin runs the analysis at build/dev time and exposes the result through the `virtual:svelte-docinfo` virtual module (no committed `library.json`/`library.ts` files) |
-| **Serialization** | `library_json_parse()`        | `library_json_parse()` (from `@fuzdev/fuz_util/library_json.js`) combines `package.json` + the virtual module's `modules` into a `LibraryJson` (`PackageJson` + `SourceJson` with computed properties) at runtime |
+| **Serialization** | `library_json_parse()`        | From `@fuzdev/fuz_util/library_json.js`; combines `package.json` + the virtual module's `modules` into a `LibraryJson` (`PackageJson` + `SourceJson` with computed properties) at runtime |
 | **Runtime**       | `Library` class               | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps |
 | **Rendering**     | Tome pages + API routes       | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts` |
 
 ### Analysis
 
-The `svelte-docinfo` package owns module analysis end to end: it walks the
-project's source files, dispatches per file type (`.ts`/`.js` vs `.svelte`),
-parses TSDoc/JSDoc (`@param`, `@returns`, `@throws`, `@example`, `@deprecated`,
-`@see`, `@since`, `@nodocs`, `@mutates`), merges re-exports into
-`also_exported_from`, sorts modules, and checks for duplicate names in the flat
-namespace. It ships a CLI, a Vite plugin (`svelte-docinfo/vite.js`), and a
-build-tool-agnostic API. fuz_ui consumes its output but does not depend on it.
+The `svelte-docinfo` package owns module analysis end to end: it walks source
+files, dispatches per file type (`.ts`/`.js` vs `.svelte`), parses TSDoc/JSDoc
+(`@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`, `@since`,
+`@nodocs`, `@mutates`), merges re-exports into `also_exported_from`, sorts
+modules, and checks for duplicate names in the flat namespace. It ships a CLI,
+a Vite plugin (`svelte-docinfo/vite.js`), and a build-tool-agnostic API. fuz_ui
+consumes its output but does not depend on it.
 
 ## Tome System
 
@@ -52,7 +52,7 @@ const Tome = z.object({
 
 ### Categories
 
-Categories group tomes in sidebar navigation. Project-specific:
+Categories group tomes in sidebar navigation; project-specific:
 
 | Project | Categories                       |
 | ------- | -------------------------------- |
@@ -102,8 +102,8 @@ Following the pattern in fuz_ui and fuz_css.
 
 ### 1. Library analysis (Vite plugin)
 
-Add the `svelte-docinfo` Vite plugin in `vite.config.ts` so the
-`virtual:svelte-docinfo` module is available at build/dev time:
+Add the `svelte-docinfo` Vite plugin in `vite.config.ts` so
+`virtual:svelte-docinfo` is available at build/dev time:
 
 ```typescript
 import {defineConfig} from 'vite';
@@ -219,8 +219,8 @@ Each tome is a `+page.svelte` in `src/routes/docs/{name}/`:
 </TomeContent>
 ```
 
-`TomeSectionHeader` auto-detects heading level (h2/h3/h4) based on nesting
-depth. Sections tracked by IntersectionObserver for right sidebar TOC.
+`TomeSectionHeader` auto-detects heading level (h2/h3/h4) from nesting depth.
+Sections tracked by IntersectionObserver for the right sidebar TOC.
 
 ### 6. API routes
 
@@ -263,8 +263,7 @@ dialog accessible from the top bar's menu button.
 
 ### Key contexts
 
-See [Helpers](#helpers) for the full list. The four contexts that wire the
-layout together:
+The four contexts that wire the layout together (full list in [Helpers](#helpers)):
 
 - `library_context` (`Library`) — API metadata
 - `tomes_context` (`() => Map<string, Tome>`) — registered tomes (set by `Docs`)
@@ -359,9 +358,6 @@ are the shared analysis engine across projects.
 - **`svelte_preprocess_mdz`** — build-time compilation of static `<Mdz>` content
   to pre-rendered Svelte markup, eliminating runtime parsing for known-static
   doc strings
-- **`svelte-docinfo`** — standalone package providing the TypeScript/Svelte
-  module analysis, with a CLI, a Vite plugin (`svelte-docinfo/vite.js` exposing
-  `virtual:svelte-docinfo`), and a build-tool-agnostic API. fuz_ui consumes its
-  output but does not depend on it.
+- **`svelte-docinfo`** — the shared module-analysis engine (see [Analysis](#analysis))
 - ./tsdoc-comments.md — TSDoc/JSDoc authoring conventions, tag reference,
   mdz auto-linking, and documentation auditing

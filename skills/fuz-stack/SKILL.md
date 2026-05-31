@@ -1,6 +1,6 @@
 ---
 name: fuz-stack
-description: Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript and Svelte 5 projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, svelte-docinfo, API routes, docs layout).
+description: Development conventions and coding patterns for the @fuzdev ecosystem — naming, file organization, testing, styling, documentation, and tooling for TypeScript, Svelte 5, and Rust projects. Use when writing or reviewing code in any @fuzdev project. Triggers include running gro commands (gro check, gro test, gro gen), styling with fuz_css, writing or splitting tests, generating code with .gen.ts files, naming functions or variables (snake_case conventions), organizing files in src/lib/ or src/test/, writing TSDoc comments, creating Svelte 5 components with runes, or formatting code. Also use for the Result type, fixture-based testing, CSS utility classes, TODO_ docs, breaking changes policy, async concurrency patterns, Gro task system, type utilities (Flavored, Branded), dependency injection patterns (*Deps/*Options/*Context interfaces, AppDeps, RuntimeDeps, mock factories), or setting up documentation (tomes, svelte-docinfo, API routes, docs layout). Also covers the ecosystem's Rust workspaces — cargo and clippy lints, thiserror error handling, the dependency-injection escalation ladder, enum-dispatch and make-impossible-states idioms, spine-consumer servers (zzz_server, fuz_forge_server), daemon lifecycle, and CLI and xtask patterns. Triggers include running cargo or clippy, editing Cargo.toml, naming or organizing Rust crates, or working on the fuz and fuzd daemon, the zap convergence engine, or the spine crates.
 license: MIT
 metadata:
   author: ryanatkn
@@ -15,7 +15,7 @@ metadata:
 > **À la carte**: Each project adopts only what serves it. Deep imports and
 > the flat namespace make this natural at the package level too.
 
-> **Skip for**: Grimoire-only edits, third-party code review, simple
+> **Skip for**: planning/lore-only edits, third-party code review, simple
 > git/shell operations. Repo `CLAUDE.md` is authoritative for
 > project-specific patterns — this skill covers shared conventions across
 > TypeScript, Svelte, and Rust crates.
@@ -160,80 +160,17 @@ All exported identifiers must have **unique names across all modules**:
 
 ### File Organization
 
-```
-src/
-├── lib/              # exportable library code
-│   ├── *.svelte      # UI components (PascalCase.svelte)
-│   ├── *.ts          # TypeScript utilities
-│   ├── *.svelte.ts   # Svelte 5 runes and reactive code
-│   ├── *.gen.ts      # generated files (by Gro gen tasks)
-│   └── domain/       # domain subdirectories (see below)
-│       └── *.ts
-├── test/             # tests (NOT co-located with source)
-│   └── *.test.ts     # mirrors lib/ structure
-└── routes/           # SvelteKit routes (if applicable)
-```
+- **`src/lib/`** — exportable library code: `PascalCase.svelte` components,
+  `*.ts` utilities, `*.svelte.ts` runes/reactive code, `*.gen.ts` generated files
+- **`src/test/`** — tests (NOT co-located), mirroring `lib/` structure
+- **`src/routes/`** — SvelteKit routes (if applicable)
+- **No barrels** — import every module by full path (`@fuzdev/fuz_app/env/load.js`);
+  package `exports` use wildcards so each module is importable
+- **Subdirectories** — group a domain into `lib/domain/` at 3+ related files;
+  a lone file stays at `lib/` root. Tests mirror the subdir structure.
 
-#### Domain subdirectories
-
-When a domain grows beyond a single file, group related modules in a
-subdirectory under `lib/`. Each file is a distinct concern — no barrel/index
-files.
-
-```
-src/lib/
-├── env/              # environment variable handling
-│   ├── load.ts       # schema-based env loading + validation
-│   ├── resolve.ts    # $$VAR$$ reference resolution
-│   ├── dotenv.ts     # .env file parsing
-│   └── mask.ts       # secret value display masking
-├── auth/             # authentication domain (~34 files)
-│   ├── keyring.ts    # crypto: HMAC-SHA256 cookie signing
-│   ├── password.ts   # crypto: password hashing interface
-│   ├── account_schema.ts  # types + Zod schemas
-│   ├── account_queries.ts # database queries
-│   ├── session_middleware.ts  # Hono middleware
-│   └── account_routes.ts     # route spec factories
-├── http/             # generic HTTP framework
-├── db/               # database infrastructure
-├── server/           # backend lifecycle + assembly
-├── runtime/          # composable runtime deps + implementations
-├── cli/              # CLI infrastructure
-├── actions/          # action spec system
-├── realtime/         # SSE and pub/sub
-├── testing/          # test utilities (shared across consumers)
-├── ui/               # frontend components and state
-└── dev/              # dev workflow helpers
-```
-
-**When to create a subdirectory**: 3+ closely related files sharing a domain
-concept. A single file stays at `lib/` root. Don't create subdirectories
-preemptively.
-
-**Consumers import individual modules by full path** — the subdirectory is
-part of the import path, not hidden behind re-exports:
-
-```typescript
-import {load_env} from '@fuzdev/fuz_app/env/load.js';
-import {resolve_env_vars} from '@fuzdev/fuz_app/env/resolve.js';
-import {create_app_backend} from '@fuzdev/fuz_app/server/app_backend.js';
-```
-
-**Tests mirror the subdirectory structure** in `src/test/`:
-
-```
-src/test/
-├── env/
-│   ├── load.test.ts
-│   ├── resolve.test.ts
-│   ├── dotenv.test.ts
-│   └── mask.test.ts
-├── auth/
-│   ├── keyring.test.ts
-│   └── account_queries.db.test.ts  # .db.test.ts suffix for PGlite tests
-└── server/
-    └── env.test.ts     # server-specific env (BaseServerEnv, validate_server_env)
-```
+See ./references/file-organization.md for the full tree, domain examples, and
+import/test-mirroring details.
 
 ### Code Style
 
@@ -245,10 +182,10 @@ src/test/
 - **Comments**:
   - JSDoc (`/** ... */`) = proper sentences with periods
   - Inline (`//`) = fragments, no capital or period
-- **No barrel exports**: Import by exact file path, no `index.ts`. Package
-  `exports` use wildcard patterns (`"./*.js"`) so every module is importable.
 - **No backwards compatibility**: Delete unused code, rename directly, no
   deprecated stubs or shims. Document breaking changes in changesets.
+
+(Imports go by full path with no barrels — see File Organization above.)
 
 ## Gro Commands (Temporary Build Tool)
 
@@ -372,95 +309,20 @@ conventions: ./references/tsdoc-comments.md.
 
 Backticked identifiers auto-link to API docs in TSDoc rendering.
 
-### Path references in documentation
+### Path references
 
-Three forms, each with its own typography. The distinction is whether the
-target is a **navigable file** (bare path) or a **code-tree identifier**
-(backticked, no leading `./`).
+Three forms by typography:
 
-**1. Navigational paths** (bare, no backticks). Use for docs, READMEs,
-external repos, and any reference that points to a file by location rather
-than by code identity:
+- **Navigational paths** — bare, no backticks (`./foo`, `../foo`, `~/dev/foo`)
+  for files referenced by location; mdz auto-linkifies `./`/`../` after whitespace
+- **src/lib module references** — backticked, src/lib-relative with **no** leading
+  `./` or `../` (e.g. "`auth/account_schema.ts`"); the backticks frame a module
+  identifier, so relative traversal contradicts the framing
+- **Code-shaped non-paths** — backticks for CLI commands (`gro check`),
+  top-level files (`package.json`), and config identifiers (`~/.fuz/`)
 
-- `./foo` and `../foo` — relative to the file's directory; mdz auto-linkifies
-  these when preceded by whitespace
-- `~/dev/foo` — anchored at the workspace root; reads cleanly at any nesting
-  depth
-- `grimoire/foo` — anchored at the workspace root; preferred over deep
-  `../../grimoire/foo` from nested files
-
-**2. src/lib module references** (backticked, written relative to src/lib
-**without** a leading `./` or `../`). Marks the target as a code-like
-identifier — a module name, not a navigable filesystem path.
-
-> **Rule**: when a path inside src/lib is wrapped in backticks, it MUST be
-> src/lib-relative — never `../foo.ts`, never `./foo.ts`, never
-> `src/lib/foo.ts` from a file already inside src/lib. The backticks frame
-> the token as a module identifier; relative traversal contradicts that
-> framing. Bare paths are the only place `./` and `../` belong.
-
-- From any file inside src/lib: "`auth/account_schema.ts`" refers to
-  `src/lib/auth/account_schema.ts`. Prefer this over both "`../auth/account_schema.ts`"
-  (backticked with prefix — defeats the identifier framing) and
-  `../auth/account_schema.ts` (bare — reads as filesystem path)
-- From files outside src/lib (root CLAUDE.md, docs/, src/test/): include
-  the `src/lib/` prefix — "`src/lib/auth/CLAUDE.md`". The path-relative-to-src/lib
-  form ("`auth/CLAUDE.md`") is also acceptable from src/test/, but the
-  full-prefix form is unambiguous at any depth
-- Applies to any file under src/lib, including subsystem CLAUDE.mds:
-  "`auth/CLAUDE.md`", "`http/CLAUDE.md`"
-- Section refs follow: "`auth/CLAUDE.md`" §Middleware (backticks wrap
-  the module, `§Heading` follows outside the backticks)
-- Examples:
-  - ✅ "`server/upload_route.ts`" — from `src/lib/server/CLAUDE.md`
-  - ✅ "`fuz_app/db/fact_store.ts`" — from `src/lib/fuz_util/CLAUDE.md`
-  - ❌ "`../fuz_app/db/fact_store.ts`" — backticked but traversal-relative
-  - ❌ "`./classroom_service.ts`" — backticked but self-relative
-
-**3. Code-shaped things outside src/lib** (backticks for code, not paths):
-
-- CLI commands: `gro check`, `deno task scry`
-- Top-level project files: `package.json`, `gitops.config.ts`, `tsconfig.json`
-- System/config identifiers: `~/.fuz/`, `~/.mg/config.json`
-
-Each file's relative paths assume the reader is in the file's parent directory.
-For `~/dev/CLAUDE.md`, project paths are `./project/`. For
-`~/dev/grimoire/CLAUDE.md`, sibling grimoire files use `./lore/` and repo
-references use `../fuz_util/`. From deeply nested files like
-`grimoire/lore/fuz/design/foo.md`, prefer `grimoire/quests/bar.md` over
-`../../../quests/bar.md`.
-
-**Web-rendered caveat**: in files published via mdz on a website (this SKILL.md
-on fuz_docs), `./foo` and `../foo` examples must be backticked to prevent mdz
-from rendering them as broken `<a>` tags. `~/dev/foo` and `grimoire/foo` are
-safe bare in web context — mdz doesn't auto-linkify those prefixes.
-
-**Anti-patterns** (linkifier won't fire, costing tokens and navigability):
-
-- **Mixing the two forms**: backticks + a leading `./` or `../` is the
-  wrong-of-both-worlds case. Pick a form. "`./foo.md`" should be either
-  bare `./foo.md` (navigational) or — for src/lib — "`subsystem/foo.ts`"
-  (module-form, drop the relative prefix).
-- **Backticking a navigable target**: "`~/dev/fuz_util`" reads as a
-  code identifier when it's actually a path. Use bare `~/dev/fuz_util`.
-- Wrapping a path in markdown-link syntax when target equals visible text:
-  `[../README.md](../README.md)` is redundant; bare `../README.md` already
-  auto-links. Same for `[~/dev/foo](~/dev/foo)` — collapse to bare
-  `~/dev/foo`. Reserve `[text](url)` for cases where the visible token
-  _isn't_ the path — e.g. a package-name-as-link:
-  `[@fuzdev/fuz_app](../../fuz_app)`.
-
-**Formatter cautions** (Prettier in particular — these have bitten real docs):
-
-- A line wrapping after `+` becomes a sublist. `cell + fact` followed by
-  Prettier wrapping to `+ cell_history` reflows as a bullet. Rephrase
-  (`cell, fact, and cell_history`) or keep the `+` mid-line.
-- Bare `_` in inline prose mixed with backticked identifiers can be parsed
-  as italic delimiters and mangle text — eating spaces and swapping
-  characters. Backtick identifiers like `scope_id` or `cell_*` even when
-  the surrounding sentence isn't otherwise code-heavy. When several
-  `_`-bearing identifiers appear in one sentence, restructure as a bullet
-  list so each lands at end-of-line away from prose interactions.
+See ./references/path-references.md for all three forms in full, the web-rendered
+caveat, anti-patterns, and Prettier cautions.
 
 ## Testing
 
@@ -529,32 +391,26 @@ Component-local classes use `kebab-case` (`site-header`, `nav-links`).
 
 ### 3-Layer Architecture
 
-| Layer              | File              | Purpose                                                   |
-| ------------------ | ----------------- | --------------------------------------------------------- |
-| 1. Semantic styles | `style.css`       | Reset + element defaults (buttons, inputs, forms, tables) |
-| 2. Style variables | `theme.css`       | 600+ design tokens as CSS custom properties               |
-| 3. Utility classes | `virtual:fuz.css` | Optional, generated per-project with only used classes    |
+- **Semantic styles** (`style.css`) — reset + element defaults (buttons, inputs, forms, tables)
+- **Style variables** (`theme.css`) — 600+ design tokens as CSS custom properties
+- **Utility classes** (`virtual:fuz.css`) — optional, generated per-project with only used classes
 
 ### CSS Classes
 
-| Type                  | Example                               | Purpose                      |
-| --------------------- | ------------------------------------- | ---------------------------- |
-| **Token classes**     | `.p_md`, `.color_a_50`, `.gap_lg`     | Map to style variables       |
-| **Composite classes** | `.box`, `.row`, `.ellipsis`           | Multi-property shortcuts     |
-| **Literal classes**   | `.display:flex`, `.hover:opacity:80%` | Arbitrary CSS property:value |
+- **Token classes** (`.p_md`, `.color_a_50`, `.gap_lg`) — map to style variables
+- **Composite classes** (`.box`, `.row`, `.ellipsis`) — multi-property shortcuts
+- **Literal classes** (`.display:flex`, `.hover:opacity:80%`) — arbitrary CSS `property:value`
 
 **Comment hints** for static extraction: `// @fuz-classes box row p_md`,
 `// @fuz-elements button input`, `// @fuz-variables shade_40 text_50`.
 
 ### When to Use Classes vs Styles
 
-| Need                   | Utility class | Style tag     | Inline style |
-| ---------------------- | ------------- | ------------- | ------------ |
-| Style own elements     | **Preferred** | Complex cases | OK           |
-| Style child components | **Yes**       | No            | Limited      |
-| Hover/focus/responsive | **Yes**       | Yes           | No           |
-| Runtime dynamic values | No            | No            | **Yes**      |
-| IDE autocomplete       | No            | **Yes**       | Partial      |
+- **Own elements** — utility classes preferred; `<style>` for complex cases; inline OK
+- **Child components** — utility classes; not `<style>`; inline limited
+- **Hover / focus / responsive** — utility classes or `<style>`; never inline
+- **Runtime dynamic values** — inline `style:` only (not classes or `<style>`)
+- **IDE autocomplete** — best in `<style>`; partial inline; none on utility classes
 
 ## Dependency Injection
 
@@ -617,6 +473,31 @@ See ./references/zod-schemas.md for branded types, transform pipelines,
 discriminated unions, route specs, schemas as runtime data, instance schemas
 (zzz Cell), and introspection.
 
+## Rust Crates
+
+The ecosystem's Rust workspaces (the `fuz`/`fuzd` CLI + daemon, the spine
+crates consumed by `zzz_server`/`fuz_forge_server`, the `zap` convergence
+engine, the `blake3`/`tsv` bindings) share a distinct set of conventions from
+the TS/Svelte side. snake_case carries over for cross-language alignment, but
+Rust solves with the type system + crate graph what TS solves with `*Deps`
+injection. Three references, loaded on demand:
+
+- **./references/rust-patterns.md** — workspace layout, strict lints
+  (`unsafe_code = "forbid"`, pedantic + nursery + restriction lints), `thiserror`
+  error taxonomy + `.hint()`/`.exit_code()` binary helpers, the DI escalation
+  ladder (`*Options`/capability-traits/enum-dispatch-before-`dyn`/RPITIT), the
+  make-impossible-states-unrepresentable idiom (zap_types is the reference),
+  graceful shutdown, daemon lifecycle, CLI/xtask patterns, and the shared
+  spine-consumer patterns (`run_app`, env loading, `fuz_audit` check-release).
+- **./references/rust-perf.md** — profiling, allocation/lock hygiene, bounds-check
+  elision, inlining, the `unsafe` escape hatch, and what's out of scope.
+- **./references/rust-dependencies.md** — the approved external-crate allowlist
+  and the crate-vs-cargo-feature supply-chain isolation technique.
+
+WASM binding crates additionally follow ./references/wasm-patterns.md. Each
+Rust repo's `CLAUDE.md` is authoritative for project-specific conventions; these
+cover the shared patterns across workspaces.
+
 ## Quick Reference
 
 - `gro check` to validate (never run dev server)
@@ -628,5 +509,7 @@ discriminated unions, route specs, schemas as runtime data, instance schemas
 - Copious `// TODO:` comments; `TODO_*.md` for multi-session work
 - Token classes for design system values, literal classes for arbitrary CSS
 - `z.strictObject()` default, PascalCase naming, `.meta()` for descriptions
+- Rust: enums for closed sets, `thiserror` typed errors, `*Options` not `*Deps` —
+  ./references/rust-patterns.md
 - Breaking changes acceptable — delete unused code, don't shim
 - Never manually edit `expected.json` — regenerate via task

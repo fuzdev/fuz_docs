@@ -11,7 +11,8 @@ interchangeable. Nominal typing adds invisible brands to distinguish them.
 ### Flavored (loose)
 
 `Flavored<TValue, TName>` adds an optional invisible brand. Unflavored base
-types are assignable without casting, but different flavors are incompatible:
+types are assignable without casting, but different flavors are incompatible.
+Primary nominal typing approach:
 
 ```typescript
 // Implementation:
@@ -30,7 +31,7 @@ const email1: Email = 'foo@bar.com';         // ok — plain string is fine
 const email2: Email = 'foo' as Address;       // error — Address !== Email
 ```
 
-Primary nominal typing approach. Real uses in fuz_util:
+Real uses in fuz_util:
 
 ```typescript
 // fuz_util/id.ts
@@ -79,7 +80,7 @@ const phone1: PhoneNumber = '555-1234';                // error — must cast
 const phone2: PhoneNumber = '555-1234' as PhoneNumber;  // ok
 ```
 
-Exported but unused in the ecosystem. In practice, use `Flavored` for
+Exported but unused in the ecosystem: in practice, use `Flavored` for
 compile-time nominal typing and Zod `.brand()` for runtime-validated types.
 
 ### Choosing between them
@@ -91,8 +92,8 @@ compile-time nominal typing and Zod `.brand()` for runtime-validated types.
 
 ### Zod `.brand()` — runtime-validated nominal types
 
-For types needing runtime validation, Zod `.brand()` (distinct from fuz_util's
-`Branded`):
+For types needing runtime validation, use Zod `.brand()` (distinct from
+fuz_util's `Branded`):
 
 ```typescript
 // zzz/zod_helpers.ts
@@ -111,7 +112,7 @@ export type DiskfilePath = z.infer<typeof DiskfilePath>;
 ```
 
 fuz_util's `Uuid` uses `Flavored` (no runtime validation); zzz's `Uuid` uses
-Zod `.brand()` (with validation). Separate types.
+Zod `.brand()` (with validation) — separate types.
 
 See ./zod-schemas.md for full Zod schema conventions including branded types.
 
@@ -125,7 +126,7 @@ Stricter `Omit` — `K` must be an actual key of `T`:
 type OmitStrict<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 ```
 
-Standard `Omit` accepts any string for `K` (typos compile silently).
+Standard `Omit` accepts any string for `K` (typos compile silently);
 `OmitStrict` catches them. Widely used in fuz_ui, fuz_app, zzz.
 
 ### PickUnion and KeyofUnion

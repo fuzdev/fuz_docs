@@ -39,8 +39,8 @@ src/
             └── update.task.ts      # regeneration task for this feature
 ```
 
-Tests live in `src/test/`, mirroring `src/lib/` subdirectories
-(e.g., `src/lib/auth/` -> `src/test/auth/`).
+Tests live in `src/test/` (not co-located), mirroring `src/lib/`
+subdirectories (e.g., `src/lib/auth/` -> `src/test/auth/`).
 
 ### Test File Naming
 
@@ -71,8 +71,8 @@ Real examples:
 Use `assert` from vitest. Choose methods for TypeScript type narrowing, not
 semantic precision. `assert.ok` is the standard guard for narrowing
 `T | undefined` to `T` — don't replace it with `assert.isDefined` or other
-methods unless the replacement provides better failure diagnostics without
-losing narrowing.
+methods unless the replacement improves failure diagnostics without losing
+narrowing.
 
 ```typescript
 import {test, assert} from 'vitest';
@@ -82,12 +82,12 @@ assert.strictEqual(a, b);
 assert.deepStrictEqual(a, b);
 ```
 
-Strengthen assertions when the value is **known** — use `assert.strictEqual`
-for exact expected values, `assert.include`/`assert.notInclude` for array
+Strengthen assertions when the value is **known**: `assert.strictEqual` for
+exact expected values, `assert.include`/`assert.notInclude` for array
 membership (shows actual contents on failure). Leave `assert.ok` for guards
 where the goal is narrowing, not value checking.
 
-**Why `assert` over `expect`:** `assert` methods narrow types for TypeScript.
+**Why `assert` over `expect`:** `assert` methods narrow types for TypeScript;
 `expect` chains don't:
 
 ```typescript
@@ -108,10 +108,10 @@ assert.isDefined(result);
 assert.strictEqual(result.id, expected_id); // no result! needed
 ```
 
-Name custom assertion helpers `assert_*` (not `expect_*`).
-Example: `assert_css_contains()` not `expect_css_contains()`.
+Name custom assertion helpers `assert_*`, not `expect_*` — e.g.
+`assert_css_contains()`.
 
-For throw assertions, use `assert.throws()` with Error constructor, string,
+For throw assertions, use `assert.throws()` with an Error constructor, string,
 or RegExp. **Do not pass a function predicate** — causes
 `"errorLike is not a constructor"`:
 
@@ -148,8 +148,8 @@ assert.fail('Expected error');
 
 When tests need stand-in domain names (allowlists, URL parsing, CSP sources,
 etc.), use `*.fuz.dev` subdomains rather than `example.com`, RFC-2606 reserved
-TLDs, or arbitrary strings. The convention keeps test fixtures consistent
-across the ecosystem and signals that the domain is owned/controllable.
+TLDs, or arbitrary strings. This keeps fixtures consistent across the ecosystem
+and signals that the domain is owned/controllable.
 
 ```typescript
 // Anonymous placeholders — letters for "any domain"
@@ -173,7 +173,7 @@ integration with that vendor.
 
 For async functions that should reject, use `assert_rejects` from
 `@fuzdev/fuz_util/testing.js`. It places `assert.fail` outside the catch
-block to prevent accidentally catching assertion errors from the test itself:
+block so the test's own assertion errors aren't accidentally caught:
 
 ```typescript
 import {assert_rejects} from '@fuzdev/fuz_util/testing.js';
@@ -228,8 +228,8 @@ pattern currently.
 
 ### The `.db.test.ts` Convention
 
-Any test using a `Db` instance should use `.db.test.ts` suffix. `.db` always
-goes immediately before `.test.ts` — e.g., `foo.integration.db.test.ts`.
+Any test using a `Db` instance uses the `.db.test.ts` suffix, with `.db`
+immediately before `.test.ts` — e.g., `foo.integration.db.test.ts`.
 
 Vitest `projects` runs all DB tests in a single worker (`isolate: false` +
 `fileParallelism: false`), sharing one PGlite WASM instance (~500-700ms
@@ -281,8 +281,9 @@ Because `isolate: false` shares module state, avoid `vi.mock()` in
 
 ### describe_db Pattern
 
-fuz_app's `testing/db.ts` provides `create_describe_db(factories, truncate_tables)`.
-Consumer projects create a `db_fixture.ts`:
+fuz_app's `testing/db.ts` provides
+`create_describe_db(factories, truncate_tables)`. Consumer projects create a
+`db_fixture.ts`:
 
 ```typescript
 // src/test/db_fixture.ts
@@ -350,14 +351,14 @@ const {app, create_session_headers, create_bearer_headers, create_account, clean
 
 `create_pglite_factory` instances in the same worker share a single PGlite
 WASM instance via module-level cache. Subsequent calls reset the schema
-(`DROP SCHEMA public CASCADE`) instead of paying cold-start cost.
+(`DROP SCHEMA public CASCADE`) instead of paying the cold-start cost.
 
 ## Test Helpers
 
 ### Shared Helpers (`@fuzdev/fuz_util/testing.js`)
 
-Cross-repo test assertions live in `@fuzdev/fuz_util/testing.js`. Only
-depends on vitest — safe for fuz_util's zero-runtime-deps constraint.
+Cross-repo test assertions live in `@fuzdev/fuz_util/testing.js`. Depends
+only on vitest — safe for fuz_util's zero-runtime-deps constraint.
 
 ```typescript
 import {assert_rejects, create_mock_logger} from '@fuzdev/fuz_util/testing.js';
@@ -376,7 +377,7 @@ narrows discriminated unions, so no wrapper is needed.
 
 ### Repo-Local Helpers
 
-Most repos also have `test_helpers.ts` for domain-specific factories
+Most repos also have a `test_helpers.ts` for domain-specific factories
 (fuz_ui, fuz_css, gro, fuz_gitops). fuz_app's test infrastructure lives
 in `src/lib/testing/` (library exports, not test helpers).
 
@@ -461,7 +462,7 @@ export const run_update_task = async <TInput, TOutput>(config: UpdateTaskConfig<
 
 When multiple components share behavior (e.g., `ContextmenuRoot` and
 `ContextmenuRootForSafariCompatibility`), extract test logic into factory
-modules exporting `create_shared_*_tests()`. Test files become thin wrappers:
+modules exporting `create_shared_*_tests()`; test files become thin wrappers:
 
 ```typescript
 // src/test/contextmenu_test_core.ts — factory module (NOT a test file)
@@ -506,7 +507,7 @@ svelte, svelte_preprocess_mdz) and other static-analysis tooling.
 
 ### Directory Structure
 
-Each fixture is a subdirectory with input and generated `expected.json`:
+Each fixture is a subdirectory with an input and a generated `expected.json`:
 
 ```
 src/test/fixtures/
@@ -629,8 +630,8 @@ files and run the update task.
 
 ### Fixture Testing in fuz_gitops
 
-Different fixture pattern: generated git repositories from fixture data files.
-Fixtures define repos with dependencies, changesets, and expected outcomes.
+Different fixture pattern: git repositories generated from fixture data files
+defining repos with dependencies, changesets, and expected outcomes.
 
 - `src/test/fixtures/repo_fixtures/*.ts` — source of truth for test repo definitions
 - `src/test/fixtures/generate_repos.ts` — idempotent repo generation logic
@@ -638,8 +639,8 @@ Fixtures define repos with dependencies, changesets, and expected outcomes.
 - `src/test/fixtures/check.test.ts` — validates command output against expectations
 - `src/test/fixtures/mock_operations.ts` — configurable DI mocks (not vi.fn())
 
-10 scenarios covering publishing, cascades, cycles, private packages, major
-bumps, peer deps, and isolation. Repos auto-generated on first test run;
+10 scenarios cover publishing, cascades, cycles, private packages, major
+bumps, peer deps, and isolation. Repos are auto-generated on first test run;
 regenerate with `gro src/test/fixtures/generate_repos`.
 
 ## Mock Patterns
@@ -706,12 +707,11 @@ const runtime = create_mock_runtime(); // MockRuntime for CLI tests
 ### vi.mock() Usage
 
 Used in gro and some fuz_app unit tests. Avoid in `.db.test.ts` where
-`isolate: false` shares module state. When needed:
+`isolate: false` shares module state. Prefer DI when possible. When needed:
 
 - gro: `vi.clearAllMocks()` in `beforeEach`, `vi.resetAllMocks()` in `afterEach`
 - `.db.test.ts`: if unavoidable, use `vi.restoreAllMocks()` in `afterEach` —
   module-level mocks leak with `isolate: false`
-- Prefer DI when possible
 
 ### Mock Factory Naming
 
@@ -794,8 +794,8 @@ describe('account queries', () => {
 
 ### Test Organization
 
-Use `describe` blocks to organize tests. One level is common; two levels
-(feature → scenario) is typical for larger modules. Use `test()` not `it()`.
+Organize tests with `describe` blocks. One level is common; two levels
+(feature → scenario) is typical for larger modules. Use `test()`, not `it()`.
 
 ```typescript
 // one level — most modules
@@ -821,7 +821,7 @@ files, but `describe` is the default.
 
 ### Parameterized Tests
 
-Labeled tuple types for self-documenting test tables:
+Use labeled tuple types for self-documenting test tables:
 
 ```typescript
 const duration_cases: Array<[label: string, input: number, expected: string]> = [
@@ -893,27 +893,27 @@ Tests with dynamic expected values or extra assertions should stay standalone.
 | `describe_standard_tests`                   | 8      | Bundle: 8 DB-backed suites, relevant-config silent-skip gates |
 
 Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
-configuration with `session_options`, `create_route_specs`, and `rpc_endpoints`.
+configuration via `session_options`, `create_route_specs`, and `rpc_endpoints`.
 The `describe_standard_tests` bundle reads a top-level `bootstrap?:
-BootstrapServerOptions` (`{mode: 'disabled' | 'surface_only' | 'live'}`)
-that gates the bootstrap-success suite (`bootstrap.mode === 'live'`)
-alongside flowing to the surface + live app.
+BootstrapServerOptions` (`{mode: 'disabled' | 'surface_only' | 'live'}`) that
+gates the bootstrap-success suite (`bootstrap.mode === 'live'`) and flows to
+the surface + live app.
 
 ### WebSocket Round-Trip Tests
 
 WebSocket JSON-RPC endpoints are tested in-process via
 `@fuzdev/fuz_app/testing/ws_round_trip.js` — no HTTP server, no Deno. The
 harness drives the real `register_action_ws` dispatcher and
-`BackendWebsocketTransport` against `MockWsClient` connections, so
-per-action auth, input validation, `ctx.notify`, and broadcast fan-out
-all run through the real code paths.
+`BackendWebsocketTransport` against `MockWsClient` connections, so per-action
+auth, input validation, `ctx.notify`, and broadcast fan-out all run through
+real code paths.
 
 Convention (used in zap, zzz):
 
 1. **All round-trip helpers live in fuz_app**
    (`@fuzdev/fuz_app/testing/ws_round_trip.js`):
    - `create_ws_test_harness({specs, handlers, ...})` → `{transport,
-     connect}`. `connect(identity?)` is async and resolves after
+     connect}`. `connect(identity?)` is async, resolving after
      `on_socket_open` completes. Passes through `register_action_ws`
      options (`on_socket_open`, `on_socket_close`, `extend_context`,
      `transport`, `log`); share a `BackendWebsocketTransport` via the
@@ -922,13 +922,13 @@ Convention (used in zap, zzz):
      default for request/response. Returns `result` on success; throws
      `rpc #id failed: [code] message data=...` on error frames.
    - `client.send(message)` + `client.wait_for(predicate)` — raw
-     primitives. Use them to assert on an error frame directly (e.g.
-     `-32602` + zod issues) or when the request never resolves
-     (`ctx.signal` abort tests).
+     primitives for asserting on an error frame directly (e.g. `-32602`
+     + zod issues) or when the request never resolves (`ctx.signal`
+     abort tests).
    - Predicates: `is_notification(method)`, `is_response_for(id)`, and
      `is_notification_with<P>(method, (params) => boolean)` — a type
-     guard that narrows `wait_for` / `messages.filter` results without
-     an explicit `<T>` at the call site.
+     guard narrowing `wait_for` / `messages.filter` results without an
+     explicit `<T>` at the call site.
    - Wire-frame types for narrowing: `JsonrpcNotificationFrame<P>`,
      `JsonrpcSuccessResponseFrame<R>`, `JsonrpcErrorResponseFrame<D>`.
    - `build_broadcast_api<TApi>({harness, specs})` — wires peer +
@@ -936,23 +936,22 @@ Convention (used in zap, zzz):
    - `keeper_identity()` — default identity for keeper-authed connections.
 
 2. **Repo-local `ws_test_harness.ts` is only for project-specific
-   setup** — not a re-implementation of the above. Repos with
-   memoized per-worker state (pglite + schema + seed) can add one;
-   zap and zzz have no repo-local harness at all and tests import
-   directly from `@fuzdev/fuz_app/testing/ws_round_trip.js`.
+   setup** — not a re-implementation of the above. Repos with memoized
+   per-worker state (pglite + schema + seed) can add one; zap and zzz
+   have none, importing directly from
+   `@fuzdev/fuz_app/testing/ws_round_trip.js`.
 
-3. **Split test files by aspect** (same as other test suites —
-   see _Test File Naming_ above):
+3. **Split test files by aspect** (see _Test File Naming_ above):
    - `ws.integration.dispatch.test.ts` — request/response, `ctx.notify`,
      per-action auth, input validation, `ctx.signal`, concurrent requests
    - `ws.integration.broadcast.test.ts` — `create_broadcast_api`
      fan-out, close-removes-from-transport
 
-4. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize
-   the harness per worker when `isolate: false` + `fileParallelism: false`
-   means module-level state would otherwise double-init.
-   Non-DB WS tests (zap, zzz) build a fresh harness per test — setup
-   is cheap and each test can supply its own ad-hoc specs + handlers.
+4. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize the
+   harness per worker, since `isolate: false` + `fileParallelism: false`
+   would otherwise double-init module-level state. Non-DB WS tests (zap,
+   zzz) build a fresh harness per test — setup is cheap and each test can
+   supply its own ad-hoc specs + handlers.
 
 ## Quick Reference
 

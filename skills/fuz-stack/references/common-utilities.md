@@ -59,10 +59,10 @@ opposite of `unwrap` returning just `.value`.
 
 - Spread data directly on the result: `{ok: true, ...data}` — not
   `{ok: true, value: {data: ...}}`
-- Use `{value}` when `unwrap()` is expected
-- Use `{message}` for errors (used by `ResultError`)
-- Prefer Result over throwing for expected errors (parsing, validation)
-- Use exceptions for unexpected errors (programmer mistakes, system failures)
+- Use `{value}` when `unwrap()` is expected; `{message}` for errors (used by
+  `ResultError`)
+- Prefer Result over throwing for expected errors (parsing, validation); use
+  exceptions for unexpected errors (programmer mistakes, system failures)
 
 ## Logger
 
@@ -119,14 +119,14 @@ Override via `PUBLIC_LOG_LEVEL` env var. Default detection order:
 | `log.debug()` | `debug` | `console.log`  | Diagnostic details                |
 | `log.raw()`   | (none)  | `console.log`  | Unfiltered, no prefix or level check |
 
-Each method (except `raw`) checks `this.level` before outputting. Prefixes
-include the label in brackets and a level indicator for error, warn, and debug.
-Info has no level prefix — just the label.
+Each method except `raw` checks `this.level` before outputting. Prefixes
+include the bracketed label plus a level indicator for error, warn, and debug;
+info has no level prefix — just the label.
 
 ### Inheritance
 
-No static state. Level, colors, and console are instance properties.
-Children inherit from parent — changing a parent's level affects children
+No static state — level, colors, and console are instance properties.
+Children inherit from parent, so changing a parent's level affects children
 that haven't set their own override.
 
 ```typescript
@@ -156,7 +156,7 @@ Colors automatically disabled when `NO_COLOR` or `CLAUDECODE` env vars are set.
 ## Timings
 
 Performance measurement via `@fuzdev/fuz_util/timings.js`. Tracks multiple
-named timing operations, used in Gro's `TaskContext` for task performance.
+named timing operations; used in Gro's `TaskContext` for task performance.
 
 ```typescript
 import {Timings} from '@fuzdev/fuz_util/timings.js';
@@ -198,8 +198,8 @@ data at debug level after task execution. `Timings` itself does not log.
 ### Stopwatch
 
 `create_stopwatch(decimals?)` — lower-level primitive returning a `Stopwatch`
-function that tracks elapsed time from creation. Call with `true` to reset.
-Default `decimals` is 2.
+function that tracks elapsed time from creation. Call with `true` to reset;
+default `decimals` is 2.
 
 ```typescript
 import {create_stopwatch, type Stopwatch} from '@fuzdev/fuz_util/timings.js';
@@ -213,7 +213,7 @@ console.log(elapsed()); // ms since reset
 
 ## DAG Execution
 
-`@fuzdev/fuz_util/dag.js` — `run_dag()` for executing dependency graphs
+`@fuzdev/fuz_util/dag.js` — `run_dag()` executes dependency graphs
 concurrently. Nodes declare dependencies via `depends_on`; independent nodes
 run in parallel up to `max_concurrency`. Uses `AsyncSemaphore` for concurrency
 and `Deferred` for dependency signaling.
@@ -252,8 +252,8 @@ swallow(event, true, false);     // stopImmediatePropagation only (no preventDef
 ```
 
 Design principle: if you `preventDefault`, you're claiming the event — use
-`swallow` to also stop propagation. Parents that need to observe before
-children claim should use the `capture` phase. See ./svelte-patterns.md
+`swallow` to also stop propagation. Parents needing to observe before children
+claim should use the `capture` phase. See ./svelte-patterns.md
 §Event Handling for full guidance.
 
 ### `handle_target_value`

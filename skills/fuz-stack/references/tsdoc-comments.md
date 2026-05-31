@@ -8,7 +8,7 @@ Doc comments flow through a three-stage pipeline:
 
 1. **`svelte-docinfo` analysis** — extracts JSDoc/TSDoc from the TypeScript AST
    into per-declaration metadata
-2. **`svelte-docinfo` Vite plugin** — exposes module and declaration metadata
+2. **`svelte-docinfo` Vite plugin** — exposes module/declaration metadata
    through the `virtual:svelte-docinfo` module at build/dev time
 3. **`mdz`** renders docs with auto-linking — backticked identifiers become
    clickable API-doc links
@@ -44,8 +44,8 @@ export const create_session = (deps: QueryDeps, account_id: AccountId): Session 
 A wrong or filler comment is worse than no comment. Four patterns recur
 in real audits.
 
-**1. Helper-contract `@throws` at every callsite.** When your function
-delegates a failure to an internal helper or an external engine, document
+**1. Helper-contract `@throws` at every callsite.** When a function
+delegates a failure to an internal helper or external engine, document
 the contract on the helper — not on every caller.
 
 ```typescript
@@ -61,10 +61,10 @@ the contract on the helper — not on every caller.
 ```
 
 **2. `@mutates X - <verb that mirrors the function name>`.** A tag that
-adds no scope beyond the name + description is filler. A `@mutates`
-earns its line when it surfaces *what would surprise a reader*: specific
-tables/columns, cross-table cascades, fire-and-forget effects, context
-keys consumed by downstream middleware, counter or rate-limiter state.
+adds no scope beyond the name + description is filler. A `@mutates` earns its
+line when it surfaces *what would surprise a reader*: specific tables/columns,
+cross-table cascades, fire-and-forget effects, context keys consumed by
+downstream middleware, counter or rate-limiter state.
 
 ```typescript
 // Weak — set_session_cookie already says it
@@ -93,15 +93,15 @@ keys consumed by downstream middleware, counter or rate-limiter state.
 
 Pick one phrasing.
 
-**4. Verbose prose / useless detail.** Filler that pads without adding
-signal. Specific shapes that recur:
+**4. Verbose prose / useless detail.** Filler that pads without signal.
+Recurring shapes:
 
-- **Filler `@param X - the X`** — when the description adds nothing beyond
-  the parameter name and type. Drop the line; the signature is enough. A
+- **Filler `@param X - the X`** — description adds nothing beyond the
+  parameter name and type. Drop the line; the signature is enough. A
   qualifier ("the X to <verb>", a format hint, an edge-case note) is
   usually worth keeping.
-- **Step-by-step narration of self-evident behavior** — when the function
-  name + signature already tell the story.
+- **Step-by-step narration of self-evident behavior** — the function name
+  + signature already tell the story.
 - **Hedging filler** — "simply", "just", "essentially", "basically", and
   "should never happen" almost always indicate filler. Cut the sentence
   or rewrite without the hedge.
@@ -124,8 +124,8 @@ signal. Specific shapes that recur:
  */
 ```
 
-Long prose without security, ordering, or invariant rationale is the shape
-to flag — multi-paragraph descriptions are *earned* (see [Voice](#voice)).
+Multi-paragraph descriptions are *earned*; long prose without that payoff
+is the shape to flag (see [Voice](#voice)).
 
 ### Voice
 
@@ -134,8 +134,8 @@ to flag — multi-paragraph descriptions are *earned* (see [Voice](#voice)).
 table/column/symbol/constant name are house style.
 
 Multi-paragraph descriptions are *earned* by security or invariant
-rationale (TOCTOU, fail-closed, sibling-supersede, ordering, init order).
-Long prose without that payoff is the pattern to flag.
+rationale (TOCTOU, fail-closed, sibling-supersede, ordering, init order);
+long prose without that payoff is the pattern to flag.
 
 ### Document workflows with numbered steps
 
@@ -155,7 +155,7 @@ Long prose without that payoff is the pattern to flag.
 
 ### Name algorithms and explain rationale
 
-Name the algorithm so readers can look it up, and note rationale for
+Name the algorithm so readers can look it up; note rationale for
 non-obvious parameter choices.
 
 ```typescript
@@ -208,11 +208,11 @@ mdz renders TSDoc through the `virtual:svelte-docinfo` pipeline, so the detail
 stays one hop from the code and moves when the code moves.
 
 CLAUDE.md entries should read as one-line pointers: symbol name plus a
-short hook. If you're writing three sentences about what a function returns
-or how it interacts with sibling symbols, that content belongs in source
-TSDoc. The failure mode is drift: CLAUDE.md prose goes stale because it
-lives far from the code it describes, while TSDoc on the same symbol often
-stays current because it's visible during the edit.
+short hook. Three sentences about what a function returns or how it
+interacts with sibling symbols belong in source TSDoc. The failure mode is
+drift: CLAUDE.md prose goes stale living far from the code it describes,
+while TSDoc on the same symbol stays current because it's visible during
+the edit.
 
 ## Tag Reference
 
@@ -237,7 +237,7 @@ blank line:
 - Hyphen separator (per TSDoc spec)
 - Wrap type/identifier references in backticks
 - Must be in source parameter order
-- Capitalization and trailing periods follow normal English. Both fragment-style (`@param foo - the value to clamp`) and sentence-style (`@param foo - The value to clamp.`) are accepted; pick one and stay consistent within a file. Acronyms (CSS, HTML, URL) and proper names (Zod, Fisher-Yates) stay capitalized regardless.
+- Capitalization and trailing periods follow normal English. Both fragment-style (`@param foo - the value to clamp`) and sentence-style (`@param foo - The value to clamp.`) are accepted; pick one per file. Acronyms (CSS, HTML, URL) and proper names (Zod, Fisher-Yates) stay capitalized regardless.
 
 ```typescript
 /**
@@ -288,6 +288,7 @@ The bare form (`@throws description`) and curly-brace form (`@throws {ErrorType}
 Code must be in fenced code blocks for syntax highlighting — `mdz` renders
 examples as markdown.
 
+
 ````typescript
 /**
  * Convert raw TSDoc `@see` content to mdz format for rendering.
@@ -328,7 +329,7 @@ export interface ModuleSourceOptions {
 
 #### Writing effective examples
 
-Focus on giving the reader a clear mental model of how to use the API:
+Give the reader a clear mental model of how to use the API:
 
 - Show the most common use case first — additional `@example` tags for variants
 - Use `// =>` or `// →` comments to show return values inline
@@ -384,7 +385,8 @@ Focus on giving the reader a clear mental model of how to use the API:
 ### `@deprecated`
 
 Include migration guidance with backtick-linked replacement. Rarely used —
-"no backwards compatibility" policy means deprecated code is usually deleted.
+the "no backwards compatibility" policy means deprecated code is usually
+deleted.
 
 ```typescript
 /**
@@ -491,7 +493,7 @@ export const task: Task<typeof Args> = {...};
 **Never `@nodocs` a symbol that external consumers import and use directly.**
 If it's part of the public API, rename one side of the collision instead —
 hiding the primary surface from the flat namespace also hides it from
-generated docs and tomes, which silently breaks downstream documentation.
+generated docs and tomes, silently breaking downstream documentation.
 See [SKILL.md §Flat Namespace](../#flat-namespace-fail-fast) for which side to rename.
 
 ### `@mutates` (non-standard)
@@ -501,23 +503,22 @@ Documents mutations to parameters or external state. Supported by fuz_ui's
 
 **Preferred form**: `@mutates target - description`. The description is
 the value-add — it tells the reader *what* changes and, when non-obvious,
-*why or when*. Without it the tag duplicates information the function name
-and signature already carry.
+*why or when*. Without it the tag duplicates the function name and
+signature.
 
 A bare backtick form (`` @mutates `target` ``, no description) parses but
-is discouraged: if the mutation is obvious enough that no description is
-warranted, the tag itself is also adding little. If you write `@mutates`,
-make the description carry weight.
+is discouraged: if the mutation needs no description, the tag adds little
+too. When you write `@mutates`, make the description carry weight.
 
 Same capitalization rules as `@param`. Document mutations visible outside
-the function. Internal locals, closure state, and pull-based lazy caches
+the function; internal locals, closure state, and pull-based lazy caches
 that consumers don't observe are out of scope.
 
 #### When `@mutates this` is warranted on class methods
 
 Stateful classes mutate by design — that's the point. Tagging *every*
 state-changing method (`add`, `remove`, `clear`, `set`, `release`,
-`acquire`, …) produces noise: the method name already names the mutation.
+`acquire`, …) is noise: the method name already names the mutation.
 
 `@mutates this[.field] - description` earns its line on a class method
 **when the mutation isn't obvious from the method name**. Recurring shapes:
@@ -526,11 +527,11 @@ state-changing method (`add`, `remove`, `clear`, `set`, `release`,
   derived state. Example: `Logger.clear_colors_override` resets the
   override AND invalidates four cached prefix strings.
 - **Cross-resource side effects** — the method registers/unregisters
-  external listeners, file watchers, timers, or process handlers in
-  addition to mutating local state. Example: `attach_error_handler` sets
+  external listeners, file watchers, timers, or process handlers beyond
+  mutating local state. Example: `attach_error_handler` sets
   `#error_handler` AND subscribes to `process.uncaughtException`.
 - **Implicit tracking** — the method name describes one action but the
-  class also records it for lifecycle/cleanup purposes. Example:
+  class also records it for lifecycle/cleanup. Example:
   `ProcessRegistry.spawn` is named after spawning, but also adds the
   child to `this.processes` for later `despawn_all`.
 - **Surprising mutation on a query-shaped name** — the method looks like
@@ -653,6 +654,7 @@ Top-level files (e.g., `src/lib/Alert.ts`) match by bare filename
 require the full sub-path ("`actions/composables.ts`"). When in doubt,
 include the directory — the longer form always works.
 
+
 The canonical format is documented on `Module.path` in `module.svelte.ts`
 (fuz_ui).
 
@@ -660,7 +662,7 @@ The canonical format is documented on `Module.path` in `module.svelte.ts`
 
 Paths starting with `/` after whitespace auto-link as internal navigation.
 
-**Gotcha — API route lists**: `/word` patterns get auto-linked, including HTTP
+**Gotcha — API route lists**: `/word` patterns auto-link, including HTTP
 routes. Bare paths create broken links that fail SvelteKit prerender:
 
 ```typescript
@@ -865,7 +867,9 @@ export interface SourceFileInfo {
 
 ### Svelte components
 
-Document props inline in the `$props()` type annotation:
+Document props inline in the `$props()` type annotation. For obvious props
+with no default, a comment is optional — focus on behavior, constraints,
+and non-obvious defaults.
 
 ```svelte
 <script lang="ts">
@@ -905,9 +909,6 @@ Document props inline in the `$props()` type annotation:
 </script>
 ```
 
-For obvious props with no default, a comment is optional. Focus on behavior,
-constraints, and non-obvious defaults.
-
 ### Type aliases
 
 ```typescript
@@ -923,11 +924,11 @@ export type AnalyzerType = 'typescript' | 'svelte';
 ## Drift — Correctness Over Coverage
 
 **A wrong doc comment is worse than a missing one**: it looks authoritative,
-so downstream readers trust it and propagate the mistake. Coverage
-(presence) is the easy axis; correctness (currency) is the failure mode that
-actually matters. When refactoring a public API — changing signatures,
-adding fields to return types, tightening error semantics, or renaming
-constants — re-read the TSDoc on every touched symbol before shipping.
+so readers trust it and propagate the mistake. Coverage (presence) is the
+easy axis; correctness (currency) is the failure mode that actually matters.
+When refactoring a public API — changing signatures, adding fields to return
+types, tightening error semantics, or renaming constants — re-read the TSDoc
+on every touched symbol before shipping.
 
 Common drift patterns to watch for:
 

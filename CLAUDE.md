@@ -142,6 +142,8 @@ skills/
 │   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
 │   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
+│   │   ├── file-organization.md       # src/ tree, domain subdirectories, full-path imports, test mirroring
+│   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
 │   │   ├── rust-dependencies.md       # Approved external crate allowlist for Rust workspaces
 │   │   ├── rust-patterns.md           # Rust workspace, lint, error, CLI patterns (fuz, tsv, blake3)
 │   │   ├── rust-perf.md               # Rust perf: profiling, allocators, locks, arenas, SIMD, false sharing
