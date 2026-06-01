@@ -647,12 +647,23 @@ else falls through to plain `<code>` and the auto-link silently breaks.
 
 // BAD — bare filename of a nested module ambiguous and won't resolve
 /** @see `composables.ts` */ // breaks if the file is at actions/composables.ts
+
+// BAD — redundant `src/lib/` prefix; collapse to the bare lib-relative form
+/** @see `src/lib/actions/composables.ts` */ // should be `actions/composables.ts`
 ```
 
 Top-level files (e.g., `src/lib/Alert.ts`) match by bare filename
 ("`Alert.ts`"). Nested files (e.g., `src/lib/actions/composables.ts`)
 require the full sub-path ("`actions/composables.ts`"). When in doubt,
 include the directory — the longer form always works.
+
+**Never reference outside the repo from TSDoc.** Source comments render into
+the published API docs, where the shipped package stands alone — a bare `../`
+path to another repo (or an absolute workspace path) becomes a dead link. Keep TSDoc
+references repo-local. Attribute external inspiration in prose without a
+navigable path, or link a full URL; a backticked literal stays an escape hatch
+(see [Path references](./path-references.md) §2). Cross-repo *code* references
+use the import-specifier form (`@scope/pkg/foo.js`), not a relative path.
 
 
 The canonical format is documented on `Module.path` in `module.svelte.ts`

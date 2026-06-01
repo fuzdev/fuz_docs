@@ -606,9 +606,10 @@ method (or that they can). See the canonical spec for the dual-variant
 `*` + `*Dyn` companion pattern when both dispatch shapes are load-bearing.
 
 Scope: `pub` traits in shared crates carry the marker even when used only as a
-generic bound today (`fuz_wire::Action`, `fuz_artifact::MetaIntegrity` currently
-lack it and should gain it). Private one-off helper traits inside a single crate
-need not.
+generic bound today (e.g. `fuz_artifact::MetaIntegrity` and
+`fuz_archive::Placement` — both `**Not object-safe**`, consumed only as
+`T: Trait` / `P: Trait` bounds). Private one-off helper traits inside a single
+crate need not.
 
 ### Test injection — concrete impls in a separate crate
 
@@ -1006,8 +1007,8 @@ re-implement it in each consumer.
 **JSON-RPC error envelope is `fuz_http`'s, period.** `fuz_http` owns the
 constructors (`invalid_params(detail, reason)`, `internal_error`,
 `internal_error_with_source`, `not_found`, `conflict`, `forbidden`,
-`validation_error`, `rate_limited`) and should own the typed-params helper
-`parse_params<T: DeserializeOwned>` (today `pub(crate)` in `fuz_cell`). Consumers
+`validation_error`, `rate_limited`) and the typed-params helper
+`parse_params<T: DeserializeOwned>`. Consumers
 must import these, never re-declare them — the wire envelope is what the
 cross-backend parity tests assert byte-for-byte, and a local copy drifts (zzz's
 re-implemented `invalid_params` dropped the spine's `reason` arg). Prefer typed
@@ -1097,7 +1098,7 @@ why the forbidden crates are crates, not features.
   config/usage; `fuzi`'s sysexits codes (64/65/70/74) are a sanctioned exception
   for agent-consumable CLIs.
 - **`HintMessage`** (`Static(&'static str) | Owned(String)`) is the shared CLI
-  hint primitive — it belongs in `fuz_common`, imported by every CLI that needs
+  hint primitive — it lives in `fuz_common::cli`, imported by every CLI that needs
   the interpolated case, not re-declared per binary. Hint strings carry *advice
   only* — the print site owns the `hint:` label; don't embed `"hint:"` inside the
   string.

@@ -16,16 +16,33 @@ location rather than by code identity:
 - `setup/foo` — bare workspace-root anchor (no `~/dev/` prefix); preferred over
   deep `../../setup/foo` from nested files
 
+> **A bare path is a promise it resolves on disk.** An unbackticked `./`, `../`,
+> or `~/dev/` path is a real, navigable link — it must point at a file or
+> directory that exists, resolved relative to the file it appears in (`~/dev/`
+> from the workspace root). If you mean a path *illustratively* — a conceptual
+> location (`./build/`), an example (`./foo/bar`), an import shown in prose
+> (`import './fuz.css'`) — **wrap it in backticks**; that's the escape hatch
+> that says "literal, don't follow." Source TSDoc additionally must not point
+> outside its own repo (see §4).
+
 ## 2. src/lib module references (backticked, src/lib-relative, no leading `./`)
 
 Marks the target as a code-like identifier — a module name, not a navigable
 filesystem path.
 
-> **Rule**: when a path inside src/lib is wrapped in backticks, it MUST be
-> src/lib-relative — never `../foo.ts`, never `./foo.ts`, never `src/lib/foo.ts`
-> from a file already inside src/lib. The backticks frame the token as a module
-> identifier; relative traversal contradicts that framing. Bare paths are the
-> only place `./` and `../` belong.
+> **Rule**: a backticked reference to a **same-repo** src/lib module MUST be the
+> bare src/lib-relative form — never `../foo.ts`, never `./foo.ts`, never
+> `src/lib/foo.ts` (the redundant prefix), never `./src/lib/foo.ts`. The
+> backticks frame the token as a module identifier; a `src/lib/` prefix or `./`
+> `../` traversal contradicts that framing. Bare paths are the only place `./`
+> and `../` belong.
+
+> **Backticks are an escape hatch.** This rule applies only to references that
+> resolve to a same-repo module. A backticked path that *isn't* one — a
+> cross-repo path, a deliberately-literal example, explanatory prose — is left
+> exactly as written. Don't rewrite `` `../some-other-repo/x.ts` `` or a
+> non-module path into the module form; the backticks mean "treat this
+> literally."
 
 - From any file inside src/lib: "`auth/account_schema.ts`" refers to
   `src/lib/auth/account_schema.ts`. Prefer this over both
@@ -39,10 +56,11 @@ filesystem path.
   "`auth/CLAUDE.md`", "`http/CLAUDE.md`"
 - Section refs follow: "`auth/CLAUDE.md`" §Middleware (backticks wrap the
   module, `§Heading` follows outside the backticks)
-- Examples:
-  - ✅ "`server/upload_route.ts`" — from `src/lib/server/CLAUDE.md`
-  - ✅ "`fuz_app/db/fact_store.ts`" — from `src/lib/fuz_util/CLAUDE.md`
-  - ❌ "`../fuz_app/db/fact_store.ts`" — backticked but traversal-relative
+- Examples (all referring to a same-repo module):
+  - ✅ "`server/upload_route.ts`" — the bare src/lib-relative form
+  - ❌ "`src/lib/server/upload_route.ts`" — redundant `src/lib/` prefix
+  - ❌ "`./src/lib/server/upload_route.ts`" — prefix plus a `./`
+  - ❌ "`../server/upload_route.ts`" — backticked but traversal-relative
   - ❌ "`./classroom_service.ts`" — backticked but self-relative
 
 ## 3. Code-shaped things outside src/lib (backticks for code, not paths)
@@ -50,6 +68,26 @@ filesystem path.
 - CLI commands: `gro check`, `deno task scry`
 - Top-level project files: `package.json`, `gitops.config.ts`, `tsconfig.json`
 - System/config identifiers: `~/.fuz/`, `~/.mg/config.json`
+
+## 4. Cross-repo references
+
+To point at a file in *another* workspace repo, use a **bare** navigational
+path (form 1) — `../other-repo/src/lib/foo.ts` or `~/dev/other-repo/...`. The
+backticked module form (form 2) is **same-repo only**: it resolves against the
+current repo's module index, so it can't name another package's module. For a
+published package's module, the import-specifier form is the right code
+reference (`@scope/pkg/foo.js`); a bare relative path is for navigation.
+
+Two constraints follow:
+
+- **A bare cross-repo path must resolve to a real file.** It's a navigable
+  link; a stale `../old-name/...` left behind after a repo is renamed or moved
+  is a broken reference. Keep these accurate as the workspace changes.
+- **TSDoc must not use `../` to leave the repo.** Source comments render into
+  the published API docs, where the shipped package has no sibling repos — an
+  out-of-repo `../` becomes a dead link. Keep TSDoc references repo-local;
+  attribute external inspiration in prose without a navigable path, or link a
+  URL. (Backticked explanatory paths remain the escape hatch — see §2.)
 
 Each file's relative paths assume the reader is in the file's parent directory.
 From `~/dev/CLAUDE.md`, project paths are `./project/`. From a deeply nested

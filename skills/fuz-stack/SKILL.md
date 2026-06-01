@@ -311,17 +311,22 @@ Backticked identifiers auto-link to API docs in TSDoc rendering.
 
 ### Path references
 
-Three forms by typography:
+Forms by typography:
 
 - **Navigational paths** — bare, no backticks (`./foo`, `../foo`, `~/dev/foo`)
-  for files referenced by location; mdz auto-linkifies `./`/`../` after whitespace
+  for files referenced by location; mdz auto-linkifies `./`/`../` after whitespace.
+  A bare path is a promise it **resolves on disk** — backtick an illustrative or
+  conceptual path (`` `./build/` ``) as the escape hatch
 - **src/lib module references** — backticked, src/lib-relative with **no** leading
-  `./` or `../` (e.g. "`auth/account_schema.ts`"); the backticks frame a module
-  identifier, so relative traversal contradicts the framing
+  `./`, `../`, or redundant `src/lib/` prefix (e.g. "`auth/account_schema.ts`");
+  the backticks frame a module identifier, so traversal/prefix contradicts the framing
+- **Cross-repo references** — bare `../other-repo/...` for navigation, or the
+  `@scope/pkg/foo.js` import specifier for a module's identity; the backticked
+  src/lib form is same-repo only, and TSDoc must not point outside its own repo
 - **Code-shaped non-paths** — backticks for CLI commands (`gro check`),
   top-level files (`package.json`), and config identifiers (`~/.fuz/`)
 
-See ./references/path-references.md for all three forms in full, the web-rendered
+See ./references/path-references.md for all forms in full, the web-rendered
 caveat, anti-patterns, and Prettier cautions.
 
 ## Testing

@@ -22110,7 +22110,7 @@
 						{
 							"name": "find_genfiles",
 							"kind": "function",
-							"docComment": "Finds modules from input paths. (see `src/lib/input_path.ts` for more)",
+							"docComment": "Finds modules from input paths. (see `input_path.ts` for more)",
 							"typeSignature": "(input_paths: InputPath[], root_dirs: PathId[], config: GroConfig, timings?: Timings | undefined): Promise<FindGenfilesResult>",
 							"modifiers": [],
 							"sourceLine": 292,
@@ -24442,7 +24442,7 @@
 						{
 							"name": "invoke_task",
 							"kind": "function",
-							"docComment": "Invokes Gro tasks by name using the filesystem as the source.\n\nWhen a task is invoked,\nGro first searches for tasks in the current working directory.\nand falls back to searching Gro's directory, if the two are different.\nSee `src/lib/input_path.ts` for info about what \"task_name\" can refer to.\nIf it matches a directory, all of the tasks within it are logged,\nboth in the current working directory and Gro.\n\nThis code is particularly hairy because\nwe're accepting a wide range of user input\nand trying to do the right thing.\nPrecise error messages are especially difficult and\nthere are some subtle differences in the complex logical branches.\nThe comments describe each condition.",
+							"docComment": "Invokes Gro tasks by name using the filesystem as the source.\n\nWhen a task is invoked,\nGro first searches for tasks in the current working directory.\nand falls back to searching Gro's directory, if the two are different.\nSee `input_path.ts` for info about what \"task_name\" can refer to.\nIf it matches a directory, all of the tasks within it are logged,\nboth in the current working directory and Gro.\n\nThis code is particularly hairy because\nwe're accepting a wide range of user input\nand trying to do the right thing.\nPrecise error messages are especially difficult and\nthere are some subtle differences in the complex logical branches.\nThe comments describe each condition.",
 							"typeSignature": "(task_name: RawInputPath, args: Args | undefined, config: GroConfig, initial_filer?: Filer | undefined, initial_timings?: Timings | null | undefined, parent_log?: Logger | undefined): Promise<...>",
 							"modifiers": [],
 							"sourceLine": 38,
@@ -28679,7 +28679,7 @@
 						{
 							"name": "find_tasks",
 							"kind": "function",
-							"docComment": "Finds modules from input paths. (see `src/lib/input_path.ts` for more)",
+							"docComment": "Finds modules from input paths. (see `input_path.ts` for more)",
 							"typeSignature": "(input_paths: InputPath[], task_root_dirs: PathId[], config: GroConfig, timings?: Timings | undefined): Promise<FindTasksResult>",
 							"modifiers": [],
 							"sourceLine": 128,
@@ -91608,7 +91608,7 @@
 									"type": "string | undefined",
 									"optional": true,
 									"rest": false,
-									"description": "path to `gitops.config.ts` (defaults to `./gitops.config.ts`)"
+									"description": "path to the gitops config file (defaults to `gitops.config.ts`)"
 								}
 							],
 							"overloads": [],
@@ -93361,8 +93361,10 @@
 			"logo_alt": "three sleepy z's",
 			"license": "MIT",
 			"scripts": {
-				"start": "deno task dev",
-				"dev": "deno task dev",
+				"start": "cargo xtask dev",
+				"dev": "cargo xtask dev",
+				"dev:setup": "cargo xtask dev-setup",
+				"prod:setup": "cargo xtask prod-setup",
 				"build": "gro build",
 				"check": "gro check",
 				"typecheck": "gro typecheck",
@@ -93391,15 +93393,14 @@
 				"@xterm/xterm": "^6.0.0",
 				"date-fns": "^4.1.0",
 				"esm-env": "^1.2.2",
-				"hono": "^4.12.23",
 				"zod": "^4.3.6"
 			},
 			"devDependencies": {
 				"@changesets/changelog-git": "^0.2.1",
-				"@fuzdev/fuz_app": "^0.76.0",
+				"@fuzdev/fuz_app": "^0.78.1",
 				"@fuzdev/fuz_code": "^0.45.1",
 				"@fuzdev/fuz_css": "^0.61.1",
-				"@fuzdev/fuz_ui": "^0.197.0",
+				"@fuzdev/fuz_ui": "^0.198.0",
 				"@fuzdev/fuz_util": "^0.63.0",
 				"@jridgewell/trace-mapping": "^0.3.31",
 				"@ryanatkn/eslint-config": "^0.12.1",
@@ -93407,7 +93408,6 @@
 				"@sveltejs/adapter-static": "^3.0.10",
 				"@sveltejs/kit": "^2.61.1",
 				"@sveltejs/vite-plugin-svelte": "^6.2.4",
-				"@types/deno": "^2.5.0",
 				"@types/estree": "^1.0.8",
 				"@types/node": "^24.10.1",
 				"@types/pg": "^8.15.7",
@@ -95108,7 +95108,8 @@
 						"action_collections.ts",
 						"action_metatypes.gen.ts",
 						"frontend.svelte.ts",
-						"frontend_action_types.gen.ts"
+						"frontend_action_types.gen.ts",
+						"reference.gen.ts"
 					],
 					"starExports": [],
 					"partial": false
@@ -118133,6 +118134,14 @@
 						}
 					],
 					"dependencies": ["provider.svelte.ts"],
+					"dependents": [],
+					"starExports": [],
+					"partial": false
+				},
+				{
+					"path": "reference.gen.ts",
+					"declarations": [],
+					"dependencies": ["action_specs.ts"],
 					"dependents": [],
 					"starExports": [],
 					"partial": false
