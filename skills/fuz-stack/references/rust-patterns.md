@@ -1118,9 +1118,16 @@ serializes the newtype to the legacy primitive (bare hex) so existing
 signatures stay valid — keep the newtype as the in-memory carrier.
 
 The same shape applies to closed sets that must serialize to a primitive wire
-value: model a `JsonrpcErrorCode` *enum* internally with `as_i32()`/`TryFrom<i32>`
-and serialize it as the `i32` the wire contract requires, rather than scattering
-bare `pub const … : i32` with a 500-fallthrough status match.
+value: `fuz_http`'s `JsonrpcErrorCode` is a `#[repr(i32)]` enum with
+`as_i32()`/`TryFrom<i32>` and a hand-written `Serialize` that emits the bare
+`i32` the wire contract requires — not scattered `pub const … : i32`. Because
+`JsonrpcError.code` is the enum (not an open `i32`), `error_code_to_http_status`
+is an *exhaustive* match with no catch-all, so a new code is a compile error
+there rather than a silent 500. `Display` renders the numeric code so the
+`thiserror` envelope message is unchanged. The closed enum stays strictly more
+capable than the consts for emit-only use; if a future deserialize path needs to
+accept off-contract upstream codes, an `Other(i32)` catch-all is a non-breaking
+add (and `TryFrom<i32>` already gives that boundary a non-panicking failure).
 
 ## Documentation
 
