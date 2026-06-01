@@ -17569,7 +17569,7 @@
 		"published": true,
 		"package_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.200.0",
+			"version": "0.201.0",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -17642,7 +17642,7 @@
 				"@types/estree": "^1.0.8",
 				"@types/node": "^24.10.1",
 				"@webref/css": "^8.2.0",
-				"esbuild": "^0.27.1",
+				"esbuild": "^0.28.0",
 				"eslint": "^9.39.1",
 				"eslint-plugin-svelte": "^3.13.1",
 				"magic-string": "^0.30.21",
@@ -17660,7 +17660,7 @@
 				"@fuzdev/blake3_wasm": "^0.1.0",
 				"@fuzdev/fuz_util": ">=0.63.0",
 				"@sveltejs/kit": "^2",
-				"esbuild": "^0.27.0",
+				"esbuild": "^0.28.0",
 				"svelte": "^5",
 				"svelte-docinfo": "^0.2.0",
 				"typescript": "^5",
@@ -17718,7 +17718,7 @@
 		},
 		"source_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.200.0",
+			"version": "0.201.0",
 			"modules": [
 				{
 					"path": "args.ts",

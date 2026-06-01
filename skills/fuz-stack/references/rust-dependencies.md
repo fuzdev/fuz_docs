@@ -53,6 +53,7 @@ dependencies in this sense and never appear here.
 | `axum-extra` | axum extras (typed headers, cookies) |
 | `tower` / `tower-http` | Service middleware |
 | `reqwest` | HTTP client |
+| `rustls` | TLS backend for `reqwest` — installs the `ring` crypto provider as the process default (`reqwest` is wired `rustls-no-provider`) |
 
 ## Concurrency
 
