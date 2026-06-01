@@ -669,7 +669,7 @@ project/
 └── docs/               # Architecture and reference documentation
 ```
 
-Crate naming: generally `{project}_{crate}` (`fuz_common`,
+Crate naming: generally `{project}_{crate}` (`fuz_sys`,
 `blake3_wasm_core`). Exceptions: fuz's CLI is just `fuz` (not `fuz_cli`) and
 its daemon is `fuzd` (not `fuz_daemon`) — short names for frequently-typed
 commands.
@@ -677,7 +677,7 @@ commands.
 ### Common crate patterns
 
 - **Foundation crate**: Shared types (Span, errors, config) with minimal deps
-  (`fuz_common`, `blake3_wasm_core`)
+  (`fuz_sys`, `blake3_wasm_core`)
 - **Feature crates**: Domain logic with `lib.rs` public API
 - **Debug crate**: Dev tooling, may embed external runtimes (Deno sidecars)
 - **Interface crates**: Binding layers (CLI, C FFI, WASM)
@@ -731,7 +731,7 @@ gitignored file (mode 0600) or the prod secrets infra.
 Note on the live model: `fuzd` authenticates over its UDS via `SO_PEERCRED`
 (same-uid), so the old `FUZ_AUTH_TOKEN` is **retired** — there is no daemon
 token to keep out of `.cargo/config.toml` anymore; the rule stands for any
-future secret. The dev/prod port comes from `fuz_common::DEV_PORT`, not a
+future secret. The dev/prod port comes from `fuz_home::DEV_PORT`, not a
 hardcoded literal.
 
 ## Testing
@@ -893,16 +893,16 @@ serialization and atomicity, not just careful writing:
   then `rename` over the target. A reader never sees a half-written file,
   and a crash mid-write leaves the old version intact.
 
-The canonical implementation is `fuz_common::fs::write_atomic` (write
+The canonical implementation is `fuz_sys::fs::write_atomic` (write
 `.<name>.tmp.<pid>` → `sync_all` → rename → **fsync the parent dir**); its doc
 notes it "replaces ~five hand-rolled copies." Use it rather than re-rolling the
 dance. The **parent-dir fsync** is required for *authoritative, non-regenerable*
 state (lock ledgers, credentials, secure files — see also
-`fuz_common::secure_file`) and is deliberately **waived** for content-addressed
+`fuz_sys::secure_file`) and is deliberately **waived** for content-addressed
 CAS bodies (a torn write is caught by re-hashing on read) and for ephemeral
 regenerable run-state (`daemon.json`). State the choice when you skip it, so a
 reviewer can tell a deliberate omission from a bug. For the lock itself, follow
-`fuz_common::file_lock`'s rule: `flock` locks the *inode*, so lock a stable
+`fuz_sys::file_lock`'s rule: `flock` locks the *inode*, so lock a stable
 sidecar path and **never unlink on release** (truncate-but-keep-dirent) — else
 two acquirers end up holding different inodes.
 
@@ -928,7 +928,7 @@ untrusted-size input unbounded.
 - **For files**: preflight the reported size, then read with a `+1` cap so a
   file that grew between `stat` and read is still rejected rather than silently
   truncated — `take(MAX + 1)` and treat `len > MAX` as an error
-  (`fuz_common::secure_file::load_secure_file`, `fuz_artifact`'s `meta_file`
+  (`fuz_sys::secure_file::load_secure_file`, `fuz_artifact`'s `meta_file`
   `read_checked`).
 - **For streams** (HTTP bodies, subprocess output): enforce a byte counter
   mid-stream and abort-on-overrun — a `Content-Length` header is a hint, not a
@@ -1039,7 +1039,7 @@ re-rolling per repo:
   warn-and-continue. This is the *"fail loud, not just fail closed"* rule. A
   failed `ActionRegistry::compile()` must likewise refuse to boot, not fall back
   to an empty registry (which silently answers `method_not_found` to everything).
-- **Booleans** go through the shared `fuz_common::env::parse_stringbool` (the
+- **Booleans** go through the shared `fuz_sys::env::parse_stringbool` (the
   `z.stringbool()`-shaped truthy/falsy closed set; an unknown value errors so a
   typo can't silently flip a feature). Don't re-declare it per crate.
 - **Secret-shaped env names** follow the canonical `SECRET_*` prefix; keep that
@@ -1049,20 +1049,27 @@ re-rolling per repo:
 
 1. **Server-side graceful shutdown is shared** via `fuz_http::lifecycle`
    (`shutdown_token` + `serve_with_shutdown`), consumed by `zzz_server` and
-   `fuz_forge_server`. The transport-free signal→`CancellationToken` half is the
-   only residue still duplicated (`fuzd` hand-rolls it because it can't link
-   `fuz_http`) — the right home for that primitive is `fuz_common`, which both
-   `fuzd` and `fuz_http` can depend on.
+   `fuz_forge_server`. The transport-free signal→`CancellationToken` half is
+   single-sourced in `fuz_sys::signal` (behind the `signal` feature, which
+   pulls tokio); `fuzd` (UDS, no axum) calls it directly and
+   `fuz_http::lifecycle::shutdown_token` re-exports it, so the SIGINT/SIGTERM
+   select lives in exactly one place. This was the forcing case for splitting
+   the old `fuz_common` into **`fuz_sys`** (generic OS/system leaf) +
+   **`fuz_home`** (the `~/.fuz` layer): the HTTP spine must be able to share the
+   primitive without inheriting fuz's home conventions, so the shared signal
+   helper lives in the home-agnostic leaf, and `fuz_http` deps `fuz_sys`, never
+   a crate carrying `~/.fuz` paths.
 2. **Client-side CLI lifecycle splits by transport.** `fuzd`'s UDS lifecycle
    lives in `fuz_daemon` (`socket_path` schema, `Hello`-based health, pulls
    `fuz_client`). An HTTP-server CLI manager (today only `zzz`'s) uses the
    port-based `DaemonInfo { version, pid, port, started, app_version }` schema
    (shared with `fuz_app` TS) and a `reqwest` `/health` probe. **Rule: reuse the
-   `fuz_common` primitives** — `pid::{is_pid_alive, send_signal}`,
-   `time::rfc3339_now`, `fs::write_atomic`, `daemon::*`, `logs::rotate_logs`,
-   `SECURE_FILE_MODE`, the lifecycle constants — rather than re-deriving them
-   (zzz currently re-derives all of them, including a hand-rolled
-   civil-from-days ISO timestamp). The HTTP lifecycle **must never enter the
+   shared primitives** — `fuz_sys::{pid::{is_pid_alive, send_signal},
+   rfc3339_now, fs::write_atomic, SECURE_FILE_MODE}` plus `fuz_home::{daemon::*,
+   rotate_logs, verify_pid_is_fuzd, the lifecycle constants}` — rather than
+   re-deriving them (zzz's CLI now routes through `fuz_sys`; it formerly
+   re-derived all of them, including a hand-rolled civil-from-days ISO
+   timestamp). The HTTP lifecycle **must never enter the
    `fuz`/`fuzd` dependency graph** (`reqwest`; `check-release` already forbids
    `fuz_daemon`/`fuz_client` from `fuz`). Don't build a transport-generic
    lifecycle crate for a single consumer — extract only when a second HTTP CLI
@@ -1108,7 +1115,7 @@ why the forbidden crates are crates, not features.
   config/usage; `fuzi`'s sysexits codes (64/65/70/74) are a sanctioned exception
   for agent-consumable CLIs.
 - **`HintMessage`** (`Static(&'static str) | Owned(String)`) is the shared CLI
-  hint primitive — it lives in `fuz_common::cli`, imported by every CLI that needs
+  hint primitive — it lives in `fuz_sys::cli`, imported by every CLI that needs
   the interpolated case, not re-declared per binary. Hint strings carry *advice
   only* — the print site owns the `hint:` label; don't embed `"hint:"` inside the
   string.

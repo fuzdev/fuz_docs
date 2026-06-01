@@ -78,7 +78,7 @@ dependencies in this sense and never appear here.
 | `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring) |
 | `subtle` | Constant-time comparison |
 | `zeroize` | Secure memory clearing |
-| `getrandom` | OS randomness — the spine standard for new randomness (`fuz_common::rand`, `fuz_auth`, `fuz_storage`) |
+| `getrandom` | OS randomness — the spine standard for new randomness (`fuz_sys::rand`, `fuz_auth`, `fuz_storage`) |
 | `rand` | RNG — pinned `0.8` **crate-level inside `fuz_sign` only** (the `ed25519-dalek` → `rand_core 0.6` constraint), not a general workspace dep. Prefer `getrandom` for new code. |
 
 ## Filesystem & OS
