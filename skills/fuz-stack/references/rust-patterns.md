@@ -397,14 +397,16 @@ newtypes for closed *formats* validated at the serde boundary (`scalar::AccountN
   `{available:true} | {available:false, error}`" but whose type permits both
   impossible combos, held out only by private constructors. That doc-comment *is* the
   smell — lift to an enum with the payload on the variant and a custom `Serialize` for
-  the flat wire shape. (Real occurrence: zzz's `ProviderStatus`.)
+  the flat wire shape. (zzz's `ProviderStatus` is the enum form:
+  `Available{…} | Unavailable{…, error}` + a hand-written `Serialize`.)
 - **The `json!({"kind": …})` closed set.** A response body built with bare
   `json!({"kind":"truncated", …})` / `{"kind":"binary"}` / `{"kind":"text", …}` across
   several `match` arms is a discriminated union evading the enum rule — model it as a
   `#[serde(tag = "kind", rename_all = "snake_case")]` enum so each variant carries only
   its own payload (`size` on truncated, `text` on text, none on binary). The wire
-  output is identical. (Real occurrence: the forge repo blob body, in the same crate
-  that already models `UploadStatus` correctly as such an enum.)
+  output is identical. (The forge's `BlobBody`
+  — `Truncated{size} | Binary | Text{text}` — is the enum form, alongside the
+  same crate's `UploadStatus`.)
 
 ### Zero-cost / low-cost abstractions
 
@@ -991,9 +993,15 @@ action-spec composition all differ) and is **not** a shared helper. But the two
 boxed-closure shapes — `ExtraActionSpecsFactory<App>` and `PreMigrationHook<E>`,
 plus the `ExtraActionSpecsRuntime` POD struct (its four fields —
 `password_hasher`/`keyring`/`daemon_token_state`/`session_cookie_name` — are all
-`fuz_auth` types) — are verbatim across consumers and belong in a spine module
-(`fuz_http::lifecycle`, generic over `App` and the error `E`), kept generic so
-`fuz_testing` never enters the spine. Align the `RunAppOptions` field vocabulary
+`fuz_auth` types) — are verbatim across consumers and live in
+`fuz_actions::consumer_lifecycle`, generic over `App` and the error `E`, kept
+generic so `fuz_testing` never enters the spine. (They belong in `fuz_actions`,
+**not** `fuz_http::lifecycle` where the signal/drain helpers live: `fuz_http`
+depends on no spine crate, so it can't name `fuz_auth` types or
+`fuz_actions::ActionSpec`. Each consumer instantiates the generics with a
+one-line concrete alias — `pub type ExtraActionSpecsFactory =
+fuz_actions::ExtraActionSpecsFactory<handlers::App>;` — which is its own type
+definition, not a re-export shim.) Align the `RunAppOptions` field vocabulary
 across consumers (prefer a `SocketAddr` bind over `u16`+hardcoded-loopback;
 always carry `drain_timeout`); `force_test_actions` is a legitimately
 consumer-specific field.
@@ -1064,8 +1072,10 @@ re-rolling per repo:
 Model daemon liveness as a `DaemonState` enum (`Running(info)` / `Stopped` /
 `Stale(info)`, plus a `Wedged(info)` arm for the HTTP "pid alive, `/health`
 silent" case) with a single `get_daemon_state()` resolver — not scattered
-`pid_alive` + `healthy` boolean pairs handled differently per command
-(`fuz_daemon` does this right; zzz re-derives it three ways).
+`pid_alive` + `healthy` boolean pairs handled differently per command.
+`fuz_daemon` (UDS) and zzz's CLI (HTTP) each carry their own such enum +
+resolver — separate by transport, since there's only one HTTP-CLI
+daemon-manager (don't build a transport-generic lifecycle crate for it).
 
 ### xtask & `check-release`
 
