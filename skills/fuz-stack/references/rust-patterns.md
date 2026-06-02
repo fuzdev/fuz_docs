@@ -1110,6 +1110,21 @@ Every workspace's `xtask` wraps the shared dep-graph audit; don't hand-roll it:
   caller; the no-arg consumers above stay insulated. Exit code is three-way
   (sysexits): clean → 0, a policy violation → 65 (`AuditReport::exit_code`), a
   tooling failure → 69/70 (`AuditError::exit_code`, exhaustive on the variants).
+- `BUILTIN_CRATE_LAYERING` — **per-crate library layering**, distinct from the
+  per-workspace/per-binary forbids above and applied unconditionally in *every*
+  workspace (a subject crate absent from a workspace is skipped). Each rule says
+  a library must not *transitively (runtime-)depend* on a forbidden set. The two
+  today gate the substrate's storage↔serving splits: `fuz_fact` ⊥
+  `{axum, fuz_http, fuz_cell, fuz_auth, fuz_actions}` (the byte store can't reach
+  HTTP/cell/authz, so bytes only escape through the authz'd `fuz_fact_serving`)
+  and `fuz_cell` ⊥ `fuz_actions` (the storage/authz half can't reach the verb
+  layer `fuz_cell_actions` owns). The cell rule is **deliberately narrower** —
+  it can't forbid `axum`/`fuz_http`, since `fuz_cell` legitimately reaches both
+  *transitively via `fuz_auth`*; the BFS is over the runtime graph, so a rule
+  must account for what a subject's legitimate deps already pull. Grow the table
+  one rule per *real, load-bearing* invariant (minimal-mechanism — no speculative
+  rules); the OK output lists the subjects actually checked so a vanished subject
+  (renamed crate) is visible, not skipped green.
 
 The `[package.metadata.fuz_audit] dev_only = true` stanza on the xtask crate is
 the **one piece of xtask config that is irreducibly per-repo** (it can't be
