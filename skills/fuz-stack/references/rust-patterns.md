@@ -178,6 +178,15 @@ impl SidecarError {
 - `.hint()` returns `Option<HintMessage>` when most variants lack a hint
   (`CliError`), or `&'static str` (`""` = absent) when all do (`ClientError`).
   See §CLI flag & error conventions for `HintMessage`.
+- **Single-source the hint table; wrappers delegate.** When a wrapping error owns
+  a variant whose source already has a hint (`CliError::Artifact(e)` → `e.hint()`),
+  delegate rather than re-implement — one wording, identical on every path. The
+  source error returns `Option<HintMessage>` so it can carry an interpolated `Owned`
+  hint (the very thing that tempts a CLI to re-implement the table). A static-only
+  leaf in a crate that doesn't — and shouldn't — depend on `fuz_sys` stays
+  `Option<&'static str>`; the first aggregator that already deps `fuz_sys` lifts it
+  with `.map(HintMessage::Static)` at the boundary. Don't push a `fuz_sys` dep onto
+  a pure leaf (`fuz_crypto`) just to unify the hint type.
 - `.exit_code()` returns `u8` (for `ExitCode::from`); reserve 1 for generic
   failure, 2+ for category-specific (auth/token). Match arms over variants.
 - `.is_transient()` / `.is_recoverable()` belong to a family of small
@@ -1091,11 +1100,16 @@ Every workspace's `xtask` wraps the shared dep-graph audit; don't hand-roll it:
 - `fuz_audit::xtask_main()` — a complete single-subcommand xtask (used by
   `fuz_forge`'s 3-line `main`).
 - `fuz_audit::run_check_release_cli()` — call from a workspace that has its own
-  subcommand router (used by `zzz` + the `fuz` workspace, which add `dev`/
-  `dev-setup`/`prod-setup`/etc.).
-- `check_release_with` / `check_release_with_rules` — extension points for
-  per-workspace extra-forbidden crates (the `fuz` workspace adds `fuz_sign`) and
-  per-binary forbids (`fuz`/`fuzd` must not link `fuzi_*`).
+  subcommand router (used by `zzz`, `zap`, + the `fuz` workspace, which add
+  `dev`/`dev-setup`/`prod-setup`/`build-musl`/etc.).
+- `run_check_release_cli_with_rules(&AuditRules)` — the single rules-taking
+  entry point, for per-workspace forbids. `AuditRules` is one config POD:
+  `extra_forbidden: &[&str]` (extra global crates — the `fuz` workspace adds
+  `fuz_sign`) + `per_binary: &[PerBinaryForbid { binary, crates }]` (per-binary
+  forbids — `fuz`/`fuzd` must not link `fuzi_*`). The `fuz` xtask is the only
+  caller; the no-arg consumers above stay insulated. Exit code is three-way
+  (sysexits): clean → 0, a policy violation → 65 (`AuditReport::exit_code`), a
+  tooling failure → 69/70 (`AuditError::exit_code`, exhaustive on the variants).
 
 The `[package.metadata.fuz_audit] dev_only = true` stanza on the xtask crate is
 the **one piece of xtask config that is irreducibly per-repo** (it can't be

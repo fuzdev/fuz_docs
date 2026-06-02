@@ -132,9 +132,10 @@ dependency graph or it is not, and that is auditable.
 - Enforcement is the `cargo xtask check-release` dep-graph audit (`fuz_audit`),
   which fails if any non-`testing_`-prefixed binary transitively links a
   forbidden crate. Workspaces add per-workspace extra-forbidden crates
-  (`fuz_sign`) and per-binary forbids (`fuz`/`fuzd` must not link `fuzi_*`) via
-  the `check_release_with`/`check_release_with_rules` entry points. See
-  rust-patterns.md §CLI Patterns for the xtask wiring.
+  (`fuz_sign`) and per-binary forbids (`fuz`/`fuzd` must not link `fuzi_*`) by
+  passing an `AuditRules` POD (`extra_forbidden` + `per_binary:
+  &[PerBinaryForbid]`) to the single `run_check_release_cli_with_rules` entry
+  point. See rust-patterns.md §xtask for the xtask wiring.
 
 ## Shared low-level leaves (consolidation candidates)
 
