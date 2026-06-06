@@ -283,7 +283,7 @@ doc page).
 Projects use **tomes** (not "stories") with auto-generated API docs.
 
 **Pipeline**: source files → `svelte-docinfo` Vite plugin →
-`virtual:svelte-docinfo` → `library_json_parse()` → `Library` class → Tome
+`virtual:svelte-docinfo` → `library_json_from_modules()` → `Library` class → Tome
 pages + API routes.
 
 See ./references/documentation-system.md for setup, the full pipeline, Tome
@@ -292,7 +292,9 @@ conventions: ./references/tsdoc-comments.md.
 
 ## mdz - Minimal Markdown Dialect
 
-`mdz` is fuz_ui's markdown dialect for documentation (`@fuzdev/fuz_ui/mdz.ts`).
+`mdz` is the Fuz markdown dialect for documentation (`@fuzdev/mdz/mdz.ts`); fuz_ui
+renders TSDoc prose through it, injecting `DocsLink` (inline code) and fuz_code's
+`Code` (code blocks) via its rendering seam.
 
 | Feature                | Syntax                                                                              |
 | ---------------------- | ----------------------------------------------------------------------------------- |
@@ -511,6 +513,7 @@ cover the shared patterns across workspaces.
 - Domain-prefix when ambiguous (`git_push`); action-first when self-descriptive
   (`truncate`)
 - TSDoc conventions: ./references/tsdoc-comments.md
+- Approved third-party deps: ./references/npm-dependencies.md (npm) + ./references/rust-dependencies.md (cargo); prefer the list, new deps need approval
 - Copious `// TODO:` comments; `TODO_*.md` for multi-session work
 - Token classes for design system values, literal classes for arbitrary CSS
 - `z.strictObject()` default, PascalCase naming, `.meta()` for descriptions

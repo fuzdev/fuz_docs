@@ -1,5 +1,8 @@
 import type {Gen} from '@fuzdev/gro';
 import {library_load_from_repo} from '@fuzdev/gro/library_load.js';
+import type {LibraryJson} from '@fuzdev/fuz_util/library_json.js';
+import {package_is_published} from '@fuzdev/fuz_util/package_helpers.js';
+import {pkg_json_from_package_json} from '@fuzdev/fuz_util/pkg_json.js';
 import {readFileSync, existsSync} from 'node:fs';
 import {execSync} from 'node:child_process';
 import {join} from 'node:path';
@@ -73,7 +76,7 @@ export const gen: Gen = async ({origin_path, log}) => {
 
 	// Unified libraries array (packages + crates)
 	const libraries: Array<Record<string, any>> = [];
-	const libraries_by_path: Record<string, any> = {};
+	const libraries_by_path: Record<string, LibraryJson> = {};
 	const dependency_graph: Record<string, Array<string>> = {};
 
 	// TypeScript packages
@@ -84,7 +87,7 @@ export const gen: Gen = async ({origin_path, log}) => {
 
 		let library_json = null;
 		try {
-			library_json = await library_load_from_repo(repo_dir, {log});
+			({library_json} = await library_load_from_repo(repo_dir, {log}));
 		} catch (err) {
 			log.warn(`skipping ${repo.name}: failed to analyze ${repo_dir}`, err);
 		}
@@ -127,12 +130,12 @@ export const gen: Gen = async ({origin_path, log}) => {
 		libraries.push({
 			kind: 'package',
 			name: repo.name,
-			version: pkg_json.version ?? library_json?.package_json?.version ?? '',
+			version: pkg_json.version ?? '',
 			path: repo.path,
 			description: pkg_json.description ?? '',
 			glyph: pkg_json.glyph ?? '',
-			homepage_url: library_json?.homepage_url ?? pkg_json.homepage ?? '',
-			published: library_json?.published ?? !pkg_json.private,
+			homepage_url: pkg_json.homepage ?? '',
+			published: package_is_published(pkg_json),
 			module_count,
 			exported_module_count,
 			export_count,
@@ -177,25 +180,18 @@ export const gen: Gen = async ({origin_path, log}) => {
 				});
 			}
 
-			// Include workspace in libraries.json with minimal LibraryJson
+			// Include workspace in libraries.json with a minimal LibraryJson. Inject
+			// `name`/`repository` so `Library` can derive its identity (repo url, etc.),
+			// then curate to the publish-safe `PkgJson` so the full Cargo-side
+			// `package.json` (scripts, deps, …) never rides along into the client.
 			if (workspace_pkg_json) {
 				libraries_by_path[workspace.path] = {
-					name: workspace_pkg_json.name ?? workspace.name,
-					repo_name: workspace.path,
-					repo_url: `https://github.com/fuzdev/${workspace.path}`,
-					owner_name: 'fuzdev',
-					homepage_url: null,
-					logo_url: null,
-					logo_alt: '',
-					npm_url: null,
-					changelog_url: null,
-					published: false,
-					package_json: workspace_pkg_json,
-					source_json: {
+					pkg_json: pkg_json_from_package_json({
+						...workspace_pkg_json,
 						name: workspace_pkg_json.name ?? workspace.name,
-						version: workspace_pkg_json.version ?? '0.0.1',
-						modules: [],
-					},
+						repository: `https://github.com/fuzdev/${workspace.path}`,
+					}),
+					source_json: {modules: []},
 				};
 			}
 		} catch {

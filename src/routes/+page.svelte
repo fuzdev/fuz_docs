@@ -20,7 +20,7 @@
 			<blockquote
 				class="unstyled panel shade_05 shadow_bottom_sm py_sm px_xl mb_xl3 text-align:center"
 			>
-				experimental AI-generated<br />docs and skills for Fuz,<br />a zippy stack for autonomy
+				experimental AI-generated<br />docs and skills for Fuz,<br />a zippy stack for human agency
 			</blockquote>
 			<div class="mb_lg p_xs2 shadow_md border_radius_sm">
 				<div class="width_atmost_sm panel p_lg shadow_inset_xs shade_00">

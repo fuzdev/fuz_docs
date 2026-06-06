@@ -12,6 +12,7 @@ Testing conventions for the Fuz stack: vitest usage, fixtures, mocks, helpers.
 - [Mock Patterns](#mock-patterns)
 - [Environment Flags](#environment-flags)
 - [Test Structure](#test-structure) (basic, organization, parameterized)
+- [Serde Boundary Conformance](#serde-boundary-conformance) (Rust ↔ hand-written TS: round-trip + coverage guard)
 - [Quick Reference](#quick-reference)
 
 ## File Organization
@@ -502,8 +503,8 @@ fuz*ui uses this for contextmenu components with 8 factory modules
 
 ## Fixture-Based Testing
 
-For parsers, analyzers, and transformers. Used in fuz_ui (mdz, tsdoc, ts,
-svelte, svelte_preprocess_mdz) and other static-analysis tooling.
+For parsers, analyzers, and transformers. Used in fuz_ui (tsdoc, ts, svelte),
+`@fuzdev/mdz` (mdz, svelte_preprocess_mdz), and other static-analysis tooling.
 
 ### Directory Structure
 
@@ -953,6 +954,52 @@ Convention (used in zap, zzz):
    zzz) build a fresh harness per test — setup is cheap and each test can
    supply its own ad-hoc specs + handlers.
 
+## Serde Boundary Conformance
+
+_Rust ↔ hand-written TS — round-trip + coverage guard, no codegen dependency._
+
+When a Rust crate owns a serde JSON boundary (`#[serde(deny_unknown_fields)]`)
+that a hand-written TypeScript layer authors against — e.g. a typed config
+builder whose calls serialize to JSON that the Rust engine parses — keep the TS
+types **hand-written** (best ergonomics, no codegen dependency) and guard them
+against drift with a round-trip test, not `schemars`/`ts-rs`.
+
+Why not codegen: a generated schema/types layer is a _second_ encoding of the
+boundary that can itself drift from serde's tagging/rename. A round-trip test
+validates against the **real serde parser** — the code that runs in production —
+so it tests reality, not a model. Reserve codegen for when you need field-level
+coverage enforcement or a published JSON Schema for external consumers.
+
+**Two-layer guard** (used in zap's TS config library):
+
+1. **Round-trip conformance.** One typed "kitchen-sink" fixture exercising every
+   type/field/variant, `import type`'d against the TS types and `export
+   default`ing a builder function. One source, gated twice:
+   - `gro typecheck` includes it → catches **types-too-strict** (a valid shape
+     the TS types wrongly reject).
+   - A Rust integration test evaluates it and parses the emitted JSON with the
+     real config type → catches **types-too-loose / false-green** (a shape TS
+     accepts that serde rejects).
+
+   The `import type` is erased at runtime, so the evaluator needs no module
+   resolution — the same file is both typechecked and executed.
+2. **Coverage guard.** Iterate the Rust canonical variant list (e.g. a
+   `ResourceType::ALL` const) and assert the fixture exercises **every** variant:
+   `for v in ALL { assert!(seen.contains(&v), "kitchen-sink missing {v}") }`.
+   This catches a whole type/variant added in Rust but absent from the TS surface
+   — which the round-trip alone can't see. Pair with a loud floor
+   (`assert!(items.len() >= N)`) so a vanished fixture fails instead of silently
+   passing.
+
+Optionally add a thin **e2e smoke** through the shipped path (built binary → real
+parse → exit code), skipping cleanly when the runtime (e.g. Deno) or binary is
+absent — the same skip discipline as the DB/Deno-gated tests above.
+
+Gotchas: if the evaluator stubs nondeterministic globals (clock/RNG) to throw,
+the fixture must use pure literals only. Gate the round-trip test on the
+evaluator runtime being present (skip-with-notice), matching the repo's
+Deno-gating posture.
+
 ## Quick Reference
 
 | Pattern                           | Purpose                                                            |
@@ -992,3 +1039,6 @@ Convention (used in zap, zzz):
 | `SKIP_EXAMPLE_TESTS=1`            | Skip slow fuz_css integration tests                                |
 | `TEST_DATABASE_URL`               | Enable PostgreSQL tests alongside PGlite                           |
 | Never edit `expected.json`        | Always regenerate via task                                         |
+| Hand-written TS + round-trip      | Honest against a Rust serde boundary without codegen (no schemars/ts-rs) |
+| Typed kitchen-sink fixture        | `import type`'d → typecheck-gated AND real-parser-gated from one source |
+| Coverage guard over `*::ALL`      | Assert the fixture exercises every Rust variant                    |

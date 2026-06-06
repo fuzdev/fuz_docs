@@ -1,13 +1,15 @@
 <script lang="ts">
 	import LibraryDetail from '@fuzdev/fuz_ui/LibraryDetail.svelte';
-	import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
+	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 	import DocsFooter from '@fuzdev/fuz_ui/DocsFooter.svelte';
 	import {site_context} from '@fuzdev/fuz_ui/site.svelte.js';
 	import {FUZ_DEV_URL, MAIN_HEADER_MARGIN_TOP} from '@fuzdev/fuz_ui/constants.js';
 	import EcosystemLinksPanel from '@fuzdev/fuz_ui/EcosystemLinksPanel.svelte';
 	import Breadcrumb from '@fuzdev/fuz_ui/Breadcrumb.svelte';
 
-	const library = library_context.get();
+	import {library_json} from '$routes/library.js';
+
+	const library = library_context.set(new Library(library_json, '/fuz_docs'));
 	const site = site_context.get();
 </script>
 

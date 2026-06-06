@@ -21,6 +21,7 @@ export const skills: Array<Skill_Meta> = [
 			{slug: 'dependency-injection', title: 'Dependency Injection'},
 			{slug: 'documentation-system', title: 'Documentation System'},
 			{slug: 'file-organization', title: 'File Organization'},
+			{slug: 'npm-dependencies', title: 'Approved npm Dependencies'},
 			{slug: 'path-references', title: 'Path References in Documentation'},
 			{slug: 'rust-dependencies', title: 'Approved Rust Dependencies'},
 			{slug: 'rust-patterns', title: 'Rust Patterns for the Fuz Ecosystem'},

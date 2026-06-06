@@ -15,7 +15,7 @@
 		<TomeSectionHeader text="Overview" />
 		<p>
 			fuz_docs is an experimental website with AI-generated documentation and agent skills for
-			<a href="https://www.fuz.dev/">Fuz</a>, a zippy stack for autonomy. It's a poorly-reviewed
+			<a href="https://www.fuz.dev/">Fuz</a>, a zippy stack for human agency. It's a poorly-reviewed
 			actively-evolving dumping ground of conventions, patterns, and reference material for
 			<GithubLink path="fuzdev"><code>@fuzdev</code></GithubLink> projects. Everything is in flux, not
 			all patterns are endorsed, and some content is plain slop.

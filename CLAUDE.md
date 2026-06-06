@@ -1,6 +1,6 @@
 # fuz_docs
 
-> experimental AI-generated docs and skills for Fuz, a zippy stack for autonomy
+> experimental AI-generated docs and skills for Fuz, a zippy stack for human agency
 
 fuz_docs (`@fuzdev/fuz_docs`) hosts experimental AI-generated documentation
 and agent skills for the [Fuz](https://fuz.dev/) ecosystem, designed
@@ -98,7 +98,7 @@ auto-generated API docs.
 - `/docs/introduction` - Ecosystem introduction
 - `/docs/fuz-stack` - Fuz stack conventions overview (links to skill docs)
 - `/docs/grimoire` - Grimoire pattern overview
-- `/docs/stack` - Stack libraries overview
+- `/docs/stack` - Stack libraries overview with an interactive, zoomable dependency map
 - `/docs/api` - Auto-generated API documentation
 - `/docs/api/[...module_path]` - Per-module API pages
 - `/docs/library` - Library metadata page
@@ -144,6 +144,7 @@ skills/
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
 │   │   ├── file-organization.md       # src/ tree, domain subdirectories, full-path imports, test mirroring
 │   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
+│   │   ├── npm-dependencies.md        # Approved external npm package allowlist for TS/Svelte repos
 │   │   ├── rust-dependencies.md       # Approved external crate allowlist for Rust workspaces
 │   │   ├── rust-patterns.md           # Rust workspace, lint, error, CLI patterns (fuz, tsv, blake3)
 │   │   ├── rust-perf.md               # Rust perf: profiling, allocators, locks, arenas, SIMD, false sharing

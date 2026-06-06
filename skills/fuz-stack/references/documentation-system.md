@@ -6,14 +6,16 @@ docs. For TSDoc/JSDoc authoring conventions, see ./tsdoc-comments.md.
 ## Pipeline Overview
 
 ```
-source files → svelte-docinfo Vite plugin → virtual:svelte-docinfo (modules) → library_json_parse() → Library class → Tome pages + API routes
+source files → svelte-docinfo plugin → virtual:svelte-docinfo (modules) ┐
+                                                                         ├→ library_json_from_modules() → Library → Tome pages + API routes
+package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
 ```
 
 | Stage             | What                          | Key details                                                                                            |
 | ----------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
 | **Analysis**      | `svelte-docinfo`              | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata |
-| **Generation**    | `svelte-docinfo/vite.js`      | Vite plugin runs the analysis at build/dev time and exposes the result through the `virtual:svelte-docinfo` virtual module (no committed `library.json`/`library.ts` files) |
-| **Serialization** | `library_json_parse()`        | From `@fuzdev/fuz_util/library_json.js`; combines `package.json` + the virtual module's `modules` into a `LibraryJson` (`PackageJson` + `SourceJson` with computed properties) at runtime |
+| **Generation**    | `svelte-docinfo/vite.js` + `vite_plugin_pkg_json` | Two Vite plugins run at build/dev time: `svelte-docinfo` exposes the analyzed `modules` as `virtual:svelte-docinfo`; `vite_plugin_pkg_json` (from fuz_ui) curates `package.json` to the publish-safe `PkgJson` and exposes it as `virtual:pkg.json`. No committed `library.json`/`library.ts` files |
+| **Serialization** | `library_json_from_modules()` | From `@fuzdev/fuz_util/library_json.js`; pairs the curated `pkg_json` (from `virtual:pkg.json`) with the analyzed `modules` (from `virtual:svelte-docinfo`) into the raw `{pkg_json, source_json}` `LibraryJson` (no derived values stored — those are computed by `Library`) |
 | **Runtime**       | `Library` class               | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps |
 | **Rendering**     | Tome pages + API routes       | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts` |
 
@@ -100,18 +102,21 @@ From `@fuzdev/fuz_ui/docs_helpers.svelte.js`:
 
 Following the pattern in fuz_ui and fuz_css.
 
-### 1. Library analysis (Vite plugin)
+### 1. Library analysis (Vite plugins)
 
-Add the `svelte-docinfo` Vite plugin in `vite.config.ts` so
-`virtual:svelte-docinfo` is available at build/dev time:
+Add the `svelte-docinfo` Vite plugin (exposes the analyzed `modules` as
+`virtual:svelte-docinfo`) and fuz_ui's `vite_plugin_pkg_json` (exposes the
+curated, publish-safe `package.json` subset as `virtual:pkg.json`) in
+`vite.config.ts`:
 
 ```typescript
 import {defineConfig} from 'vite';
 import {sveltekit} from '@sveltejs/kit/vite';
 import svelte_docinfo from 'svelte-docinfo/vite.js';
+import {vite_plugin_pkg_json} from '@fuzdev/fuz_ui/vite_plugin_pkg_json.js';
 
 export default defineConfig({
-	plugins: [sveltekit(), svelte_docinfo()],
+	plugins: [sveltekit(), svelte_docinfo(), vite_plugin_pkg_json()],
 });
 ```
 
@@ -119,59 +124,107 @@ Register the ambient types in `src/app.d.ts`:
 
 ```typescript
 /// <reference types="svelte-docinfo/virtual-svelte-docinfo.js" />
+
+declare module 'virtual:pkg.json' {
+	import type {PkgJson} from '@fuzdev/fuz_util/pkg_json.js';
+	const pkg_json: PkgJson;
+	export default pkg_json;
+}
 ```
 
-There are no committed `library.gen.ts`, `library.json`, or `library.ts` files
-— the module data is produced by the plugin at runtime.
+`vite_plugin_pkg_json` reads `package.json` at build time and serves only the
+publish-safe `pkg_json_keys` subset, keeping `scripts`, `dependencies`, and
+private config out of the client bundle (and avoiding SvelteKit's
+`server.fs.allow` tripping on a cold HMR reload). There are no committed
+`library.gen.ts`, `library.json`, or `library.ts` files — the data is produced
+by the plugins at runtime.
 
-### 2. Root layout
+### 2. Root layout — site identity only
 
-In `src/routes/+layout.svelte`, build a `LibraryJson` from `package.json` plus
-the virtual module's `modules`, then create a `Library` instance and provide it:
+The root `src/routes/+layout.svelte` wraps **every** route, so keep it light:
+set only the small `site_context` (icon, glyph, repo url — `glyph`/`repo_url`
+derive from `virtual:pkg.json`). Do **not** build the `Library` here — that
+pulls the heavy analyzed `modules` into the root chunk and instantiates
+`Library` on every page, including the landing.
 
 ```svelte
 <script lang="ts">
-	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.js';
-	import {library_json_parse} from '@fuzdev/fuz_util/library_json.js';
-	import type {PackageJson} from '@fuzdev/fuz_util/package_json.js';
-	import {modules} from 'virtual:svelte-docinfo';
+	import ThemeRoot from '@fuzdev/fuz_ui/ThemeRoot.svelte';
+	import {SiteState, site_context} from '@fuzdev/fuz_ui/site.svelte.js';
+	import {logo_my_project} from '$lib/logos.js';
+	import pkg_json from 'virtual:pkg.json';
+	import type {Snippet} from 'svelte';
 
-	import package_json from '../../package.json' with {type: 'json'};
+	const {children}: {children: Snippet} = $props();
 
-	const library_json = library_json_parse(package_json as PackageJson, {
-		name: package_json.name,
-		version: package_json.version,
-		modules,
-	});
-
-	library_context.set(new Library(library_json));
+	// `glyph` and `repo_url` derive from `pkg_json`; `icon` stays explicit.
+	site_context.set(new SiteState({icon: logo_my_project, pkg_json}));
 </script>
+
+<ThemeRoot>{@render children()}</ThemeRoot>
 ```
 
-### 3. Docs layout
+### 3. Library data — a shared module, provided per subtree
 
-`src/routes/docs/+layout.svelte`:
+Build the `LibraryJson` once in `src/routes/library.ts`. As a module-level
+`export const` it evaluates lazily on first import and is shared by every
+importer; because only the docs subtree imports it, the heavy
+`virtual:svelte-docinfo` payload stays out of the root chunk:
+
+```typescript
+// src/routes/library.ts
+import {library_json_from_modules} from '@fuzdev/fuz_util/library_json.js';
+import {modules} from 'virtual:svelte-docinfo';
+import pkg_json from 'virtual:pkg.json';
+
+export const library_json = library_json_from_modules(pkg_json, modules);
+```
+
+Provide `library_context` in the docs layout (`src/routes/docs/+layout.svelte`),
+which covers all `/docs/*` pages:
 
 ```svelte
 <script lang="ts">
 	import type {Snippet} from 'svelte';
 	import Docs from '@fuzdev/fuz_ui/Docs.svelte';
-	import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
+	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 	import {tomes} from '$routes/docs/tomes.js';
+	import {library_json} from '$routes/library.js';
 
 	const {children}: {children: Snippet} = $props();
-	const library = library_context.get();
+
+	library_context.set(new Library(library_json));
 </script>
 
-<Docs {tomes} {library}>
+<Docs {tomes}>
 	{@render children()}
 </Docs>
 ```
 
-Optional `breadcrumb_children` snippet for custom logo in the top nav:
+`library_context.get()` **throws** when unset, and that only surfaces at
+SSR/prerender (`gro build`) — not in `gro typecheck` or `gro test`. So it must
+be set by a layout that is a common ancestor of every component that reads it
+(`LibraryDetail`, `DeclarationLink`, `ModuleLink`, `ApiIndex`, and `Mdz` with an
+injected `DocsLink`). Any consumer **outside** `/docs` provides its own from the
+same `library.ts` — e.g. an `/about` page or a `/skills` subtree:
 
 ```svelte
-<Docs {tomes} {library}>
+<script lang="ts">
+	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.js';
+	import {library_json} from '$routes/library.js';
+
+	const library = library_context.set(new Library(library_json));
+</script>
+```
+
+Keep these off the landing page so it never pulls the heavy data. After any
+change that moves a context provider, verify with `gro build` — a missing
+provider passes typecheck and tests but fails the prerender.
+
+Optional `breadcrumb_children` snippet for a custom logo in the top nav:
+
+```svelte
+<Docs {tomes}>
 	{#snippet breadcrumb_children(is_primary_nav)}
 		{#if is_primary_nav}
 			<div class="icon row">
@@ -265,7 +318,7 @@ dialog accessible from the top bar's menu button.
 
 The four contexts that wire the layout together (full list in [Helpers](#helpers)):
 
-- `library_context` (`Library`) — API metadata
+- `library_context` (`Library`) — API metadata; provided per docs-consuming subtree (docs layout, `/about`, …), never at the root (see [Setting Up Docs](#setting-up-docs-in-a-project) §3)
 - `tomes_context` (`() => Map<string, Tome>`) — registered tomes (set by `Docs`)
 - `tome_context` (`() => Tome`) — current page's tome (set by `TomeContent`)
 - `docs_links_context` (`DocsLinks`) — fragment tracking for section navigation

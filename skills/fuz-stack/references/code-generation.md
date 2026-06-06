@@ -262,7 +262,7 @@ API documentation metadata is no longer produced by a gen task. Instead the
 `svelte-docinfo` Vite plugin analyzes TypeScript and Svelte source files at
 build/dev time and exposes the result through `virtual:svelte-docinfo`. Add the
 plugin in `vite.config.ts` and build a `LibraryJson` at runtime with
-`library_json_parse` — see ./documentation-system.md for the full setup.
+`library_json_from_modules` — see ./documentation-system.md for the full setup.
 
 ```typescript
 // vite.config.ts

@@ -419,11 +419,13 @@ Returns 64-character hex strings. `blake3_ready` resolves immediately in
 Node.js/Deno (sync init); must be awaited in browsers.
 
 See §Two Packages for the build config and `Cargo.toml` for blake3's two
-wasm-bindgen crates. tsv_wasm disables wasm-opt entirely:
+wasm-bindgen crates. tsv_wasm runs wasm-opt with explicit feature flags so it
+works on Rust 2024 output — bulk-memory and nontrapping-float-to-int are passed
+by name (without them wasm-opt fails on Rust 2024's bulk-memory ops):
 
 ```toml
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = false  # Disabled until wasm-opt supports Rust 2024's bulk memory
+wasm-opt = ['-O3', '--enable-bulk-memory', '--enable-nontrapping-float-to-int']
 ```
 
 ## Multiple Binding Crates (tsv pattern)
@@ -435,19 +437,41 @@ all exporting identical signatures so consumers choose by runtime:
 | ---------- | ------------ | -------------------- | -------------------- |
 | `tsv_wasm` | wasm-bindgen | Deno, browsers, Node | `Result<T, JsError>` |
 | `tsv_ffi`  | C ABI        | Deno FFI, Python     | JSON error objects   |
-| `tsv_napi` | napi-rs      | Node.js, Bun         | `napi::Result<T>`    |
 
 **Published surface is WASM and C-FFI only.** npm gets the wasm-bindgen
-package; the C-FFI `cdylib` serves Deno FFI and Python. `tsv_napi` stays
-in-tree as a reference for consumers wanting a Node-native build, but the
-project does not publish it — the deliberate stance is a clean break from
-Node-native, WASM-to-npm.
+packages; the C-FFI `cdylib` serves Deno FFI and Python. N-API is not
+supported — the deliberate stance is a clean break from Node-native,
+WASM-to-npm.
 
 - `parse_internal_*()` benchmarks skip serialization via `black_box()`
-- `tsv_ffi` (and the unpublished `tsv_napi`) require `unsafe_code = "allow"`
-  (raw pointers / ABI stubs); re-declare the rest of the workspace lints —
-  see ./rust-patterns.md §Lints
+- `tsv_ffi` requires `unsafe_code = "allow"` (raw pointers / ABI stubs);
+  re-declare the rest of the workspace lints — see ./rust-patterns.md §Lints
 - `tsv_ffi` uses raw pointers with `tsv_free(ptr, len)` for memory management
+
+## Package naming: `_wasm` suffix
+
+WASM artifacts carry a `_wasm` suffix everywhere they could be confused with a
+native build; native (FFI) artifacts stay bare. The suffix is part of the
+published identity — npm package, crate name, and the generated `*_wasm_bg.wasm`
+all agree — not just an internal label.
+
+| Project | WASM packages | Native |
+| ------- | ------------- | ------ |
+| blake3 | `@fuzdev/blake3_wasm` (SIMD), `@fuzdev/blake3_wasm_small` (no SIMD) | none published |
+| tsv | `@fuzdev/tsv_format_wasm` (format), `@fuzdev/tsv_parse_wasm` (parse + AST) | `tsv` (`tsv_ffi` C-ABI build, not on npm) |
+
+- **Native stays bare.** blake3 publishes no native binding; tsv's native FFI
+  lib is just `tsv` in tooling (one `.so` exposing every function), while the
+  WASM surface splits into the `_wasm`-suffixed pieces.
+- **Drop redundant kind labels.** Where artifacts are already grouped by kind
+  (a "WASM modules" vs "Native binaries" table, say), don't repeat `(wasm)` /
+  `(native)` in the row name — the `_wasm` suffix (or its absence) carries it.
+- **Pieces vs. umbrella.** Both libraries ship two related WASM packages, split
+  on a build axis: blake3 on SIMD (`_wasm` vs `_wasm_small`), tsv on the
+  `ast` / `convert` feature (format-only `tsv_format_wasm` vs parse + AST
+  `tsv_parse_wasm`). tsv additionally reserves a full `@fuzdev/tsv_wasm`
+  umbrella (parse + format + future tooling), with the two pieces as the
+  independently-shippable subsets.
 
 ## Two Packages, Not Two Profiles
 

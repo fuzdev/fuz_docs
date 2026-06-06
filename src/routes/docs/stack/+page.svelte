@@ -7,6 +7,8 @@
 	import {stack} from '$routes/stack.js';
 	import {SvelteMap} from 'svelte/reactivity';
 
+	import StackMap from './StackMap.svelte';
+
 	const tome = tome_get_by_slug('stack');
 
 	const packages = stack.libraries.filter((lib) => lib.kind === 'package');
@@ -15,34 +17,6 @@
 	const total_exports = packages.reduce((sum, pkg) => sum + pkg.export_count!, 0);
 	const total_modules = packages.reduce((sum, pkg) => sum + pkg.module_count!, 0);
 	const total_exported_modules = packages.reduce((sum, pkg) => sum + pkg.exported_module_count!, 0);
-
-	const dep_graph: Record<string, Array<string>> = stack.dependency_graph;
-
-	const build_dag_section = (pkgs: typeof packages): string => {
-		const lines: Array<string> = [];
-		for (const pkg of pkgs) {
-			const deps = dep_graph[pkg.name] ?? [];
-			if (deps.length === 0) {
-				lines.push(pkg.name + ' (no runtime @fuzdev deps)');
-			} else {
-				lines.push(pkg.name);
-				for (let i = 0; i < deps.length; i++) {
-					const prefix = i === deps.length - 1 ? '└── ' : '├── ';
-					lines.push(`  ${prefix}${deps[i]}`);
-				}
-			}
-		}
-		return lines.join('\n');
-	};
-
-	const published_packages = packages.filter((pkg) => pkg.published);
-	const private_packages = packages.filter((pkg) => !pkg.published);
-
-	const dag_text =
-		build_dag_section(published_packages) +
-		(private_packages.length > 0
-			? '\n\nUnpublished packages:\n' + build_dag_section(private_packages)
-			: '');
 
 	// Group crates by workspace
 	const crate_workspaces: Array<{name: string; edition: string; crates: typeof crates}> = $state(
@@ -63,6 +37,11 @@
 </script>
 
 <TomeContent {tome}>
+	<TomeSection>
+		<TomeSectionHeader text="Dependency map" />
+		<StackMap />
+	</TomeSection>
+
 	<TomeSection>
 		<TomeSectionHeader text="Toolchain" />
 		<table>
@@ -153,9 +132,4 @@
 			{/each}
 		</TomeSection>
 	{/if}
-
-	<TomeSection>
-		<TomeSectionHeader text="Dependency graph" />
-		<pre>{dag_text}</pre>
-	</TomeSection>
 </TomeContent>

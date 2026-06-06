@@ -11,8 +11,7 @@ their own deps and are out of scope here.
 
 **Source of truth**: each repo's root `[workspace.dependencies]`. This doc
 mirrors the union of those for human and agent audit; it is not generated.
-Verify it against the workspaces periodically — an automated audit parses
-this list and reports any workspace dep missing from it.
+Verify it against the workspaces periodically.
 
 Crates internal to a workspace (declared with `path = ...`) are not
 dependencies in this sense and never appear here.
