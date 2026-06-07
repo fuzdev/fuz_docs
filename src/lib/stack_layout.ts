@@ -1,4 +1,4 @@
-import type {Stack_Edge, Stack_Edge_Kind, Stack_Node} from './stack_graph_types.js';
+import type {StackEdge, StackEdgeKind, StackNode} from './stack_graph_types.js';
 
 /**
  * Pure, deterministic layout for the public `@fuzdev` stack dependency graph.
@@ -22,10 +22,10 @@ export const COL_GAP = 150;
 const SWEEP_COUNT = 4;
 
 /** Raw node input to `compute_stack_layout` — the positioned fields are filled in by the layout. */
-export type Stack_Node_Input = Omit<Stack_Node, 'layer' | 'fan_in' | 'x' | 'y'>;
+export type StackNodeInput = Omit<StackNode, 'layer' | 'fan_in' | 'x' | 'y'>;
 
 /** Structural (load-bearing) edge kinds that define the real dependency skeleton. */
-const STRUCTURAL_KINDS: ReadonlySet<Stack_Edge_Kind> = new Set<Stack_Edge_Kind>(['prod', 'peer']);
+const STRUCTURAL_KINDS: ReadonlySet<StackEdgeKind> = new Set<StackEdgeKind>(['prod', 'peer']);
 
 /**
  * Computes baked layout positions for the stack graph.
@@ -39,9 +39,9 @@ const STRUCTURAL_KINDS: ReadonlySet<Stack_Edge_Kind> = new Set<Stack_Edge_Kind>(
  * @returns positioned nodes sorted by `name`, with `layer`, `fan_in`, `x`, `y` filled in
  */
 export const compute_stack_layout = (
-	nodes: ReadonlyArray<Stack_Node_Input>,
-	edges: ReadonlyArray<Stack_Edge>,
-): Array<Stack_Node> => {
+	nodes: ReadonlyArray<StackNodeInput>,
+	edges: ReadonlyArray<StackEdge>,
+): Array<StackNode> => {
 	// sorted, de-duped node names for fully deterministic iteration order
 	const names = [...new Set(nodes.map((n) => n.name))].sort();
 	const name_set = new Set(names);
@@ -51,7 +51,7 @@ export const compute_stack_layout = (
 	const structural_layer = compute_layers(names, build_structural_out(names, edges, name_set));
 
 	// 2. cut graph: orient `dev` edges so they never fight the structural skeleton
-	const cut_edges: Array<Stack_Edge> = [];
+	const cut_edges: Array<StackEdge> = [];
 	for (const edge of edges) {
 		if (!name_set.has(edge.from) || !name_set.has(edge.to) || edge.from === edge.to) continue;
 		if (edge.kind === 'dev') {
@@ -107,7 +107,7 @@ export const compute_stack_layout = (
  */
 const build_structural_reachability = (
 	names: ReadonlyArray<string>,
-	edges: ReadonlyArray<Stack_Edge>,
+	edges: ReadonlyArray<StackEdge>,
 	name_set: ReadonlySet<string>,
 ): ((from: string, to: string) => boolean) => {
 	// structural adjacency: from -> set of direct structural deps
@@ -141,7 +141,7 @@ const build_structural_reachability = (
 /** Structural-only out-adjacency (`name -> sorted prod/peer deps`), used for structural depth. */
 const build_structural_out = (
 	names: ReadonlyArray<string>,
-	edges: ReadonlyArray<Stack_Edge>,
+	edges: ReadonlyArray<StackEdge>,
 	name_set: ReadonlySet<string>,
 ): Map<string, Array<string>> => {
 	const out = new Map<string, Array<string>>();
@@ -166,7 +166,7 @@ const build_structural_out = (
  */
 const break_residual_cycles = (
 	names: ReadonlyArray<string>,
-	cut_edges: ReadonlyArray<Stack_Edge>,
+	cut_edges: ReadonlyArray<StackEdge>,
 ): Map<string, Array<string>> => {
 	// de-dupe out-neighbors, sorted for determinism
 	const raw_adj = new Map<string, Array<string>>();

@@ -3,29 +3,19 @@ import {library_load_from_repo} from '@fuzdev/gro/library_load.js';
 import type {LibraryJson} from '@fuzdev/fuz_util/library_json.js';
 import {package_is_published} from '@fuzdev/fuz_util/package_helpers.js';
 import {pkg_json_from_package_json} from '@fuzdev/fuz_util/pkg_json.js';
+import {compactReplacer} from 'svelte-docinfo/declaration-helpers.js';
 import {readFileSync, existsSync} from 'node:fs';
 import {execSync} from 'node:child_process';
 import {join} from 'node:path';
 
+import {stack_repos} from '$lib/stack_repos.js';
+
 const DEV_DIR = join(process.env.HOME!, 'dev');
 
-const TYPESCRIPT_REPOS = [
-	{path: 'fuz_util', name: '@fuzdev/fuz_util'},
-	{path: 'gro', name: '@fuzdev/gro'},
-	{path: 'fuz_css', name: '@fuzdev/fuz_css'},
-	{path: 'fuz_ui', name: '@fuzdev/fuz_ui'},
-	{path: 'fuz_app', name: '@fuzdev/fuz_app'},
-	{path: 'fuz_code', name: '@fuzdev/fuz_code'},
-	{path: 'fuz_template', name: '@fuzdev/fuz_template'},
-	{path: 'fuz_blog', name: '@fuzdev/fuz_blog'},
-	{path: 'fuz_mastodon', name: '@fuzdev/fuz_mastodon'},
-	{path: 'fuz_gitops', name: '@fuzdev/fuz_gitops'},
-	{path: 'fuz_docs', name: '@fuzdev/fuz_docs'},
-	{path: 'fuz.dev', name: '@fuzdev/fuz.dev'},
-	{path: 'zzz', name: '@fuzdev/zzz'},
-];
-
-const RUST_WORKSPACES: Array<{path: string; name: string}> = [{path: 'blake3', name: 'blake3'}];
+// Derived from the shared `stack_repos` list: `ts` repos are analyzed with
+// svelte-docinfo via gro's loader; `wasm`/`rust` repos are read via `cargo metadata`.
+const TYPESCRIPT_REPOS = stack_repos.filter((repo) => repo.language === 'ts');
+const RUST_WORKSPACES = stack_repos.filter((repo) => repo.language !== 'ts');
 
 const read_json = (file_path: string): any => {
 	if (!existsSync(file_path)) return null;
@@ -175,7 +165,7 @@ export const gen: Gen = async ({origin_path, log}) => {
 					description: pkg.description ?? '',
 					crate_kind,
 					edition,
-					workspace: workspace.name,
+					workspace: workspace.path,
 					internal_deps,
 				});
 			}
@@ -188,7 +178,7 @@ export const gen: Gen = async ({origin_path, log}) => {
 				libraries_by_path[workspace.path] = {
 					pkg_json: pkg_json_from_package_json({
 						...workspace_pkg_json,
-						name: workspace_pkg_json.name ?? workspace.name,
+						name: workspace_pkg_json.name ?? workspace.path,
 						repository: `https://github.com/fuzdev/${workspace.path}`,
 					}),
 					source_json: {modules: []},
@@ -206,7 +196,11 @@ export const gen: Gen = async ({origin_path, log}) => {
 	};
 
 	const stack_json = JSON.stringify(stack_data, null, '\t');
-	const libraries_json = JSON.stringify(libraries_by_path, null, '\t');
+	// Serialize through `compactReplacer` so the baked `modules` match svelte-docinfo's
+	// wire shape (the input side emitted by `virtual:svelte-docinfo`): empty arrays and
+	// `false` are dropped, restored by Zod defaults on parse. Shrinks the file and keeps
+	// both producers shape-aligned. gro's loader hands back the fuller output side.
+	const libraries_json = JSON.stringify(libraries_by_path, compactReplacer, '\t');
 
 	const stack_ts = `${banner}
 

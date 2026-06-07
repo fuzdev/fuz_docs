@@ -69,7 +69,7 @@
 	 * Category → fuz_css color token. Eight distinguishable hues from the design
 	 * system's saturated mid-shade palette (`--color_*_50`).
 	 */
-	const category_colors: Record<Stack_Category, string> = {
+	const category_colors: Record<StackCategory, string> = {
 		foundation: 'var(--color_a_50)', // blue
 		build: 'var(--color_f_50)', // brown
 		styling: 'var(--color_g_50)', // pink
@@ -81,7 +81,7 @@
 	};
 
 	/** Human-readable legend labels for each category, in display order. */
-	const category_labels: Array<[Stack_Category, string]> = [
+	const category_labels: Array<[StackCategory, string]> = [
 		['app', 'apps'],
 		['site', 'sites'],
 		['fullstack', 'fullstack'],
@@ -98,7 +98,7 @@
 	import {browser} from '$app/environment';
 
 	import {stack_nodes, stack_edges} from './stack_graph.js';
-	import type {Stack_Node, Stack_Edge, Stack_Category} from '$lib/stack_graph_types.js';
+	import type {StackNode, StackEdge, StackCategory} from '$lib/stack_graph_types.js';
 
 	// Camera (`$state` not raw so in-place `.tx`/`.ty`/`.scale` mutations stay reactive).
 	let camera: Viewport = $state({scale: 1, tx: 0, ty: 0});
@@ -120,7 +120,7 @@
 	// Index nodes by name for O(1) lookups during cone walks and rendering.
 	const nodes_by_name = $derived.by(() => {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity
-		const m = new Map<string, Stack_Node>();
+		const m = new Map<string, StackNode>();
 		for (const n of stack_nodes) m.set(n.name, n);
 		return m;
 	});
@@ -190,7 +190,7 @@
 	});
 
 	const node_is_dimmed = (name: string): boolean => cone !== null && !cone.has(name);
-	const edge_is_dimmed = (edge: Stack_Edge): boolean =>
+	const edge_is_dimmed = (edge: StackEdge): boolean =>
 		cone !== null && !(cone.has(edge.from) && cone.has(edge.to));
 
 	const hovered_node = $derived(hovered ? (nodes_by_name.get(hovered) ?? null) : null);

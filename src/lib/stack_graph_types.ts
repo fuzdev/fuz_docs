@@ -3,13 +3,13 @@
  *
  * The generated `stack_graph.ts` (under `src/routes/docs/stack/`) re-exports
  * these and provides the baked `stack_nodes` / `stack_edges` data. The pure
- * layout in `stack_layout.ts` produces the positioned `Stack_Node`s.
+ * layout in `stack_layout.ts` produces the positioned `StackNode`s.
  *
  * @module
  */
 
 /** Editorial grouping of a stack repo, hardcoded by the generator (not from any manifest). */
-export type Stack_Category =
+export type StackCategory =
 	| 'foundation'
 	| 'build'
 	| 'styling'
@@ -20,17 +20,17 @@ export type Stack_Category =
 	| 'site';
 
 /** Primary implementation language of a stack repo. */
-export type Stack_Language = 'ts' | 'wasm' | 'rust';
+export type StackLanguage = 'ts' | 'wasm' | 'rust';
 
 /** Which dependency block an edge came from. */
-export type Stack_Edge_Kind = 'prod' | 'peer' | 'dev';
+export type StackEdgeKind = 'prod' | 'peer' | 'dev';
 
 /** A positioned node in the stack dependency graph. */
-export interface Stack_Node {
+export interface StackNode {
 	/** Short repo/display name, e.g. `fuz_util`, `fuz.dev`. */
 	name: string;
-	category: Stack_Category;
-	language: Stack_Language;
+	category: StackCategory;
+	language: StackLanguage;
 	/** From the manifest `description` field; empty string if none. */
 	description: string;
 	/** Dependency depth from the cut graph: 0 = foundation (bottom). */
@@ -43,10 +43,10 @@ export interface Stack_Node {
 }
 
 /** A directed dependency edge between two stack nodes. */
-export interface Stack_Edge {
+export interface StackEdge {
 	/** Dependent (the one that depends). */
 	from: string;
 	/** Dependency (the one depended upon). */
 	to: string;
-	kind: Stack_Edge_Kind;
+	kind: StackEdgeKind;
 }

@@ -228,7 +228,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.73.0",
+			"version": "0.74.0",
 			"path": "fuz_gitops",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
@@ -257,9 +257,9 @@
 			"glyph": "📜",
 			"homepage_url": "https://docs.fuz.dev/",
 			"published": false,
-			"module_count": 3,
-			"exported_module_count": 3,
-			"export_count": 10,
+			"module_count": 4,
+			"exported_module_count": 4,
+			"export_count": 12,
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -314,6 +314,29 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util"
+			]
+		},
+		{
+			"kind": "package",
+			"name": "svelte-docinfo",
+			"version": "0.4.1",
+			"path": "svelte-docinfo",
+			"description": "static analysis for TypeScript and Svelte",
+			"glyph": "📜",
+			"homepage_url": "https://svelte-docinfo.fuz.dev/",
+			"published": true,
+			"module_count": 31,
+			"exported_module_count": 29,
+			"export_count": 192,
+			"peer_dependencies": [],
+			"runtime_dependencies": [],
+			"dev_dependencies": [
+				"@fuzdev/blake3_wasm",
+				"@fuzdev/fuz_code",
+				"@fuzdev/fuz_css",
+				"@fuzdev/fuz_ui",
+				"@fuzdev/fuz_util",
+				"@fuzdev/gro"
 			]
 		},
 		{
@@ -408,6 +431,7 @@
 			"@fuzdev/fuz_ui",
 			"@fuzdev/fuz_util",
 			"@fuzdev/gro"
-		]
+		],
+		"svelte-docinfo": []
 	}
 }
