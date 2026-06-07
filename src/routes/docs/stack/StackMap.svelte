@@ -26,7 +26,7 @@
 	});
 
 	/** A circular hit-test target with painter's-algorithm z-order. */
-	interface Hit_Target {
+	interface HitTarget {
 		id: string;
 		/** World x. */
 		x: number;
@@ -43,11 +43,11 @@
 	 * Ties on `z` resolve to the last entry (matches painter's-algorithm draw order).
 	 */
 	const pick_topmost = (
-		targets: ReadonlyArray<Hit_Target>,
+		targets: ReadonlyArray<HitTarget>,
 		wx: number,
 		wy: number,
 	): string | null => {
-		let best: Hit_Target | null = null;
+		let best: HitTarget | null = null;
 		for (const t of targets) {
 			const dx = wx - t.x;
 			const dy = wy - t.y;
@@ -133,7 +133,7 @@
 	// Hit targets in painter order (later nodes win ties), one per node.
 	const hit_targets = $derived.by(() =>
 		stack_nodes.map(
-			(n, i): Hit_Target => ({id: n.name, x: n.x, y: n.y, r: node_radius(n.fan_in), z: i}),
+			(n, i): HitTarget => ({id: n.name, x: n.x, y: n.y, r: node_radius(n.fan_in), z: i}),
 		),
 	);
 

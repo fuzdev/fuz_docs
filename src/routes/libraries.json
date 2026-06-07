@@ -42226,7 +42226,7 @@
 								},
 								{
 									"name": "input_mode",
-									"type": "Input_Mode",
+									"type": "InputMode",
 									"optional": true,
 									"description": "The current input mode.",
 									"defaultValue": "'text'",

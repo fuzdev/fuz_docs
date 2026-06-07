@@ -4,9 +4,9 @@
 	import {from_hex} from '@fuzdev/fuz_util/hex.js';
 	import {format_bytes} from '@fuzdev/fuz_util/bytes.js';
 
-	type Input_Mode = 'text' | 'file' | 'hex' | 'base64';
+	type InputMode = 'text' | 'file' | 'hex' | 'base64';
 
-	const input_modes: Array<Input_Mode> = ['text', 'file', 'hex', 'base64'];
+	const input_modes: Array<InputMode> = ['text', 'file', 'hex', 'base64'];
 
 	let {
 		value = $bindable(null),
@@ -17,7 +17,7 @@
 		/** The normalized binary output. `null` when input is empty or invalid. */
 		value?: Uint8Array | null;
 		/** The current input mode. */
-		input_mode?: Input_Mode;
+		input_mode?: InputMode;
 		children?: Snippet;
 	} = $props();
 

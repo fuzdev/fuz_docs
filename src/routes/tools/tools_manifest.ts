@@ -1,6 +1,6 @@
-export interface Tool_Meta {
+export interface ToolMeta {
 	name: string;
 	title: string;
 }
 
-export const tools: Array<Tool_Meta> = [{name: 'hash', title: 'BLAKE3 and SHA hashing'}];
+export const tools: Array<ToolMeta> = [{name: 'hash', title: 'BLAKE3 and SHA hashing'}];

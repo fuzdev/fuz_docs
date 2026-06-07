@@ -130,15 +130,15 @@ export const gen: Gen = ({origin_path}) => {
 		output_files.push({
 			content: `${banner}
 
-export interface Skill_Doc {
+export interface SkillDoc {
 	slug: string;
 	title: string;
 	content: string;
 }
 
-export const skill_main: Skill_Doc = ${JSON.stringify({slug: 'overview', title: skill_title, content: rewrite_md_links(skill_content)})};
+export const skill_main: SkillDoc = ${JSON.stringify({slug: 'overview', title: skill_title, content: rewrite_md_links(skill_content)})};
 
-export const skill_references: Array<Skill_Doc> = ${JSON.stringify(references)};
+export const skill_references: Array<SkillDoc> = ${JSON.stringify(references)};
 
 ${banner}
 `,
@@ -210,14 +210,14 @@ ${svelte_banner}
 	// generate skills_manifest.ts
 	const manifest_content = `${banner}
 
-export interface Skill_Meta {
+export interface SkillMeta {
 	name: string;
 	title: string;
 	description: string;
 	references: Array<{slug: string; title: string}>;
 }
 
-export const skills: Array<Skill_Meta> = ${JSON.stringify(skills_meta)};
+export const skills: Array<SkillMeta> = ${JSON.stringify(skills_meta)};
 
 ${banner}
 `;
