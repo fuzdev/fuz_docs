@@ -124,7 +124,9 @@ New packages are added deliberately, not incidentally:
 - Prefer `node:` built-ins, then this list, before anything new.
 - A new dependency needs explicit approval — name it, its purpose, what it
   replaces or enables, and its transitive footprint.
-- Removing the last user of a package? Drop it from this list in the same change.
+- Removing an unused dependency is pre-authorized — no approval needed. Verify
+  nothing references it, then drop the entry. Removing the last user of a
+  package? Drop it from this list in the same change.
 
 ## Dependency classification (peer vs dependency vs dev)
 

@@ -267,6 +267,25 @@ system works" is lore; "why autonomy matters for software design" is writing.
 Writing docs may reference each other and link to lore entries, but lore entries
 should not depend on writing docs for implementation context.
 
+### Memory (`memory/`)
+
+Agents accumulate working memory as they build — in Claude Code, per-project
+auto-memory (facts plus an index, the same shape as lore), written to a
+machine-local, unversioned store. A grimoire can adopt that as a durable layer:
+mirror each repo's agent memory into `memory/{repo}/` so it survives, travels,
+and is shared between person and agents.
+
+Memory is **raw accumulation** — fast, per-repo, noisy — sitting one step before
+lore in the lifecycle: lore is what gets *distilled from* it. Treat a memory
+file as a lead, not authority. Keep the mirror out of the self-observation
+checks (it isn't authored grimoire prose to lint or index), and reconcile it
+with a sync step on a cadence rather than hand-editing. The durable set can be
+derived from the same repo registry that scopes the checks, so it tracks the
+coordinated repos automatically instead of drifting against a hand-maintained
+list. Mind the sync's conflict resolution: capture (live store → mirror) and
+restore (mirror → fresh machine) want a rule that won't silently overwrite
+newer memory.
+
 A grimoire can also observe itself. Because lore and indexes make claims about
 the repos a grimoire coordinates, those claims can be checked against reality —
 surfacing drift between what the grimoire says and what the repos actually

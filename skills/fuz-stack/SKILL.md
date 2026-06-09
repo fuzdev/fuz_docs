@@ -513,7 +513,7 @@ cover the shared patterns across workspaces.
 - Domain-prefix when ambiguous (`git_push`); action-first when self-descriptive
   (`truncate`)
 - TSDoc conventions: ./references/tsdoc-comments.md
-- Approved third-party deps: ./references/npm-dependencies.md (npm) + ./references/rust-dependencies.md (cargo); prefer the list, new deps need approval
+- Approved third-party deps: ./references/npm-dependencies.md (npm) + ./references/rust-dependencies.md (cargo); prefer the list; adding/upgrading needs approval, removing unused deps is pre-authorized
 - Copious `// TODO:` comments; `TODO_*.md` for multi-session work
 - Token classes for design system values, literal classes for arbitrary CSS
 - `z.strictObject()` default, PascalCase naming, `.meta()` for descriptions

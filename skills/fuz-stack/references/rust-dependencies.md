@@ -173,5 +173,7 @@ New crates are added deliberately, not incidentally:
   replaces or enables, and its transitive footprint.
 - Add it at the workspace level (`[workspace.dependencies]`) so member
   crates share one version, then record it here.
-- Removing the last user of a crate? Drop it from the workspace and this
-  list in the same change.
+- Removing an unused dependency is pre-authorized — no approval needed. Verify
+  nothing references it (including features and build scripts), then drop the
+  entry. Removing the last user of a crate? Drop it from the workspace and
+  this list in the same change.
