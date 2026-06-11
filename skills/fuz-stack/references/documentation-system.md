@@ -11,13 +11,13 @@ source files → svelte-docinfo plugin → virtual:svelte-docinfo (modules) ┐
 package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
 ```
 
-| Stage             | What                          | Key details                                                                                            |
-| ----------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Analysis**      | `svelte-docinfo`              | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata |
+| Stage             | What                                              | Key details                                                                                                                                                                                                                                                                                         |
+| ----------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Analysis**      | `svelte-docinfo`                                  | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata                                                                                                                                                                        |
 | **Generation**    | `svelte-docinfo/vite.js` + `vite_plugin_pkg_json` | Two Vite plugins run at build/dev time: `svelte-docinfo` exposes the analyzed `modules` as `virtual:svelte-docinfo`; `vite_plugin_pkg_json` (from fuz_ui) curates `package.json` to the publish-safe `PkgJson` and exposes it as `virtual:pkg.json`. No committed `library.json`/`library.ts` files |
-| **Serialization** | `library_json_from_modules()` | From `@fuzdev/fuz_util/library_json.js`; pairs the curated `pkg_json` (from `virtual:pkg.json`) with the analyzed `modules` (from `virtual:svelte-docinfo`) into the raw `{pkg_json, source_json}` `LibraryJson` (no derived values stored — those are computed by `Library`) |
-| **Runtime**       | `Library` class               | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps |
-| **Rendering**     | Tome pages + API routes       | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts` |
+| **Serialization** | `library_json_from_modules()`                     | From `@fuzdev/fuz_util/library_json.js`; pairs the curated `pkg_json` (from `virtual:pkg.json`) with the analyzed `modules` (from `virtual:svelte-docinfo`) into the raw `{pkg_json, source_json}` `LibraryJson` (no derived values stored — those are computed by `Library`)                       |
+| **Runtime**       | `Library` class                                   | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps                                                                                                                                                                                   |
+| **Rendering**     | Tome pages + API routes                           | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts`                                                                                                                                                                                         |
 
 ### Analysis
 
@@ -35,12 +35,12 @@ A **Tome** is a documentation page. Zod schema in `@fuzdev/fuz_ui/tome.js`:
 
 ```typescript
 const Tome = z.object({
-  name: z.string(),            // URL slug and display name
-  category: z.string(),        // grouping in sidebar navigation
-  Component: z.custom<Component<any, any>>(), // the +page.svelte component
-  related_tomes: z.array(z.string()),         // cross-links to other tome pages
-  related_modules: z.array(z.string()),       // links to source modules in API docs
-  related_declarations: z.array(z.string()),  // links to specific exports in API docs
+	name: z.string(), // URL slug and display name
+	category: z.string(), // grouping in sidebar navigation
+	Component: z.custom<Component<any, any>>(), // the +page.svelte component
+	related_tomes: z.array(z.string()), // cross-links to other tome pages
+	related_modules: z.array(z.string()), // links to source modules in API docs
+	related_declarations: z.array(z.string()), // links to specific exports in API docs
 });
 ```
 
@@ -193,7 +193,8 @@ which covers all `/docs/*` pages:
 
 	const {children}: {children: Snippet} = $props();
 
-	library_context.set(new Library(library_json));
+	const library = new Library(library_json);
+	library_context.set(() => library);
 </script>
 
 <Docs {tomes}>
@@ -201,19 +202,25 @@ which covers all `/docs/*` pages:
 </Docs>
 ```
 
-`library_context.get()` **throws** when unset, and that only surfaces at
-SSR/prerender (`gro build`) — not in `gro typecheck` or `gro test`. So it must
-be set by a layout that is a common ancestor of every component that reads it
-(`LibraryDetail`, `DeclarationLink`, `ModuleLink`, `ApiIndex`, and `Mdz` with an
-injected `DocsLink`). Any consumer **outside** `/docs` provides its own from the
-same `library.ts` — e.g. an `/about` page or a `/skills` subtree:
+`library_context` holds a getter (`() => Library`) — set it with a closure
+over reactive state as above. `library_context.get()` **throws** when unset,
+and that only surfaces at SSR/prerender (`gro build`) — not in `gro typecheck`
+or `gro test`. So it must be set by a layout that is a common ancestor of
+every component that reads it (`DeclarationLink`, `ModuleLink`, `TypeLink`,
+`DocsTertiaryNav`, and `Mdz` with an injected `DocsLink`). Components that
+take a `library` prop (`LibraryDetail`, `ApiIndex`, `ApiModule`) project it
+into the context for their own subtree, so an aggregator can render a foreign
+library without touching the site-level context. Any consumer **outside**
+`/docs` provides its own from the same `library.ts` — e.g. an `/about` page or
+a `/skills` subtree:
 
 ```svelte
 <script lang="ts">
 	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 	import {library_json} from '$routes/library.js';
 
-	const library = library_context.set(new Library(library_json));
+	const library = new Library(library_json);
+	library_context.set(() => library);
 </script>
 ```
 
@@ -318,7 +325,7 @@ dialog accessible from the top bar's menu button.
 
 The four contexts that wire the layout together (full list in [Helpers](#helpers)):
 
-- `library_context` (`Library`) — API metadata; provided per docs-consuming subtree (docs layout, `/about`, …), never at the root (see [Setting Up Docs](#setting-up-docs-in-a-project) §3)
+- `library_context` (`() => Library`) — API metadata, set with a getter; provided per docs-consuming subtree (docs layout, `/about`, …), never at the root (see [Setting Up Docs](#setting-up-docs-in-a-project) §3); components with a `library` prop project it for their subtree
 - `tomes_context` (`() => Map<string, Tome>`) — registered tomes (set by `Docs`)
 - `tome_context` (`() => Tome`) — current page's tome (set by `TomeContent`)
 - `docs_links_context` (`DocsLinks`) — fragment tracking for section navigation
@@ -342,29 +349,29 @@ All use `$derived` for reactive computed properties.
 
 ### Documentation layout
 
-| Component          | Purpose                                                      |
-| ------------------ | ------------------------------------------------------------ |
+| Component          | Purpose                                                            |
+| ------------------ | ------------------------------------------------------------------ |
 | `Docs`             | Three-column layout, sets `tomes_context` and `docs_links_context` |
-| `DocsPrimaryNav`   | Top bar with breadcrumb navigation and menu toggle           |
-| `DocsSecondaryNav` | Left sidebar — tome list grouped by category                 |
-| `DocsTertiaryNav`  | Right sidebar — section headers within current page          |
-| `DocsContent`      | Content wrapper for docs pages                               |
-| `DocsFooter`       | Footer with library info and breadcrumb                      |
-| `DocsSearch`       | Search input for filtering modules and declarations          |
-| `DocsMenu`         | Navigation menu for tomes                                    |
-| `DocsLink`         | Navigation link within docs                                  |
-| `DocsList`         | List component for docs navigation                           |
-| `DocsPageLinks`    | Links section within a docs page                             |
-| `DocsMenuHeader`   | Header within the docs navigation menu                       |
+| `DocsPrimaryNav`   | Top bar with breadcrumb navigation and menu toggle                 |
+| `DocsSecondaryNav` | Left sidebar — tome list grouped by category                       |
+| `DocsTertiaryNav`  | Right sidebar — section headers within current page                |
+| `DocsContent`      | Content wrapper for docs pages                                     |
+| `DocsFooter`       | Footer with library info and breadcrumb                            |
+| `DocsSearch`       | Search input for filtering modules and declarations                |
+| `DocsMenu`         | Navigation menu for tomes                                          |
+| `DocsLink`         | Navigation link within docs                                        |
+| `DocsList`         | List component for docs navigation                                 |
+| `DocsPageLinks`    | Links section within a docs page                                   |
+| `DocsMenuHeader`   | Header within the docs navigation menu                             |
 
 ### Tome components
 
-| Component           | Purpose                                               |
-| ------------------- | ----------------------------------------------------- |
-| `TomeContent`       | Individual tome page wrapper, sets `tome_context`     |
-| `TomeHeader`        | Default header rendered by `TomeContent`              |
+| Component           | Purpose                                                |
+| ------------------- | ------------------------------------------------------ |
+| `TomeContent`       | Individual tome page wrapper, sets `tome_context`      |
+| `TomeHeader`        | Default header rendered by `TomeContent`               |
 | `TomeSection`       | Section container with depth tracking and intersection |
-| `TomeSectionHeader` | Section heading with hashlink (auto h2/h3/h4)         |
+| `TomeSectionHeader` | Section heading with hashlink (auto h2/h3/h4)          |
 | `TomeLink`          | Cross-reference link to another tome                   |
 
 ### API documentation
@@ -382,10 +389,10 @@ All use `$derived` for reactive computed properties.
 
 ### Library metadata
 
-| Component        | Purpose                                          |
-| ---------------- | ------------------------------------------------ |
-| `LibrarySummary` | Compact package metadata card                    |
-| `LibraryDetail`  | Expanded package info with file type breakdown   |
+| Component        | Purpose                                        |
+| ---------------- | ---------------------------------------------- |
+| `LibrarySummary` | Compact package metadata card                  |
+| `LibraryDetail`  | Expanded package info with file type breakdown |
 
 ## Cross-Project Pattern
 

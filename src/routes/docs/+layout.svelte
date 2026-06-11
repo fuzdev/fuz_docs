@@ -12,7 +12,8 @@
 		children: Snippet;
 	} = $props();
 
-	library_context.set(new Library(library_json, '/fuz_docs'));
+	const library = new Library(library_json, '/fuz_docs');
+	library_context.set(() => library);
 </script>
 
 <Docs {tomes}>

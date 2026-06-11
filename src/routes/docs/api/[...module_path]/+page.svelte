@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ApiIndex from '@fuzdev/fuz_ui/ApiIndex.svelte';
 	import ApiModule from '@fuzdev/fuz_ui/ApiModule.svelte';
-	import {library_context} from '@fuzdev/fuz_ui/library.svelte.js';
 	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 	import {resolve} from '$app/paths';
 
@@ -12,20 +11,14 @@
 	const tome = tome_get_by_slug('api');
 
 	// Parse the path: first segment is repo_path, remainder is module_path.
-	// Computed at init — Docs.svelte re-keys on pathname so this recreates on navigation.
 	const full_path = $derived(params.module_path ?? '');
 	const slash_index = $derived(full_path.indexOf('/'));
 	const repo_path = $derived(slash_index === -1 ? full_path : full_path.slice(0, slash_index));
 	const module_path = $derived(slash_index === -1 ? '' : full_path.slice(slash_index + 1));
 
-	// TODO is not reactive, maybe put a getter inside `library_context` instead of the Library instance?
-	// svelte-ignore state_referenced_locally
-	const library = get_library(repo_path);
-
-	// Set library_context during init so ModuleLink/DeclarationLink resolve correctly during SSR.
-	if (library) {
-		library_context.set(library);
-	}
+	// `ApiModule`/`ApiIndex` project this into `library_context` for their
+	// subtree, so links resolve against the selected package's library.
+	const library = $derived(get_library(repo_path));
 </script>
 
 <svelte:head>

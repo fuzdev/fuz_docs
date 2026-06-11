@@ -186,9 +186,7 @@ export class Library {
 			? this.source_json.modules.map((module_json) => new Module(this, module_json))
 			: [],
 	);
-	readonly module_by_path = $derived(
-		new Map(this.modules.map((m) => [m.path, m])),
-	);
+	readonly module_by_path = $derived(new Map(this.modules.map((m) => [m.path, m])));
 }
 ```
 
@@ -324,11 +322,11 @@ export const section_depth_context = create_context(() => 0);
 ```svelte
 <!-- Provider component sets the context -->
 <script>
-  import type {Snippet} from 'svelte';
-  import {frontend_context} from './frontend.svelte.js';
+	import type {Snippet} from 'svelte';
+	import {frontend_context} from './frontend.svelte.js';
 
-  const {app, children}: {app: Frontend; children: Snippet} = $props();
-  frontend_context.set(app);
+	const {app, children}: {app: Frontend; children: Snippet} = $props();
+	frontend_context.set(app);
 </script>
 
 {@render children()}
@@ -337,8 +335,8 @@ export const section_depth_context = create_context(() => 0);
 ```svelte
 <!-- Consumer components get the context -->
 <script>
-  import {frontend_context} from './frontend.svelte.js';
-  const app = frontend_context.get();
+	import {frontend_context} from './frontend.svelte.js';
+	const app = frontend_context.get();
 </script>
 ```
 
@@ -351,17 +349,37 @@ while the value can change:
 // Type is () => ThemeState, not ThemeState
 export const theme_state_context = create_context<() => ThemeState>();
 
-// Setting with a getter
+// Setting with a getter that closes over reactive state
 theme_state_context.set(() => theme_state);
 
-// Consuming - call the getter
+// Consuming: call .get() at init (it uses Svelte's getContext), then read
+// the getter lazily so the value stays reactive
 const get_theme_state = theme_state_context.get();
-const theme_state = get_theme_state();
+const theme_state = $derived(get_theme_state());
 ```
 
-Used when the context value might be reassigned (e.g., `theme_state` is a prop).
-Direct value contexts like `frontend_context` and `library_context` are for
-values stable for the context's lifetime.
+The getter must be read **lazily** — calling it once at init
+(`const theme_state = get_theme_state();` without `$derived`) captures a
+snapshot and loses reactivity, defeating the pattern's purpose. Besides the
+script-level `$derived` above, two other lazy forms appear in real consumers:
+
+```svelte
+<!-- template-inline (MdzNodeView.svelte) -->
+{@const mdz_base = get_mdz_base?.()}
+```
+
+```typescript
+// prop default, re-evaluated while the prop is undefined (ColorSchemeInput.svelte)
+const {value = get_theme_state()} = $props();
+```
+
+Used when the context value might be reassigned (e.g., `theme_state` is a
+prop). `library_context` is a getter context (`() => Library`) for the same
+reason — components with a `library` prop (`LibraryDetail`, `ApiIndex`,
+`ApiModule`) project the prop into it for their subtree via
+`library_context.set(() => library)`. Direct value contexts like
+`frontend_context` and `site_context` are for values stable for the context's
+lifetime.
 
 For an inventory of contexts in fuz_ui and zzz, grep for `create_context<`.
 
@@ -401,7 +419,9 @@ Children can be parameterized — `Dialog` passes a close function back to the c
 ```svelte
 <!-- Dialog.svelte -->
 <script lang="ts">
-	const {children}: {
+	const {
+		children,
+	}: {
 		children: Snippet<[close: (e?: Event) => void]>;
 	} = $props();
 </script>
@@ -709,12 +729,12 @@ export class Scrollable {
 
 ### Choosing a Pattern
 
-| Pattern                       | When to use                               | Example         |
-| ----------------------------- | ----------------------------------------- | --------------- |
-| **Simple factory**            | Fire-once, no ongoing observation         | `autofocus`     |
-| **Lazy function** (`() => p`) | Reactive callbacks without observer churn | `intersect`     |
-| **Direct params**             | Static config cached for later retrieval  | `contextmenu`   |
-| **Class method**              | Attachment shares state with a class      | `Scrollable`    |
+| Pattern                       | When to use                               | Example       |
+| ----------------------------- | ----------------------------------------- | ------------- |
+| **Simple factory**            | Fire-once, no ongoing observation         | `autofocus`   |
+| **Lazy function** (`() => p`) | Reactive callbacks without observer churn | `intersect`   |
+| **Direct params**             | Static config cached for later retrieval  | `contextmenu` |
+| **Class method**              | Attachment shares state with a class      | `Scrollable`  |
 
 ### Writing a New Attachment
 
@@ -788,11 +808,12 @@ Intersect `SvelteHTMLElements` from `svelte/elements` with custom props:
 		icon,
 		children,
 		...rest
-	}: SvelteHTMLElements['div'] & SvelteHTMLElements['a'] & {
-		align?: 'left' | 'right' | 'above' | 'below';
-		icon?: string | Snippet;
-		children: Snippet;
-	} = $props();
+	}: SvelteHTMLElements['div'] &
+		SvelteHTMLElements['a'] & {
+			align?: 'left' | 'right' | 'above' | 'below';
+			icon?: string | Snippet;
+			children: Snippet;
+		} = $props();
 </script>
 
 <div {...rest} class="card {rest.class}">
@@ -808,7 +829,7 @@ Svelte 5 uses standard DOM event syntax:
 
 ```svelte
 <button onclick={handle_click}>Click</button>
-<input oninput={(e) => value = e.currentTarget.value} />
+<input oninput={(e) => (value = e.currentTarget.value)} />
 
 <!-- Conditional event handlers (pass undefined to remove) -->
 <svelte:window onkeydown={active ? on_window_keydown : undefined} />
@@ -848,9 +869,9 @@ them, use the `capture` phase explicitly — don't rely on implicit bubbling.
 import {swallow} from '@fuzdev/fuz_util/dom.js';
 
 // swallow(event, immediate?, preventDefault?)
-swallow(e);                  // preventDefault + stopImmediatePropagation (default)
-swallow(e, false);           // preventDefault + stopPropagation (non-immediate)
-swallow(e, true, false);     // stopImmediatePropagation only (no preventDefault)
+swallow(e); // preventDefault + stopImmediatePropagation (default)
+swallow(e, false); // preventDefault + stopPropagation (non-immediate)
+swallow(e, true, false); // stopImmediatePropagation only (no preventDefault)
 ```
 
 For handlers that only need `stopPropagation` without `preventDefault` (e.g.,
@@ -860,33 +881,38 @@ preventing game input from seeing keystrokes in a chat input), use
 ```svelte
 <!-- Claiming an event in a handler -->
 <script lang="ts">
-  import {swallow} from '@fuzdev/fuz_util/dom.js';
+	import {swallow} from '@fuzdev/fuz_util/dom.js';
 
-  const on_keydown = (e: KeyboardEvent): void => {
-    if (e.key === 'Enter') {
-      swallow(e);
-      send();
-    } else if (e.key === 'Escape') {
-      swallow(e);
-      close();
-    } else {
-      // only stop propagation, don't prevent default (e.g., typing characters)
-      e.stopPropagation();
-    }
-  };
+	const on_keydown = (e: KeyboardEvent): void => {
+		if (e.key === 'Enter') {
+			swallow(e);
+			send();
+		} else if (e.key === 'Escape') {
+			swallow(e);
+			close();
+		} else {
+			// only stop propagation, don't prevent default (e.g., typing characters)
+			e.stopPropagation();
+		}
+	};
 </script>
 ```
 
 ```typescript
 // Programmatic listener claiming context menu and wheel events
 const cleanup_contextmenu = on(canvas, 'contextmenu', (e) => {
-  swallow(e);
+	swallow(e);
 });
 
-const cleanup_wheel = on(canvas, 'wheel', (e) => {
-  handle_zoom(e);
-  swallow(e);
-}, {passive: false});
+const cleanup_wheel = on(
+	canvas,
+	'wheel',
+	(e) => {
+		handle_zoom(e);
+		swallow(e);
+	},
+	{passive: false},
+);
 ```
 
 ## Component Composition
@@ -1006,10 +1032,18 @@ let show_map = $state.raw(false);
 let show_sidebar = $state.raw(true);
 
 export const world_ui = {
-	get show_map() { return show_map; },
-	set show_map(v: boolean) { show_map = v; },
-	get show_sidebar() { return show_sidebar; },
-	set show_sidebar(v: boolean) { show_sidebar = v; },
+	get show_map() {
+		return show_map;
+	},
+	set show_map(v: boolean) {
+		show_map = v;
+	},
+	get show_sidebar() {
+		return show_sidebar;
+	},
+	set show_sidebar(v: boolean) {
+		show_sidebar = v;
+	},
 };
 ```
 
@@ -1072,15 +1106,27 @@ export const create_api_search = (library: Library): ApiSearchState => {
 	});
 
 	return {
-		get query() { return query; },
-		set query(v: string) { query = v; },
+		get query() {
+			return query;
+		},
+		set query(v: string) {
+			query = v;
+		},
 		modules: {
-			get all() { return all_modules; },
-			get filtered() { return filtered_modules; },
+			get all() {
+				return all_modules;
+			},
+			get filtered() {
+				return filtered_modules;
+			},
 		},
 		declarations: {
-			get all() { return all_declarations; },
-			get filtered() { return filtered_declarations; },
+			get all() {
+				return all_declarations;
+			},
+			get filtered() {
+				return filtered_declarations;
+			},
 		},
 	};
 };
@@ -1160,7 +1206,9 @@ Use `style:` directive to pass JS values as CSS custom properties:
 <div style:--columns={columns}>...</div>
 
 <style>
-	div { grid-template-columns: repeat(var(--columns), 1fr); }
+	div {
+		grid-template-columns: repeat(var(--columns), 1fr);
+	}
 </style>
 ```
 
@@ -1175,7 +1223,9 @@ third-party components):
 
 <!-- Child uses it -->
 <style>
-	h1 { color: var(--color); }
+	h1 {
+		color: var(--color);
+	}
 </style>
 ```
 
@@ -1187,7 +1237,9 @@ third-party components):
 
 <style>
 	div :global {
-		h1 { color: red; }
+		h1 {
+			color: red;
+		}
 	}
 </style>
 ```
@@ -1207,18 +1259,18 @@ directive:
 
 Always use runes mode. Deprecated patterns and their replacements:
 
-| Instead of                         | Use                                           |
-| ---------------------------------- | --------------------------------------------- |
-| `let count = 0` (implicit)         | `let count = $state(0)`                       |
-| `$:` assignments/statements        | `$derived` / `$effect`                        |
-| `export let`                       | `$props()`                                    |
-| `on:click={...}`                   | `onclick={...}`                               |
-| `<slot>`                           | `{#snippet}` / `{@render}`                    |
-| `<svelte:component this={C}>`      | `<C />` (dynamic component directly)          |
-| `<svelte:self>`                    | `import Self from './Self.svelte'` + `<Self>` |
-| `use:action`                       | `{@attach}`                                   |
-| `class:active`                     | `class={['base', active && 'active']}`        |
-| Stores (`writable`, `readable`)    | Classes with `$state` fields                  |
+| Instead of                      | Use                                           |
+| ------------------------------- | --------------------------------------------- |
+| `let count = 0` (implicit)      | `let count = $state(0)`                       |
+| `$:` assignments/statements     | `$derived` / `$effect`                        |
+| `export let`                    | `$props()`                                    |
+| `on:click={...}`                | `onclick={...}`                               |
+| `<slot>`                        | `{#snippet}` / `{@render}`                    |
+| `<svelte:component this={C}>`   | `<C />` (dynamic component directly)          |
+| `<svelte:self>`                 | `import Self from './Self.svelte'` + `<Self>` |
+| `use:action`                    | `{@attach}`                                   |
+| `class:active`                  | `class={['base', active && 'active']}`        |
+| Stores (`writable`, `readable`) | Classes with `$state` fields                  |
 
 ## Quick Reference
 

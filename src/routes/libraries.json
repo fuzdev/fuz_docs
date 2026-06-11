@@ -24525,7 +24525,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.201.0",
+			"version": "0.202.0",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -24755,8 +24755,7 @@
 									"name": "library",
 									"type": "Library",
 									"optional": true,
-									"description": "The library instance to render API docs for.\nDefaults to getting from library_context.",
-									"defaultValue": "library_context.get()"
+									"description": "The library instance to render API docs for.\nDefaults to getting from `library_context`."
 								},
 								{
 									"name": "tome",
@@ -24794,8 +24793,7 @@
 									"name": "library",
 									"type": "Library",
 									"optional": true,
-									"description": "The library instance to render API docs for.\nDefaults to getting from library_context.",
-									"defaultValue": "library_context.get()"
+									"description": "The library instance to render API docs for.\nDefaults to getting from `library_context`."
 								},
 								{
 									"name": "tome",
@@ -25043,44 +25041,129 @@
 							"name": "CONTEXTMENU_DEFAULT_OPEN_OFFSET_X",
 							"kind": "variable",
 							"typeSignature": "-2",
-							"sourceLine": 6
+							"sourceLine": 16
 						},
 						{
 							"name": "CONTEXTMENU_DEFAULT_OPEN_OFFSET_Y",
 							"kind": "variable",
 							"typeSignature": "-2",
-							"sourceLine": 7
+							"sourceLine": 17
 						},
 						{
 							"name": "CONTEXTMENU_DEFAULT_BYPASS_WINDOW",
 							"kind": "variable",
 							"typeSignature": "750",
-							"sourceLine": 8
+							"sourceLine": 18
 						},
 						{
 							"name": "CONTEXTMENU_DEFAULT_BYPASS_MOVE_TOLERANCE",
 							"kind": "variable",
 							"typeSignature": "11",
-							"sourceLine": 9
+							"sourceLine": 19
 						},
 						{
 							"name": "CONTEXTMENU_DEFAULT_LONGPRESS_DURATION",
 							"kind": "variable",
 							"typeSignature": "633",
-							"sourceLine": 10
+							"sourceLine": 20
 						},
 						{
 							"name": "CONTEXTMENU_DEFAULT_LONGPRESS_MOVE_TOLERANCE",
 							"kind": "variable",
 							"typeSignature": "21",
-							"sourceLine": 11
+							"sourceLine": 21
+						},
+						{
+							"name": "ContextmenuRootBaseProps",
+							"kind": "interface",
+							"docComment": "Props shared by `ContextmenuRoot.svelte` and `ContextmenuRootForSafariCompatibility.svelte`.\nDefaults are applied identically by both roots.",
+							"typeSignature": "ContextmenuRootBaseProps",
+							"sourceLine": 27,
+							"members": [
+								{
+									"name": "contextmenu",
+									"kind": "variable",
+									"docComment": "The contextmenu state. Each root defaults to its own new instance -\npass one to control or observe the menu externally.",
+									"typeSignature": "ContextmenuState",
+									"optional": true
+								},
+								{
+									"name": "open_offset_x",
+									"kind": "variable",
+									"docComment": "The number of pixels to offset from the pointer X position when opened.\nUseful to ensure the first menu item is immediately under the pointer.",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
+									"name": "open_offset_y",
+									"kind": "variable",
+									"docComment": "The number of pixels to offset from the pointer Y position when opened.\nUseful to ensure the first menu item is immediately under the pointer.",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
+									"name": "bypass_with_tap_then_longpress",
+									"kind": "variable",
+									"docComment": "Whether to detect tap-then-longpress to bypass the Fuz contextmenu.\nThis allows access to the system contextmenu by tapping once then rightclicking/long-pressing.\nSetting to `false` disables the gesture.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "bypass_window",
+									"kind": "variable",
+									"docComment": "The number of milliseconds between taps to detect a gesture that bypasses the Fuz contextmenu.\nUsed only when `bypass_with_tap_then_longpress` is true.\nIf the duration is too long, it'll detect more false positives and interrupt normal usage,\nbut too short and some people will have difficulty performing the gesture.",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
+									"name": "bypass_move_tolerance",
+									"kind": "variable",
+									"docComment": "The number of pixels the pointer can be moved between taps to detect a tap-then-longpress.\nUsed only when `bypass_with_tap_then_longpress` is true.",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
+									"name": "scoped",
+									"kind": "variable",
+									"docComment": "If `true`, wraps `children` with a div and listens to events on it instead of the window.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "link_entry",
+									"kind": "variable",
+									"docComment": "Snippet for rendering link entries.\nSet to `null` to disable automatic link detection.\nDefaults to `link_entry_default` which renders `ContextmenuLinkEntry`.",
+									"typeSignature": "Snippet<[ComponentProps<typeof ContextmenuLinkEntry>]> | null",
+									"optional": true
+								},
+								{
+									"name": "text_entry",
+									"kind": "variable",
+									"docComment": "Snippet for rendering copy text entries.\nSet to `null` to disable automatic copy text detection.\nDefaults to `text_entry_default` which renders `ContextmenuTextEntry`.",
+									"typeSignature": "Snippet<[ComponentProps<typeof ContextmenuTextEntry>]> | null",
+									"optional": true
+								},
+								{
+									"name": "separator_entry",
+									"kind": "variable",
+									"docComment": "Snippet for rendering separator entries.\nSet to `null` to disable automatic separator rendering.\nDefaults to `separator_entry_default` which renders `ContextmenuSeparator`.",
+									"typeSignature": "Snippet<[ComponentProps<typeof ContextmenuSeparator>]> | null",
+									"optional": true
+								},
+								{
+									"name": "children",
+									"kind": "variable",
+									"docComment": "The content the root listens over for contextmenu gestures.",
+									"typeSignature": "Snippet"
+								}
+							]
 						},
 						{
 							"name": "contextmenu_is_valid_target",
 							"kind": "function",
 							"docComment": "Returns true if valid and narrows the type to HTMLElement | SVGElement.",
 							"typeSignature": "(target: EventTarget | null, shiftKey: boolean): target is HTMLElement | SVGElement",
-							"sourceLine": 16,
+							"sourceLine": 92,
 							"parameters": [
 								{
 									"name": "target",
@@ -25097,7 +25180,7 @@
 							"name": "contextmenu_create_keyboard_handlers",
 							"kind": "function",
 							"typeSignature": "(contextmenu: ContextmenuState): Map<string, () => void>",
-							"sourceLine": 27,
+							"sourceLine": 103,
 							"parameters": [
 								{
 									"name": "contextmenu",
@@ -25110,7 +25193,7 @@
 							"name": "contextmenu_create_keydown_handler",
 							"kind": "function",
 							"typeSignature": "(keyboard_handlers: Map<string, () => void>): (e: KeyboardEvent) => void",
-							"sourceLine": 42,
+							"sourceLine": 118,
 							"parameters": [
 								{
 									"name": "keyboard_handlers",
@@ -25122,8 +25205,9 @@
 						{
 							"name": "contextmenu_calculate_constrained_x",
 							"kind": "function",
+							"docComment": "Constrains the menu's x coordinate to the layout, shifting left to fit the right edge.\nClamps at `0` so a menu wider than the layout pins its left edge - the start of each\nitem stays visible.",
 							"typeSignature": "(menu_x: number, menu_width: number, layout_width: number): number",
-							"sourceLine": 51,
+							"sourceLine": 132,
 							"parameters": [
 								{
 									"name": "menu_x",
@@ -25143,8 +25227,9 @@
 						{
 							"name": "contextmenu_calculate_constrained_y",
 							"kind": "function",
+							"docComment": "Constrains the menu's y coordinate to the layout, shifting up to fit the bottom edge.\nClamps at `0` so a menu taller than the layout pins its top edge - the first\nitems stay visible.",
 							"typeSignature": "(menu_y: number, menu_height: number, layout_height: number): number",
-							"sourceLine": 57,
+							"sourceLine": 143,
 							"parameters": [
 								{
 									"name": "menu_y",
@@ -25160,10 +25245,368 @@
 								}
 							],
 							"returnType": "number"
+						},
+						{
+							"name": "ContextmenuSubmenuTranslateOptions",
+							"kind": "interface",
+							"typeSignature": "ContextmenuSubmenuTranslateOptions",
+							"sourceLine": 149,
+							"members": [
+								{
+									"name": "base_x",
+									"kind": "variable",
+									"docComment": "The submenu's untranslated viewport x - the parent menu's left edge.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "base_y",
+									"kind": "variable",
+									"docComment": "The submenu's untranslated viewport y.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "width",
+									"kind": "variable",
+									"docComment": "The submenu's width.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "height",
+									"kind": "variable",
+									"docComment": "The submenu's height.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "parent_width",
+									"kind": "variable",
+									"docComment": "The parent menu's width.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "layout_width",
+									"kind": "variable",
+									"docComment": "The layout's width.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "layout_height",
+									"kind": "variable",
+									"docComment": "The layout's height.",
+									"typeSignature": "number"
+								}
+							]
+						},
+						{
+							"name": "contextmenu_calculate_submenu_translate",
+							"kind": "function",
+							"docComment": "Calculates a submenu flyout's translation so it fits the layout.\n\nPreference order on the x axis: fly out to the right of the parent menu,\nelse flip fully to the left of it, else shift to pin whichever side\noverflows less. The y axis shifts up only as far as needed to fit the\nbottom edge.\n\nUsed by `ContextmenuSubmenu.svelte`.",
+							"typeSignature": "(options: ContextmenuSubmenuTranslateOptions): { x: number; y: number; }",
+							"sourceLine": 176,
+							"parameters": [
+								{
+									"name": "options",
+									"type": "ContextmenuSubmenuTranslateOptions"
+								}
+							],
+							"returnType": "{ x: number; y: number; }"
+						},
+						{
+							"name": "ContextmenuOpenFromEventOptions",
+							"kind": "interface",
+							"typeSignature": "ContextmenuOpenFromEventOptions",
+							"sourceLine": 198,
+							"extends": ["ContextmenuOpenOptions"],
+							"members": [
+								{
+									"name": "open_offset_x",
+									"kind": "variable",
+									"docComment": "The number of pixels to offset from the pointer X position when opened.",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
+									"name": "open_offset_y",
+									"kind": "variable",
+									"docComment": "The number of pixels to offset from the pointer Y position when opened.",
+									"typeSignature": "number",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "contextmenu_open_from_event",
+							"kind": "function",
+							"docComment": "Handles a `contextmenu` event by opening the contextmenu from the event target,\nunless the target is invalid or inside the open menu element.\nSwallows the event when the menu opens.",
+							"typeSignature": "(e: MouseEvent, contextmenu: ContextmenuState, menu_el: HTMLElement | undefined, options?: ContextmenuOpenFromEventOptions | undefined): boolean",
+							"sourceLine": 220,
+							"parameters": [
+								{
+									"name": "e",
+									"type": "MouseEvent",
+									"description": "the `contextmenu` event"
+								},
+								{
+									"name": "contextmenu",
+									"type": "ContextmenuState",
+									"description": "the contextmenu state"
+								},
+								{
+									"name": "menu_el",
+									"type": "HTMLElement | undefined",
+									"description": "the open menu element, if any, so events inside it are ignored"
+								},
+								{
+									"name": "options",
+									"type": "ContextmenuOpenFromEventOptions | undefined",
+									"optional": true,
+									"description": "offsets and entry filtering forwarded to `contextmenu_open`"
+								}
+							],
+							"returnType": "boolean",
+							"returnDescription": "whether the contextmenu was opened"
+						},
+						{
+							"name": "contextmenu_resolve_contextmenu_event",
+							"kind": "function",
+							"docComment": "Resolves a `contextmenu` event: opens the menu from the event target when possible\n(arming `open_guard` against the gesture's residual events), otherwise lets the\nnative contextmenu show - closing ours unless the press was on the menu itself.\n\nShared by `ContextmenuRoot.svelte` and `ContextmenuRootForSafariCompatibility.svelte`,\nafter their root-specific bypass and longpress handling.",
+							"typeSignature": "(e: MouseEvent, contextmenu: ContextmenuState, menu_el: HTMLElement | undefined, open_guard: ContextmenuOpenGuard, options?: ContextmenuOpenFromEventOptions | undefined): boolean",
+							"sourceLine": 264,
+							"parameters": [
+								{
+									"name": "e",
+									"type": "MouseEvent",
+									"description": "the `contextmenu` event"
+								},
+								{
+									"name": "contextmenu",
+									"type": "ContextmenuState",
+									"description": "the contextmenu state"
+								},
+								{
+									"name": "menu_el",
+									"type": "HTMLElement | undefined",
+									"description": "the open menu element, if any"
+								},
+								{
+									"name": "open_guard",
+									"type": "ContextmenuOpenGuard",
+									"description": "guard that identifies presses belonging to the gesture that opened the menu"
+								},
+								{
+									"name": "options",
+									"type": "ContextmenuOpenFromEventOptions | undefined",
+									"optional": true,
+									"description": "offsets and entry filtering forwarded to `contextmenu_open`"
+								}
+							],
+							"returnType": "boolean",
+							"returnDescription": "whether the contextmenu was opened"
+						},
+						{
+							"name": "contextmenu_create_mousedown_handler",
+							"kind": "function",
+							"docComment": "Creates a `mousedown` handler that closes the contextmenu when pressing outside of\nthe menu element, deferring to `open_guard` for presses that belong to the gesture\nthat opened the menu: gesture presses outside don't close, and gesture presses on the\nmenu arm the click blocker instead of activating the entry under the pointer.\n\nSecondary-button presses outside the menu never close here - their own `contextmenu`\nevent resolves the menu in the roots' handlers (reopening it elsewhere, or closing it\nwhen there's nothing to open) - with one exception: shift+rightclick, an explicit\nnative-menu request whose `contextmenu` event Firefox suppresses entirely, closes on\nthe press itself.\n\nRegistered on the window during the bubble phase deliberately -\nconsumers keep the menu open through a press by swallowing the event\n(e.g. menu controller buttons that use `onmousedowncapture` + `swallow`).",
+							"typeSignature": "(contextmenu: ContextmenuState, get_menu_el: () => HTMLElement | undefined, open_guard?: ContextmenuOpenGuard | undefined): (e: MouseEvent) => void",
+							"sourceLine": 312,
+							"parameters": [
+								{
+									"name": "contextmenu",
+									"type": "ContextmenuState",
+									"description": "the contextmenu state"
+								},
+								{
+									"name": "get_menu_el",
+									"type": "() => HTMLElement | undefined",
+									"description": "getter for the open menu element, if any"
+								},
+								{
+									"name": "open_guard",
+									"type": "ContextmenuOpenGuard | undefined",
+									"optional": true,
+									"description": "guard that identifies presses belonging to the gesture that opened the menu"
+								}
+							],
+							"returnType": "(e: MouseEvent) => void"
+						},
+						{
+							"name": "contextmenu_resolve_popover_host",
+							"kind": "function",
+							"docComment": "Resolves the element that must host the contextmenu popover for it to stay\ninteractive: the modal `<dialog>` containing `target`, if any.\n\nA modal dialog makes every element outside its subtree inert, and the top layer\nfixes painting order, not inertness - so a popover shown from outside the dialog\npaints above it but receives no pointer or focus events (hit-testing skips inert\nelements). Only the topmost modal dialog's subtree is interactive, so the dialog\ncontaining the menu's open target is by construction the one the menu must join.",
+							"typeSignature": "(target: HTMLElement | SVGElement | undefined): HTMLDialogElement | null",
+							"sourceLine": 354,
+							"parameters": [
+								{
+									"name": "target",
+									"type": "HTMLElement | SVGElement | undefined",
+									"description": "the element the menu was opened from"
+								}
+							],
+							"returnType": "HTMLDialogElement | null",
+							"returnDescription": "the modal dialog to reparent the menu into, or `null` when the menu\ndoesn't need a host"
+						},
+						{
+							"name": "contextmenu_popover_attachment",
+							"kind": "function",
+							"docComment": "Creates an attachment that shows the contextmenu element as a manual popover,\npromoting it into the top layer so it paints above modal `<dialog>` elements\n(e.g. `Dialog.svelte`) - top-layer elements paint in insertion order.\n\nPainting is only half of it: a modal dialog also makes everything outside its\nsubtree inert. When the menu opens from inside a modal dialog, the menu element\nis reparented into that dialog (see `contextmenu_resolve_popover_host`) so it\nescapes the inert-ness and stays interactive - top-layer positioning is relative\nto the viewport regardless of ancestors, so the menu's fixed coordinates are\nunaffected. The host dialog's `close` also closes the menu, since the menu's DOM\nnode vanishes with the dialog.\n\nNo-ops where the Popover API is unavailable (older browsers, jsdom),\nfalling back to `--contextmenu_z_index` stacking - the menu then renders\nbeneath and inert to any open modal dialog.\n\nUsed with the `popover=\"manual\"` attribute - `\"manual\"` rather than `\"auto\"`\nso opening, closing, and keyboard handling stay fully owned by `ContextmenuState`.",
+							"typeSignature": "(contextmenu: ContextmenuState): Attachment<HTMLElement>",
+							"sourceLine": 379,
+							"parameters": [
+								{
+									"name": "contextmenu",
+									"type": "ContextmenuState"
+								}
+							],
+							"returnType": "Attachment<HTMLElement>"
+						},
+						{
+							"name": "ContextmenuOpenGuard",
+							"kind": "class",
+							"docComment": "Guards the menu from the residual events of the gesture that opened it,\nusing exact gesture causality - no timing heuristics or tunable windows.\n\nTouch: when the menu opens during a touch (the native longpress `contextmenu` event,\nor the Safari-compat custom longpress), the release of that same gesture must not\ninteract with the menu - an unprevented `touchend` lets the browser synthesize\ncompatibility mouse events (`mousedown`/`mouseup`/`click`) at the touch point, and the\nopen offsets place the first menu item exactly there, activating it immediately.\n`touchend` swallows the release to stop the synthesis, and `consume_blocked_click`\nblocks the next click on the menu as belt and braces (iOS can synthesize the click\nregardless).\n\nMouse: tap-style input devices (e.g. some touchpads) can register an overlapping\nprimary-button press during the right-click gesture that opened the menu - the\ncompositor serializes the event stream, but the press's hardware `timeStamp` falls\ninside the gesture, and its delivery can lag long after the menu opened. Because the\nopen offsets place the first menu item under the pointer, that press's `click` would\nactivate the entry. `press_belongs_to_open_gesture` identifies overlap presses\nexactly: the press's own `buttons` bitmask shows the secondary button still down\nat generation time, or its `timeStamp` predates the release tracked by\n`track_mouseup`. No pressed-state is tracked across events deliberately: the native\ncontextmenu's pointer grab swallows the secondary `mouseup` whenever it opens\n(right-click on our menu, shift+rightclick - which in Firefox doesn't even fire\nthe `contextmenu` event), so a tracked flag wedges stuck, while the judged press's\nown `buttons` self-corrects. A deliberate right-then-left click - however fast -\nis sequential in hardware time and is never blocked.\n\nPlain DOM-event bookkeeping with no reactive state - used only inside event handlers\nby `ContextmenuRoot.svelte` and `ContextmenuRootForSafariCompatibility.svelte`.",
+							"sourceLine": 430,
+							"members": [
+								{
+									"name": "touchstart",
+									"kind": "function",
+									"docComment": "Begins a new gesture on `touchstart`, clearing stale flags from the previous one.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								},
+								{
+									"name": "opened",
+									"kind": "function",
+									"docComment": "Arms the touch release guard for the gesture that just opened the menu.\nCall after a successful open.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								},
+								{
+									"name": "track_mouseup",
+									"kind": "function",
+									"docComment": "Tracks the physical secondary button's release - call from an always-on\nwindow `mouseup` capture listener. The release may never be delivered\n(the native contextmenu's pointer grab eats it), which is why\n`press_belongs_to_open_gesture` never depends on it alone.",
+									"typeSignature": "(e: MouseEvent): void",
+									"parameters": [
+										{
+											"name": "e",
+											"type": "MouseEvent"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "press_belongs_to_open_gesture",
+									"kind": "function",
+									"docComment": "Returns `true` when a press belongs to the gesture that opened the menu\nrather than being a deliberate response to it:\nsecondary-button presses (their own `contextmenu` event resolves them),\npresses during or predating an active touch (synthesized compatibility events),\nand presses overlapping the secondary button in hardware time - the press's\nown `buttons` bitmask shows the secondary button still down at generation\ntime, or its `timeStamp` predates the release tracked by `track_mouseup`.",
+									"typeSignature": "(e: MouseEvent): boolean",
+									"parameters": [
+										{
+											"name": "e",
+											"type": "MouseEvent"
+										}
+									],
+									"returnType": "boolean"
+								},
+								{
+									"name": "mousedown_on_menu",
+									"kind": "function",
+									"docComment": "Handles a `mousedown` that landed on the menu element: when a primary-button\npress belongs to the opening gesture, its `click` is blocked from activating the\nentry that the open offsets placed under the pointer. Non-primary presses never\narm the blocker - they produce no `click`, so an armed blocker would linger and\neat the next deliberate click on the menu.",
+									"typeSignature": "(e: MouseEvent): void",
+									"parameters": [
+										{
+											"name": "e",
+											"type": "MouseEvent"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "touchend",
+									"kind": "function",
+									"docComment": "Handles `touchend`: when the release belongs to the gesture that opened the menu,\nswallows it (stopping mouse event synthesis) and arms the click blocker,\nreturning `true`.",
+									"typeSignature": "(e: TouchEvent): boolean",
+									"parameters": [
+										{
+											"name": "e",
+											"type": "TouchEvent"
+										}
+									],
+									"returnType": "boolean"
+								},
+								{
+									"name": "reset",
+									"kind": "function",
+									"docComment": "Clears gesture state, including any armed click blocker. Call on `touchcancel`.\nThe secondary release timestamp persists - it mirrors hardware history,\nnot gesture state.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								},
+								{
+									"name": "consume_blocked_click",
+									"kind": "function",
+									"docComment": "Consumes an armed click blocker, returning `true` if the click should be swallowed.\nCall from the menu element's `click` capture handler.",
+									"typeSignature": "(): boolean",
+									"returnType": "boolean"
+								}
+							]
+						},
+						{
+							"name": "ContextmenuBypassTracker",
+							"kind": "class",
+							"docComment": "Tracks the tap-then-longpress gesture that bypasses the Fuz contextmenu,\nletting users reach the system contextmenu by tapping once\nthen longpressing/rightclicking within a time window.\n\nPlain DOM-event bookkeeping with no reactive state - used only inside event handlers\nby `ContextmenuRoot.svelte` and `ContextmenuRootForSafariCompatibility.svelte`.",
+							"sourceLine": 539,
+							"members": [
+								{
+									"name": "bypassed",
+									"kind": "variable",
+									"docComment": "Set when a tap-then-longpress is detected,\ntelling the next `contextmenu` event handler to let the system contextmenu through.",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "track",
+									"kind": "function",
+									"docComment": "Records a single-touch `touchstart` at the given coordinates.\nDetects a tap-then-longpress when the previous tap happened within `bypass_window`\nmilliseconds and moved less than `bypass_move_tolerance` pixels,\nsetting `bypassed` and returning `true`.\nOtherwise records the tap for future detection and returns `false`.",
+									"typeSignature": "(x: number, y: number, bypass_window: number, bypass_move_tolerance: number): boolean",
+									"parameters": [
+										{
+											"name": "x",
+											"type": "number"
+										},
+										{
+											"name": "y",
+											"type": "number"
+										},
+										{
+											"name": "bypass_window",
+											"type": "number"
+										},
+										{
+											"name": "bypass_move_tolerance",
+											"type": "number"
+										}
+									],
+									"returnType": "boolean"
+								},
+								{
+									"name": "consume",
+									"kind": "function",
+									"docComment": "Consumes a pending bypass, returning `true` and resetting all state if `bypassed` was set,\notherwise returning `false` with no effect so tap tracking is preserved.",
+									"typeSignature": "(): boolean",
+									"returnType": "boolean"
+								},
+								{
+									"name": "reset",
+									"kind": "function",
+									"docComment": "Clears all tracking state including any pending bypass.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								}
+							]
 						}
 					],
 					"dependencies": ["contextmenu_state.svelte.ts"],
-					"dependents": ["ContextmenuRoot.svelte", "ContextmenuRootForSafariCompatibility.svelte"]
+					"dependents": [
+						"ContextmenuMenu.svelte",
+						"ContextmenuRoot.svelte",
+						"ContextmenuRootForSafariCompatibility.svelte",
+						"ContextmenuSubmenu.svelte"
+					]
 				},
 				{
 					"path": "contextmenu_state.svelte.ts",
@@ -25172,42 +25615,42 @@
 							"name": "contextmenu_context",
 							"kind": "variable",
 							"typeSignature": "{ get: (error_message?: string | undefined) => () => ContextmenuState; get_maybe: () => (() => ContextmenuState) | undefined; set: (value: () => ContextmenuState) => () => ContextmenuState; }",
-							"sourceLine": 13
+							"sourceLine": 15
 						},
 						{
 							"name": "contextmenu_submenu_context",
 							"kind": "variable",
 							"typeSignature": "{ get: (error_message?: string | undefined) => SubmenuState; get_maybe: () => SubmenuState | undefined; set: (value: SubmenuState) => SubmenuState; }",
-							"sourceLine": 15
+							"sourceLine": 17
 						},
 						{
 							"name": "contextmenu_dimensions_context",
 							"kind": "variable",
 							"typeSignature": "{ get: () => Dimensions; set: (value?: Dimensions | undefined) => Dimensions; }",
-							"sourceLine": 17
+							"sourceLine": 19
 						},
 						{
 							"name": "ContextmenuParams",
 							"kind": "type",
 							"typeSignature": "ContextmenuParams",
-							"sourceLine": 19
+							"sourceLine": 21
 						},
 						{
 							"name": "ContextmenuActivateResult",
 							"kind": "type",
 							"typeSignature": "ContextmenuActivateResult",
-							"sourceLine": 26
+							"sourceLine": 28
 						},
 						{
 							"name": "ItemState",
 							"kind": "type",
 							"typeSignature": "ItemState",
-							"sourceLine": 31
+							"sourceLine": 33
 						},
 						{
 							"name": "EntryState",
 							"kind": "class",
-							"sourceLine": 33,
+							"sourceLine": 35,
 							"members": [
 								{
 									"name": "is_menu",
@@ -25280,9 +25723,50 @@
 							]
 						},
 						{
+							"name": "ContextmenuItemsState",
+							"kind": "class",
+							"docComment": "Shared `items` state for `SubmenuState` and `RootMenuState`.\n\nThe source of truth is a plain non-reactive array because items register and\nunregister from component lifecycles that can interleave within a single batch -\neffect teardowns can observe stale signal values mid-batch, so read-copy-write\nagainst the reactive array can lose concurrent registrations (e.g. reopening the\nmenu while it's open). Every mutation publishes an immutable snapshot, preserving\nthe reassignment (not mutation) contract for readers.",
+							"sourceLine": 68,
+							"members": [
+								{
+									"name": "add_item",
+									"kind": "function",
+									"docComment": "Appends `item`, publishing a new immutable `items`.",
+									"typeSignature": "(item: ItemState): void",
+									"parameters": [
+										{
+											"name": "item",
+											"type": "ItemState"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "remove_item",
+									"kind": "function",
+									"docComment": "Removes `item` if present, publishing a new immutable `items`.\nSafe to call from effect teardown - it reads only the non-reactive source array.",
+									"typeSignature": "(item: ItemState): void",
+									"parameters": [
+										{
+											"name": "item",
+											"type": "ItemState"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "items",
+									"kind": "variable",
+									"typeSignature": "readonly ItemState[]",
+									"modifiers": ["getter", "setter"]
+								}
+							]
+						},
+						{
 							"name": "SubmenuState",
 							"kind": "class",
-							"sourceLine": 56,
+							"sourceLine": 103,
+							"extends": "ContextmenuItemsState",
 							"members": [
 								{
 									"name": "is_menu",
@@ -25309,12 +25793,6 @@
 									"reactivity": "$state.raw"
 								},
 								{
-									"name": "items",
-									"kind": "variable",
-									"typeSignature": "ReadonlyArray<ItemState>",
-									"reactivity": "$state.raw"
-								},
-								{
 									"name": "constructor",
 									"kind": "constructor",
 									"typeSignature": "(menu: SubmenuState | RootMenuState, depth: number): SubmenuState",
@@ -25334,7 +25812,8 @@
 						{
 							"name": "RootMenuState",
 							"kind": "class",
-							"sourceLine": 70,
+							"sourceLine": 117,
+							"extends": "ContextmenuItemsState",
 							"members": [
 								{
 									"name": "is_menu",
@@ -25353,12 +25832,6 @@
 									"kind": "variable",
 									"typeSignature": "1",
 									"modifiers": ["readonly"]
-								},
-								{
-									"name": "items",
-									"kind": "variable",
-									"typeSignature": "ReadonlyArray<ItemState>",
-									"reactivity": "$state.raw"
 								}
 							]
 						},
@@ -25366,7 +25839,7 @@
 							"name": "ContextmenuRun",
 							"kind": "type",
 							"typeSignature": "ContextmenuRun",
-							"sourceLine": 78,
+							"sourceLine": 123,
 							"members": [
 								{
 									"name": "(call)",
@@ -25380,7 +25853,7 @@
 							"name": "ContextmenuStateOptions",
 							"kind": "interface",
 							"typeSignature": "ContextmenuStateOptions",
-							"sourceLine": 80,
+							"sourceLine": 131,
 							"members": [
 								{
 									"name": "layout",
@@ -25393,8 +25866,8 @@
 						{
 							"name": "ContextmenuState",
 							"kind": "class",
-							"docComment": "Creates a contextmenu store.\nSee usage with `ContextmenuRoot.svelte` and `Contextmenu.svelte`.",
-							"sourceLine": 90,
+							"docComment": "Manages contextmenu state.\nSee usage with `ContextmenuRoot.svelte` and `Contextmenu.svelte`.",
+							"sourceLine": 141,
 							"seeAlso": [
 								"{@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event}"
 							],
@@ -25442,6 +25915,12 @@
 									"reactivity": "$state.raw"
 								},
 								{
+									"name": "target",
+									"kind": "variable",
+									"docComment": "The element the menu was opened from, while opened, else `undefined`.\nResolves the popover host when the menu opens inside a modal `<dialog>` -\nsee `contextmenu_resolve_popover_host`. Deliberately not reactive -\nread it in event handlers and attachments, not in templates.",
+									"typeSignature": "HTMLElement | SVGElement | undefined"
+								},
+								{
 									"name": "root_menu",
 									"kind": "variable",
 									"typeSignature": "RootMenuState",
@@ -25466,14 +25945,9 @@
 									"reactivity": "$derived.by"
 								},
 								{
-									"name": "can_select_next",
+									"name": "can_select_sibling",
 									"kind": "variable",
-									"typeSignature": "boolean",
-									"reactivity": "$derived.by"
-								},
-								{
-									"name": "can_select_previous",
-									"kind": "variable",
+									"docComment": "Whether `select_next` and `select_previous` can move the selection -\nthe selected menu has more than one item.",
 									"typeSignature": "boolean",
 									"reactivity": "$derived.by"
 								},
@@ -25498,7 +25972,7 @@
 								{
 									"name": "open",
 									"kind": "function",
-									"typeSignature": "(params: ContextmenuParams[], x: number, y: number): void",
+									"typeSignature": "(params: ContextmenuParams[], x: number, y: number, target?: HTMLElement | SVGElement | undefined): void",
 									"parameters": [
 										{
 											"name": "params",
@@ -25511,6 +25985,11 @@
 										{
 											"name": "y",
 											"type": "number"
+										},
+										{
+											"name": "target",
+											"type": "HTMLElement | SVGElement | undefined",
+											"optional": true
 										}
 									],
 									"returnType": "void"
@@ -25536,6 +26015,7 @@
 								{
 									"name": "activate",
 									"kind": "function",
+									"docComment": "Activates `item` - expanding submenus, running entries.",
 									"typeSignature": "(item: ItemState): boolean | Promise<ContextmenuActivateResult>",
 									"parameters": [
 										{
@@ -25543,18 +26023,20 @@
 											"type": "ItemState"
 										}
 									],
-									"returnType": "boolean | Promise<ContextmenuActivateResult>"
+									"returnType": "boolean | Promise<ContextmenuActivateResult>",
+									"returnDescription": "for async runs, the activation promise; for sync runs, `false` when the\nactivation didn't run (disabled) or failed (a throw or `{ok: false}`), else `true`"
 								},
 								{
 									"name": "activate_selected",
 									"kind": "function",
+									"docComment": "Activates the selected item, or if none is selected, selects the first.\nReturns `false` without activating when the selected item has unregistered\nout from under the selection (e.g. its component unmounted).",
 									"typeSignature": "(): boolean | void | Promise<ContextmenuActivateResult>",
 									"returnType": "boolean | void | Promise<ContextmenuActivateResult>"
 								},
 								{
 									"name": "select",
 									"kind": "function",
-									"docComment": "Activates the selected entry, or if none, selects the first.",
+									"docComment": "Selects `item` and its ancestor menus, deselecting everything else.",
 									"typeSignature": "(item: ItemState): void",
 									"parameters": [
 										{
@@ -25630,22 +26112,12 @@
 							"name": "contextmenu_attachment",
 							"kind": "function",
 							"docComment": "Creates an attachment that sets up contextmenu behavior on an element.",
-							"typeSignature": "<T extends ContextmenuParams, U extends T | Array<T>>(params: U | null | undefined): Attachment<HTMLElement | SVGElement>",
-							"sourceLine": 356,
-							"genericParams": [
-								{
-									"name": "T",
-									"constraint": "ContextmenuParams"
-								},
-								{
-									"name": "U",
-									"constraint": "T | Array<T>"
-								}
-							],
+							"typeSignature": "(params: ContextmenuParams | ContextmenuParams[] | null | undefined): Attachment<HTMLElement | SVGElement>",
+							"sourceLine": 463,
 							"parameters": [
 								{
 									"name": "params",
-									"type": "U | null | undefined",
+									"type": "ContextmenuParams | ContextmenuParams[] | null | undefined",
 									"description": "contextmenu parameters or nullish to disable"
 								}
 							],
@@ -25655,7 +26127,7 @@
 							"name": "ContextmenuOpenOptions",
 							"kind": "interface",
 							"typeSignature": "ContextmenuOpenOptions",
-							"sourceLine": 380,
+							"sourceLine": 481,
 							"members": [
 								{
 									"name": "link_enabled",
@@ -25688,7 +26160,7 @@
 							"kind": "function",
 							"docComment": "Opens the contextmenu, if appropriate,\nquerying the menu items from the DOM starting at the event target.",
 							"typeSignature": "(target: HTMLElement | SVGElement, x: number, y: number, contextmenu: ContextmenuState, options?: ContextmenuOpenOptions | undefined): boolean",
-							"sourceLine": 397,
+							"sourceLine": 498,
 							"parameters": [
 								{
 									"name": "target",
@@ -25698,17 +26170,17 @@
 								{
 									"name": "x",
 									"type": "number",
-									"description": "the page X coordinate at which to open the contextmenu, typically the mouse `pageX`"
+									"description": "the client (viewport) X coordinate at which to open the contextmenu, typically the mouse `clientX` - the menu positions with `fixed`"
 								},
 								{
 									"name": "y",
 									"type": "number",
-									"description": "the page Y coordinate at which to open the contextmenu, typically the mouse `pageY`"
+									"description": "the client (viewport) Y coordinate at which to open the contextmenu, typically the mouse `clientY` - the menu positions with `fixed`"
 								},
 								{
 									"name": "contextmenu",
 									"type": "ContextmenuState",
-									"description": "the contextmenu store"
+									"description": "the contextmenu state"
 								},
 								{
 									"name": "options",
@@ -25723,9 +26195,9 @@
 						{
 							"name": "contextmenu_check_global_root",
 							"kind": "function",
-							"docComment": "Registers a contextmenu root and warns if multiple non-scoped roots are detected.\nOnly active in development mode. Automatically handles cleanup on unmount.",
+							"docComment": "Registers a contextmenu root and warns if multiple non-scoped roots are detected.\nOnly active in development mode - `DEV` is a build-time constant, so production\nbundles eliminate the check. Automatically handles cleanup on unmount.",
 							"typeSignature": "(get_scoped: () => boolean): void",
-							"sourceLine": 493,
+							"sourceLine": 592,
 							"parameters": [
 								{
 									"name": "get_scoped",
@@ -25736,11 +26208,18 @@
 							"returnType": "void"
 						}
 					],
-					"dependencies": ["context_helpers.ts", "dimensions.svelte.ts", "library_helpers.ts"],
+					"dependencies": [
+						"context_helpers.ts",
+						"dimensions.svelte.ts",
+						"icons.ts",
+						"library_helpers.ts",
+						"svg.ts"
+					],
 					"dependents": [
 						"Contextmenu.svelte",
 						"ContextmenuEntry.svelte",
 						"ContextmenuLinkEntry.svelte",
+						"ContextmenuMenu.svelte",
 						"ContextmenuRoot.svelte",
 						"ContextmenuRootForSafariCompatibility.svelte",
 						"ContextmenuSubmenu.svelte",
@@ -25833,7 +26312,7 @@
 								},
 								{
 									"name": "icon",
-									"type": "string | Snippet<[]>",
+									"type": "string | Snippet<[]> | SvgData",
 									"optional": true
 								},
 								{
@@ -25856,7 +26335,88 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["contextmenu_state.svelte.ts"]
+					"dependencies": ["contextmenu_state.svelte.ts", "icons.ts", "svg.ts"]
+				},
+				{
+					"path": "ContextmenuMenu.svelte",
+					"declarations": [
+						{
+							"name": "ContextmenuMenu",
+							"kind": "component",
+							"sourceLine": 7,
+							"props": [
+								{
+									"name": "contextmenu",
+									"type": "ContextmenuState",
+									"description": "The contextmenu state owned by the root."
+								},
+								{
+									"name": "open_guard",
+									"type": "ContextmenuOpenGuard",
+									"description": "Guards the menu from the residual events of the gesture that opened it.\nOwned by the root, which arms it when its gesture detection opens the menu."
+								},
+								{
+									"name": "link_entry",
+									"type": "Snippet<[any]> | null",
+									"description": "Snippet for rendering link entries, or `null` to disable them."
+								},
+								{
+									"name": "text_entry",
+									"type": "Snippet<[any]> | null",
+									"description": "Snippet for rendering copy text entries, or `null` to disable them."
+								},
+								{
+									"name": "separator_entry",
+									"type": "Snippet<[any]> | null",
+									"description": "Snippet for rendering separator entries, or `null` to disable them."
+								},
+								{
+									"name": "el",
+									"type": "HTMLElement",
+									"optional": true,
+									"description": "The menu element while opened - bound by the roots for their gesture handlers.",
+									"bindable": true
+								}
+							]
+						},
+						{
+							"name": "link_entry_default",
+							"kind": "snippet",
+							"typeSignature": "Snippet<[props: any]>",
+							"sourceLine": 151,
+							"parameters": [
+								{
+									"name": "props",
+									"type": "any"
+								}
+							]
+						},
+						{
+							"name": "text_entry_default",
+							"kind": "snippet",
+							"typeSignature": "Snippet<[props: any]>",
+							"sourceLine": 155,
+							"parameters": [
+								{
+									"name": "props",
+									"type": "any"
+								}
+							]
+						},
+						{
+							"name": "separator_entry_default",
+							"kind": "snippet",
+							"typeSignature": "Snippet<[props: any]>",
+							"sourceLine": 159,
+							"parameters": [
+								{
+									"name": "props",
+									"type": "any"
+								}
+							]
+						}
+					],
+					"dependencies": ["contextmenu_helpers.ts", "contextmenu_state.svelte.ts"]
 				},
 				{
 					"path": "ContextmenuRoot.svelte",
@@ -25864,13 +26424,14 @@
 						{
 							"name": "ContextmenuRoot",
 							"kind": "component",
-							"docComment": "Touch event handler for tap-then-longpress bypass detection.\n\nThis allows users to access the native context menu by performing a tap\nfollowed by a longpress/rightclick within a specified time window.\nThe bypass gesture is useful for accessing browser features like text selection\nor the native context menu when the Fuz contextmenu would normally override it.\n\nNote: preventDefault is not called as we're only observing touch patterns,\nnot intercepting them. The actual bypass happens in on_window_contextmenu.",
+							"docComment": "Touch event handler for tap-then-longpress bypass detection\nand touch-open release guarding.\n\nThe bypass gesture allows users to access the native context menu by performing\na tap followed by a longpress/rightclick within a specified time window,\nuseful for browser features like text selection when the Fuz contextmenu\nwould normally override it.\n\nNote: preventDefault is not called as we're only observing touch patterns,\nnot intercepting them. The actual bypass happens in on_window_contextmenu.",
 							"sourceLine": 1,
 							"props": [
 								{
 									"name": "contextmenu",
 									"type": "ContextmenuState",
 									"optional": true,
+									"description": "The contextmenu state. Each root defaults to its own new instance -\npass one to control or observe the menu externally.",
 									"defaultValue": "new ContextmenuState()"
 								},
 								{
@@ -25956,7 +26517,8 @@
 								},
 								{
 									"name": "children",
-									"type": "Snippet<[]>"
+									"type": "Snippet<[]>",
+									"description": "The content the root listens over for contextmenu gestures."
 								}
 							],
 							"acceptsChildren": true
@@ -25970,34 +26532,35 @@
 						{
 							"name": "ContextmenuRootForSafariCompatibility",
 							"kind": "component",
-							"docComment": "Blocks the next click event. Set to true when a longpress completes to prevent\niOS's synthesized click from activating the first menu item.",
+							"docComment": "Adds contextmenu-pending class to body during longpress tracking.\nThis applies aggressive user-select/touch-callout blocking via CSS\nto give iOS the earliest possible signal to not show selection UI.",
 							"sourceLine": 1,
 							"props": [
 								{
 									"name": "contextmenu",
 									"type": "ContextmenuState",
 									"optional": true,
+									"description": "The contextmenu state. Each root defaults to its own new instance -\npass one to control or observe the menu externally.",
 									"defaultValue": "new ContextmenuState()"
 								},
 								{
-									"name": "longpress_move_tolerance",
+									"name": "open_offset_x",
 									"type": "number",
 									"optional": true,
-									"description": "The number of pixels the pointer can be moved without canceling `longpress`.",
-									"defaultValue": "CONTEXTMENU_DEFAULT_LONGPRESS_MOVE_TOLERANCE"
+									"description": "The number of pixels to offset from the pointer X position when opened.\nUseful to ensure the first menu item is immediately under the pointer.",
+									"defaultValue": "CONTEXTMENU_DEFAULT_OPEN_OFFSET_X"
 								},
 								{
-									"name": "longpress_duration",
+									"name": "open_offset_y",
 									"type": "number",
 									"optional": true,
-									"description": "The number of milliseconds after a touch starts before opening the Fuz contextmenu.",
-									"defaultValue": "CONTEXTMENU_DEFAULT_LONGPRESS_DURATION"
+									"description": "The number of pixels to offset from the pointer Y position when opened.\nUseful to ensure the first menu item is immediately under the pointer.",
+									"defaultValue": "CONTEXTMENU_DEFAULT_OPEN_OFFSET_Y"
 								},
 								{
 									"name": "bypass_with_tap_then_longpress",
 									"type": "boolean",
 									"optional": true,
-									"description": "Whether to detect tap-then-longpress to bypass the Fuz contextmenu.\nThis allows access to the system contextmenu by tapping once then long-pressing.\nSetting to `false` disables the gesture.",
+									"description": "Whether to detect tap-then-longpress to bypass the Fuz contextmenu.\nThis allows access to the system contextmenu by tapping once then rightclicking/long-pressing.\nSetting to `false` disables the gesture.",
 									"defaultValue": "true"
 								},
 								{
@@ -26013,20 +26576,6 @@
 									"optional": true,
 									"description": "The number of pixels the pointer can be moved between taps to detect a tap-then-longpress.\nUsed only when `bypass_with_tap_then_longpress` is true.",
 									"defaultValue": "CONTEXTMENU_DEFAULT_BYPASS_MOVE_TOLERANCE"
-								},
-								{
-									"name": "open_offset_x",
-									"type": "number",
-									"optional": true,
-									"description": "The number of pixels to offset from the pointer X position when opened.\nUseful to ensure the first menu item is immediately under the pointer.",
-									"defaultValue": "CONTEXTMENU_DEFAULT_OPEN_OFFSET_X"
-								},
-								{
-									"name": "open_offset_y",
-									"type": "number",
-									"optional": true,
-									"description": "The number of pixels to offset from the pointer Y position when opened.\nUseful to ensure the first menu item is immediately under the pointer.",
-									"defaultValue": "CONTEXTMENU_DEFAULT_OPEN_OFFSET_Y"
 								},
 								{
 									"name": "scoped",
@@ -26076,7 +26625,22 @@
 								},
 								{
 									"name": "children",
-									"type": "Snippet<[]>"
+									"type": "Snippet<[]>",
+									"description": "The content the root listens over for contextmenu gestures."
+								},
+								{
+									"name": "longpress_move_tolerance",
+									"type": "number",
+									"optional": true,
+									"description": "The number of pixels the pointer can be moved without canceling `longpress`.",
+									"defaultValue": "CONTEXTMENU_DEFAULT_LONGPRESS_MOVE_TOLERANCE"
+								},
+								{
+									"name": "longpress_duration",
+									"type": "number",
+									"optional": true,
+									"description": "The number of milliseconds after a touch starts before opening the Fuz contextmenu.",
+									"defaultValue": "CONTEXTMENU_DEFAULT_LONGPRESS_DURATION"
 								}
 							],
 							"acceptsChildren": true
@@ -26121,7 +26685,11 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["contextmenu_state.svelte.ts", "dimensions.svelte.ts"]
+					"dependencies": [
+						"contextmenu_helpers.ts",
+						"contextmenu_state.svelte.ts",
+						"dimensions.svelte.ts"
+					]
 				},
 				{
 					"path": "ContextmenuTextEntry.svelte",
@@ -26141,12 +26709,12 @@
 								},
 								{
 									"name": "icon",
-									"type": "string"
+									"type": "string | SvgData"
 								}
 							]
 						}
 					],
-					"dependencies": ["contextmenu_state.svelte.ts"]
+					"dependencies": ["contextmenu_state.svelte.ts", "svg.ts"]
 				},
 				{
 					"path": "CopyToClipboard.svelte",
@@ -26202,7 +26770,8 @@
 							],
 							"acceptsChildren": true
 						}
-					]
+					],
+					"dependencies": ["icons.ts"]
 				},
 				{
 					"path": "csp_of_fuzdev.ts",
@@ -26667,7 +27236,7 @@
 								{
 									"name": "also_exported_from",
 									"kind": "variable",
-									"docComment": "Other modules that also export this declaration (re-export paths\nrelative to src/lib). Absent when only exported from its defining module.",
+									"docComment": "Other modules that also export this declaration (re-export paths\nrelative to src/lib). Absent when only exported from its defining module.\nThe back-link of those modules' `Module.re_exports` edges.",
 									"typeSignature": "string[] | undefined",
 									"reactivity": "$derived"
 								},
@@ -26784,6 +27353,12 @@
 								{
 									"name": "name",
 									"type": "string"
+								},
+								{
+									"name": "module_path",
+									"type": "string",
+									"optional": true,
+									"description": "Module path of the declaration's defining module. When provided,\nresolution is scoped to that module's declarations — exact even when\nnames collide across modules. Without it, resolution falls back to the\nlibrary-wide by-name map."
 								},
 								{
 									"name": "hash",
@@ -27055,7 +27630,7 @@
 						}
 					],
 					"moduleComment": "The default content surface for `Dialog`: a fuz_css `.pane` card with a\n`gutter` margin (the dismiss zone), centered in the viewport by `Dialog`'s\nown layout. It reads `close` from `dialog_context` (set by `Dialog`) and\npasses it to `children`, so content can close the dialog without the consumer\nthreading `close` down from `Dialog`'s own `children` snippet.\n\nMust be rendered inside a `Dialog`, with which it registers its surface, so\nclick-outside-to-close treats presses inside the card as inside regardless of\nclasses -- `pane={false}` works without further setup.\n\nBy default it renders a `close_button` floating just outside the surface's\ntop-right corner. The surface is a containing block (`position: relative`) for\nthat button and any absolutely-positioned content in `children`.\n\nThe surface has no layout of its own -- it's a plain block, so children flow\ntop-to-bottom in normal document order. Pass `class` through (e.g. `box` for a\ncentered column, `column` for an uncentered one) to add one.",
-					"dependencies": ["dialog.ts"]
+					"dependencies": ["dialog.ts", "icons.ts"]
 				},
 				{
 					"path": "dimensions.svelte.ts",
@@ -27116,7 +27691,7 @@
 						{
 							"name": "DOCS_PATH",
 							"kind": "variable",
-							"typeSignature": "\"/docs\" | \"/\" | \"/about\" | \"/docs/Alert\" | \"/docs/Breadcrumb\" | \"/docs/Breadcrumb/a\" | \"/docs/Breadcrumb/a/b\" | \"/docs/Breadcrumb/a/b/c\" | \"/docs/Breadcrumb/a/b/c/d\" | \"/docs/Card\" | ... 67 more ... | `/${string}${`/docs/api/${string}` & {}}`",
+							"typeSignature": "\"/docs\" | \"/\" | \"/about\" | \"/docs/Alert\" | \"/docs/Breadcrumb\" | \"/docs/Breadcrumb/a\" | \"/docs/Breadcrumb/a/b\" | \"/docs/Breadcrumb/a/b/c\" | \"/docs/Breadcrumb/a/b/c/d\" | \"/docs/Card\" | ... 69 more ... | `/${string}${`/docs/api/${string}` & {}}`",
 							"sourceLine": 33
 						},
 						{
@@ -27636,7 +28211,8 @@
 							],
 							"acceptsChildren": true
 						}
-					]
+					],
+					"dependencies": ["icons.ts"]
 				},
 				{
 					"path": "DocsSecondaryNav.svelte",
@@ -27843,6 +28419,487 @@
 							],
 							"acceptsChildren": true
 						}
+					]
+				},
+				{
+					"path": "icons.ts",
+					"declarations": [
+						{
+							"name": "icon_unknown",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 9
+						},
+						{
+							"name": "icon_important",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 18
+						},
+						{
+							"name": "icon_info",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 27
+						},
+						{
+							"name": "icon_add",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 38
+						},
+						{
+							"name": "icon_remove",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 43
+						},
+						{
+							"name": "icon_close",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 52
+						},
+						{
+							"name": "icon_delete",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 61
+						},
+						{
+							"name": "icon_clear",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 70
+						},
+						{
+							"name": "icon_restore",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 79
+						},
+						{
+							"name": "icon_cancel",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 88
+						},
+						{
+							"name": "icon_drag",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 97
+						},
+						{
+							"name": "icon_copy",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 106
+						},
+						{
+							"name": "icon_paste",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 111
+						},
+						{
+							"name": "icon_reset",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 120
+						},
+						{
+							"name": "icon_refresh",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 129
+						},
+						{
+							"name": "icon_connect",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 134
+						},
+						{
+							"name": "icon_disconnect",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 143
+						},
+						{
+							"name": "icon_retry",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 152
+						},
+						{
+							"name": "icon_placeholder",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 160
+						},
+						{
+							"name": "icon_send",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 165
+						},
+						{
+							"name": "icon_play",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 172
+						},
+						{
+							"name": "icon_pause",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 177
+						},
+						{
+							"name": "icon_stop",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 186
+						},
+						{
+							"name": "icon_checkmark",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 195
+						},
+						{
+							"name": "icon_checkmark_heavy",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 200
+						},
+						{
+							"name": "icon_xmark",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 205
+						},
+						{
+							"name": "icon_xmark_heavy",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 214
+						},
+						{
+							"name": "icon_download",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 225
+						},
+						{
+							"name": "icon_upload",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 234
+						},
+						{
+							"name": "icon_error",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 243
+						},
+						{
+							"name": "icon_chevron_up",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 252
+						},
+						{
+							"name": "icon_chevron_right",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 257
+						},
+						{
+							"name": "icon_chevron_down",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 262
+						},
+						{
+							"name": "icon_chevron_left",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 267
+						},
+						{
+							"name": "icon_double_chevron_left",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 272
+						},
+						{
+							"name": "icon_double_chevron_right",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 281
+						},
+						{
+							"name": "icon_edit",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 292
+						},
+						{
+							"name": "icon_sort",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 301
+						},
+						{
+							"name": "icon_chat",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 312
+						},
+						{
+							"name": "icon_thread",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 321
+						},
+						{
+							"name": "icon_turn",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 330
+						},
+						{
+							"name": "icon_file",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 339
+						},
+						{
+							"name": "icon_list",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 348
+						},
+						{
+							"name": "icon_directory",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 357
+						},
+						{
+							"name": "icon_create_file",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 366
+						},
+						{
+							"name": "icon_create_directory",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 375
+						},
+						{
+							"name": "icon_prompt",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 384
+						},
+						{
+							"name": "icon_part",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 393
+						},
+						{
+							"name": "icon_provider",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 402
+						},
+						{
+							"name": "icon_model",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 411
+						},
+						{
+							"name": "icon_action",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 420
+						},
+						{
+							"name": "icon_view",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 425
+						},
+						{
+							"name": "icon_preview",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 434
+						},
+						{
+							"name": "icon_log",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 443
+						},
+						{
+							"name": "icon_tab",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 452
+						},
+						{
+							"name": "icon_project",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 461
+						},
+						{
+							"name": "icon_capability",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 470
+						},
+						{
+							"name": "icon_settings",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 479
+						},
+						{
+							"name": "icon_domain",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 488
+						},
+						{
+							"name": "icon_page",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 497
+						},
+						{
+							"name": "icon_space",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 508
+						},
+						{
+							"name": "icon_desk",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 517
+						},
+						{
+							"name": "icon_pin",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 526
+						},
+						{
+							"name": "icon_terminal",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 537
+						},
+						{
+							"name": "icon_workspace",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 546
+						},
+						{
+							"name": "icon_idea",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 555
+						},
+						{
+							"name": "icon_ping",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 566
+						},
+						{
+							"name": "icon_heartbeat",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 575
+						},
+						{
+							"name": "icon_response",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 584
+						},
+						{
+							"name": "icon_session",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 589
+						},
+						{
+							"name": "icon_action_local_call",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 600
+						},
+						{
+							"name": "icon_action_remote_notification",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 612
+						},
+						{
+							"name": "icon_action_request_response",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 623
+						},
+						{
+							"name": "icon_link",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 634
+						},
+						{
+							"name": "icon_external_link",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 643
+						},
+						{
+							"name": "icon_arrow_right",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 652
+						},
+						{
+							"name": "icon_arrow_left",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 657
+						},
+						{
+							"name": "icon_backend",
+							"kind": "variable",
+							"typeSignature": "{ label: string; paths: { d: string; }[]; }",
+							"sourceLine": 664
+						}
+					],
+					"dependencies": ["svg.ts"],
+					"dependents": [
+						"ContextmenuLinkEntry.svelte",
+						"CopyToClipboard.svelte",
+						"DialogContent.svelte",
+						"DocsSearch.svelte",
+						"contextmenu_state.svelte.ts"
 					]
 				},
 				{
@@ -28096,15 +29153,37 @@
 						{
 							"name": "library_context",
 							"kind": "variable",
-							"typeSignature": "{ get: (error_message?: string | undefined) => Library; get_maybe: () => Library | undefined; set: (value: Library) => Library; }",
-							"sourceLine": 18
+							"docComment": "Holds a getter to the active `Library` for the current subtree.\n\nThe getter form keeps consumers reactive when the library changes without\nrequiring a remount — set it with a closure over reactive state, e.g.\n`library_context.set(() => library)`. Components that accept a `library`\nprop (`LibraryDetail`, `ApiIndex`, `ApiModule`) project the prop into this\ncontext for their subtree, so descendants like `ModuleLink`,\n`DeclarationLink`, and TSDoc-rendered `DocsLink` resolve against the same\nlibrary — including when an aggregator renders a foreign library that\ndiffers from the site-level context.",
+							"typeSignature": "{ get: (error_message?: string | undefined) => () => Library; get_maybe: () => (() => Library) | undefined; set: (value: () => Library) => () => Library; }",
+							"sourceLine": 30
+						},
+						{
+							"name": "set_library_context_with_fallback",
+							"kind": "function",
+							"docComment": "Sets `library_context` for the component's subtree to a getter that prefers\nthe component's `library` prop and falls back to the ancestor's value,\nreturning the resolved getter.\n\nPass `get_library_prop` as a getter (not a snapshot) so prop changes remain\nreactive. The ancestor lookup happens once at component init, before the\nprojection — the fallback sees the parent value, not the projection.",
+							"typeSignature": "(get_library_prop: () => Library | undefined, component_name: string): () => Library",
+							"sourceLine": 46,
+							"parameters": [
+								{
+									"name": "get_library_prop",
+									"type": "() => Library | undefined",
+									"description": "Getter for the component's `library` prop. A thunk so the prop stays reactive."
+								},
+								{
+									"name": "component_name",
+									"type": "string",
+									"description": "Used in the error when neither the prop nor the context provides a library."
+								}
+							],
+							"returnType": "() => Library",
+							"returnDescription": "getter for the resolved library; read it lazily, e.g. `$derived(get_library())`"
 						},
 						{
 							"name": "parse_library_url_prefix",
 							"kind": "function",
 							"docComment": "Normalizes a URL prefix: ensures leading `/`, strips trailing `/`, returns `''` for falsy and non-string values.",
 							"typeSignature": "(value: unknown): string",
-							"sourceLine": 23,
+							"sourceLine": 65,
 							"parameters": [
 								{
 									"name": "value",
@@ -28117,7 +29196,7 @@
 							"name": "Library",
 							"kind": "class",
 							"docComment": "Rich runtime representation of a library.\n\nWraps `LibraryJson` with computed properties and provides the root\nof the API documentation hierarchy: `Library` → `Module` → `Declaration`.",
-							"sourceLine": 37,
+							"sourceLine": 79,
 							"seeAlso": [
 								"`module.svelte.ts` for `Module` class",
 								"`declaration.svelte.ts` for `Declaration` class"
@@ -28554,7 +29633,7 @@
 						{
 							"name": "logo_fuz_css",
 							"kind": "variable",
-							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; attrs: { style: string; }; }",
+							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; style: string; }",
 							"sourceLine": 72
 						},
 						{
@@ -32068,7 +33147,7 @@
 							"name": "Module",
 							"kind": "class",
 							"docComment": "Rich runtime representation of a module with computed properties.\n\nWraps svelte-docinfo's `ModuleJson` with reactive derivations,\nURL generation, and `Declaration` instances.",
-							"sourceLine": 16,
+							"sourceLine": 41,
 							"seeAlso": [
 								"{@link https://github.com/ryanatkn/svelte-docinfo svelte-docinfo} for the analysis library",
 								"`declaration.svelte.ts` for the `Declaration` wrapper class"
@@ -32139,6 +33218,7 @@
 								{
 									"name": "has_declarations",
 									"kind": "variable",
+									"docComment": "Whether the module has renderable declarations (after the default-export\nfilter in `declarations`).",
 									"typeSignature": "boolean",
 									"reactivity": "$derived"
 								},
@@ -32175,9 +33255,82 @@
 									"reactivity": "$derived"
 								},
 								{
+									"name": "re_exports",
+									"kind": "variable",
+									"docComment": "Same-name re-export edges in this module's source (`ModuleJson.reExports`)\n— the forward view of declarations' `alsoExportedFrom`, sorted by name\nthen module. Renamed re-exports appear as declarations with `aliasOf`\ninstead, and star exports in `star_exports`.",
+									"typeSignature": "{ name: string; module: string; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }[]",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "has_re_exports",
+									"kind": "variable",
+									"typeSignature": "boolean",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "star_exports",
+									"kind": "variable",
+									"docComment": "Modules fully re-exported via `export * from './module'`\n(`ModuleJson.starExports`), in source order. Star-projected symbols are\nnot materialized as declarations or `re_exports` edges — this is their\nsole encoding.",
+									"typeSignature": "string[]",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "has_star_exports",
+									"kind": "variable",
+									"typeSignature": "boolean",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "re_exports_by_module",
+									"kind": "variable",
+									"docComment": "Re-export edges grouped by canonical module path, groups sorted by path.\nEntries within each group keep their name-sorted serialized order.",
+									"typeSignature": "Map<string, Array<ReExportJsonInput>>",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "external_re_exports",
+									"kind": "variable",
+									"docComment": "Re-exports whose immediate target is an external package\n(`ModuleJson.externalReExports`) — `export {x} from 'pkg'` and\n`export * as ns from 'pkg'` forms, sorted by name then specifier.",
+									"typeSignature": "{ name: string; specifier: string; originalName?: string | undefined; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }[]",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "has_external_re_exports",
+									"kind": "variable",
+									"typeSignature": "boolean",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "external_re_exports_by_specifier",
+									"kind": "variable",
+									"docComment": "External re-exports grouped by package specifier, groups sorted by\nspecifier. Entries within each group keep their name-sorted serialized\norder.",
+									"typeSignature": "Map<string, Array<ExternalReExportJsonInput>>",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "external_star_exports",
+									"kind": "variable",
+									"docComment": "External packages fully re-exported via `export * from 'pkg'`\n(`ModuleJson.externalStarExports`), in source order. The projected\nnames are unknown — the package isn't analyzed.",
+									"typeSignature": "string[]",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "has_external_star_exports",
+									"kind": "variable",
+									"typeSignature": "boolean",
+									"reactivity": "$derived"
+								},
+								{
+									"name": "has_any_re_exports",
+									"kind": "variable",
+									"docComment": "Whether the module re-exports anything in any form — same-name edges,\nstar exports, or the external variants of both.",
+									"typeSignature": "boolean",
+									"reactivity": "$derived"
+								},
+								{
 									"name": "constructor",
 									"kind": "constructor",
-									"typeSignature": "(library: Library, module_json: { path: string; declarations?: ({ kind: \"function\"; name: string; returnType?: string | undefined; returnDescription?: string | undefined; parameters?: { ...; }[] | undefined; ... 14 more ...; genericParams?: { ...; }[] | undefined; } | ... 7 more ... | { ...; })[] | undefined; ... 4 more ...; partial?: boolean | undefined; }): Module",
+									"typeSignature": "(library: Library, module_json: { path: string; declarations?: ({ kind: \"function\"; name: string; returnType?: string | undefined; returnDescription?: string | undefined; parameters?: { ...; }[] | undefined; ... 14 more ...; genericParams?: { ...; }[] | undefined; } | ... 7 more ... | { ...; })[] | undefined; ... 7 more ...; partial?: boolean | undefined; }): Module",
 									"parameters": [
 										{
 											"name": "library",
@@ -32813,6 +33966,7 @@
 							"acceptsChildren": true
 						}
 					],
+					"moduleComment": "Renders an `SvgData` icon definition to inline `svg` markup, never via `@html`.\n\n## Security\n\n`SvgData` is rendered structurally into a fixed element set - `svg`, `defs`,\n`linearGradient`/`radialGradient`, `stop`, and `path`. None of these expose a\nnavigation or script sink (no `src` or `foreignObject`, and a gradient `href`\nonly references another gradient as a template, never a document location),\nand Svelte routes `on*` spread keys through `addEventListener` rather than\nwriting inline handler attributes. So even an untrusted `SvgData` cannot\nintroduce script execution or navigation - which is why the data is rendered\nthrough typed fields (`paths`, `gradients`) instead of a raw-markup escape\nhatch.\n\nThe one residual: a `style` value (`data.style`, a path's `style`, or a\ngradient's `attrs.style`) can still issue network requests via `url(...)`, so\nsanitize styles if you render untrusted data and that matters. Per-instance\n`svg` attributes come from this component's own props, not from `data`.",
 					"dependencies": ["svg.ts"]
 				},
 				{
@@ -32821,50 +33975,35 @@
 						{
 							"name": "SvgData",
 							"kind": "interface",
+							"docComment": "A structured icon definition rendered by `Svg.svelte`. Rendering is purely\nstructural - typed fields, never raw markup - so untrusted data cannot\nintroduce script execution or navigation. See `Svg.svelte` for the full\nsecurity notes, including the residual `style` `url(...)` caveat.",
 							"typeSignature": "SvgData",
-							"sourceLine": 3,
+							"sourceLine": 9,
 							"members": [
-								{
-									"name": "raw",
-									"kind": "variable",
-									"docComment": "Raw svg markup string that's inserted unsafely as a child of the `svg` element.\nThis is an escape hatch for non-`path` markup -\ngenerally, you should instead use the `paths` property to avoid security/CSP implications.",
-									"typeSignature": "string | null",
-									"optional": true
-								},
 								{
 									"name": "paths",
 									"kind": "variable",
-									"docComment": "List of svg `path` attribute objects. The `d` attribute is required.",
+									"docComment": "List of svg `path` attribute objects, spread onto each `path` element. The\n`d` attribute is required; a per-path `fill` overrides the resolved `fill`.",
 									"typeSignature": "Array<{d: string} & SvelteHTMLElements['path']> | null",
 									"optional": true
 								},
 								{
-									"name": "attrs",
+									"name": "style",
 									"kind": "variable",
-									"typeSignature": "SvelteHTMLElements['svg'] | null",
+									"docComment": "Inline `style` applied to the root `svg` element, merged with any `style`\npassed as a component prop. Travels with the icon definition - per-instance\nsvg attributes belong on the `Svg` component itself.",
+									"typeSignature": "string | null",
 									"optional": true
 								},
 								{
 									"name": "fill",
 									"kind": "variable",
-									"typeSignature": "string | null",
-									"optional": true
-								},
-								{
-									"name": "width",
-									"kind": "variable",
-									"typeSignature": "string | null",
-									"optional": true
-								},
-								{
-									"name": "height",
-									"kind": "variable",
+									"docComment": "Default `fill` for every `path`, falling back to `var(--text_color, #000)`.\nOverridden by the component's `fill` prop, and per-path by a path's own `fill`.",
 									"typeSignature": "string | null",
 									"optional": true
 								},
 								{
 									"name": "label",
 									"kind": "variable",
+									"docComment": "Accessible name, applied as `aria-label`. Overridden by the component's `label` prop.",
 									"typeSignature": "string | null",
 									"optional": true
 								},
@@ -32874,11 +34013,89 @@
 									"docComment": "Defaults to `\"0 0 100 100\"`.",
 									"typeSignature": "string | null",
 									"optional": true
+								},
+								{
+									"name": "gradients",
+									"kind": "variable",
+									"docComment": "Gradient definitions rendered into the svg's `<defs>` block. This is the\nstructured replacement for raw markup - reference a gradient from a\npath/shape `fill` or `stroke` with `url(#id)`. Most svgs need only `paths`.",
+									"typeSignature": "Array<SvgGradient> | null",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "SvgGradient",
+							"kind": "interface",
+							"docComment": "A gradient definition rendered into the svg's `<defs>` block. Reference it\nfrom a path/shape `fill` or `stroke` with `url(#id)`.",
+							"typeSignature": "SvgGradient",
+							"sourceLine": 46,
+							"members": [
+								{
+									"name": "type",
+									"kind": "variable",
+									"docComment": "Whether to render a `linearGradient` or `radialGradient` element.",
+									"typeSignature": "'linear' | 'radial'"
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"docComment": "The `id` referenced by a `fill`/`stroke` like `url(#id)`. Inline svgs share\nthe document's id namespace, so pick a value unique to the icon - icons\nwith colliding ids all resolve to whichever element renders first.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "stops",
+									"kind": "variable",
+									"docComment": "The gradient's color stops.",
+									"typeSignature": "Array<SvgGradientStop>"
+								},
+								{
+									"name": "attrs",
+									"kind": "variable",
+									"docComment": "Additional attributes on the gradient element, e.g. `gradientUnits`,\n`gradientTransform`, `cx`/`cy`/`r` (radial), or `x1`/`y1`/`x2`/`y2` (linear).",
+									"typeSignature": "(SvelteHTMLElements['radialGradient'] & SvelteHTMLElements['linearGradient']) | null",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "SvgGradientStop",
+							"kind": "interface",
+							"docComment": "A single color stop of an `SvgGradient`.",
+							"typeSignature": "SvgGradientStop",
+							"sourceLine": 71,
+							"members": [
+								{
+									"name": "offset",
+									"kind": "variable",
+									"docComment": "The stop's position along the gradient, e.g. `0.5` or `\"50%\"`.",
+									"typeSignature": "string | number"
+								},
+								{
+									"name": "color",
+									"kind": "variable",
+									"docComment": "The stop's color, applied as the `stop-color` attribute.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "opacity",
+									"kind": "variable",
+									"docComment": "The stop's opacity, applied as the `stop-opacity` attribute.",
+									"typeSignature": "string | number | null",
+									"optional": true
 								}
 							]
 						}
 					],
-					"dependents": ["ProjectLinks.svelte", "Svg.svelte", "logos.ts", "site.svelte.ts"]
+					"dependents": [
+						"ContextmenuLinkEntry.svelte",
+						"ContextmenuTextEntry.svelte",
+						"ProjectLinks.svelte",
+						"Svg.svelte",
+						"contextmenu_state.svelte.ts",
+						"icons.ts",
+						"logos.ts",
+						"site.svelte.ts"
+					]
 				},
 				{
 					"path": "Teleport.svelte",
@@ -41823,22 +43040,6 @@
 					]
 				},
 				{
-					"path": "RepoLibraryDetail.svelte",
-					"declarations": [
-						{
-							"name": "RepoLibraryDetail",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "library",
-									"type": "Library"
-								}
-							]
-						}
-					]
-				},
-				{
 					"path": "ReposTable.svelte",
 					"declarations": [
 						{
@@ -42720,6 +43921,39 @@
 					]
 				},
 				{
+					"path": "action_icons.ts",
+					"declarations": [
+						{
+							"name": "get_icon_for_action_method",
+							"kind": "function",
+							"typeSignature": "(method: \"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\"): SvgData",
+							"sourceLine": 16,
+							"parameters": [
+								{
+									"name": "method",
+									"type": "\"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\""
+								}
+							],
+							"returnType": "SvgData"
+						},
+						{
+							"name": "get_icon_for_action_kind",
+							"kind": "function",
+							"typeSignature": "(kind: \"request_response\" | \"remote_notification\" | \"local_call\"): SvgData",
+							"sourceLine": 33,
+							"parameters": [
+								{
+									"name": "kind",
+									"type": "\"request_response\" | \"remote_notification\" | \"local_call\""
+								}
+							],
+							"returnType": "SvgData"
+						}
+					],
+					"dependencies": ["action_metatypes.ts"],
+					"dependents": ["ActionDetail.svelte", "ActionListitem.svelte"]
+				},
+				{
 					"path": "action_metatypes.gen.ts",
 					"declarations": [
 						{
@@ -42924,10 +44158,10 @@
 					"dependencies": ["action_collections.ts"],
 					"dependents": [
 						"action.svelte.ts",
+						"action_icons.ts",
 						"actions.svelte.ts",
 						"frontend.svelte.ts",
 						"frontend_action_types.ts",
-						"glyphs.ts",
 						"schema_registry.ts"
 					]
 				},
@@ -43141,7 +44375,7 @@
 							"name": "WorkspaceChangedInput",
 							"kind": "type",
 							"docComment": "Input for `workspace_changed`.",
-							"typeSignature": "ZodObject<{ type: ZodEnum<{ close: \"close\"; open: \"open\"; }>; workspace: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<ZodString, \"DiskfilePath\", \"out\">>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodString; }, $strict>; }, $strict>",
+							"typeSignature": "ZodObject<{ type: ZodEnum<{ open: \"open\"; close: \"close\"; }>; workspace: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, $ZodBranded<ZodString, \"DiskfilePath\", \"out\">>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodString; }, $strict>; }, $strict>",
 							"sourceLine": 260
 						},
 						{
@@ -43267,7 +44501,7 @@
 						{
 							"name": "workspace_changed_action_spec",
 							"kind": "variable",
-							"typeSignature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ type: ZodEnum<{ close: \"close\"; open: \"open\"; }>; workspace: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodS...",
+							"typeSignature": "{ method: string; kind: \"remote_notification\"; initiator: \"backend\"; auth: null; side_effects: true; input: ZodObject<{ type: ZodEnum<{ open: \"open\"; close: \"close\"; }>; workspace: ZodObject<{ path: $ZodBranded<ZodPipe<ZodPipe<...>, $ZodBranded<...>>, \"DiskfileDirectoryPath\", \"out\">; name: ZodString; opened_at: ZodS...",
 							"sourceLine": 516
 						},
 						{
@@ -43494,7 +44728,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["action.svelte.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["action.svelte.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "ActionDetail.svelte",
@@ -43511,7 +44745,7 @@
 							]
 						}
 					],
-					"dependencies": ["action.svelte.ts", "glyphs.ts"]
+					"dependencies": ["action.svelte.ts", "action_icons.ts"]
 				},
 				{
 					"path": "ActionList.svelte",
@@ -43574,7 +44808,7 @@
 							]
 						}
 					],
-					"dependencies": ["action.svelte.ts", "glyphs.ts"]
+					"dependencies": ["action.svelte.ts", "action_icons.ts"]
 				},
 				{
 					"path": "actions.svelte.ts",
@@ -44224,7 +45458,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["glyphs.ts", "logos.ts"]
+					"dependencies": ["logos.ts"]
 				},
 				{
 					"path": "CapabilityBackend.svelte",
@@ -44235,7 +45469,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["constants.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["constants.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "CapabilityFilesystem.svelte",
@@ -44286,7 +45520,7 @@
 							]
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "CapabilitySystem.svelte",
@@ -45960,7 +47194,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["chat.svelte.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["chat.svelte.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "ChatInitializer.svelte",
@@ -46032,7 +47266,7 @@
 							]
 						}
 					],
-					"dependencies": ["chat.svelte.ts", "glyphs.ts"]
+					"dependencies": ["chat.svelte.ts"]
 				},
 				{
 					"path": "chats.svelte.ts",
@@ -46391,7 +47625,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "ChatThread.svelte",
@@ -46495,7 +47729,7 @@
 							]
 						}
 					],
-					"dependencies": ["chat.svelte.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["chat.svelte.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "ChatViewMulti.svelte",
@@ -46551,21 +47785,20 @@
 								},
 								{
 									"name": "restore_icon",
-									"type": "string | Snippet<[]>",
+									"type": "string | Snippet<[]> | SvgData",
 									"optional": true,
-									"defaultValue": "GLYPH_RESTORE"
+									"defaultValue": "icon_restore"
 								},
 								{
 									"name": "clear_icon",
-									"type": "string | Snippet<[]>",
+									"type": "string | Snippet<[]> | SvgData",
 									"optional": true,
-									"defaultValue": "GLYPH_CLEAR"
+									"defaultValue": "icon_clear"
 								}
 							],
 							"acceptsChildren": true
 						}
-					],
-					"dependencies": ["glyphs.ts"]
+					]
 				},
 				{
 					"path": "click_outside.svelte.ts",
@@ -47128,7 +48361,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["glyphs.ts", "helpers.ts"]
+					"dependencies": ["helpers.ts"]
 				},
 				{
 					"path": "ContextmenuEntryToggle.svelte",
@@ -47166,8 +48399,7 @@
 							],
 							"acceptsChildren": true
 						}
-					],
-					"dependencies": ["glyphs.ts"]
+					]
 				},
 				{
 					"path": "Dashboard.svelte",
@@ -47185,7 +48417,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "logos.ts", "nav.ts"]
+					"dependencies": ["frontend.svelte.ts", "logos.ts", "nav.ts"]
 				},
 				{
 					"path": "DashboardActions.svelte",
@@ -47196,7 +48428,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["action.svelte.ts", "app.svelte.ts", "glyphs.ts"]
+					"dependencies": ["action.svelte.ts", "app.svelte.ts"]
 				},
 				{
 					"path": "DashboardCapabilities.svelte",
@@ -47207,7 +48439,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "DashboardChats.svelte",
@@ -47218,7 +48450,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "DashboardDiskfiles.svelte",
@@ -47261,7 +48493,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "nav.ts"]
+					"dependencies": ["frontend.svelte.ts", "nav.ts"]
 				},
 				{
 					"path": "DashboardModels.svelte",
@@ -47272,7 +48504,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "DashboardPrompts.svelte",
@@ -47283,7 +48515,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "helpers.ts", "part.svelte.ts"]
+					"dependencies": ["frontend.svelte.ts", "helpers.ts", "part.svelte.ts"]
 				},
 				{
 					"path": "DashboardProviders.svelte",
@@ -47294,7 +48526,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "DashboardSettings.svelte",
@@ -47305,7 +48537,7 @@
 							"sourceLine": 1
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["frontend.svelte.ts"]
 				},
 				{
 					"path": "DeskMenu.svelte",
@@ -47322,12 +48554,7 @@
 							"sourceLine": 2
 						}
 					],
-					"dependencies": [
-						"click_outside.svelte.ts",
-						"frontend.svelte.ts",
-						"glyphs.ts",
-						"spaces.svelte.ts"
-					]
+					"dependencies": ["click_outside.svelte.ts", "frontend.svelte.ts", "spaces.svelte.ts"]
 				},
 				{
 					"path": "diskfile_editor_state.svelte.ts",
@@ -48705,8 +49932,7 @@
 					"dependencies": [
 						"diskfile.svelte.ts",
 						"diskfile_editor_state.svelte.ts",
-						"frontend.svelte.ts",
-						"glyphs.ts"
+						"frontend.svelte.ts"
 					]
 				},
 				{
@@ -48729,7 +49955,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["diskfile.svelte.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["diskfile.svelte.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "DiskfileEditorNav.svelte",
@@ -48746,7 +49972,7 @@
 							]
 						}
 					],
-					"dependencies": ["diskfile_editor_state.svelte.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["diskfile_editor_state.svelte.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "DiskfileEditorView.svelte",
@@ -48791,12 +50017,7 @@
 							]
 						}
 					],
-					"dependencies": [
-						"diskfile.svelte.ts",
-						"frontend.svelte.ts",
-						"glyphs.ts",
-						"sortable.svelte.ts"
-					]
+					"dependencies": ["diskfile.svelte.ts", "frontend.svelte.ts", "sortable.svelte.ts"]
 				},
 				{
 					"path": "DiskfileHistoryView.svelte",
@@ -48847,8 +50068,7 @@
 						"diskfile.svelte.ts",
 						"diskfile_editor_state.svelte.ts",
 						"diskfile_helpers.ts",
-						"frontend.svelte.ts",
-						"glyphs.ts"
+						"frontend.svelte.ts"
 					]
 				},
 				{
@@ -48883,7 +50103,7 @@
 							]
 						}
 					],
-					"dependencies": ["diskfile.svelte.ts", "glyphs.ts"]
+					"dependencies": ["diskfile.svelte.ts"]
 				},
 				{
 					"path": "DiskfileMetrics.svelte",
@@ -48900,7 +50120,7 @@
 							]
 						}
 					],
-					"dependencies": ["diskfile_editor_state.svelte.ts", "glyphs.ts"]
+					"dependencies": ["diskfile_editor_state.svelte.ts"]
 				},
 				{
 					"path": "DiskfilePartView.svelte",
@@ -48987,7 +50207,7 @@
 								},
 								{
 									"name": "dialog_props",
-									"type": "OmitStrict<$$ComponentProps, \"children\">",
+									"type": "OmitStrict<Omit<HTMLDialogAttributes, \"children\" | \"onclose\"> & { show?: boolean | undefined; align?: DialogAlign | undefined; dismissable?: boolean | undefined; content_selector?: string | undefined; onbeforeclose?: (() => boolean | void) | undefined; onclose?: (() => void) | undefined; children: Snippet<...>; }, \"...",
 									"optional": true
 								}
 							]
@@ -49494,7 +50714,7 @@
 							]
 						}
 					],
-					"dependencies": ["diskfile_tab.svelte.ts", "glyphs.ts"]
+					"dependencies": ["diskfile_tab.svelte.ts"]
 				},
 				{
 					"path": "EditableText.svelte",
@@ -49549,10 +50769,10 @@
 							"sourceLine": 1,
 							"props": [
 								{
-									"name": "glyph",
-									"type": "string",
+									"name": "icon",
+									"type": "SvgData",
 									"optional": true,
-									"defaultValue": "GLYPH_ERROR"
+									"defaultValue": "icon_error"
 								},
 								{
 									"name": "children",
@@ -49561,8 +50781,7 @@
 							],
 							"acceptsChildren": true
 						}
-					],
-					"dependencies": ["glyphs.ts"]
+					]
 				},
 				{
 					"path": "ExternalLink.svelte",
@@ -49611,20 +50830,19 @@
 							"props": [
 								{
 									"name": "children",
-									"type": "Snippet<[text_icon: string]>",
+									"type": "Snippet<[icon: SvgData]>",
 									"optional": true,
 									"parameters": [
 										{
-											"name": "text_icon",
-											"type": "string"
+											"name": "icon",
+											"type": "SvgData"
 										}
 									]
 								}
 							],
 							"acceptsChildren": true
 						}
-					],
-					"dependencies": ["glyphs.ts"]
+					]
 				},
 				{
 					"path": "Footer.svelte",
@@ -50523,537 +51741,26 @@
 					"path": "glyphs.ts",
 					"declarations": [
 						{
-							"name": "GLYPH_UNKNOWN",
-							"kind": "variable",
-							"typeSignature": "\"⁇\"",
-							"sourceLine": 4
-						},
-						{
-							"name": "GLYPH_IMPORTANT",
-							"kind": "variable",
-							"typeSignature": "\"⁈\"",
-							"sourceLine": 5
-						},
-						{
-							"name": "GLYPH_INFO",
-							"kind": "variable",
-							"typeSignature": "\"ⓘ\"",
-							"sourceLine": 6
-						},
-						{
-							"name": "GLYPH_ADD",
-							"kind": "variable",
-							"typeSignature": "\"✛\"",
-							"sourceLine": 8
-						},
-						{
-							"name": "GLYPH_REMOVE",
-							"kind": "variable",
-							"typeSignature": "\"🗙\"",
-							"sourceLine": 9
-						},
-						{
-							"name": "GLYPH_DELETE",
-							"kind": "variable",
-							"typeSignature": "\"⌧\"",
-							"sourceLine": 10
-						},
-						{
-							"name": "GLYPH_CLEAR",
-							"kind": "variable",
-							"typeSignature": "\"⌫\"",
-							"sourceLine": 11
-						},
-						{
-							"name": "GLYPH_RESTORE",
-							"kind": "variable",
-							"typeSignature": "\"⤻\"",
-							"sourceLine": 12
-						},
-						{
-							"name": "GLYPH_CANCEL",
-							"kind": "variable",
-							"typeSignature": "\"⦸\"",
-							"sourceLine": 13
-						},
-						{
-							"name": "GLYPH_DRAG",
-							"kind": "variable",
-							"typeSignature": "\"≡\"",
-							"sourceLine": 14
-						},
-						{
-							"name": "GLYPH_COPY",
-							"kind": "variable",
-							"typeSignature": "\"⧉\"",
-							"sourceLine": 15
-						},
-						{
-							"name": "GLYPH_PASTE",
-							"kind": "variable",
-							"typeSignature": "\"⎌\"",
-							"sourceLine": 16
-						},
-						{
-							"name": "GLYPH_RESET",
-							"kind": "variable",
-							"typeSignature": "\"⤺\"",
-							"sourceLine": 17
-						},
-						{
-							"name": "GLYPH_REFRESH",
-							"kind": "variable",
-							"typeSignature": "\"⟳\"",
-							"sourceLine": 18
-						},
-						{
-							"name": "GLYPH_CONNECT",
-							"kind": "variable",
-							"typeSignature": "\"⭍\"",
-							"sourceLine": 19
-						},
-						{
-							"name": "GLYPH_DISCONNECT",
-							"kind": "variable",
-							"typeSignature": "\"⊝\"",
-							"sourceLine": 20
-						},
-						{
-							"name": "GLYPH_RETRY",
-							"kind": "variable",
-							"typeSignature": "\"↺\"",
-							"sourceLine": 21
-						},
-						{
 							"name": "GLYPH_PLACEHOLDER",
 							"kind": "variable",
 							"typeSignature": "\"↳\"",
-							"sourceLine": 22
-						},
-						{
-							"name": "GLYPH_SEND",
-							"kind": "variable",
-							"typeSignature": "\"⮥\"",
-							"sourceLine": 23
-						},
-						{
-							"name": "GLYPH_PLAY",
-							"kind": "variable",
-							"typeSignature": "\"▶︎\"",
-							"sourceLine": 24
-						},
-						{
-							"name": "GLYPH_PAUSE",
-							"kind": "variable",
-							"typeSignature": "\"❙❙\"",
-							"sourceLine": 25
+							"sourceLine": 7
 						},
 						{
 							"name": "GLYPH_STOP",
 							"kind": "variable",
 							"typeSignature": "\"⏹\"",
-							"sourceLine": 26
-						},
-						{
-							"name": "GLYPH_CHECKMARK",
-							"kind": "variable",
-							"typeSignature": "\"✓\"",
-							"sourceLine": 30
-						},
-						{
-							"name": "GLYPH_XMARK",
-							"kind": "variable",
-							"typeSignature": "\"✗\"",
-							"sourceLine": 31
-						},
-						{
-							"name": "GLYPH_XMARK_HEAVY",
-							"kind": "variable",
-							"typeSignature": "\"✘\"",
-							"sourceLine": 32
-						},
-						{
-							"name": "GLYPH_DOWNLOAD",
-							"kind": "variable",
-							"typeSignature": "\"⭳\"",
-							"sourceLine": 34
-						},
-						{
-							"name": "GLYPH_ERROR",
-							"kind": "variable",
-							"typeSignature": "\"‼\"",
-							"sourceLine": 35
-						},
-						{
-							"name": "GLYPH_CHEVRON_UP",
-							"kind": "variable",
-							"typeSignature": "\"⮝\"",
-							"sourceLine": 36
-						},
-						{
-							"name": "GLYPH_CHEVRON_RIGHT",
-							"kind": "variable",
-							"typeSignature": "\"⮞\"",
-							"sourceLine": 37
-						},
-						{
-							"name": "GLYPH_CHEVRON_DOWN",
-							"kind": "variable",
-							"typeSignature": "\"⮟\"",
-							"sourceLine": 38
-						},
-						{
-							"name": "GLYPH_CHEVRON_LEFT",
-							"kind": "variable",
-							"typeSignature": "\"⮜\"",
-							"sourceLine": 39
-						},
-						{
-							"name": "GLYPH_DOUBLE_CHEVRON_LEFT",
-							"kind": "variable",
-							"typeSignature": "\"«\"",
-							"sourceLine": 40
-						},
-						{
-							"name": "GLYPH_DOUBLE_CHEVRON_RIGHT",
-							"kind": "variable",
-							"typeSignature": "\"»\"",
-							"sourceLine": 41
-						},
-						{
-							"name": "GLYPH_EDIT",
-							"kind": "variable",
-							"typeSignature": "\"✎\"",
-							"sourceLine": 45
-						},
-						{
-							"name": "GLYPH_SORT",
-							"kind": "variable",
-							"typeSignature": "\"⇅\"",
-							"sourceLine": 51
-						},
-						{
-							"name": "GLYPH_BACKEND",
-							"kind": "variable",
-							"typeSignature": "\"🜢\"",
-							"sourceLine": 53
-						},
-						{
-							"name": "GLYPH_CHAT",
-							"kind": "variable",
-							"typeSignature": "\"⌸\"",
-							"sourceLine": 54
-						},
-						{
-							"name": "GLYPH_THREAD",
-							"kind": "variable",
-							"typeSignature": "\"☷\"",
-							"sourceLine": 55
-						},
-						{
-							"name": "GLYPH_TURN",
-							"kind": "variable",
-							"typeSignature": "\"⎍\"",
-							"sourceLine": 56
-						},
-						{
-							"name": "GLYPH_FILE",
-							"kind": "variable",
-							"typeSignature": "\"⧈\"",
-							"sourceLine": 57
-						},
-						{
-							"name": "GLYPH_LIST",
-							"kind": "variable",
-							"typeSignature": "\"▤\"",
-							"sourceLine": 59
-						},
-						{
-							"name": "GLYPH_DIRECTORY",
-							"kind": "variable",
-							"typeSignature": "\"▦\"",
-							"sourceLine": 60
-						},
-						{
-							"name": "GLYPH_CREATE_FILE",
-							"kind": "variable",
-							"typeSignature": "\"🗎\"",
-							"sourceLine": 61
-						},
-						{
-							"name": "GLYPH_CREATE_FOLDER",
-							"kind": "variable",
-							"typeSignature": "\"🗁\"",
-							"sourceLine": 62
-						},
-						{
-							"name": "GLYPH_PROMPT",
-							"kind": "variable",
-							"typeSignature": "\"⌇\"",
-							"sourceLine": 63
-						},
-						{
-							"name": "GLYPH_PART",
-							"kind": "variable",
-							"typeSignature": "\"┊\"",
-							"sourceLine": 65
-						},
-						{
-							"name": "GLYPH_PROVIDER",
-							"kind": "variable",
-							"typeSignature": "\"⨕\"",
-							"sourceLine": 66
-						},
-						{
-							"name": "GLYPH_MODEL",
-							"kind": "variable",
-							"typeSignature": "\"⊛\"",
-							"sourceLine": 67
-						},
-						{
-							"name": "GLYPH_ACTION",
-							"kind": "variable",
-							"typeSignature": "\"⍾\"",
-							"sourceLine": 68
-						},
-						{
-							"name": "GLYPH_VIEW",
-							"kind": "variable",
-							"typeSignature": "\"⍜\"",
-							"sourceLine": 69
-						},
-						{
-							"name": "GLYPH_PREVIEW",
-							"kind": "variable",
-							"typeSignature": "\"⦾\"",
-							"sourceLine": 70
-						},
-						{
-							"name": "GLYPH_LOG",
-							"kind": "variable",
-							"typeSignature": "\"⎙\"",
-							"sourceLine": 71
-						},
-						{
-							"name": "GLYPH_TAB",
-							"kind": "variable",
-							"typeSignature": "\"⛶\"",
-							"sourceLine": 72
-						},
-						{
-							"name": "GLYPH_PROJECT",
-							"kind": "variable",
-							"typeSignature": "\"⌬\"",
-							"sourceLine": 73
-						},
-						{
-							"name": "GLYPH_CAPABILITY",
-							"kind": "variable",
-							"typeSignature": "\"⧰\"",
-							"sourceLine": 74
-						},
-						{
-							"name": "GLYPH_SETTINGS",
-							"kind": "variable",
-							"typeSignature": "\"⛮\"",
-							"sourceLine": 75
-						},
-						{
-							"name": "GLYPH_DOMAIN",
-							"kind": "variable",
-							"typeSignature": "\"⟡\"",
-							"sourceLine": 76
-						},
-						{
-							"name": "GLYPH_PAGE",
-							"kind": "variable",
-							"typeSignature": "\"⌺\"",
-							"sourceLine": 77
-						},
-						{
-							"name": "GLYPH_SPACE",
-							"kind": "variable",
-							"typeSignature": "\"⌂\"",
-							"sourceLine": 79
-						},
-						{
-							"name": "GLYPH_DESK",
-							"kind": "variable",
-							"typeSignature": "\"⍟\"",
-							"sourceLine": 80
-						},
-						{
-							"name": "GLYPH_PIN",
-							"kind": "variable",
-							"typeSignature": "\"⏍\"",
-							"sourceLine": 81
-						},
-						{
-							"name": "GLYPH_TERMINAL",
-							"kind": "variable",
-							"typeSignature": "\"⌨\"",
-							"sourceLine": 83
-						},
-						{
-							"name": "GLYPH_WORKSPACE",
-							"kind": "variable",
-							"typeSignature": "\"⊞\"",
-							"sourceLine": 84
-						},
-						{
-							"name": "GLYPH_IDEA",
-							"kind": "variable",
-							"typeSignature": "\"⌆\"",
-							"sourceLine": 85
-						},
-						{
-							"name": "GLYPH_PING",
-							"kind": "variable",
-							"typeSignature": "\"⥀\"",
-							"sourceLine": 87
-						},
-						{
-							"name": "GLYPH_HEARTBEAT",
-							"kind": "variable",
-							"typeSignature": "\"∽\"",
-							"sourceLine": 88
-						},
-						{
-							"name": "GLYPH_RESPONSE",
-							"kind": "variable",
-							"typeSignature": "\"⮑\"",
-							"sourceLine": 89
-						},
-						{
-							"name": "GLYPH_SESSION",
-							"kind": "variable",
-							"typeSignature": "\"⏣\"",
-							"sourceLine": 90
-						},
-						{
-							"name": "GLYPH_ACTION_TYPE_LOCAL_CALL",
-							"kind": "variable",
-							"typeSignature": "\"⤳\"",
-							"sourceLine": 92
-						},
-						{
-							"name": "GLYPH_ACTION_TYPE_REMOTE_NOTIFICATION",
-							"kind": "variable",
-							"typeSignature": "\"⥙\"",
-							"sourceLine": 93
-						},
-						{
-							"name": "GLYPH_ACTION_TYPE_REQUEST_RESPONSE",
-							"kind": "variable",
-							"typeSignature": "\"⥮\"",
-							"sourceLine": 94
-						},
-						{
-							"name": "GLYPH_EXTERNAL_LINK",
-							"kind": "variable",
-							"typeSignature": "\"🡵\"",
-							"sourceLine": 96
-						},
-						{
-							"name": "GLYPH_ARROW_RIGHT",
-							"kind": "variable",
-							"typeSignature": "\"→\"",
-							"sourceLine": 98
-						},
-						{
-							"name": "GLYPH_ARROW_LEFT",
-							"kind": "variable",
-							"typeSignature": "\"←\"",
-							"sourceLine": 99
-						},
-						{
-							"name": "get_glyph_for_action_method",
-							"kind": "function",
-							"typeSignature": "(method: \"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\"): string",
-							"sourceLine": 101,
-							"parameters": [
-								{
-									"name": "method",
-									"type": "\"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\""
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "get_glyph_for_action_kind",
-							"kind": "function",
-							"typeSignature": "(kind: \"request_response\" | \"remote_notification\" | \"local_call\"): string",
-							"sourceLine": 118,
-							"parameters": [
-								{
-									"name": "kind",
-									"type": "\"request_response\" | \"remote_notification\" | \"local_call\""
-								}
-							],
-							"returnType": "string"
+							"sourceLine": 8
 						}
 					],
-					"dependencies": ["action_metatypes.ts"],
 					"dependents": [
-						"ActionContextmenu.svelte",
-						"ActionDetail.svelte",
-						"ActionListitem.svelte",
-						"CapabilitiesView.svelte",
-						"CapabilityBackend.svelte",
-						"CapabilityProviderApi.svelte",
 						"CapabilityWebsocket.svelte",
-						"ChatContextmenu.svelte",
-						"ChatListitem.svelte",
 						"ChatThread.svelte",
-						"ChatView.svelte",
 						"ChatViewMulti.svelte",
-						"ChatsContextmenu.svelte",
-						"ClearRestoreButton.svelte",
 						"ContentEditor.svelte",
-						"ContextmenuEntryCopyToClipboard.svelte",
-						"ContextmenuEntryToggle.svelte",
-						"Dashboard.svelte",
-						"DashboardActions.svelte",
-						"DashboardCapabilities.svelte",
-						"DashboardChats.svelte",
-						"DashboardHome.svelte",
-						"DashboardModels.svelte",
-						"DashboardPrompts.svelte",
-						"DashboardProviders.svelte",
-						"DashboardSettings.svelte",
-						"DeskMenu.svelte",
-						"DiskfileActions.svelte",
-						"DiskfileContextmenu.svelte",
-						"DiskfileEditorNav.svelte",
 						"DiskfileEditorView.svelte",
-						"DiskfileExplorer.svelte",
-						"DiskfileInfo.svelte",
-						"DiskfileListitem.svelte",
-						"DiskfileMetrics.svelte",
-						"DiskfileTabListitem.svelte",
-						"ErrorMessageInline.svelte",
-						"ExternalLinkIcon.svelte",
-						"ModelContextmenu.svelte",
-						"ModelDetail.svelte",
-						"ModelLink.svelte",
-						"PartContextmenu.svelte",
 						"PartEditorForDiskfile.svelte",
-						"PartRemoveButton.svelte",
-						"PingForm.svelte",
-						"PromptContextmenu.svelte",
-						"PromptListitem.svelte",
-						"ProviderDetail.svelte",
-						"ProviderLink.svelte",
-						"SocketMessageQueue.svelte",
-						"TerminalPresetBar.svelte",
-						"TerminalRunItem.svelte",
-						"ThreadContextmenu.svelte",
-						"ThreadListitem.svelte",
-						"TurnContextmenu.svelte",
-						"XmlAttributeEditor.svelte",
-						"XmlTagControls.svelte",
-						"nav.ts",
-						"part_helpers.ts"
+						"XmlTagControls.svelte"
 					]
 				},
 				{
@@ -52124,7 +52831,7 @@
 						{
 							"name": "logo_gemini",
 							"kind": "variable",
-							"typeSignature": "{ label: string; fill: string; raw: string; paths: { d: string; }[]; }",
+							"typeSignature": "{ label: string; fill: string; gradients: { type: \"radial\"; id: string; attrs: { cx: string; cy: string; r: string; gradientUnits: string; gradientTransform: string; }; stops: { offset: string; color: string; }[]; }[]; paths: { ...; }[]; }",
 							"sourceLine": 38
 						}
 					],
@@ -52439,7 +53146,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["glyphs.ts", "model.svelte.ts"]
+					"dependencies": ["model.svelte.ts"]
 				},
 				{
 					"path": "ModelDetail.svelte",
@@ -52461,7 +53168,7 @@
 							]
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "model.svelte.ts"]
+					"dependencies": ["frontend.svelte.ts", "model.svelte.ts"]
 				},
 				{
 					"path": "ModelLink.svelte",
@@ -52491,7 +53198,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["glyphs.ts", "model.svelte.ts"]
+					"dependencies": ["model.svelte.ts"]
 				},
 				{
 					"path": "ModelListitem.svelte",
@@ -52574,7 +53281,7 @@
 								},
 								{
 									"name": "dialog_props",
-									"type": "OmitStrict<$$ComponentProps, \"children\">",
+									"type": "OmitStrict<Omit<HTMLDialogAttributes, \"children\" | \"onclose\"> & { show?: boolean | undefined; align?: DialogAlign | undefined; dismissable?: boolean | undefined; content_selector?: string | undefined; onbeforeclose?: (() => boolean | void) | undefined; onclose?: (() => void) | undefined; children: Snippet<...>; }, \"...",
 									"optional": true
 								},
 								{
@@ -52848,7 +53555,7 @@
 							"name": "NavLinkItem",
 							"kind": "interface",
 							"typeSignature": "NavLinkItem",
-							"sourceLine": 21,
+							"sourceLine": 22,
 							"members": [
 								{
 									"name": "label",
@@ -52863,7 +53570,7 @@
 								{
 									"name": "icon",
 									"kind": "variable",
-									"typeSignature": "string | SvgData"
+									"typeSignature": "SvgData"
 								}
 							]
 						},
@@ -52871,7 +53578,7 @@
 							"name": "NavItem",
 							"kind": "interface",
 							"typeSignature": "NavItem",
-							"sourceLine": 28,
+							"sourceLine": 29,
 							"members": [
 								{
 									"name": "group",
@@ -52889,7 +53596,7 @@
 							"name": "to_nav_link_href",
 							"kind": "function",
 							"typeSignature": "(app: Frontend, label: string, href: string): string",
-							"sourceLine": 38,
+							"sourceLine": 39,
 							"parameters": [
 								{
 									"name": "app",
@@ -52910,10 +53617,10 @@
 							"name": "main_nav_items_default",
 							"kind": "variable",
 							"typeSignature": "NavItem[]",
-							"sourceLine": 56
+							"sourceLine": 57
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "logos.ts"],
+					"dependencies": ["frontend.svelte.ts", "logos.ts"],
 					"dependents": ["Dashboard.svelte", "DashboardHome.svelte"]
 				},
 				{
@@ -52988,26 +53695,26 @@
 					"path": "part_helpers.ts",
 					"declarations": [
 						{
-							"name": "PART_GLYPHS",
+							"name": "PART_ICONS",
 							"kind": "variable",
-							"typeSignature": "{ text: string; diskfile: string; }",
-							"sourceLine": 4
+							"typeSignature": "{ text: { label: string; paths: { d: string; }[]; }; diskfile: { label: string; paths: { d: string; }[]; }; }",
+							"sourceLine": 6
 						},
 						{
-							"name": "get_part_type_glyph",
+							"name": "get_part_type_icon",
 							"kind": "function",
-							"typeSignature": "(part: PartUnion): string",
-							"sourceLine": 9,
+							"typeSignature": "(part: PartUnion): SvgData",
+							"sourceLine": 11,
 							"parameters": [
 								{
 									"name": "part",
 									"type": "PartUnion"
 								}
 							],
-							"returnType": "string"
+							"returnType": "SvgData"
 						}
 					],
-					"dependencies": ["glyphs.ts", "part.svelte.ts"],
+					"dependencies": ["part.svelte.ts"],
 					"dependents": [
 						"PartContextmenu.svelte",
 						"PartSummary.svelte",
@@ -53698,7 +54405,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "part.svelte.ts", "part_helpers.ts"]
+					"dependencies": ["frontend.svelte.ts", "part.svelte.ts", "part_helpers.ts"]
 				},
 				{
 					"path": "PartEditorForDiskfile.svelte",
@@ -53889,7 +54596,7 @@
 								},
 								{
 									"name": "dialog_props",
-									"type": "OmitStrict<$$ComponentProps, \"children\">",
+									"type": "OmitStrict<Omit<HTMLDialogAttributes, \"children\" | \"onclose\"> & { show?: boolean | undefined; align?: DialogAlign | undefined; dismissable?: boolean | undefined; content_selector?: string | undefined; onbeforeclose?: (() => boolean | void) | undefined; onclose?: (() => void) | undefined; children: Snippet<...>; }, \"...",
 									"optional": true
 								}
 							]
@@ -53924,7 +54631,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["glyphs.ts", "part.svelte.ts", "prompt.svelte.ts", "prompts.svelte.ts"]
+					"dependencies": ["part.svelte.ts", "prompt.svelte.ts", "prompts.svelte.ts"]
 				},
 				{
 					"path": "parts.svelte.ts",
@@ -54315,7 +55022,7 @@
 								},
 								{
 									"name": "dialog_props",
-									"type": "OmitStrict<$$ComponentProps, \"children\">",
+									"type": "OmitStrict<Omit<HTMLDialogAttributes, \"children\" | \"onclose\"> & { show?: boolean | undefined; align?: DialogAlign | undefined; dismissable?: boolean | undefined; content_selector?: string | undefined; onbeforeclose?: (() => boolean | void) | undefined; onclose?: (() => void) | undefined; children: Snippet<...>; }, \"...",
 									"optional": true
 								}
 							],
@@ -54340,7 +55047,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["capabilities.svelte.ts", "frontend.svelte.ts", "glyphs.ts"]
+					"dependencies": ["capabilities.svelte.ts", "frontend.svelte.ts"]
 				},
 				{
 					"path": "poller.svelte.ts",
@@ -54734,7 +55441,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "part.svelte.ts", "prompt.svelte.ts"]
+					"dependencies": ["frontend.svelte.ts", "part.svelte.ts", "prompt.svelte.ts"]
 				},
 				{
 					"path": "PromptList.svelte",
@@ -54767,7 +55474,7 @@
 							]
 						}
 					],
-					"dependencies": ["glyphs.ts", "prompt.svelte.ts"]
+					"dependencies": ["prompt.svelte.ts"]
 				},
 				{
 					"path": "PromptPicker.svelte",
@@ -54837,7 +55544,7 @@
 								},
 								{
 									"name": "dialog_props",
-									"type": "OmitStrict<$$ComponentProps, \"children\">",
+									"type": "OmitStrict<Omit<HTMLDialogAttributes, \"children\" | \"onclose\"> & { show?: boolean | undefined; align?: DialogAlign | undefined; dismissable?: boolean | undefined; content_selector?: string | undefined; onbeforeclose?: (() => boolean | void) | undefined; onclose?: (() => void) | undefined; children: Snippet<...>; }, \"...",
 									"optional": true
 								}
 							]
@@ -55427,7 +56134,7 @@
 							]
 						}
 					],
-					"dependencies": ["glyphs.ts", "provider.svelte.ts"]
+					"dependencies": ["provider.svelte.ts"]
 				},
 				{
 					"path": "ProviderLink.svelte",
@@ -55444,7 +56151,7 @@
 								},
 								{
 									"name": "icon",
-									"type": "\"svg\" | \"glyph\" | Snippet<[provider: Provider, glyph: string]>",
+									"type": "\"svg\" | \"glyph\" | Snippet<[provider: Provider, icon: SvgData]>",
 									"optional": true
 								},
 								{
@@ -55471,7 +56178,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["glyphs.ts", "provider.svelte.ts"]
+					"dependencies": ["provider.svelte.ts"]
 				},
 				{
 					"path": "ProviderLogo.svelte",
@@ -57011,7 +57718,7 @@
 							]
 						}
 					],
-					"dependencies": ["glyphs.ts", "helpers.ts", "socket.svelte.ts", "time_helpers.ts"]
+					"dependencies": ["helpers.ts", "socket.svelte.ts", "time_helpers.ts"]
 				},
 				{
 					"path": "sortable.svelte.ts",
@@ -57951,7 +58658,7 @@
 							]
 						}
 					],
-					"dependencies": ["glyphs.ts", "terminal_preset.svelte.ts"]
+					"dependencies": ["terminal_preset.svelte.ts"]
 				},
 				{
 					"path": "TerminalRunItem.svelte",
@@ -57985,7 +58692,7 @@
 							]
 						}
 					],
-					"dependencies": ["app.svelte.ts", "glyphs.ts"]
+					"dependencies": ["app.svelte.ts"]
 				},
 				{
 					"path": "TerminalRunner.svelte",
@@ -58468,7 +59175,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["frontend.svelte.ts", "glyphs.ts", "thread.svelte.ts"]
+					"dependencies": ["frontend.svelte.ts", "thread.svelte.ts"]
 				},
 				{
 					"path": "ThreadList.svelte",
@@ -58508,7 +59215,7 @@
 							]
 						}
 					],
-					"dependencies": ["chat.svelte.ts", "glyphs.ts", "thread.svelte.ts"]
+					"dependencies": ["chat.svelte.ts", "thread.svelte.ts"]
 				},
 				{
 					"path": "threads.svelte.ts",
@@ -59470,7 +60177,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["glyphs.ts", "turn.svelte.ts"]
+					"dependencies": ["turn.svelte.ts"]
 				},
 				{
 					"path": "TurnList.svelte",
@@ -60156,7 +60863,7 @@
 							]
 						}
 					],
-					"dependencies": ["glyphs.ts", "xml.ts"]
+					"dependencies": ["xml.ts"]
 				},
 				{
 					"path": "XmlTagControls.svelte",
@@ -60269,7 +60976,7 @@
 	"svelte-docinfo": {
 		"pkg_json": {
 			"name": "svelte-docinfo",
-			"version": "0.4.1",
+			"version": "0.5.0",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
 			"logo": "logo.svg",
@@ -60392,30 +61099,11 @@
 							]
 						},
 						{
-							"name": "ModuleAnalyzeResult",
-							"kind": "interface",
-							"docComment": "Result of analyzing a single module.\n\n`alsoExportedFrom` on declarations is always empty from this path —\ncross-module re-export resolution requires all modules.",
-							"typeSignature": "ModuleAnalyzeResult",
-							"sourceLine": 225,
-							"members": [
-								{
-									"name": "module",
-									"kind": "variable",
-									"typeSignature": "ModuleJson"
-								},
-								{
-									"name": "reExports",
-									"kind": "variable",
-									"typeSignature": "Array<ReExportInfo>"
-								}
-							]
-						},
-						{
 							"name": "analyzeModule",
 							"kind": "function",
 							"docComment": "Analyze a single non-Svelte source file and extract module metadata.",
-							"typeSignature": "(sourceFile: SourceFileInfo & { dependents?: readonly string[] | undefined; }, program: Program, options: ModuleSourceOptions, diagnostics: ({ symbolName: string; ... 5 more ...; column?: number | undefined; } | ... 12 more ... | { ...; })[], log?: AnalysisLog | undefined): ModuleAnalyzeResult | undefined",
-							"sourceLine": 262,
+							"typeSignature": "(sourceFile: SourceFileInfo & { dependents?: readonly string[] | undefined; }, program: Program, options: ModuleSourceOptions, diagnostics: ({ symbolName: string; ... 5 more ...; column?: number | undefined; } | ... 12 more ... | { ...; })[], log?: AnalysisLog | undefined): { ...; } | undefined",
+							"sourceLine": 284,
 							"parameters": [
 								{
 									"name": "sourceFile",
@@ -60439,14 +61127,14 @@
 									"optional": true
 								}
 							],
-							"returnType": "ModuleAnalyzeResult | undefined"
+							"returnType": "{ path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ......"
 						},
 						{
 							"name": "AnalyzeCoreInputs",
 							"kind": "interface",
 							"docComment": "Inputs to `analyzeCore`. The caller (one-shot wrapper or session.query)\nis responsible for normalizing `sourceOptions`, obtaining the program,\nand pre-transforming Svelte files into `svelteVirtualFiles`.\n\n`transformFailedIds` carries the IDs of `.svelte` files whose svelte2tsx\ntransform threw at ingest. The dispatch synthesizes a placeholder\n`ModuleJson` (`partial: true`, empty declarations) for each so consumers\nsee the file's existence in `modules` even though analysis couldn't run.\nIdentifying these via a sibling Set keeps `svelteVirtualFiles` a clean\n\"files we can analyze\" map; the failure side-channel doesn't pollute it.",
 							"typeSignature": "AnalyzeCoreInputs",
-							"sourceLine": 346,
+							"sourceLine": 370,
 							"members": [
 								{
 									"name": "sourceFiles",
@@ -60493,8 +61181,8 @@
 							"name": "analyzeCore",
 							"kind": "function",
 							"docComment": "Run the two-phase analysis loop on pre-prepared inputs.",
-							"typeSignature": "(inputs: AnalyzeCoreInputs): { modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }",
-							"sourceLine": 374,
+							"typeSignature": "(inputs: AnalyzeCoreInputs): { modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }",
+							"sourceLine": 398,
 							"parameters": [
 								{
 									"name": "inputs",
@@ -60508,7 +61196,7 @@
 							"kind": "function",
 							"docComment": "Normalize `Diagnostic.file` to project-root-relative form, in place.\n\nProducers inside the analysis pipeline can write absolute paths or virtual\npaths (svelte2tsx output like `Foo.svelte.__svelte2tsx__.ts`). This pass\ncollapses both to the public contract: a path relative to `projectRoot`\nwith no leading slash and no `./` prefix.\n\nExposed for build-tool integrations that bypass the session and collect\ntheir own discovery/dep diagnostics — they need the same normalization to\nmatch the public contract.",
 							"typeSignature": "(diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | { functionName: string; ... 5 more ...; column?: number | undefined; } | ... 11 more ... | { ...; })[], projectRoot: string): void",
-							"sourceLine": 487,
+							"sourceLine": 506,
 							"mutates": {
 								"diagnostics": "— rewrites each diagnostic's `file` field"
 							},
@@ -60590,7 +61278,7 @@
 							"name": "analyze",
 							"kind": "function",
 							"docComment": "Analyze library source files and extract metadata (one-shot).\n\nWraps a single-use `AnalysisSession`. For repeated analyses of the same\nsource set (e.g., a Vite plugin reacting to file edits), use\n`createAnalysisSession` directly.",
-							"typeSignature": "(options: AnalyzeOptions): Promise<{ modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }>",
+							"typeSignature": "(options: AnalyzeOptions): Promise<{ modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }>",
 							"sourceLine": 77,
 							"throws": [
 								{
@@ -60696,7 +61384,7 @@
 							"name": "analyzeFromFiles",
 							"kind": "function",
 							"docComment": "Analyze a library from files on disk with automatic file discovery.\n\nRecommended high-level API for one-shot use (CLI, build-time generation):\n\n1. **Discovery** — `discoverSourceFiles` (exports-first, glob fallback)\n2. **Ingest** — push discovered files into a single-use session\n3. **Analysis** — `session.query()`",
-							"typeSignature": "(options: AnalyzeFromFilesOptions): Promise<{ modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }>",
+							"typeSignature": "(options: AnalyzeFromFilesOptions): Promise<{ modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }>",
 							"sourceLine": 173,
 							"throws": [
 								{
@@ -60909,32 +61597,11 @@
 					"path": "declaration-build.ts",
 					"declarations": [
 						{
-							"name": "ReExportInfo",
-							"kind": "interface",
-							"docComment": "Information about a same-name re-export.\n\nCollected during phase 1 of analysis and passed to `mergeReExports`\nin phase 2 to build `alsoExportedFrom` arrays on canonical declarations.",
-							"typeSignature": "ReExportInfo",
-							"sourceLine": 35,
-							"members": [
-								{
-									"name": "name",
-									"kind": "variable",
-									"docComment": "Name of the re-exported declaration. `'default'` for default-slot\nre-exports (`export {default} from './x'`) — that's the canonical's\nactual symbol name in the original module.",
-									"typeSignature": "string"
-								},
-								{
-									"name": "originalModule",
-									"kind": "variable",
-									"docComment": "Module path (relative to `sourceRoot`) where the declaration is originally declared.",
-									"typeSignature": "string"
-								}
-							]
-						},
-						{
 							"name": "MemberJsonBuild",
 							"kind": "interface",
 							"docComment": "Permissive type for constructing members incrementally before Zod validation.\n\nUsed by internal analysis functions in `typescript-extract-*.ts` that build members\nby mutating a plain object. The discriminated union schema (`MemberJson`)\nvalidates the final shape at the `ModuleJson.parse()` boundary.\n\nMirrors `DeclarationJsonBuild` for the same reason: construction sites\ndetermine `kind` at runtime, so TypeScript can't narrow the union during\nincremental field assignment.",
 							"typeSignature": "MemberJsonBuild",
-							"sourceLine": 57,
+							"sourceLine": 42,
 							"members": [
 								{
 									"name": "name",
@@ -61070,7 +61737,7 @@
 							"kind": "interface",
 							"docComment": "Permissive type for constructing declarations incrementally before Zod validation.\n\nUsed by internal analysis functions (`analyzeDeclaration`, `extractFunctionInfo`, etc.)\nthat build declarations by mutating a plain object. The discriminated union schema\nvalidates the final shape at the `ModuleJson.parse()` boundary.",
 							"typeSignature": "DeclarationJsonBuild",
-							"sourceLine": 90,
+							"sourceLine": 75,
 							"members": [
 								{
 									"name": "name",
@@ -61260,7 +61927,7 @@
 							"kind": "interface",
 							"docComment": "Result of analyzing a single declaration.\n\nProduced by `analyzeDeclaration` (in `typescript-exports.ts`) and Svelte component analysis.\nUsed by `analyzeModule` to filter `@nodocs` declarations before output.\n\nUses `DeclarationJsonBuild` (not `DeclarationJsonInput`) because declarations\nare constructed incrementally — Zod validation happens at the `ModuleJson.parse()` boundary.",
 							"typeSignature": "DeclarationAnalysis",
-							"sourceLine": 134,
+							"sourceLine": 119,
 							"members": [
 								{
 									"name": "declaration",
@@ -61281,7 +61948,7 @@
 							"kind": "interface",
 							"docComment": "Result of analyzing a module's exports.\n\nProduced by `analyzeExports` in `typescript-exports.ts`.",
 							"typeSignature": "ModuleExportsAnalysis",
-							"sourceLine": 146,
+							"sourceLine": 131,
 							"members": [
 								{
 									"name": "moduleComment",
@@ -61299,13 +61966,25 @@
 								{
 									"name": "reExports",
 									"kind": "variable",
-									"docComment": "Same-name re-exports (for building `alsoExportedFrom` in post-processing).",
-									"typeSignature": "Array<ReExportInfo>"
+									"docComment": "Same-name re-exports. Published as `ModuleJson.reExports` and consumed\nby `mergeReExports` in phase 2 to build `alsoExportedFrom` arrays on\ncanonical declarations. Unsorted here and may contain exact duplicates\n(Svelte default-slot re-keying) — ordering and dedup are applied at\npublication in `analyze-core.ts`.",
+									"typeSignature": "Array<ReExportJsonInput>"
 								},
 								{
 									"name": "starExports",
 									"kind": "variable",
 									"docComment": "Star exports (`export * from './module'`) — module paths that are fully re-exported.",
+									"typeSignature": "Array<string>"
+								},
+								{
+									"name": "externalReExports",
+									"kind": "variable",
+									"docComment": "Direct re-exports from external packages. Published as\n`ModuleJson.externalReExports`; unsorted here, sorted at publication.",
+									"typeSignature": "Array<ExternalReExportJsonInput>"
+								},
+								{
+									"name": "externalStarExports",
+									"kind": "variable",
+									"docComment": "External star exports (`export * from 'pkg'`) — specifiers as written.",
 									"typeSignature": "Array<string>"
 								}
 							]
@@ -61315,7 +61994,7 @@
 							"kind": "interface",
 							"docComment": "Result of analyzing a module (TypeScript or Svelte).\n\nProduced by `analyzeTypescriptModule` and `analyzeSvelteModule`.\nBoth analyzers return this same structure for uniform handling\nby `analyzeModule` in `analyze-core.ts`.",
 							"typeSignature": "ModuleAnalysis",
-							"sourceLine": 164,
+							"sourceLine": 162,
 							"extends": ["ModuleExportsAnalysis"],
 							"members": [
 								{
@@ -61343,7 +62022,6 @@
 					"dependencies": ["types.ts"],
 					"dependents": [
 						"analyze-core.ts",
-						"postprocess.ts",
 						"svelte.ts",
 						"tsdoc.ts",
 						"typescript-exports.ts",
@@ -62452,7 +63130,7 @@
 							"kind": "interface",
 							"docComment": "A duplicate declaration with its full metadata and module path.",
 							"typeSignature": "DuplicateDeclaration",
-							"sourceLine": 44,
+							"sourceLine": 43,
 							"alsoExportedFrom": ["index.ts"],
 							"members": [
 								{
@@ -62472,9 +63150,9 @@
 						{
 							"name": "findDuplicates",
 							"kind": "function",
-							"docComment": "Find duplicate declaration names across modules.\n\nCallers can decide how to handle duplicates (throw, warn, ignore).",
-							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]): Map<...>",
-							"sourceLine": 72,
+							"docComment": "Find duplicate declaration names across modules.\n\nA duplicate is two *different things* sharing a name in the flat namespace.\nOccurrences are compared by canonical identity — `aliasOf` chains are\nresolved first, so an alias and its canonical (or two aliases of the same\ncanonical) are one thing, not a collision. Documenting a same-name re-export\n(which synthesizes an alias) or re-exporting a component under its own name\n(`export {default as Foo} from './Foo.svelte'`) therefore doesn't flag.\nWhen a name does flag, all occurrences are reported, aliases included.\n\nCallers can decide how to handle duplicates (throw, warn, ignore).",
+							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): Map<...>",
+							"sourceLine": 122,
 							"examples": [
 								"```ts\nconst duplicates = findDuplicates(modules);\nif (duplicates.size > 0) {\n  for (const [name, occurrences] of duplicates) {\n    console.error(`\"${name}\" found in:`);\n    for (const {declaration, module} of occurrences) {\n      console.error(`  - ${module}:${declaration.sourceLine} (${declaration.kind})`);\n    }\n  }\n  throw new Error(`Found ${duplicates.size} duplicate declaration names`);\n}\n```"
 							],
@@ -62489,11 +63167,29 @@
 							"returnDescription": "`Map` of declaration names to their `DuplicateDeclaration` occurrences (only includes duplicates)"
 						},
 						{
+							"name": "compareStrings",
+							"kind": "function",
+							"docComment": "Code-unit string comparator for deterministic output ordering.\n\nUnlike `localeCompare` (host-locale/ICU-dependent, so byte-identical input\ncan serialize in different orders on different machines), code-unit order is\nenvironment-independent — and it matches the default `Array.prototype.sort`\nused for `alsoExportedFrom`, `dependencies`, and `dependents`.",
+							"typeSignature": "(a: string, b: string): number",
+							"sourceLine": 174,
+							"parameters": [
+								{
+									"name": "a",
+									"type": "string"
+								},
+								{
+									"name": "b",
+									"type": "string"
+								}
+							],
+							"returnType": "number"
+						},
+						{
 							"name": "sortModules",
 							"kind": "function",
-							"docComment": "Sort modules alphabetically by path for deterministic output and cleaner diffs.",
-							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]): { ...; }[]",
-							"sourceLine": 110,
+							"docComment": "Sort modules alphabetically by path for deterministic output and cleaner diffs.\n\nCode-unit order (`compareStrings`) so the output is environment-independent.",
+							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): { ...; }[]",
+							"sourceLine": 184,
 							"parameters": [
 								{
 									"name": "modules",
@@ -62505,50 +63201,23 @@
 							"returnDescription": "a new sorted array (does not mutate input)"
 						},
 						{
-							"name": "ReExportEntry",
-							"kind": "interface",
-							"docComment": "A collected re-export with its source module context.\n\nUsed during the two-phase re-export resolution:\n1. Phase 1: Collect re-exports from each module during analysis\n2. Phase 2: Group by original module and merge into `alsoExportedFrom`",
-							"typeSignature": "ReExportEntry",
-							"sourceLine": 121,
-							"alsoExportedFrom": ["index.ts"],
-							"members": [
-								{
-									"name": "reExportingModule",
-									"kind": "variable",
-									"docComment": "The module that re-exports the declaration.",
-									"typeSignature": "string"
-								},
-								{
-									"name": "reExport",
-									"kind": "variable",
-									"docComment": "The re-export info (name and original module).",
-									"typeSignature": "ReExportInfo"
-								}
-							]
-						},
-						{
 							"name": "mergeReExports",
 							"kind": "function",
-							"docComment": "Build `alsoExportedFrom` arrays from collected re-export data.\n\nThis function resolves the two-phase re-export problem:\n\n**Problem**: When module A re-exports from module B, we discover this while\nanalyzing A, but need to update B's declarations. However, B may already be\nprocessed or may be processed later.\n\n**Solution**: Collect all re-exports in phase 1, then merge them in phase 2\nafter all modules are analyzed.\n\nComponent-only fields on renamed component aliases (`props`,\n`acceptsChildren`, etc.) are populated separately by `resolveComponentAliases`\n— call it after this function. They split because they touch disjoint fields\nand have different inputs.",
-							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[], collectedReExports: ReExportEntry[]): void",
-							"sourceLine": 160,
+							"docComment": "Build `alsoExportedFrom` arrays from the modules' forward re-export edges.\n\nEach module carries its same-name re-export edges as `ModuleJson.reExports`\n(collected in phase 1); this phase-2 pass inverts them onto the canonical\ndeclarations so both directions of the same fact are queryable. Edges whose\ncanonical module or declaration is absent from `modules` are skipped — the\nforward entry remains without a back-link (see `ReExportJson` for the\npresence caveats).\n\nComponent-only fields on renamed component aliases (`props`,\n`acceptsChildren`, etc.) are populated separately by `resolveComponentAliases`\n— call it after this function. They split because they touch disjoint fields\nand have different inputs.",
+							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): void",
+							"sourceLine": 222,
 							"examples": [
-								"```ts\n// helpers.ts exports: foo, bar\n// index.ts does: export {foo, bar} from './files.js'\n//\n// After processing:\n// - helpers.ts foo declaration gets: alsoExportedFrom: ['index.ts']\n// - helpers.ts bar declaration gets: alsoExportedFrom: ['index.ts']\n```"
+								"```ts\n// helpers.ts exports: foo, bar\n// index.ts does: export {foo, bar} from './helpers.js'\n// (so index.ts's ModuleJson carries reExports:\n//   [{name: 'foo', module: 'helpers.ts'}, {name: 'bar', module: 'helpers.ts'}])\n//\n// After processing:\n// - helpers.ts foo declaration gets: alsoExportedFrom: ['index.ts']\n// - helpers.ts bar declaration gets: alsoExportedFrom: ['index.ts']\n```"
 							],
 							"mutates": {
-								"modules": "unions new re-exporters into `declaration.alsoExportedFrom`"
+								"modules": "unions re-exporters into `declaration.alsoExportedFrom`"
 							},
 							"alsoExportedFrom": ["index.ts"],
 							"parameters": [
 								{
 									"name": "modules",
 									"type": "{ path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ......",
-									"description": "the modules array with all modules (will be mutated)"
-								},
-								{
-									"name": "collectedReExports",
-									"type": "ReExportEntry[]",
-									"description": "array of re-exports collected during phase 1"
+									"description": "the modules array with all modules (will be mutated).\nMust be parsed `ModuleJson`s — wire JSON strips empty arrays, so run\nraw JSON through `AnalyzeResultJson.parse` first or `reExports` may be\n`undefined`"
 								}
 							],
 							"returnType": "void"
@@ -62557,8 +63226,8 @@
 							"name": "resolveComponentAliases",
 							"kind": "function",
 							"docComment": "Copy props/acceptsChildren/lang/etc. from canonical component declarations\nonto synthesized component-aliased declarations.\n\nRenamed Svelte component re-exports (`export {default as Foo} from './X.svelte'`)\nare emitted as `kind: 'component'` placeholders by `analyzeExports`, with `aliasOf`\npointing at the canonical. The canonical's component-specific fields are only\navailable after `analyzeSvelteModule` synthesizes the canonical declaration, so\nthe copy happens here in phase 2 once all modules are analyzed.\n\nCall this *after* `mergeReExports` — both walk the same modules array but\nread/write disjoint fields, so order between them only matters for clarity.",
-							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]): void",
-							"sourceLine": 214,
+							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): void",
+							"sourceLine": 274,
 							"mutates": {
 								"modules": "fills component-only fields on aliased component declarations"
 							},
@@ -62576,7 +63245,7 @@
 							"kind": "function",
 							"docComment": "Compute bidirectional dependencies from source files.\n\nThis function ensures that if file A has file B in its `dependencies`,\nthen file B will have file A in its `dependents`. This provides consistent\noutput regardless of whether callers provide one-directional or bidirectional\ndependency information.\n\nReturns new `SourceFileInfo` objects when computed dependents exist or when\npaths needed posixification; otherwise the original input objects flow\nthrough `===`-equal (fast path for session callers, who already pass POSIX\npaths and may have no inferable dependents for a given file).",
 							"typeSignature": "(files: readonly SourceFileInfo[]): (SourceFileInfo & { dependents?: readonly string[] | undefined; })[]",
-							"sourceLine": 292,
+							"sourceLine": 352,
 							"examples": [
 								"```ts\n// Input: Calculator.svelte has dependencies: [math.ts]\n// Output: Calculator.svelte has dependencies: [math.ts]\n//         math.ts has dependents: [Calculator.svelte]\nconst filesWithBidirectional = computeDependents(files);\n```"
 							],
@@ -62589,10 +63258,124 @@
 							],
 							"returnType": "(SourceFileInfo & { dependents?: readonly string[] | undefined; })[]",
 							"returnDescription": "new array with bidirectional dependencies computed"
+						},
+						{
+							"name": "ExportSurfaceEntry",
+							"kind": "interface",
+							"docComment": "One name on a module's resolved export surface.",
+							"typeSignature": "ExportSurfaceEntry",
+							"sourceLine": 415,
+							"alsoExportedFrom": ["index.ts"],
+							"members": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"docComment": "Exported name, in the docinfo model's terms — Svelte components appear\nunder their filename-derived name (the model's convention for default\nexports of `.svelte` files), not `'default'`.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "via",
+									"kind": "variable",
+									"docComment": "How the name reaches this module's surface: an own declaration\n(including synthesized aliases), a same-name re-export edge, a direct\nexternal re-export, or projection through `export * from './x'`.",
+									"typeSignature": "'declaration' | 'reExport' | 'external' | 'star'"
+								},
+								{
+									"name": "module",
+									"kind": "variable",
+									"docComment": "Canonical module path, when known (`undefined` for external entries).",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "declaration",
+									"kind": "variable",
+									"docComment": "The canonical declaration, when present in the analyzed set.",
+									"typeSignature": "DeclarationJson",
+									"optional": true
+								},
+								{
+									"name": "specifier",
+									"kind": "variable",
+									"docComment": "Package specifier for external entries (as written in the statement).",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "originalName",
+									"kind": "variable",
+									"docComment": "Name inside the external package when renamed.",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "typeOnly",
+									"kind": "variable",
+									"docComment": "Type-only re-export — the name is erased at runtime.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "starFrom",
+									"kind": "variable",
+									"docComment": "For star-projected entries: the `starExports` target the name arrived through.",
+									"typeSignature": "string",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "ExportSurface",
+							"kind": "interface",
+							"docComment": "A module's resolved export surface — see `resolveExportSurface`.",
+							"typeSignature": "ExportSurface",
+							"sourceLine": 445,
+							"alsoExportedFrom": ["index.ts"],
+							"members": [
+								{
+									"name": "entries",
+									"kind": "variable",
+									"docComment": "Surface entries, sorted by `name` (code-unit order).",
+									"typeSignature": "Array<ExportSurfaceEntry>"
+								},
+								{
+									"name": "unresolvedStarExports",
+									"kind": "variable",
+									"docComment": "Star targets (own or transitive) absent from the analyzed set — their\nprojected names are unknown, so the surface is incomplete.",
+									"typeSignature": "Array<string>"
+								},
+								{
+									"name": "externalStarExports",
+									"kind": "variable",
+									"docComment": "External star specifiers reachable from this module (own or transitive)\n— their projected names are unknowable without analyzing the package.",
+									"typeSignature": "Array<string>"
+								}
+							]
+						},
+						{
+							"name": "resolveExportSurface",
+							"kind": "function",
+							"docComment": "Resolve a module's full export surface from the analyzed model, applying\nES module semantics to star exports.\n\nCombines the module's own `declarations` (including synthesized aliases),\n`reExports` edges, `externalReExports`, and transitively-resolved\n`starExports` into one deduped, name-sorted list. The ES rules applied to\nstar projection:\n\n- explicit exports (declarations, edges, externals) shadow star-projected\n  names\n- a name projected by two stars that resolve to *different* canonicals is\n  ambiguous and excluded (same canonical through a diamond is included\n  once)\n- `default` is never star-projected — including canonical Svelte component\n  declarations, which represent their file's default export. (Caveat: a\n  star-projected re-export edge whose canonical is a component is treated\n  as a default-slot re-export and skipped; a `<script module>` const\n  sharing the component's exact name would be skipped with it.)\n\nA Position-3 alias and its `reExports` edge are the same fact — the\ndeclaration entry wins, inheriting the edge's `typeOnly`.\n\nCyclic star graphs terminate by contributing nothing along the back-edge\n(an approximation of ES fixpoint resolution — fine in practice). Surfaces\nresolved inside a cycle are path-relative and not memoized, so sibling\nstar paths resolve independently rather than inheriting them. Star\ntargets missing from `modules` are reported in `unresolvedStarExports`\nrather than guessed at; `externalStarExports` aggregates external star\nspecifiers reachable from the module, whose names are unknowable.",
+							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[], path: string): ExportSurface | null",
+							"sourceLine": 508,
+							"alsoExportedFrom": ["index.ts"],
+							"parameters": [
+								{
+									"name": "modules",
+									"type": "{ path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ......",
+									"description": "the analyzed modules (parsed `ModuleJson`s — run wire\nJSON through `AnalyzeResultJson.parse` first)"
+								},
+								{
+									"name": "path",
+									"type": "string",
+									"description": "the module to resolve, as a `ModuleJson.path` value"
+								}
+							],
+							"returnType": "ExportSurface | null",
+							"returnDescription": "the resolved surface, or `null` when `path` isn't in `modules`"
 						}
 					],
 					"moduleComment": "Post-processing for analyzed library metadata.\n\nThese functions transform analysis results after module-level analysis is complete:\n\n1. **Validation** — `findDuplicates` checks flat namespace constraints\n2. **Transformation** — `mergeReExports` resolves re-export relationships,\n   `computeDependents` builds bidirectional dependency graphs\n3. **Output** — `sortModules` prepares deterministic output\n\n@see `analyze.ts` for the main analysis entry point",
-					"dependencies": ["declaration-build.ts", "paths.ts", "source.ts", "types.ts"],
+					"dependencies": ["paths.ts", "source.ts", "types.ts"],
 					"dependents": ["analyze-core.ts", "index.ts", "session.ts"]
 				},
 				{
@@ -62771,7 +63554,7 @@
 									"name": "query",
 									"kind": "function",
 									"docComment": "Run a two-phase analysis pass against the current owned set.",
-									"typeSignature": "(opts?: QueryOptions | undefined): { modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 4 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }",
+									"typeSignature": "(opts?: QueryOptions | undefined): { modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 17 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]; }",
 									"throws": [
 										{
 											"type": "Error",
@@ -64055,7 +64838,7 @@
 							"kind": "type",
 							"docComment": "A function declaration. Has `parameters`, `returnType`, `returnDescription`, `overloads`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnDescription: ZodOptional<ZodString>; ... 16 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 463,
+							"sourceLine": 469,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64063,7 +64846,7 @@
 							"kind": "type",
 							"docComment": "A class declaration. Has `members`, `extends`, `implements`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"class\">; extends: ZodOptional<ZodString>; implements: ZodDefault<ZodArray<ZodString>>; ... 15 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 472,
+							"sourceLine": 478,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64071,7 +64854,7 @@
 							"kind": "type",
 							"docComment": "An interface declaration. Has `members`, `extends`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"interface\">; extends: ZodDefault<ZodArray<ZodString>>; members: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>, ZodObject<...>, ZodObject<...>], \"kind\">>>; ... 14 more ...; genericParams: ...",
-							"sourceLine": 494,
+							"sourceLine": 500,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64079,7 +64862,7 @@
 							"kind": "type",
 							"docComment": "A type alias declaration. Has `members`, `intersects`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"type\">; intersects: ZodDefault<ZodArray<ZodString>>; members: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>, ZodObject<...>, ZodObject<...>], \"kind\">>>; ... 14 more ...; genericParams: Zo...",
-							"sourceLine": 515,
+							"sourceLine": 521,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64087,7 +64870,7 @@
 							"kind": "type",
 							"docComment": "A variable declaration. Has optional `reactivity` for top-level rune-module\nexports (e.g., `export let count = $state(0)` in `.svelte.ts` or `<script module>`).",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"variable\">; reactivity: ZodOptional<ZodEnum<{ $state: \"$state\"; \"$state.raw\": \"$state.raw\"; $derived: \"$derived\"; \"$derived.by\": \"$derived.by\"; }>>; ... 15 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 539,
+							"sourceLine": 545,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64095,7 +64878,7 @@
 							"kind": "type",
 							"docComment": "An enum declaration. Has `members` for enum values.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"enum\">; members: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; name: ZodString; optional: ZodDefault<ZodBoolean>; ... 15 more ...; genericParams: ZodDefault<...>; }, $strict>, ZodObject<...>, ZodObject<...>], \"kind\">>>; ... 14 more ...; genericPara...",
-							"sourceLine": 551,
+							"sourceLine": 557,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64103,7 +64886,7 @@
 							"kind": "type",
 							"docComment": "A Svelte component declaration. Has `props`, `intersects`, `acceptsChildren`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"component\">; intersects: ZodDefault<ZodArray<ZodString>>; props: ZodDefault<ZodArray<ZodObject<{ examples: ZodDefault<ZodArray<ZodString>>; ... 10 more ...; parameters: ZodOptional<...>; }, $strict>>>; ... 16 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 561,
+							"sourceLine": 567,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64111,7 +64894,7 @@
 							"kind": "type",
 							"docComment": "A Svelte snippet declaration exported from `<script module>`. Has `parameters`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"snippet\">; parameters: ZodDefault<ZodArray<ZodObject<{ name: ZodString; type: ZodString; optional: ZodDefault<ZodBoolean>; rest: ZodDefault<...>; description: ZodOptional<...>; defaultValue: ZodOptional<...>; propertyDescriptions: ZodOptional<...>; }, $strict>>>; ... 14 more ...; generi...",
-							"sourceLine": 583,
+							"sourceLine": 589,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64119,7 +64902,7 @@
 							"kind": "type",
 							"docComment": "A namespace re-export binding: `export * as ns from './x'`.\n\nCarries no inline members — `module` points to the source module whose\ndeclarations are projected under this name. Consumers that want to render\n`ns.a` can deref by reading the source module's `declarations` array.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"namespace\">; module: ZodString; alsoExportedFrom: ZodDefault<ZodArray<ZodString>>; aliasOf: ZodOptional<ZodObject<{ ...; }, $strict>>; ... 12 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 599,
+							"sourceLine": 605,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
@@ -64127,28 +64910,119 @@
 							"kind": "type",
 							"docComment": "Metadata for an exported declaration (function, type, class, component, etc.).\n\nDiscriminated union on `kind` — each variant has only the fields relevant to that kind.\nUse `isKind` (in `declaration-helpers.ts`) to narrow, or check `declaration.kind` directly.",
 							"typeSignature": "ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnDescription: ZodOptional<ZodString>; ... 16 more ...; genericParams: ZodDefault<...>; }, $strict>, ... 7 more ..., ZodObject<...>], \"kind\">",
-							"sourceLine": 614,
+							"sourceLine": 620,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
 							"name": "DeclarationJsonInput",
 							"kind": "type",
 							"typeSignature": "{ kind: \"function\"; name: string; returnType?: string | undefined; returnDescription?: string | undefined; parameters?: { name: string; type: string; optional?: boolean | undefined; rest?: boolean | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | u...",
-							"sourceLine": 639
+							"sourceLine": 645
+						},
+						{
+							"name": "ReExportJson",
+							"kind": "type",
+							"docComment": "A same-name re-export edge, from the re-exporting module's side.\n\nEach entry on `ModuleJson.reExports` records that the module's source\ncontains `export {name} from ...` where the canonical declaration lives in\n`module`. This is the forward view of the same fact that\n`alsoExportedFrom` records on the canonical declaration — consumers\nresolve the canonical by `(module, name)`, the same lookup contract as\n`aliasOf`.\n\nSame-name re-exports of analyzed source only. Renamed re-exports appear as\ndeclarations with `aliasOf` in the re-exporting module; star exports live\nin `ModuleJson.starExports`; external re-exports in\n`ModuleJson.externalReExports` / `externalStarExports`. Use\n`resolveExportSurface` (in `postprocess.ts`) to combine all of these into\na module's full export surface — it handles the name dedup (a documented\nsame-name re-export appears both here and as a synthesized alias\ndeclaration) and the ES star semantics (explicit exports shadow\nstar-projected ones, names ambiguous between stars are excluded,\n`default` doesn't project).\n\n`module` points at the *canonical* module (multi-hop chains are resolved),\nnot the immediate specifier in the export statement. For Svelte default-slot\nre-exports (`export {default} from './X.svelte'`), `name` is the component\nname derived from the filename (`'X'`), matching the canonical declaration's\nname — the same exception documented on `aliasOf`. Because of that\nre-keying, two entries in one module can share a `name` (a re-keyed\ncomponent colliding with a same-name re-export from another module);\n`(module, name)` pairs remain unique (exact duplicates are deduped at\nconstruction).\n\n`@nodocs` on the export statement suppresses the entry (and the\n`alsoExportedFrom` back-link). When the canonical declaration itself is\n`@nodocs`, or the canonical module isn't part of the analyzed set, the\nentry still exists but has no matching back-link — the same presence\ncaveat as `aliasOf.module` and `starExports`.",
+							"typeSignature": "ZodObject<{ name: ZodString; module: ZodString; typeOnly: ZodDefault<ZodBoolean>; sourceLine: ZodOptional<ZodNumber>; }, $strict>",
+							"sourceLine": 684,
+							"alsoExportedFrom": ["index.ts"]
+						},
+						{
+							"name": "ReExportJsonInput",
+							"kind": "type",
+							"typeSignature": "{ name: string; module: string; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }",
+							"sourceLine": 703,
+							"members": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"docComment": "Exported name — the canonical declaration's name in `module`.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "module",
+									"kind": "variable",
+									"docComment": "Module path (relative to `sourceRoot`) where the canonical declaration lives.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "typeOnly",
+									"kind": "variable",
+									"docComment": "Whether the statement (`export type {A} from ...`) or specifier\n(`export {type A} from ...`) is type-only — the name is erased at\nruntime and importable only via `import type`.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "sourceLine",
+									"kind": "variable",
+									"docComment": "1-based line of the export specifier in this module's source. When\nidentical `(name, module)` edges are deduped (Svelte default-slot\nre-keying), the smallest line is kept.",
+									"typeSignature": "number",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "ExternalReExportJson",
+							"kind": "type",
+							"docComment": "A re-export whose immediate target is outside the analyzed source set —\n`export {x} from 'pkg'`, `export {x as y} from 'pkg'`, or\n`export * as ns from 'pkg'`.\n\n`specifier` is the module specifier as written (usually a package name);\nthere is no canonical declaration to resolve, so these entries are flat\nfacts about the statement rather than edges into the module graph.\n\nOnly statements that *directly* reference the external specifier are\ncaptured. Forms that stay silent: `import {x} from 'pkg'; export {x};`\n(import-then-export), re-export chains that reach a package through\nanother source module (that module owns the entry), and specifiers the\nchecker can't resolve. Statement-level `@nodocs` suppresses the entry.",
+							"typeSignature": "ZodObject<{ name: ZodString; specifier: ZodString; originalName: ZodOptional<ZodString>; typeOnly: ZodDefault<ZodBoolean>; sourceLine: ZodOptional<...>; }, $strict>",
+							"sourceLine": 720,
+							"alsoExportedFrom": ["index.ts"]
+						},
+						{
+							"name": "ExternalReExportJsonInput",
+							"kind": "type",
+							"typeSignature": "{ name: string; specifier: string; originalName?: string | undefined; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }",
+							"sourceLine": 737,
+							"members": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"docComment": "Public exported name from this module.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "specifier",
+									"kind": "variable",
+									"docComment": "Module specifier as written in the statement (e.g. `'pkg'`).",
+									"typeSignature": "string"
+								},
+								{
+									"name": "originalName",
+									"kind": "variable",
+									"docComment": "The name inside the external module when renamed\n(`export {x as y} from 'pkg'` → `'x'`). Omitted for same-name\nre-exports and namespace form (`export * as ns`).",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "typeOnly",
+									"kind": "variable",
+									"docComment": "Whether the statement or specifier is type-only — see `ReExportJson.typeOnly`.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "sourceLine",
+									"kind": "variable",
+									"docComment": "1-based line of the export specifier in this module's source.",
+									"typeSignature": "number",
+									"optional": true
+								}
+							]
 						},
 						{
 							"name": "ModuleJson",
 							"kind": "type",
 							"docComment": "Metadata for a source module — the top-level container in the data model.\n\n`analyze` and `analyzeFromFiles` return `Array<ModuleJson>` sorted alphabetically by `path`.\nEach module contains its exported `declarations`, dependency graph, and optional `moduleComment`.",
-							"typeSignature": "ZodObject<{ path: ZodString; declarations: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnDescription: ZodOptional<...>; ... 16 more ...; genericParams: ZodDefault<...>; }, $strict>, ... 7 more ..., ZodObject<...>], \"kind\">>>; ... 4 more...",
-							"sourceLine": 647,
+							"typeSignature": "ZodObject<{ path: ZodString; declarations: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnDescription: ZodOptional<...>; ... 16 more ...; genericParams: ZodDefault<...>; }, $strict>, ... 7 more ..., ZodObject<...>], \"kind\">>>; ... 7 more...",
+							"sourceLine": 745,
 							"alsoExportedFrom": ["index.ts"]
 						},
 						{
 							"name": "ModuleJsonInput",
 							"kind": "type",
 							"typeSignature": "{ path: string; declarations?: ({ kind: \"function\"; name: string; returnType?: string | undefined; returnDescription?: string | undefined; parameters?: { name: string; type: string; optional?: boolean | undefined; rest?: boolean | undefined; description?: string | undefined; defaultValue?: string | undefined; proper...",
-							"sourceLine": 681,
+							"sourceLine": 801,
 							"members": [
 								{
 									"name": "path",
@@ -64187,7 +65061,28 @@
 								{
 									"name": "starExports",
 									"kind": "variable",
-									"docComment": "Modules fully re-exported via `export * from './module'`.\nPaths are relative to `sourceRoot`.",
+									"docComment": "Modules fully re-exported via `export * from './module'`.\nPaths are relative to `sourceRoot`. Statement-level `@nodocs`\nsuppresses the entry, like the other re-export encodings.",
+									"typeSignature": "string[]",
+									"optional": true
+								},
+								{
+									"name": "reExports",
+									"kind": "variable",
+									"docComment": "Same-name re-exports in this module's source, sorted by `name` then\n`module` (names can collide — see `ReExportJson`). The forward view of\n`alsoExportedFrom` — see `ReExportJson` for the full contract (canonical\nresolution, Svelte default-slot naming, `@nodocs` suppression, presence\ncaveats).",
+									"typeSignature": "{ name: string; module: string; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }[]",
+									"optional": true
+								},
+								{
+									"name": "externalReExports",
+									"kind": "variable",
+									"docComment": "Re-exports whose immediate target is an external package, sorted by\n`name` then `specifier`. See `ExternalReExportJson` for which forms\nare captured.",
+									"typeSignature": "{ name: string; specifier: string; originalName?: string | undefined; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }[]",
+									"optional": true
+								},
+								{
+									"name": "externalStarExports",
+									"kind": "variable",
+									"docComment": "External modules fully re-exported via `export * from 'pkg'`, as\nwritten (statement order). The projected names are unknown — the\npackage isn't analyzed. Statement-level `@nodocs` suppresses the\nentry; unresolvable specifiers are skipped.",
 									"typeSignature": "string[]",
 									"optional": true
 								},
@@ -64209,6 +65104,7 @@
 						"index.ts",
 						"postprocess.ts",
 						"svelte.ts",
+						"typescript-exports.ts",
 						"typescript-extract-class.ts",
 						"typescript-extract-shared.ts",
 						"typescript-extract-type-properties.ts"
@@ -64261,9 +65157,9 @@
 						{
 							"name": "analyzeExports",
 							"kind": "function",
-							"docComment": "Analyze all exports from a TypeScript source file.\n\nExtracts the module-level comment via `extractModuleComment`, star exports via\n`extractStarExports`, and all exported declarations with complete metadata.\nHandles re-exports by:\n- Same-name re-exports: tracked in `reExports` for `alsoExportedFrom` building\n- Renamed re-exports: included as new declarations with `aliasOf` metadata\n- Star exports (`export * from`): tracked in `starExports` for namespace-level info\n\nThis is a mid-level function (above the individual `extract*` helpers, below `analyze`)\nsuitable for building documentation, API explorers, or analysis tools.\nFor standard SvelteKit library layouts, use `createSourceOptions(process.cwd())`.",
+							"docComment": "Analyze all exports from a TypeScript source file.\n\nExtracts the module-level comment via `extractModuleComment`, star exports via\n`extractStarExports`, and all exported declarations with complete metadata.\nHandles re-exports by:\n- Same-name re-exports: tracked in `reExports` for `alsoExportedFrom` building\n- Renamed re-exports: included as new declarations with `aliasOf` metadata\n- Star exports (`export * from`): tracked in `starExports` for namespace-level info\n- Direct external re-exports: tracked in `externalReExports`/`externalStarExports`\n  (specifier as written; import-then-export and source-chained forms stay silent)\n\nThis is a mid-level function (above the individual `extract*` helpers, below `analyze`)\nsuitable for building documentation, API explorers, or analysis tools.\nFor standard SvelteKit library layouts, use `createSourceOptions(process.cwd())`.",
 							"typeSignature": "(sourceFile: SourceFile, checker: TypeChecker, options: ModuleSourceOptions, diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | ... 12 more ... | { ...; })[]): ModuleExportsAnalysis",
-							"sourceLine": 258,
+							"sourceLine": 386,
 							"parameters": [
 								{
 									"name": "sourceFile",
@@ -64287,14 +65183,14 @@
 								}
 							],
 							"returnType": "ModuleExportsAnalysis",
-							"returnDescription": "module comment, declarations, re-exports, and star exports"
+							"returnDescription": "module comment, declarations, re-exports (source + external), and star exports (source + external)"
 						},
 						{
 							"name": "analyzeDeclaration",
 							"kind": "function",
 							"docComment": "Analyze a TypeScript symbol and extract rich metadata.\n\nThis is a high-level function that combines TSDoc parsing with TypeScript\ntype analysis to produce complete declaration metadata. Suitable for use\nin documentation generators, IDE integrations, and other tooling.",
 							"typeSignature": "(symbol: Symbol, sourceFile: SourceFile, checker: TypeChecker, diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | ... 12 more ... | { ...; })[], isExternalFile: IsExternalFile): DeclarationAnalysis",
-							"sourceLine": 626,
+							"sourceLine": 737,
 							"parameters": [
 								{
 									"name": "symbol",
@@ -64330,7 +65226,7 @@
 							"kind": "function",
 							"docComment": "Extract module-level comment.",
 							"typeSignature": "(sourceFile: SourceFile): string | undefined",
-							"sourceLine": 695,
+							"sourceLine": 806,
 							"seeAlso": [
 								"{@link https://typedoc.org/documents/Tags._module.html|TypeDoc @module documentation}"
 							],
@@ -64351,6 +65247,7 @@
 						"source-config.ts",
 						"source.ts",
 						"tsdoc.ts",
+						"types.ts",
 						"typescript-extract-class.ts",
 						"typescript-extract-function.ts",
 						"typescript-extract-shared.ts",

@@ -9,7 +9,8 @@
 
 	import {library_json} from '$routes/library.js';
 
-	const library = library_context.set(new Library(library_json, '/fuz_docs'));
+	const library = new Library(library_json, '/fuz_docs');
+	library_context.set(() => library);
 	const site = site_context.get();
 </script>
 
