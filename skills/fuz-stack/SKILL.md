@@ -302,6 +302,7 @@ renders TSDoc prose through it, injecting `DocsLink` (inline code) and fuz_code'
 | Bold / italic / strike | `**bold**`, `_italic_`, `~strike~`                                                  |
 | Links                  | auto-detected URLs, `/internal/path`, `[text](url)`                                 |
 | Headings               | `# Heading` (column 0 required, gets lowercase slugified `id` for fragment links)   |
+| Lists                  | `- item` / `1. item` (column 0 starts; indent nests, blank lines contained, items hold paragraphs/lists/code blocks) |
 | Code blocks            | fenced with language hints                                                          |
 | Components             | `<Alert status="warning">content</Alert>` (registered via `mdz_components_context`) |
 
