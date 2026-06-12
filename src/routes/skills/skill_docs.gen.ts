@@ -150,7 +150,7 @@ ${banner}
 			content: `${svelte_banner}
 
 <script lang="ts">
-	import Mdz from '@fuzdev/fuz_ui/Mdz.svelte';
+	import Mdz from '@fuzdev/mdz/Mdz.svelte';
 
 	import {skill_main} from './skill_data.js';
 </script>
@@ -193,7 +193,7 @@ ${svelte_banner}
 				content: `${svelte_banner}
 
 <script lang="ts">
-	import Mdz from '@fuzdev/fuz_ui/Mdz.svelte';
+	import Mdz from '@fuzdev/mdz/Mdz.svelte';
 
 	import {skill_references} from '../../skill_data.js';
 </script>

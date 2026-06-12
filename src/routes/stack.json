@@ -30,7 +30,8 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -52,13 +53,14 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/fuz_util"
+				"@fuzdev/fuz_util",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.62.0",
+			"version": "0.63.0",
 			"path": "fuz_css",
 			"description": "CSS framework and design system for semantic HTML",
 			"glyph": "🪴",
@@ -74,26 +76,28 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.203.1",
+			"version": "0.205.0",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
 			"homepage_url": "https://ui.fuz.dev/",
 			"published": true,
-			"module_count": 118,
-			"exported_module_count": 118,
-			"export_count": 491,
+			"module_count": 94,
+			"exported_module_count": 94,
+			"export_count": 300,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -101,7 +105,8 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -124,7 +129,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -146,7 +152,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -169,13 +176,14 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.26.0",
+			"version": "0.28.0",
 			"path": "fuz_blog",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",
@@ -199,13 +207,14 @@
 				"@fuzdev/fuz_mastodon",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_mastodon",
-			"version": "0.41.0",
+			"version": "0.43.0",
 			"path": "fuz_mastodon",
 			"description": "Mastodon components and helpers for Svelte, SvelteKit, and Fuz",
 			"glyph": "🦣",
@@ -222,13 +231,14 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.74.0",
+			"version": "0.76.0",
 			"path": "fuz_gitops",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
@@ -245,7 +255,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -268,7 +279,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -291,7 +303,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -303,9 +316,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 212,
-			"exported_module_count": 209,
-			"export_count": 652,
+			"module_count": 211,
+			"exported_module_count": 208,
+			"export_count": 578,
 			"peer_dependencies": ["@fuzdev/fuz_app", "@fuzdev/fuz_ui", "@fuzdev/fuz_util"],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
@@ -313,13 +326,14 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/fuz_util"
+				"@fuzdev/fuz_util",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.5.1",
+			"version": "0.5.3",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
@@ -327,7 +341,7 @@
 			"published": true,
 			"module_count": 31,
 			"exported_module_count": 29,
-			"export_count": 197,
+			"export_count": 198,
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -336,7 +350,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -410,7 +425,13 @@
 		"@fuzdev/fuz_util": ["@fuzdev/blake3_wasm"],
 		"@fuzdev/gro": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
 		"@fuzdev/fuz_css": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util", "@fuzdev/gro"],
-		"@fuzdev/fuz_ui": ["@fuzdev/fuz_code", "@fuzdev/fuz_css", "@fuzdev/fuz_util", "@fuzdev/gro"],
+		"@fuzdev/fuz_ui": [
+			"@fuzdev/fuz_code",
+			"@fuzdev/fuz_css",
+			"@fuzdev/fuz_util",
+			"@fuzdev/gro",
+			"@fuzdev/mdz"
+		],
 		"@fuzdev/fuz_app": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
 		"@fuzdev/fuz_code": ["@fuzdev/fuz_css", "@fuzdev/fuz_util"],
 		"@fuzdev/fuz_template": [],
