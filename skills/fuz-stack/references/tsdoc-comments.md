@@ -298,10 +298,10 @@ examples as markdown.
  *
  * @example
  * ```typescript
- * tsdoc_see_to_mdz('{@link https://fuz.dev|API Docs}')
+ * mdz_from_tsdoc('{@link https://fuz.dev|API Docs}')
  * // → '[API Docs](https://fuz.dev)'
  *
- * tsdoc_see_to_mdz('{@link SomeType}')
+ * mdz_from_tsdoc('{@link SomeType}')
  * // → '`SomeType`'
  * ```
  */
@@ -772,7 +772,7 @@ pattern above):
 
 ```typescript
 /**
- * mdz — minimal markdown dialect for Fuz documentation.
+ * mdz — strict markdown dialect for Fuz documentation.
  *
  * ## Design philosophy
  *

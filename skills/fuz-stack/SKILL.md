@@ -290,7 +290,7 @@ See ./references/documentation-system.md for setup, the full pipeline, Tome
 system, layout architecture, and component reference. TSDoc authoring
 conventions: ./references/tsdoc-comments.md.
 
-## mdz - Minimal Markdown Dialect
+## mdz - Strict Markdown Dialect
 
 `mdz` is the Fuz markdown dialect for documentation (`@fuzdev/mdz/mdz.ts`); fuz_ui
 renders TSDoc prose through it, injecting `DocsLink` (inline code) and fuz_code's
@@ -299,10 +299,11 @@ renders TSDoc prose through it, injecting `DocsLink` (inline code) and fuz_code'
 | Feature                | Syntax                                                                              |
 | ---------------------- | ----------------------------------------------------------------------------------- |
 | Code                   | "`code`"                                                                            |
-| Bold / italic / strike | `**bold**`, `_italic_`, `~strike~`                                                  |
+| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` (single `~` is literal)                        |
 | Links                  | auto-detected URLs, `/internal/path`, `[text](url)`                                 |
 | Headings               | `# Heading` (column 0 required, gets lowercase slugified `id` for fragment links)   |
 | Lists                  | `- item` / `1. item` (column 0 starts; indent nests, blank lines contained, items hold paragraphs/lists/code blocks) |
+| Blockquotes            | `> ` per line (no lazy continuation); `>>` nests; bare `>` separates paragraphs in-quote; blank line ends the quote |
 | Code blocks            | fenced with language hints                                                          |
 | Components             | `<Alert status="warning">content</Alert>` (registered via `mdz_components_context`) |
 

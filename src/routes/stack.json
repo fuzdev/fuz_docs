@@ -30,8 +30,7 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/gro",
-				"@fuzdev/mdz"
+				"@fuzdev/gro"
 			]
 		},
 		{
@@ -53,14 +52,13 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/fuz_util",
-				"@fuzdev/mdz"
+				"@fuzdev/fuz_util"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.63.0",
+			"version": "0.62.0",
 			"path": "fuz_css",
 			"description": "CSS framework and design system for semantic HTML",
 			"glyph": "🪴",
@@ -76,14 +74,13 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro",
-				"@fuzdev/mdz"
+				"@fuzdev/gro"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.205.0",
+			"version": "0.204.0",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -112,7 +109,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.84.0",
+			"version": "0.85.1",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -152,8 +149,7 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro",
-				"@fuzdev/mdz"
+				"@fuzdev/gro"
 			]
 		},
 		{
@@ -285,30 +281,6 @@
 		},
 		{
 			"kind": "package",
-			"name": "@fuzdev/fuz.dev",
-			"version": "0.0.1",
-			"path": "fuz.dev",
-			"description": "website for the Fuz, a zippy stack for human agency",
-			"glyph": "🦋",
-			"homepage_url": "https://www.fuz.dev/",
-			"published": false,
-			"module_count": 0,
-			"exported_module_count": 0,
-			"export_count": 0,
-			"peer_dependencies": [],
-			"runtime_dependencies": [],
-			"dev_dependencies": [
-				"@fuzdev/blake3_wasm",
-				"@fuzdev/fuz_code",
-				"@fuzdev/fuz_css",
-				"@fuzdev/fuz_ui",
-				"@fuzdev/fuz_util",
-				"@fuzdev/gro",
-				"@fuzdev/mdz"
-			]
-		},
-		{
-			"kind": "package",
 			"name": "@fuzdev/zzz",
 			"version": "0.0.1",
 			"path": "zzz",
@@ -316,9 +288,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 211,
-			"exported_module_count": 208,
-			"export_count": 578,
+			"module_count": 212,
+			"exported_module_count": 209,
+			"export_count": 652,
 			"peer_dependencies": ["@fuzdev/fuz_app", "@fuzdev/fuz_ui", "@fuzdev/fuz_util"],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
@@ -350,8 +322,7 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro",
-				"@fuzdev/mdz"
+				"@fuzdev/gro"
 			]
 		},
 		{
@@ -445,7 +416,6 @@
 		"@fuzdev/fuz_mastodon": ["@fuzdev/fuz_css", "@fuzdev/fuz_ui", "@fuzdev/fuz_util"],
 		"@fuzdev/fuz_gitops": ["@fuzdev/fuz_css", "@fuzdev/fuz_ui", "@fuzdev/fuz_util", "@fuzdev/gro"],
 		"@fuzdev/fuz_docs": [],
-		"@fuzdev/fuz.dev": [],
 		"@fuzdev/zzz": [
 			"@fuzdev/blake3_wasm",
 			"@fuzdev/fuz_app",
