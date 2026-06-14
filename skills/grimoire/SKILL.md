@@ -126,7 +126,6 @@ clearly, don't restate it in lore.
 **Lore CLAUDE.md content** — what does NOT belong:
 
 - Build commands, file structure, API surface (that's the repo's CLAUDE.md)
-- Restating what the repo already says clearly
 - Metrics or status that will go stale (put in TODO.md)
 
 **Lore CLAUDE.md structure** — a predictable shape agents can follow:
@@ -155,10 +154,9 @@ Links to related lore, quests, upstream/downstream projects.
 
 Not every section is needed — a light entry might just have the header, summary,
 a sentence of context, and a lore docs table. Use bare paths (no backticks) for
-navigational file references — `./path`, `../path`, `~/dev/path`, or
-`grimoire/path` (the last is preferred over deep `../../grimoire/path` from
-nested files). See the fuz-stack skill's "Path references in documentation"
-section for the full convention.
+navigational file references — `./path`, `../path`, or a path from the
+grimoire root (preferred over a deep `../../` chain from nested files). See the
+fuz-stack skill's path-reference conventions for the full guidance.
 
 **Weight ranges**:
 
@@ -267,6 +265,15 @@ system works" is lore; "why autonomy matters for software design" is writing.
 Writing docs may reference each other and link to lore entries, but lore entries
 should not depend on writing docs for implementation context.
 
+### Glossary (`GLOSSARY.md`)
+
+Shared definitions for the terms a grimoire leans on — its metaphors, named
+patterns, and domain vocabulary recurring across lore, quests, and writing. It
+matters most in a shared grimoire, where terminology must be negotiated rather
+than assumed: it pins taste to words so people and agents read the same meaning.
+Start one only when a term keeps needing re-explanation — it earns its place by
+use, not speculation.
+
 ### Memory (`memory/`)
 
 Agents accumulate working memory as they build — in Claude Code, per-project
@@ -331,8 +338,7 @@ what's learned into lasting knowledge and removing what's resolved or superseded
 History and resolved decisions belong in commit logs, not in markdown.
 
 **What belongs here**: Cross-repo context, the _why_ behind decisions, future
-intent. If content duplicates what an implementation repo already says clearly,
-delete it from lore.
+intent.
 
 **Living and approximate**: A grimoire is actively evolved — always trying to
 catch up to reality and pave future paths — but never fully accurate. It's
@@ -359,7 +365,7 @@ what's drifted.
 Create `lore/{project}/TODO.md` as a starting point. Add `CLAUDE.md` when
 context or decisions accumulate beyond TODO tracking — use the lore CLAUDE.md
 structure described earlier. Focus on planning context: ecosystem
-role, relationships, decisions. Don't summarize the repo's own CLAUDE.md.
+role, relationships, decisions.
 
 Most active projects end up with both files — the pair keeps planning context
 (CLAUDE.md) and action items (TODO.md) separated. When a TODO.md grows
@@ -410,7 +416,10 @@ Don't build structure speculatively — let it emerge from genuine need.
 **Transparency as constraint**: Making the full scope visible — via indexes,
 structure diagrams — creates accountability. File sprawl becomes obvious when every
 file must be listed. The index isn't documentation; it's a mirror that pressures
-the grimoire to stay lean.
+the grimoire to stay lean. In practice this is a top-level index doc (e.g.
+`INDEX.md`) that enumerates the grimoire's contents — primitives, lore entries,
+quests, supporting layers — and, like any claim the grimoire makes about itself,
+can be checked against what's actually on disk.
 
 **Private or shared**: A grimoire can be personal (spanning private and public
 repos in ways too detailed for public consumption) or collaborative (a team
