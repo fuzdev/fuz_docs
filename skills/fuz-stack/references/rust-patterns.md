@@ -187,8 +187,10 @@ impl SidecarError {
   `Option<&'static str>`; the first aggregator that already deps `fuz_sys` lifts it
   with `.map(HintMessage::Static)` at the boundary. Don't push a `fuz_sys` dep onto
   a pure leaf (`fuz_crypto`) just to unify the hint type.
-- `.exit_code()` returns `u8` (for `ExitCode::from`); reserve 1 for generic
-  failure, 2+ for category-specific (auth/token). Match arms over variants.
+- `.exit_code()` returns `u8` (for `ExitCode::from`); match arms over variants.
+  What the codes *mean* — and why a `403` is `2`, not its own integer — is the
+  exit-code policy in §CLI flag & error conventions (keyed to the caller's
+  remediation, not to error category).
 - `.is_transient()` / `.is_recoverable()` belong to a family of small
   `&self -> bool` (or `-> Option<_>`) **classifiers** the caller branches on —
   each answers one dispatch question by matching variants, no side effects.
@@ -1138,11 +1140,39 @@ why the forbidden crates are crates, not features.
   default to execute with an opt-in `--dry-run` preview (`fuz`). The env-file
   flag is **hyphenated** `--env-file` (argh's default rendering) — don't
   introduce `--env_file`.
-- **Exit codes**: prefer `fn main() -> ExitCode` with `exit_code(&self) -> u8`
-  (zap's shape — can't represent the `>255`/negative codes raw `i32` allows, and
-  avoids `std::process::exit`). Reserve `1` for generic failure, `2` for
-  config/usage; `fuzi`'s sysexits codes (64/65/70/74) are a sanctioned exception
-  for agent-consumable CLIs.
+- **Exit codes** — a small, *stable* contract; treat it as a versioned API and
+  settle/document/test it pre-1.0, before consumers depend on it (assert each
+  category → code in a test; document the table in the crate doc). Mechanism:
+  `fn main() -> ExitCode` + `exit_code(&self) -> u8` (zap's shape — can't
+  represent the `>255`/negative codes raw `i32` allows, avoids
+  `std::process::exit`), match arms over variants. **Key the codes to the
+  caller's *remediation*, not to error type** — there are more error types than
+  useful codes, so a type→code map collapses ambiguously.
+  - **Default dialect** (human/script-facing CLIs — `fuz`, `zap`, `fuzf`): `0`
+    success; `2` = the caller must change something local before re-running — the
+    invocation (bad/missing args, a declined confirmation), the config, **or the
+    credentials** (no token, or a token lacking scope — a `403`); "don't retry
+    as-is" (i.e. *needs action*). `1` = anything else — a server/RPC error, a
+    transient failure, local I/O, a decode error, a missing target; "a retry may
+    help, or it's out of the caller's hands." A `403`/forbidden is `2`
+    (caller-side credentials, same class as no-token-configured), **not** `1`,
+    and **not** its own integer — don't mint codes for categories nothing
+    branches on.
+  - **Extend via a structured `kind`, not new exit integers.** A code is coarse
+    and can't carry detail (which file, which scope); when a consumer needs finer
+    signal, add a stable snake_case `error.kind` to `--json` (fuzi's
+    `FuziError::kind()`) — strictly more expressive. A new integer is the last
+    resort, only for a bare-shell consumer that branches on the number.
+  - **Agent tier**: an *automation-primary* CLI whose consumers branch on
+    category (`fuzi`) uses the `sysexits.h` codes (`64`/`65`/`70`/`74`/…) **plus**
+    a stable `kind()`. Two dialects max — an agent CLI adopts fuzi's exact
+    pattern, it doesn't invent a third. Pick by audience: human/script → default
+    `0`/`1`/`2`; automation-primary → sysexits + `kind`.
+  - **argh gotcha**: `argh::from_env()` hard-exits **`1`** on a parse error — the
+    commonest usage error — silently violating "usage = `2`". To honor it, parse
+    with `T::from_args(&[cmd], &args)` and map the `EarlyExit`: `status == Ok(())`
+    (`--help`/`--version`) → stdout, exit `0`; `Err(())` (a usage error) →
+    stderr, exit `2`.
 - **`HintMessage`** (`Static(&'static str) | Owned(String)`) is the shared CLI
   hint primitive — it lives in `fuz_sys::cli`, imported by every CLI that needs
   the interpolated case, not re-declared per binary. Hint strings carry *advice

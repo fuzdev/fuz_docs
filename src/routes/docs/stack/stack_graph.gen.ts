@@ -12,7 +12,7 @@ import type {
 import {stack_repos} from '$lib/stack_repos.js';
 
 // Sibling repos live one level up from the fuz_docs repo root (the gen runs from
-// the repo root, so `process.cwd()` is `~/dev/fuz_docs` and the workspace is its parent).
+// the repo root, so `process.cwd()` is the fuz_docs repo root and the workspace is its parent).
 const DEV_DIR = join(process.cwd(), '..');
 
 /**

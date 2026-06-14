@@ -62,6 +62,10 @@ is authoritative for what it actually uses.
 
 **Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_app -> zzz, zap, apps`
 
+**Adding deps**: prefer the approved allowlists (./references/npm-dependencies.md,
+./references/rust-dependencies.md). Adding or upgrading needs approval; removing
+an unused dep is pre-authorized.
+
 ## Coding Conventions
 
 ### Naming - snake_case + PascalCase
@@ -184,8 +188,6 @@ import/test-mirroring details.
   - Inline (`//`) = fragments, no capital or period
 - **No backwards compatibility**: Delete unused code, rename directly, no
   deprecated stubs or shims. Document breaking changes in changesets.
-
-(Imports go by full path with no barrels — see File Organization above.)
 
 ## Gro Commands (Temporary Build Tool)
 
@@ -506,20 +508,3 @@ injection. Three references, loaded on demand:
 WASM binding crates additionally follow ./references/wasm-patterns.md. Each
 Rust repo's `CLAUDE.md` is authoritative for project-specific conventions; these
 cover the shared patterns across workspaces.
-
-## Quick Reference
-
-- `gro check` to validate (never run dev server)
-- snake_case for functions, PascalCase for types/components
-- Tests in `src/test/`, not co-located
-- Domain-prefix when ambiguous (`git_push`); action-first when self-descriptive
-  (`truncate`)
-- TSDoc conventions: ./references/tsdoc-comments.md
-- Approved third-party deps: ./references/npm-dependencies.md (npm) + ./references/rust-dependencies.md (cargo); prefer the list; adding/upgrading needs approval, removing unused deps is pre-authorized
-- Copious `// TODO:` comments; `TODO_*.md` for multi-session work
-- Token classes for design system values, literal classes for arbitrary CSS
-- `z.strictObject()` default, PascalCase naming, `.meta()` for descriptions
-- Rust: enums for closed sets, `thiserror` typed errors, `*Options` not `*Deps` —
-  ./references/rust-patterns.md
-- Breaking changes acceptable — delete unused code, don't shim
-- Never manually edit `expected.json` — regenerate via task
