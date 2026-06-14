@@ -290,17 +290,17 @@ fuz_app's `testing/db.ts` provides
 // src/test/db_fixture.ts
 import type {Db} from '$lib/db/db.js';
 import {run_migrations} from '$lib/db/migrate.js';
-import {AUTH_MIGRATION_NS} from '$lib/auth/migrations.js';
+import {auth_migration_ns} from '$lib/auth/migrations.js';
 import {
 	create_pglite_factory,
 	create_pg_factory,
 	create_describe_db,
-	AUTH_INTEGRATION_TRUNCATE_TABLES,
+	auth_integration_truncate_tables,
 	log_db_factory_status,
 } from '$lib/testing/db.js';
 
 const init_schema = async (db: Db): Promise<void> => {
-	await run_migrations(db, [AUTH_MIGRATION_NS]);
+	await run_migrations(db, [auth_migration_ns]);
 };
 
 export const pglite_factory = create_pglite_factory(init_schema);
@@ -309,7 +309,7 @@ export const db_factories = [pglite_factory, pg_factory];
 
 log_db_factory_status(db_factories);
 
-export const describe_db = create_describe_db(db_factories, AUTH_INTEGRATION_TRUNCATE_TABLES);
+export const describe_db = create_describe_db(db_factories, auth_integration_truncate_tables);
 ```
 
 Test files import and use as a wrapper:

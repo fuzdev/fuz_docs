@@ -26,6 +26,8 @@ export interface FsReadDeps {
 	stat: (path: string) => Promise<StatResult | null>;
 	read_text_file: (path: string) => Promise<string>;
 	read_file: (path: string) => Promise<Uint8Array>;
+	read_text_from_offset: (path: string, offset: number) => Promise<ReadTextFromOffsetResult>;
+	readdir: (path: string) => Promise<Array<string>>;
 }
 
 export interface FsWriteDeps {
@@ -33,6 +35,7 @@ export interface FsWriteDeps {
 	write_text_file: (path: string, content: string) => Promise<void>;
 	write_file: (path: string, data: Uint8Array) => Promise<void>;
 	rename: (old_path: string, new_path: string) => Promise<void>;
+	fsync: (path: string) => Promise<void>; // flush to stable storage before rename
 }
 
 export interface CommandDeps {
@@ -53,8 +56,8 @@ export const setup_env_file = async (
 
 // App-level composite — flat intersection for the wiring layer
 export interface RuntimeDeps
-	extends EnvDeps, FsReadDeps, FsWriteDeps, FsRemoveDeps,
-		CommandDeps, TerminalDeps, ProcessDeps, LogDeps {
+	extends EnvDeps, FsReadDeps, FsWriteDeps, FsRemoveDeps, FsStreamDeps,
+		CommandDeps, TerminalDeps, ProcessDeps, LogDeps, FetchDeps {
 	env_all: () => Record<string, string>;
 	readonly args: ReadonlyArray<string>;
 	cwd: () => string;
@@ -80,7 +83,8 @@ anti-pattern is `Pick<GodType>`. See "Narrowing with `Pick<>`" below.
 - **fuz_app `auth/deps.ts`**: `AppDeps` (server capabilities), `RouteFactoryDeps` (`Omit<AppDeps, 'db'>`)
 - **fuz_app `auth/password.ts`**: `PasswordHashDeps` (hash, verify, verify_dummy)
 - **fuz_app `runtime/deps.ts`**: `EnvDeps`, `FsReadDeps`, `FsWriteDeps`, `FsRemoveDeps`,
-  `CommandDeps`, `LogDeps`, `TerminalDeps`, `ProcessDeps`, `RuntimeDeps` (full bundle)
+  `FsStreamDeps`, `CommandDeps`, `LogDeps`, `TerminalDeps`, `ProcessDeps`, `FetchDeps`,
+  `RuntimeDeps` (full bundle)
 - **fuz_app `db/query_deps.ts`**: `QueryDeps` (`{db: Db}` — base for all `query_*` functions)
 - **fuz_css `deps.ts`**: `CacheDeps` (cache file I/O)
 - **fuz_gitops `operations.ts`**: `GitopsOperations`, `GitOperations`, `FsOperations`, etc.
@@ -120,9 +124,7 @@ Three suffixes for single-object parameters, each with distinct test behavior:
 | `*Options` | Data (config values, limits, flags) | Literal objects, constructed once, reused | Static values — no mock factory needed |
 | `*Context` | Scoped world for a callback/handler | Depends on scope (may contain deps + data) | The world available within a bounded scope |
 
-The `*Deps` / `*Options` boundary is validated by testing patterns: deps get
-mock factories with per-test overrides; options are plain objects reused
-across test cases. `*Context` examples:
+`*Context` examples:
 
 - `RouteContext` — per-request: `{db, background_db, pending_effects}`
 - `AppServerContext` — per-setup-callback: `{deps, backend, session_options, ...}`
@@ -260,7 +262,7 @@ Stateless capabilities bundle for server code. Three-part vocabulary:
 
 | Category          | Type        | Examples                                        | Rule                             |
 | ----------------- | ----------- | ----------------------------------------------- | -------------------------------- |
-| **Capabilities**  | `AppDeps`   | `keyring`, `password`, `db`, `log`, `on_audit_event` | Stateless, injectable, swappable |
+| **Capabilities**  | `AppDeps`   | `keyring`, `password`, `db`, `log`, `audit` | Stateless, injectable, swappable |
 | **Route caps**    | `RouteFactoryDeps` | `Omit<AppDeps, 'db'>` — for route factories     | Handlers get `db` via `RouteContext` |
 | **Parameters**    | `*Options`  | `session_options`, `rate_limiter`, `token_path`  | Static values set at startup    |
 | **Runtime state** | inline ref  | `bootstrap_status: {available, token_path}`      | Mutable — NOT in deps or options |
@@ -277,7 +279,8 @@ export interface AppDeps {
 	password: PasswordHashDeps;
 	db: Db;
 	log: Logger;
-	on_audit_event: (event: AuditLogEvent) => void;
+	audit: AuditEmitter;
+	fact_store?: FactStore; // optional — wired when the consumer needs facts
 }
 
 // Route factories use RouteFactoryDeps — AppDeps without db
@@ -397,7 +400,7 @@ export interface AppBackend {
 
 ## RuntimeDeps Pattern (fuz_app)
 
-The 8 small `*Deps` interfaces and the `RuntimeDeps` composite (see "Bottom-up
+The 10 small `*Deps` interfaces and the `RuntimeDeps` composite (see "Bottom-up
 composition") live in `runtime/deps.ts`. Platform factories:
 
 - `create_deno_runtime(args)` — Deno implementation
@@ -717,7 +720,7 @@ export const stub_app_deps: AppDeps = {
 	password: create_throwing_stub('password'),
 	db: create_throwing_stub('db'),
 	log: create_throwing_stub('log'),
-	on_audit_event: () => {},
+	audit: create_test_audit_emitter(),
 };
 
 // create_stub_app_deps — no-op stubs that silently pass
@@ -729,7 +732,7 @@ export const create_stub_app_deps = (): AppDeps => ({
 	password: create_noop_stub('password'),
 	db: stub_db,
 	log: new Logger('test', {level: 'off'}),
-	on_audit_event: () => {},
+	audit: create_test_audit_emitter(),
 });
 ```
 

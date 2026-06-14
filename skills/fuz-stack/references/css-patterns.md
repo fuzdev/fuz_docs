@@ -527,7 +527,7 @@ spacing, color, or typography.
 
 ### What "Minimal Styles" Looks Like
 
-Across fuz_ui's 65 components, ~30 have no `<style>` block at all. The rest
+Across fuz_ui's ~64 components, ~28 have no `<style>` block at all. The rest
 typically have 5-30 lines covering positioning, animations, or complex
 pseudo-states. Shared traits:
 
@@ -554,7 +554,7 @@ pseudo-states. Shared traits:
 ```
 
 Real example from fuz_ui's `Details.svelte`, `EcosystemLinks.svelte`,
-`Mdz.svelte`, `Hashlink.svelte`, `LibrarySummary.svelte`: all use semantic
+`Hashlink.svelte`, `LibrarySummary.svelte`: all use semantic
 HTML directly (`<details>`, `<summary>`, `<ul>`, `<li>`, `<a>`, `<p>`) and
 ride on the default element styling.
 

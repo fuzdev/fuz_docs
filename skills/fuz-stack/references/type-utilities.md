@@ -34,8 +34,8 @@ const email2: Email = 'foo' as Address;       // error — Address !== Email
 Real uses in fuz_util:
 
 ```typescript
-// fuz_util/id.ts
-export type Uuid = Flavored<string, 'Uuid'>;
+// fuz_util/path.ts
+export type PathId = Flavored<string, 'PathId'>;
 
 // fuz_util/git.ts
 export type GitOrigin = Flavored<string, 'GitOrigin'>;
@@ -96,10 +96,11 @@ For types needing runtime validation, use Zod `.brand()` (distinct from
 fuz_util's `Branded`):
 
 ```typescript
-// zzz/zod_helpers.ts
+// fuz_util/id.ts
 export const Uuid = z.uuid().brand('Uuid');
 export type Uuid = z.infer<typeof Uuid>;
 
+// fuz_util/datetime.ts
 export const Datetime = z.iso.datetime().brand('Datetime');
 export type Datetime = z.infer<typeof Datetime>;
 
@@ -111,8 +112,10 @@ export const DiskfilePath = z
 export type DiskfilePath = z.infer<typeof DiskfilePath>;
 ```
 
-fuz_util's `Uuid` uses `Flavored` (no runtime validation); zzz's `Uuid` uses
-Zod `.brand()` (with validation) — separate types.
+`Flavored`/`Branded` are compile-time only (no runtime check); Zod `.brand()`
+brands a schema that _also_ validates — `Uuid` rejects non-UUID strings at parse
+time — so reach for `.brand()` when the value crosses a runtime boundary. (zzz
+re-imports fuz_util's `Uuid` rather than defining its own.)
 
 See ./zod-schemas.md for full Zod schema conventions including branded types.
 

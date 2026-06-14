@@ -35,10 +35,11 @@ A **Tome** is a documentation page. Zod schema in `@fuzdev/fuz_ui/tome.js`:
 
 ```typescript
 const Tome = z.object({
-	name: z.string(), // URL slug and display name
+	slug: z.string(), // URL path segment + lookup key (used in related_tomes)
+	title: z.string().optional(), // display label; falls back to slug when omitted
 	category: z.string(), // grouping in sidebar navigation
 	Component: z.custom<Component<any, any>>(), // the +page.svelte component
-	related_tomes: z.array(z.string()), // cross-links to other tome pages
+	related_tomes: z.array(z.string()), // cross-links to other tome pages (by slug)
 	related_modules: z.array(z.string()), // links to source modules in API docs
 	related_declarations: z.array(z.string()), // links to specific exports in API docs
 });
@@ -72,7 +73,7 @@ import api from '$routes/docs/api/+page.svelte';
 
 export const tomes: Array<Tome> = [
 	{
-		name: 'introduction',
+		slug: 'introduction',
 		category: 'guide',
 		Component: introduction,
 		related_tomes: ['api'],
@@ -87,8 +88,9 @@ export const tomes: Array<Tome> = [
 
 From `@fuzdev/fuz_ui/tome.js`:
 
-- `get_tome_by_name(name)` — look up a Tome from `tomes_context` (throws if not found)
-- `to_tome_pathname(tome, docs_path?, hash?)` — generate URL for a tome
+- `tome_get_by_slug(slug)` — look up a Tome from `tomes_context` (throws if not found)
+- `tome_to_pathname(tome, docs_path?, hash?)` — generate URL for a tome
+- `tome_to_title(tome)` — display label (its `title`, else its `slug`)
 - `tomes_context` — context holding `() => Map<string, Tome>` (set by `Docs`)
 - `tome_context` — context holding `() => Tome` for the current page (set by `TomeContent`)
 
@@ -228,40 +230,23 @@ Keep these off the landing page so it never pulls the heavy data. After any
 change that moves a context provider, verify with `gro build` — a missing
 provider passes typecheck and tests but fails the prerender.
 
-Optional `breadcrumb_children` snippet for a custom logo in the top nav:
-
-```svelte
-<Docs {tomes}>
-	{#snippet breadcrumb_children(is_primary_nav)}
-		{#if is_primary_nav}
-			<div class="icon row">
-				<Svg data={logo} size="var(--icon_size_sm)" /> <span class="ml_sm">my_project</span>
-			</div>
-		{:else}
-			<Svg data={logo} size="var(--icon_size_sm)" />
-		{/if}
-	{/snippet}
-	{@render children()}
-</Docs>
-```
-
 ### 4. Tomes registry
 
 `src/routes/docs/tomes.ts` — see [Registry](#registry) above.
 
 ### 5. Individual tome pages
 
-Each tome is a `+page.svelte` in `src/routes/docs/{name}/`:
+Each tome is a `+page.svelte` in `src/routes/docs/{slug}/`:
 
 ```svelte
 <script lang="ts">
-	import {get_tome_by_name} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
 	import TomeContent from '@fuzdev/fuz_ui/TomeContent.svelte';
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
 
-	const LIBRARY_ITEM_NAME = 'MyComponent';
-	const tome = get_tome_by_name(LIBRARY_ITEM_NAME);
+	const TOME_SLUG = 'MyComponent';
+	const tome = tome_get_by_slug(TOME_SLUG);
 </script>
 
 <TomeContent {tome}>
@@ -342,8 +327,6 @@ hierarchy:
   `declarations`, `url_api`, `module_comment`
 - **`Declaration`** (`declaration.svelte.ts`) — wraps `DeclarationJson`,
   provides `name`, `kind`, `module_path`, `url_api`, `url_github`
-
-All use `$derived` for reactive computed properties.
 
 ## Component Reference
 

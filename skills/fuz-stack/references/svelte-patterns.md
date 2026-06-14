@@ -177,10 +177,12 @@ reassignment (which Svelte 5 does allow):
 export class Library {
 	readonly library_json: LibraryJson = $state.raw()!;
 
-	readonly package_json = $derived(this.library_json.package_json);
+	readonly pkg_json = $derived(this.library_json.pkg_json);
 	readonly source_json = $derived(this.library_json.source_json);
-	readonly name = $derived(this.library_json.name);
-	readonly repo_url = $derived(this.library_json.repo_url);
+	// `LibraryJson` stores only the raw `pkg_json`/`source_json` pair — these
+	// derive from `pkg_json`, not from extra `LibraryJson` fields.
+	readonly name = $derived(this.pkg_json.name);
+	readonly repo_url = $derived(repo_url_parse(this.pkg_json.repository)!);
 	readonly modules = $derived(
 		this.source_json.modules
 			? this.source_json.modules.map((module_json) => new Module(this, module_json))
@@ -191,12 +193,12 @@ export class Library {
 ```
 
 ```typescript
-// From Thread class (zzz/thread.svelte.ts) - $derived.by for complex logic
-readonly model: Model = $derived.by(() => {
-	const model = this.app.models.find_by_name(this.model_name);
-	if (!model) throw new Error(`Model "${this.model_name}" not found`);
-	return model;
-});
+// From Thread class (zzz/thread.svelte.ts) - return `| undefined`, never throw
+// from a $derived that templates read (a throw render-crashes every consumer);
+// guard at the callsites instead.
+readonly model: Model | undefined = $derived.by(() =>
+	this.app.models.find_by_name(this.model_name),
+);
 
 // From ContextmenuState - $derived for simple, $derived.by for multi-step
 readonly can_collapse = $derived(this.selections.length > 1);
@@ -206,6 +208,38 @@ readonly can_expand = $derived.by(() => {
 	return !!selected?.is_menu && selected.items.length > 0;
 });
 ```
+
+**Field-initializer order gotcha (plain classes).** Class field initializers run
+_before_ the constructor body, so a `$derived` whose expression reads a field the
+constructor assigns (common in plain `.svelte.ts` classes — `app`, `name`, …)
+trips TS2729 _"used before initialization"_:
+
+```typescript
+export class ProviderCapability {
+	readonly app: Frontend;
+	readonly name: ProviderName;
+	// Don't do this — `this.app`/`this.name` are read in a field initializer,
+	// which runs before the constructor body assigns them (TS2729).
+	readonly status = $derived(this.app.lookup_provider_status(this.name));
+	constructor(o: {app: Frontend; name: ProviderName}) {
+		this.app = o.app;
+		this.name = o.name;
+	}
+}
+```
+
+Wrap the read in `$derived.by(() => …)`: TS's init-order check doesn't descend
+into the closure, and the read is lazy at runtime regardless.
+
+```typescript
+// closure defers the read past construction
+readonly status = $derived.by(() => this.app.lookup_provider_status(this.name));
+```
+
+Cells don't hit this — `app` comes from the base `Cell` constructor (runs before
+subclass fields), and schema fields use `$state.raw()!` (counts as initialized in
+declaration order). It bites only plain classes that read constructor-assigned
+fields in a `$derived`.
 
 ### Derived from Props
 
@@ -684,8 +718,8 @@ function). Returns cleanup that removes the cache entry.
 ```typescript
 // contextmenu_state.svelte.ts (exported alongside Contextmenu state class)
 export const contextmenu_attachment =
-	<T extends ContextmenuParams, U extends T | Array<T>>(
-		params: U | null | undefined,
+	(
+		params: ContextmenuParams | Array<ContextmenuParams> | null | undefined,
 	): Attachment<HTMLElement | SVGElement> =>
 	(el): undefined | (() => void) => {
 		if (params == null) return;
@@ -700,7 +734,7 @@ Attachments as class properties, sharing reactive state with the instance:
 ```typescript
 // scrollable.svelte.ts (simplified — see source for flex-direction handling)
 export class Scrollable {
-	scroll_y: number = $state(0);
+	scroll_y: number = $state.raw(0);
 	readonly scrolled: boolean = $derived(this.scroll_y > this.threshold);
 
 	// Listens to scroll events, updates class state

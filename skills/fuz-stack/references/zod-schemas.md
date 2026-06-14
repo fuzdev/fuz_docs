@@ -21,8 +21,8 @@ defaults, metadata, CLI help text, and serialization.
 | Layer | Module | Capabilities |
 |---|---|---|
 | Foundation | `@fuzdev/fuz_util/zod.ts` | Schema introspection — extract descriptions, defaults, aliases, types, properties; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); object-field helpers (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`); check optional/nullable/default; format values for display |
-| Foundation | `@fuzdev/fuz_util/uuid.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` branded types and factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`) |
-| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | Re-exports `Uuid`/`Datetime` from fuz_util; `TypeLiteral` and path-transform schemas (`PathWithTrailingSlash`, etc.); `SvelteMapSchema`; validation error formatting |
+| Foundation | `@fuzdev/fuz_util/id.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` branded types and factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`) |
+| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | Path-transform schemas (`PathWithTrailingSlash`, `PathWithoutTrailingSlash`, `PathWithLeadingSlash`) |
 | CLI | `@fuzdev/fuz_app/cli/args.ts`, `help.ts` | Schema-validated CLI arg parsing; schema-driven help text generation |
 | HTTP | `@fuzdev/fuz_app/http/schema_helpers.ts` | `schema_to_surface()` exports JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces; `instanceof` checks for schema type detection |
 | Testing | `@fuzdev/fuz_app/testing/schema_generators.ts` | Schema-driven test data generation — valid bodies, adversarial inputs |
@@ -121,7 +121,7 @@ export const ChatJson = CellJson.extend({
 export type ChatJson = z.infer<typeof ChatJson>;       // all fields present
 export type ChatJsonInput = z.input<typeof ChatJson>;   // defaults omittable
 
-// zap — every resource schema exports an input type
+// a schema extending a base + literal discriminant, exporting an input type
 export const PackageResource = ResourceBase.extend({
 	type: z.literal('package'),
 	from: PackageMapping,
@@ -140,11 +140,10 @@ types, validated state.
 
 ### Factory Functions with Input Types
 
-zap uses a systematic factory pattern: accept `z.input<>` without the
-discriminant field, parse to get validated output:
+A systematic factory pattern: accept `z.input<>` without the discriminant
+field, parse to get validated output:
 
 ```typescript
-// zap/resources/types.ts
 export const package_resource = (
 	config: Omit<PackageResourceInput, 'type'>,
 ): PackageResource => {
@@ -164,7 +163,7 @@ Nominal typing for primitives — a `Uuid` is not interchangeable with `string`
 at the type level:
 
 ```typescript
-// fuz_util/uuid.ts — Zod 4 built-in validators + brand
+// fuz_util/id.ts — Zod 4 built-in validators + brand
 export const Uuid = z.uuid().brand('Uuid');
 export type Uuid = z.infer<typeof Uuid>;
 
@@ -179,7 +178,7 @@ export const DiskfilePath = z
 	.brand('DiskfilePath');
 export type DiskfilePath = z.infer<typeof DiskfilePath>;
 
-// zap/types.ts — simple string + brand (generic syntax)
+// simple string + brand (generic syntax, no runtime format check)
 export const ResourceId = z.string().min(1).brand<'ResourceId'>();
 export type ResourceId = z.infer<typeof ResourceId>;
 
@@ -219,7 +218,7 @@ email: Email.nullish(),  // fuz_app invite creation
 // .catch(fallback) — use fallback if present value fails validation.
 // Different from .default() (missing field). For graceful degradation of
 // stored data that may have been written by an older schema version.
-before: PackageCurrent.nullable().catch(null),  // zap change schemas
+before: PreviousState.nullable().catch(null),  // tolerate older stored shapes
 ```
 
 ## Field-Level Validation
@@ -227,11 +226,12 @@ before: PackageCurrent.nullable().catch(null),  // zap change schemas
 Use `.shape` to validate individual fields without parsing the whole object:
 
 ```typescript
-// zzz — validate a single field value
-ProviderJson.shape.name.parse(value);
+// zzz/part.svelte.ts — reuse a base field's validator via `.shape`
+// (here a subtype overrides the inherited default)
+has_xml_tag: PartJsonBase.shape.has_xml_tag.default(true),
 
-// zzz/socket.svelte.ts — Cell field mutations via shape access
-SocketJson.shape.url.parse(new_url);
+// or validate a single value against one field's schema
+PartJsonBase.shape.has_xml_tag.parse(value);
 ```
 
 ## Transform Pipelines
@@ -299,7 +299,7 @@ schema._zod.def  // works but prefer schema.def
 
 See `@fuzdev/fuz_util/zod.ts` for unwrapping utilities (`zod_unwrap_def`,
 `zod_get_base_type`, `zod_to_subschema`, `zod_get_innermost_type`,
-`zod_get_innermost_type_name`, `zod_unwrap_to_object`) that handle wrappers like
+`zod_unwrap_to_object`) that handle wrappers like
 optional, nullable, default, transform, and pipe; and object-field helpers
 (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`).
 
@@ -311,21 +311,17 @@ Use `z.discriminatedUnion()` when a type field determines the shape; members use
 `z.strictObject()`:
 
 ```typescript
-// zap/resources/types.ts — 16 resource types
-export const Resource = z.discriminatedUnion('type', [
-	PackageResource,
-	FileResource,
-	DirectoryResource,
-	// ...
+// zzz/provider_types.ts — discriminate on `available`; members use strictObject
+export const ProviderStatus = z.discriminatedUnion('available', [
+	z.strictObject({name: z.string(), available: z.literal(true), checked_at: z.number()}),
+	z.strictObject({
+		name: z.string(),
+		available: z.literal(false),
+		error: z.string(),
+		checked_at: z.number(),
+	}),
 ]);
-export type Resource = z.infer<typeof Resource>;
-
-// inline members also use strictObject
-export const FileContent = z.discriminatedUnion('type', [
-	z.strictObject({type: z.literal('inline'), content: z.string()}),
-	z.strictObject({type: z.literal('template'), template: z.string(), vars: TemplateVars.optional()}),
-	z.strictObject({type: z.literal('source'), path: z.string()}),
-]);
+export type ProviderStatus = z.infer<typeof ProviderStatus>;
 ```
 
 ### Plain Unions
@@ -339,15 +335,15 @@ export const JsonrpcMessage = z.union([
 	JsonrpcRequest, JsonrpcNotification, JsonrpcResponse, JsonrpcErrorMessage,
 ]);
 
-// fuz_app/actions/action_spec.ts — mixed literal + object
-export const ActionAuth = z.union([
-	z.literal('public'),
-	z.literal('authenticated'),
-	z.strictObject({role: z.string()}),
+// mixed literals + an object shape
+export const Sort = z.union([
+	z.literal('asc'),
+	z.literal('desc'),
+	z.strictObject({by: z.string(), dir: z.enum(['asc', 'desc'])}),
 ]);
 
-// zap/resources/types.ts — union with literal false for opt-out
-sudo: z.union([z.enum(['nopasswd', 'password']), z.literal(false)]).optional(),
+// union with a literal `false` for opt-out
+const sudo = z.union([z.enum(['nopasswd', 'password']), z.literal(false)]).optional();
 ```
 
 Prefer `z.discriminatedUnion()` when possible — it gives better error messages.
@@ -386,7 +382,7 @@ export const ActionSpec = z.strictObject({
 
 export const RequestResponseActionSpec = ActionSpec.extend({
 	kind: z.literal('request_response').default('request_response'),
-	auth: ActionAuth,
+	auth: RouteAuth.nullable(), // four-axis {account, actor, roles?, credential_types?}
 	async: z.literal(true).default(true),
 });
 ```
@@ -492,18 +488,12 @@ if (!result.success) {
 
 ### Formatting Errors
 
-```typescript
-// Zod 4 built-in — multi-line, human-readable (CLI args, error display)
-return {success: false, error: z.prettifyError(parsed.error)};
+Prefer Zod 4's built-ins over hand-rolled formatters:
 
-// zzz/zod_helpers.ts — single-line, compact (inline error messages)
-export const format_zod_validation_error = (error: z.ZodError): string =>
-	error.issues
-		.map((i) => {
-			const path = i.path.length > 0 ? `${i.path.join('.')}: ` : '';
-			return `${path}${i.message}`;
-		})
-		.join(', ');
+```typescript
+z.prettifyError(parsed.error); // multi-line, human-readable (CLI args, error display)
+z.treeifyError(parsed.error); // nested structure mirroring the schema
+z.flattenError(parsed.error); // {formErrors, fieldErrors} — flat, for forms
 ```
 
 ## Quick Reference

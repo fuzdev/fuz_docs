@@ -155,16 +155,8 @@ for (const [i, result] of results.entries()) {
 keep their real settlements, in-flight items are rejected with abort reason.
 Items never pulled from the iterator are absent from the results array.
 
-### How concurrency control works
-
-All three use the same internal pattern:
-
-1. Maintain `active_count` and `next_index` counters
-2. Spawn workers up to `concurrency` limit
-3. On completion, decrement `active_count` and call `run_next()`
-4. `run_next()` spawns more if slots are available
-
-Empty iterables resolve immediately.
+All three cap in-flight work at `concurrency`, spawning the next item as each
+settles. Empty iterables resolve immediately.
 
 ## AsyncSemaphore
 
@@ -190,12 +182,7 @@ Constructor requires `permits >= 0`.
 `new AsyncSemaphore(Infinity)` — `acquire()` always resolves immediately.
 Useful for disabling concurrency limits without changing call sites.
 
-### Internal mechanics
-
-- `acquire()`: If permits > 0, decrements and resolves. Otherwise queues.
-- `release()`: If waiters queued, resolves next. Otherwise increments permits.
-
-Used by `run_dag()` for controlling node execution concurrency.
+Used by `run_dag()` to bound node execution concurrency.
 
 ## DAG Execution
 

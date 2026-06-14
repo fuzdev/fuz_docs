@@ -32,7 +32,7 @@ src/lib/
 │   ├── resolve.ts    # $$VAR$$ reference resolution
 │   ├── dotenv.ts     # .env file parsing
 │   └── mask.ts       # secret value display masking
-├── auth/             # authentication domain (~34 files)
+├── auth/             # authentication domain (~80 files)
 │   ├── keyring.ts    # crypto: HMAC-SHA256 cookie signing
 │   ├── password.ts   # crypto: password hashing interface
 │   ├── account_schema.ts  # types + Zod schemas

@@ -109,6 +109,7 @@ dependencies in this sense and never appear here.
 | Crate | Purpose |
 | ----- | ------- |
 | `wasm-bindgen` | JS interop (wasm-pack) |
+| `js-sys` | engine-native `JSON.parse` for the wasm-bindgen parse exports (tsv) |
 | `wit-bindgen` | Component-model bindings |
 | `wasmtime` / `wasmtime-wasi` | WASM host (tests, benches) |
 

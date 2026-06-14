@@ -309,20 +309,32 @@ impl Blake3Hasher {
 
 ### tsv wasm-bindgen patterns
 
-Uses `serde-wasm-bindgen` for complex return types (ASTs):
+Returns complex types (ASTs) by crossing the boundary as a single JSON string,
+then parsing it with the engine's native `JSON.parse` (via `js-sys`). Building
+the JS object graph node-by-node with `serde-wasm-bindgen` was measurably slower,
+so it was dropped:
 
 ```rust
+// parse_<lang> / parse_<lang>_json are macro-generated (lang_bindings!).
+// The extern type names the matching interface in the bundled tsv_ast.d.ts,
+// so wasm-pack declares the return as the typed AST (e.g. `Root`).
 #[wasm_bindgen]
-pub fn parse_svelte(source: &str) -> Result<JsValue, JsError> {
-    let ast = tsv_svelte::parse(source).map_err(|e| JsError::new(&e.to_string()))?;
-    let public = tsv_svelte::convert_ast(&ast, source);
-    serde_wasm_bindgen::to_value(&public)
-        .map_err(|e| JsError::new(&e.to_string()))
+pub fn parse_svelte(source: &str) -> Result<SvelteRoot, JsError> {
+    let json = parse_svelte_json(source)?;
+    let js_value = js_sys::JSON::parse(&json)
+        .map_err(|_| err("internal error: AST serialized to invalid JSON"))?;
+    Ok(js_value.unchecked_into::<SvelteRoot>())
+}
+
+#[wasm_bindgen]
+pub fn parse_svelte_json(source: &str) -> Result<String, JsError> {
+    let ast = tsv_svelte::parse(source).map_err(err)?;
+    Ok(tsv_svelte::convert_ast_json_string(&ast, source))
 }
 ```
 
-`serde_wasm_bindgen::to_value()` converts serde types directly to `JsValue` —
-more efficient than JSON strings. `parse_internal_*()` benchmarks skip
+`parse_*_json` returns the wire string directly for consumers that forward it
+without materializing a JS object. `parse_internal_*()` benchmarks skip
 serialization via `std::hint::black_box()`.
 
 ### TypeScript entry points
