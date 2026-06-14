@@ -26,16 +26,15 @@
 				</li>
 				<li>
 					<a
-						class="menuitem"
-						href={resolve('/skills')}
-						class:selected={pathname === resolve('/skills')}>skills</a
+						class={['menuitem', {selected: pathname === resolve('/skills')}]}
+						href={resolve('/skills')}>skills</a
 					>
 				</li>
 				{#each skills as skill (skill.name)}
 					{@const skill_path = resolve(('/skills/' + skill.name) as any)}
 					{@const skill_active = pathname.startsWith(skill_path)}
 					<li>
-						<a class="menuitem pl_lg" href={skill_path} class:selected={pathname === skill_path}
+						<a class={['menuitem pl_lg', {selected: pathname === skill_path}]} href={skill_path}
 							>{skill.name}</a
 						>
 						{#if skill_active && skill.references.length > 0}
@@ -43,11 +42,16 @@
 								{#each skill.references as ref (ref.slug)}
 									<li>
 										<a
-											class="menuitem"
+											class={[
+												'menuitem',
+												{
+													selected:
+														pathname ===
+														resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any),
+												},
+											]}
 											style:padding-left="calc(2 * var(--space_lg))"
 											href={resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)}
-											class:selected={pathname ===
-												resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)}
 											>{ref.title}</a
 										>
 									</li>
@@ -58,15 +62,14 @@
 				{/each}
 				<li>
 					<a
-						class="menuitem"
-						href={resolve('/tools')}
-						class:selected={pathname === resolve('/tools')}>tools</a
+						class={['menuitem', {selected: pathname === resolve('/tools')}]}
+						href={resolve('/tools')}>tools</a
 					>
 				</li>
 				{#each tools as tool (tool.name)}
 					{@const tool_path = resolve(('/tools/' + tool.name) as any)}
 					<li>
-						<a class="menuitem pl_lg" href={tool_path} class:selected={pathname === tool_path}
+						<a class={['menuitem pl_lg', {selected: pathname === tool_path}]} href={tool_path}
 							>{tool.name}</a
 						>
 					</li>

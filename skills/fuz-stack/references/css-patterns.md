@@ -539,7 +539,7 @@ pseudo-states. Shared traits:
   values
 - **Layout uses composites and utilities** — `box`, `row`, `column`, `panel`,
   `p_md`, `gap_lg` instead of manual flex declarations
-- **Stateful styling is conventional** — `class:selected={...}` on a button or
+- **Stateful styling is conventional** — `class={{selected: ...}}` on a button or
   link rides on fuz_css's built-in `.selected` rules; no custom CSS needed
 
 ```svelte
@@ -549,7 +549,7 @@ pseudo-states. Shared traits:
 	<small class="text_50">{subtitle}</small>
 	<p>{description}</p>
 	<button class="color_a">Confirm</button>
-	<button class="color_c" class:selected={destructive}>Delete</button>
+	<button class={['color_c', {selected: destructive}]}>Delete</button>
 </aside>
 ```
 
@@ -623,10 +623,10 @@ These patterns indicate a component is doing too much styling work:
 
 ```svelte
 <!-- BAD: hand-rolled destructive button -->
-<button class="delete-btn" class:active={pending}>Delete</button>
+<button class={['delete-btn', {active: pending}]}>Delete</button>
 
 <!-- GOOD: built-in conventions handle it -->
-<button class="color_c" class:selected={pending}>Delete</button>
+<button class={['color_c', {selected: pending}]}>Delete</button>
 
 <style>
 	.delete-btn {

@@ -158,8 +158,10 @@
 <div {...rest} class="data_input box {rest.class ?? ''}">
 	<nav class="row gap_xs">
 		{#each input_modes as mode (mode)}
-			<button type="button" class:selected={input_mode === mode} onclick={() => (input_mode = mode)}
-				>{mode}</button
+			<button
+				type="button"
+				class={{selected: input_mode === mode}}
+				onclick={() => (input_mode = mode)}>{mode}</button
 			>
 		{/each}
 	</nav>
@@ -176,8 +178,7 @@
 		{:else if input_mode === 'file'}
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class="drop_zone panel shadow_inset_xs p_lg"
-				class:dragging
+				class={['drop_zone panel shadow_inset_xs p_lg', {dragging}]}
 				{ondrop}
 				{ondragover}
 				{ondragleave}

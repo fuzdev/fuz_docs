@@ -30,7 +30,8 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -42,9 +43,9 @@
 			"glyph": "🌰",
 			"homepage_url": "https://gro.fuz.dev/",
 			"published": true,
-			"module_count": 81,
-			"exported_module_count": 59,
-			"export_count": 329,
+			"module_count": 80,
+			"exported_module_count": 58,
+			"export_count": 327,
 			"peer_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -52,13 +53,14 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
-				"@fuzdev/fuz_util"
+				"@fuzdev/fuz_util",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.62.0",
+			"version": "0.63.2",
 			"path": "fuz_css",
 			"description": "CSS framework and design system for semantic HTML",
 			"glyph": "🪴",
@@ -74,13 +76,14 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.204.0",
+			"version": "0.205.1",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -109,7 +112,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.87.0",
+			"version": "0.88.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -133,7 +136,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_code",
-			"version": "0.46.0",
+			"version": "0.46.1",
 			"path": "fuz_code",
 			"description": "syntax styling utilities and components for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
@@ -235,15 +238,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.76.0",
+			"version": "0.77.0",
 			"path": "fuz_gitops",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
 			"homepage_url": "https://gitops.fuz.dev/",
 			"published": true,
-			"module_count": 52,
-			"exported_module_count": 47,
-			"export_count": 207,
+			"module_count": 54,
+			"exported_module_count": 49,
+			"export_count": 218,
 			"peer_dependencies": ["@fuzdev/fuz_css", "@fuzdev/fuz_ui", "@fuzdev/fuz_util", "@fuzdev/gro"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -289,9 +292,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 211,
-			"exported_module_count": 208,
-			"export_count": 578,
+			"module_count": 210,
+			"exported_module_count": 207,
+			"export_count": 567,
 			"peer_dependencies": ["@fuzdev/fuz_app", "@fuzdev/fuz_ui", "@fuzdev/fuz_util"],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
@@ -323,7 +326,8 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/gro",
+				"@fuzdev/mdz"
 			]
 		},
 		{

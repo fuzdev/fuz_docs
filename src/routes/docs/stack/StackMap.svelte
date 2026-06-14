@@ -379,8 +379,7 @@
 				{@const to = nodes_by_name.get(edge.to)}
 				{#if from && to}
 					<line
-						class="edge"
-						class:dimmed={edge_is_dimmed(edge)}
+						class={['edge', {dimmed: edge_is_dimmed(edge)}]}
 						x1={from.x}
 						y1={from.y}
 						x2={to.x}
@@ -392,9 +391,11 @@
 			{#each stack_nodes as node (node.name)}
 				{@const r = node_radius(node.fan_in)}
 				<g
-					class="node cat-{node.category}"
-					class:selected={selected === node.name}
-					class:dimmed={node_is_dimmed(node.name)}
+					class={[
+						'node',
+						`cat-${node.category}`,
+						{selected: selected === node.name, dimmed: node_is_dimmed(node.name)},
+					]}
 					transform="translate({node.x} {node.y})"
 					onpointerenter={() => (hovered = node.name)}
 					onpointerleave={() => {

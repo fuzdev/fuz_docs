@@ -13255,79 +13255,6 @@
 					"dependents": ["gro.ts", "run.task.ts"]
 				},
 				{
-					"path": "gro_plugin_deno_compile.ts",
-					"declarations": [
-						{
-							"name": "GroPluginDenoCompileOptions",
-							"kind": "interface",
-							"typeSignature": "GroPluginDenoCompileOptions",
-							"sourceLine": 24,
-							"members": [
-								{
-									"name": "entry",
-									"kind": "variable",
-									"docComment": "Entry point TypeScript file.",
-									"typeSignature": "string"
-								},
-								{
-									"name": "output_name",
-									"kind": "variable",
-									"docComment": "Output binary name (without path).",
-									"typeSignature": "string"
-								},
-								{
-									"name": "output_dir",
-									"kind": "variable",
-									"docComment": "Output directory for the binary.",
-									"typeSignature": "string",
-									"optional": true,
-									"defaultValue": "'dist_cli'"
-								},
-								{
-									"name": "permissions",
-									"kind": "variable",
-									"docComment": "Deno permissions to grant.",
-									"typeSignature": "Array<string>",
-									"optional": true,
-									"defaultValue": "['--allow-all']"
-								},
-								{
-									"name": "flags",
-									"kind": "variable",
-									"docComment": "Additional deno compile flags.",
-									"typeSignature": "Array<string>",
-									"optional": true,
-									"defaultValue": "[]"
-								},
-								{
-									"name": "generate_hash",
-									"kind": "variable",
-									"docComment": "Generate a SHA-256 hash file alongside the binary.\nThe hash file is named `{output_name}.sha256` and uses sha256sum format.",
-									"typeSignature": "boolean",
-									"optional": true,
-									"defaultValue": "true"
-								}
-							]
-						},
-						{
-							"name": "gro_plugin_deno_compile",
-							"kind": "function",
-							"docComment": "Creates a gro plugin that compiles TypeScript to a binary using `deno compile`.\nRuns during the `adapt` phase (production build only).",
-							"typeSignature": "(options: GroPluginDenoCompileOptions): Plugin<PluginContext<object>>",
-							"sourceLine": 65,
-							"parameters": [
-								{
-									"name": "options",
-									"type": "GroPluginDenoCompileOptions"
-								}
-							],
-							"returnType": "Plugin<PluginContext<object>>"
-						}
-					],
-					"moduleComment": "Gro build plugin for compiling TypeScript to a standalone binary via `deno compile`.\n\nRuns during the `adapt` phase (production build only).\nOptionally generates a SHA-256 hash file for verification.\n\nTo avoid bundling all npm devDependencies from `package.json`, we:\n1. Extract just the \"imports\" from root deno.json\n2. Rebase relative paths (e.g. `../fuz_app/` → `../../fuz_app/`) since\n   compilation runs from the output subdirectory\n3. Write a minimal deno.json to the output directory\n4. Compile from that directory (which has no `package.json`)",
-					"dependencies": ["plugin.ts", "task.ts"]
-				},
-				{
 					"path": "gro_plugin_deno_server.ts",
 					"declarations": [
 						{
@@ -15387,7 +15314,6 @@
 						"build.task.ts",
 						"dev.task.ts",
 						"gro_config.ts",
-						"gro_plugin_deno_compile.ts",
 						"gro_plugin_deno_server.ts",
 						"gro_plugin_gen.ts",
 						"gro_plugin_server.ts",
@@ -16718,7 +16644,6 @@
 						"gen.task.ts",
 						"gen.ts",
 						"gen_helpers.ts",
-						"gro_plugin_deno_compile.ts",
 						"gro_plugin_sveltekit_app.ts",
 						"gro_plugin_sveltekit_library.ts",
 						"index.ts",
@@ -16978,7 +16903,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.62.0",
+			"version": "0.63.2",
 			"description": "CSS framework and design system for semantic HTML",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -24525,7 +24450,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.204.0",
+			"version": "0.205.1",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -31375,7 +31300,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.87.0",
+			"version": "0.88.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -31835,7 +31760,7 @@
 	"fuz_code": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_code",
-			"version": "0.46.0",
+			"version": "0.46.1",
 			"description": "syntax styling utilities and components for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
 			"logo": "logo.svg",
@@ -32083,6 +32008,12 @@
 									"optional": true,
 									"description": "Custom `SyntaxStyler` instance (defaults to the global one).",
 									"defaultValue": "syntax_styler_global"
+								},
+								{
+									"name": "wrapper_attrs",
+									"type": "HTMLAttributes<HTMLDivElement>",
+									"optional": true,
+									"description": "Attributes for the wrapper `<div>` — the layout box that the textarea\nfills and `resize` grows. Use it for sizing/layout classes, `style`,\n`id`, or container-level handlers. Its `class` is merged with the\ninternal `code_textarea` class; `data-lang` stays component-controlled.\n(`...rest` spreads onto the `<textarea>`; the backdrop `<pre>` is\ninternal and intentionally not exposed.)"
 								}
 							],
 							"acceptsChildren": true
@@ -32536,12 +32467,6 @@
 							"sourceLine": 33,
 							"members": [
 								{
-									"name": "language_supported",
-									"kind": "variable",
-									"typeSignature": "boolean",
-									"modifiers": ["readonly"]
-								},
-								{
 									"name": "highlighting_disabled",
 									"kind": "variable",
 									"typeSignature": "boolean",
@@ -32554,7 +32479,7 @@
 							"kind": "function",
 							"docComment": "Wires up CSS Custom Highlight API range highlighting for a single element's\ntext node, shared by `CodeHighlight` and `CodeTextarea`. Creates a\n`HighlightManager`, memoizes tokenization, applies/clears ranges in an effect,\nemits DEV warnings for unsupported languages, and tears down on destroy.\n\nMust be called during component initialization (it uses `$effect`/`onDestroy`).",
 							"typeSignature": "(options: RangeHighlightingOptions): RangeHighlighting",
-							"sourceLine": 46,
+							"sourceLine": 45,
 							"parameters": [
 								{
 									"name": "options",
@@ -35181,7 +35106,7 @@
 	"fuz_gitops": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.76.0",
+			"version": "0.77.0",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
 			"logo": "logo.svg",
@@ -35464,6 +35389,217 @@
 					"moduleComment": "Changeset parsing and version prediction from `.changeset/*.md` files.\n\nReads changesets to determine which packages need publishing and their version bumps.\nFor auto-generating changesets during publishing, see `changeset_generator.ts`.",
 					"dependencies": ["local_repo.ts", "version_utils.ts"],
 					"dependents": ["operations.ts", "operations_defaults.ts"]
+				},
+				{
+					"path": "ci_reconcile.ts",
+					"declarations": [
+						{
+							"name": "CiDriftKind",
+							"kind": "type",
+							"docComment": "How a repo's declared `ci` diverges from its workflow files on disk.",
+							"typeSignature": "CiDriftKind",
+							"sourceLine": 21
+						},
+						{
+							"name": "CiDrift",
+							"kind": "interface",
+							"typeSignature": "CiDrift",
+							"sourceLine": 27,
+							"members": [
+								{
+									"name": "repo_url",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "ci",
+									"kind": "variable",
+									"docComment": "The declared/derived `ci` value.",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "has_workflows",
+									"kind": "variable",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "kind",
+									"kind": "variable",
+									"typeSignature": "CiDriftKind"
+								}
+							]
+						},
+						{
+							"name": "CiReconcileInput",
+							"kind": "interface",
+							"typeSignature": "CiReconcileInput",
+							"sourceLine": 35,
+							"members": [
+								{
+									"name": "repo_url",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "ci",
+									"kind": "variable",
+									"docComment": "The declared/derived `ci` value from the gitops config.",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "has_workflows",
+									"kind": "variable",
+									"docComment": "Whether the repo has at least one workflow file on disk.",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "checkable",
+									"kind": "variable",
+									"docComment": "Whether the repo is checked out locally; uncheckable repos are skipped.",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "archived",
+									"kind": "variable",
+									"docComment": "Whether the repo is archived (frozen) on its host; archived repos are skipped.",
+									"typeSignature": "boolean"
+								}
+							]
+						},
+						{
+							"name": "reconcile_ci",
+							"kind": "function",
+							"docComment": "Compares each repo's declared `ci` against its actual workflow presence.",
+							"typeSignature": "(repos: CiReconcileInput[]): CiDrift[]",
+							"sourceLine": 51,
+							"parameters": [
+								{
+									"name": "repos",
+									"type": "CiReconcileInput[]"
+								}
+							],
+							"returnType": "CiDrift[]",
+							"returnDescription": "one `CiDrift` per repo whose declaration and reality disagree"
+						},
+						{
+							"name": "repo_has_workflows",
+							"kind": "function",
+							"docComment": "Whether a local repo directory contains at least one GitHub Actions workflow.",
+							"typeSignature": "(repo_dir: string): boolean",
+							"sourceLine": 69,
+							"parameters": [
+								{
+									"name": "repo_dir",
+									"type": "string",
+									"description": "absolute or cwd-relative path to the repo's local directory"
+								}
+							],
+							"returnType": "boolean"
+						}
+					],
+					"moduleComment": "Reconciles each repo's declared `ci` flag against whether it actually has\nGitHub Actions workflow files on disk.\n\nThe gitops config derives `ci` from visibility (on for public repos, off for\nprivate) with per-repo overrides; this check catches drift between that\ndeclaration and reality —\na repo that claims CI but ships no workflow, or one that disclaims CI yet\nstill carries one. Repos that aren't checked out locally can't be judged, so\nthe caller marks them uncheckable and they're skipped. Archived repos are\nfrozen on their host, so their CI state is intentionally left alone and they're\nskipped too.",
+					"dependents": ["gitops_validate.task.ts"]
+				},
+				{
+					"path": "config_reconcile.ts",
+					"declarations": [
+						{
+							"name": "IntrinsicField",
+							"kind": "type",
+							"typeSignature": "\"visibility\" | \"ci\" | \"archived\" | \"branch\"",
+							"sourceLine": 19
+						},
+						{
+							"name": "ConfigDriftKind",
+							"kind": "type",
+							"typeSignature": "ConfigDriftKind",
+							"sourceLine": 21
+						},
+						{
+							"name": "ConfigDrift",
+							"kind": "interface",
+							"typeSignature": "ConfigDrift",
+							"sourceLine": 27,
+							"members": [
+								{
+									"name": "repo_url",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "config",
+									"kind": "variable",
+									"docComment": "Name of the subset config whose entry diverges.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "kind",
+									"kind": "variable",
+									"typeSignature": "ConfigDriftKind"
+								},
+								{
+									"name": "field",
+									"kind": "variable",
+									"docComment": "The field that disagrees, set when `kind` is `'field_mismatch'`.",
+									"typeSignature": "IntrinsicField",
+									"optional": true
+								},
+								{
+									"name": "canonical_value",
+									"kind": "variable",
+									"docComment": "The canonical config's value, set when `kind` is `'field_mismatch'`.",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "config_value",
+									"kind": "variable",
+									"docComment": "The subset config's value, set when `kind` is `'field_mismatch'`.",
+									"typeSignature": "string",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "NamedRepos",
+							"kind": "interface",
+							"typeSignature": "NamedRepos",
+							"sourceLine": 40,
+							"members": [
+								{
+									"name": "name",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "repos",
+									"kind": "variable",
+									"typeSignature": "Array<GitopsRepoConfig>"
+								}
+							]
+						},
+						{
+							"name": "reconcile_configs",
+							"kind": "function",
+							"docComment": "Compares each subset config against the canonical config. Repos that live only\nin the canonical config are fine — the subsets are intentional partial views.",
+							"typeSignature": "(canonical: NamedRepos, subsets: NamedRepos[]): ConfigDrift[]",
+							"sourceLine": 64,
+							"parameters": [
+								{
+									"name": "canonical",
+									"type": "NamedRepos"
+								},
+								{
+									"name": "subsets",
+									"type": "NamedRepos[]"
+								}
+							],
+							"returnType": "ConfigDrift[]",
+							"returnDescription": "one `ConfigDrift` per subset entry that is missing from the canonical\nconfig or whose intrinsic fields disagree with it"
+						}
+					],
+					"moduleComment": "Reconciles repo metadata across multiple gitops configs.\n\nThe ecosystem keeps several gitops configs — a canonical superset plus\nnarrower per-project subsets. They can't share one source of truth (the\nsuperset includes private repos that public configs may not reference), so the\nsame repo is declared independently in each. This check flags when a subset's\nintrinsic fields drift from the canonical config, or when a subset lists a\nrepo the canonical config doesn't. `repo_dir` is per-config and ignored.",
+					"dependencies": ["gitops_config.ts"]
 				},
 				{
 					"path": "dependency_graph.ts",
@@ -36548,10 +36684,17 @@
 							]
 						},
 						{
+							"name": "GitopsRepoVisibility",
+							"kind": "type",
+							"docComment": "Visibility of a repo on its host, mirroring the host's own model\n(e.g. GitHub's `visibility` field). Named to avoid confusion with the npm\n`package.json` `private` flag, which is a separate publishing concern.",
+							"typeSignature": "GitopsRepoVisibility",
+							"sourceLine": 40
+						},
+						{
 							"name": "GitopsRepoConfig",
 							"kind": "interface",
 							"typeSignature": "GitopsRepoConfig",
-							"sourceLine": 35,
+							"sourceLine": 42,
 							"members": [
 								{
 									"name": "repo_url",
@@ -36575,6 +36718,24 @@
 									"kind": "variable",
 									"docComment": "The branch name to use when fetching the repo. Defaults to `main`.",
 									"typeSignature": "GitBranch"
+								},
+								{
+									"name": "visibility",
+									"kind": "variable",
+									"docComment": "Visibility of the repo on its host. Defaults to `'public'`.",
+									"typeSignature": "GitopsRepoVisibility"
+								},
+								{
+									"name": "ci",
+									"kind": "variable",
+									"docComment": "Whether the repo runs CI. Defaults to `true` for public repos and `false`\nfor private repos, unless set explicitly.",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "archived",
+									"kind": "variable",
+									"docComment": "Whether the repo is archived (read-only) on its host. Defaults to `false`.",
+									"typeSignature": "boolean"
 								}
 							]
 						},
@@ -36582,7 +36743,7 @@
 							"name": "RawGitopsRepoConfig",
 							"kind": "interface",
 							"typeSignature": "RawGitopsRepoConfig",
-							"sourceLine": 65,
+							"sourceLine": 88,
 							"members": [
 								{
 									"name": "repo_url",
@@ -36600,6 +36761,27 @@
 									"kind": "variable",
 									"typeSignature": "GitBranch",
 									"optional": true
+								},
+								{
+									"name": "visibility",
+									"kind": "variable",
+									"docComment": "Visibility of the repo on its host. Defaults to `'public'`.",
+									"typeSignature": "GitopsRepoVisibility",
+									"optional": true
+								},
+								{
+									"name": "ci",
+									"kind": "variable",
+									"docComment": "Whether the repo runs CI. Defaults to `true` for public, `false` for private.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "archived",
+									"kind": "variable",
+									"docComment": "Whether the repo is archived (read-only) on its host. Defaults to `false`.",
+									"typeSignature": "boolean",
+									"optional": true
 								}
 							]
 						},
@@ -36607,7 +36789,7 @@
 							"name": "create_empty_gitops_config",
 							"kind": "function",
 							"typeSignature": "(): GitopsConfig",
-							"sourceLine": 71,
+							"sourceLine": 100,
 							"returnType": "GitopsConfig"
 						},
 						{
@@ -36615,7 +36797,7 @@
 							"kind": "function",
 							"docComment": "Transforms a `RawGitopsConfig` to the more strict `GitopsConfig`.\nThis allows users to provide a more relaxed config.",
 							"typeSignature": "(raw_config: RawGitopsConfig): GitopsConfig",
-							"sourceLine": 80,
+							"sourceLine": 109,
 							"parameters": [
 								{
 									"name": "raw_config",
@@ -36628,7 +36810,7 @@
 							"name": "GitopsConfigModule",
 							"kind": "interface",
 							"typeSignature": "GitopsConfigModule",
-							"sourceLine": 103,
+							"sourceLine": 143,
 							"members": [
 								{
 									"name": "default",
@@ -36642,7 +36824,7 @@
 							"name": "load_gitops_config",
 							"kind": "function",
 							"typeSignature": "(config_path: string): Promise<GitopsConfig | null>",
-							"sourceLine": 107,
+							"sourceLine": 147,
 							"parameters": [
 								{
 									"name": "config_path",
@@ -36655,7 +36837,7 @@
 							"name": "validate_gitops_config_module",
 							"kind": "function",
 							"typeSignature": "(config_module: any, config_path: string): asserts config_module is GitopsConfigModule",
-							"sourceLine": 122,
+							"sourceLine": 162,
 							"parameters": [
 								{
 									"name": "config_module",
@@ -36672,6 +36854,7 @@
 					"moduleComment": "Configuration types and normalization for gitops multi-repo management.\n\nTwo-phase configuration system:\n- `RawGitopsConfig` - User-friendly format with optional fields and flexible types\n- `GitopsConfig` - Internal format with required fields and strict types\n\nThis allows users to provide minimal configs (e.g., just URLs as strings) while\nthe system works with normalized configs internally for type safety.",
 					"dependencies": ["paths.ts"],
 					"dependents": [
+						"config_reconcile.ts",
 						"gitops_task_helpers.ts",
 						"local_repo.ts",
 						"repo_ops.ts",
@@ -36944,6 +37127,7 @@
 				{
 					"path": "gitops_validate.task.ts",
 					"dependencies": [
+						"ci_reconcile.ts",
 						"gitops_constants.ts",
 						"gitops_task_helpers.ts",
 						"graph_validation.ts",
@@ -41120,8 +41304,7 @@
 						"action_icons.ts",
 						"actions.svelte.ts",
 						"frontend.svelte.ts",
-						"frontend_action_types.ts",
-						"schema_registry.ts"
+						"frontend_action_types.ts"
 					]
 				},
 				{
@@ -45388,48 +45571,6 @@
 									"reactivity": "$state.raw"
 								},
 								{
-									"name": "dependencies_by_id",
-									"kind": "variable",
-									"typeSignature": "Map<DiskfilePath, SerializableDisknode>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "dependents_by_id",
-									"kind": "variable",
-									"typeSignature": "Map<DiskfilePath, SerializableDisknode>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "dependency_ids",
-									"kind": "variable",
-									"typeSignature": "Array<DiskfilePath>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "dependent_ids",
-									"kind": "variable",
-									"typeSignature": "Array<DiskfilePath>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "has_dependencies",
-									"kind": "variable",
-									"typeSignature": "boolean",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "has_dependents",
-									"kind": "variable",
-									"typeSignature": "boolean",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
 									"name": "dependencies_count",
 									"kind": "variable",
 									"typeSignature": "number",
@@ -45467,13 +45608,6 @@
 									"reactivity": "$derived"
 								},
 								{
-									"name": "content_token_count",
-									"kind": "variable",
-									"typeSignature": "number | null",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
 									"name": "content_preview",
 									"kind": "variable",
 									"typeSignature": "string",
@@ -45497,7 +45631,7 @@
 							"name": "DiskfileSchema",
 							"kind": "variable",
 							"typeSignature": "ZodCustom<Diskfile, Diskfile>",
-							"sourceLine": 69
+							"sourceLine": 53
 						}
 					],
 					"dependencies": ["cell.svelte.ts", "diskfile_types.ts", "helpers.ts", "part.svelte.ts"],
@@ -45822,7 +45956,7 @@
 							"name": "is_path_absolute",
 							"kind": "function",
 							"typeSignature": "(path: string): boolean",
-							"sourceLine": 17,
+							"sourceLine": 9,
 							"parameters": [
 								{
 									"name": "path",
@@ -45835,7 +45969,7 @@
 							"name": "to_relative_path",
 							"kind": "function",
 							"typeSignature": "(path: string, parent: string): string",
-							"sourceLine": 20,
+							"sourceLine": 12,
 							"parameters": [
 								{
 									"name": "path",
@@ -45849,25 +45983,11 @@
 							"returnType": "string"
 						},
 						{
-							"name": "map_watcher_change_to_diskfile_change",
-							"kind": "function",
-							"docComment": "Maps watcher change types to diskfile change types.",
-							"typeSignature": "(type: WatcherChangeType): \"add\" | \"change\" | \"delete\"",
-							"sourceLine": 26,
-							"parameters": [
-								{
-									"name": "type",
-									"type": "WatcherChangeType"
-								}
-							],
-							"returnType": "\"add\" | \"change\" | \"delete\""
-						},
-						{
 							"name": "disknode_to_diskfile_json",
 							"kind": "function",
 							"docComment": "Converts a `SerializableDisknode` to the `DiskfileJson` format.",
 							"typeSignature": "(disknode: { id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }, existing_id?: string & $brand<...>): { ...; }",
-							"sourceLine": 39,
+							"sourceLine": 21,
 							"parameters": [
 								{
 									"name": "disknode",
@@ -45887,13 +46007,13 @@
 							"name": "SUPPORTED_CODE_FILETYPE_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 60
+							"sourceLine": 42
 						},
 						{
 							"name": "has_dependencies",
 							"kind": "function",
 							"typeSignature": "(diskfile: Diskfile): boolean",
-							"sourceLine": 61,
+							"sourceLine": 43,
 							"parameters": [
 								{
 									"name": "diskfile",
@@ -45901,23 +46021,6 @@
 								}
 							],
 							"returnType": "boolean"
-						},
-						{
-							"name": "to_serializable_disknode",
-							"kind": "function",
-							"typeSignature": "(disknode: Disknode, dir: string): { id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; ... 4 more ...; dependencies: [...][]; }",
-							"sourceLine": 67,
-							"parameters": [
-								{
-									"name": "disknode",
-									"type": "Disknode"
-								},
-								{
-									"name": "dir",
-									"type": "string"
-								}
-							],
-							"returnType": "{ id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }"
 						}
 					],
 					"dependencies": ["diskfile.svelte.ts", "diskfile_types.ts"],
@@ -49869,7 +49972,6 @@
 						"ModelSelect.svelte",
 						"ModelSummary.svelte",
 						"provider.svelte.ts",
-						"response_helpers.ts",
 						"thread.svelte.ts",
 						"thread_types.ts",
 						"threads.svelte.ts"
@@ -52854,8 +52956,7 @@
 						"model.svelte.ts",
 						"provider.svelte.ts",
 						"ProviderLogo.svelte",
-						"providers.svelte.ts",
-						"response_helpers.ts"
+						"providers.svelte.ts"
 					]
 				},
 				{
@@ -53718,7 +53819,7 @@
 							"kind": "function",
 							"docComment": "Extracts the text content from a completion response.",
 							"typeSignature": "(completion_response: { created: string & $brand<\"Datetime\">; provider_name: \"claude\" | \"chatgpt\" | \"gemini\"; model: string; data: { type: \"claude\"; value: any; } | { type: \"chatgpt\"; value: any; } | { ...; }; } | null | undefined): string | null",
-							"sourceLine": 14,
+							"sourceLine": 7,
 							"parameters": [
 								{
 									"name": "completion_response",
@@ -53726,214 +53827,10 @@
 								}
 							],
 							"returnType": "string | null"
-						},
-						{
-							"name": "to_completion_result",
-							"kind": "function",
-							"docComment": "Creates a standardized `CompletionResponse` message from provider-specific responses.",
-							"typeSignature": "(provider_name: \"claude\" | \"chatgpt\" | \"gemini\", model: string, api_response: unknown, progress_token?: (string & $brand<\"Uuid\">) | undefined): { completion_response: { ...; }; _meta?: { ...; } | undefined; }",
-							"sourceLine": 38,
-							"parameters": [
-								{
-									"name": "provider_name",
-									"type": "\"claude\" | \"chatgpt\" | \"gemini\""
-								},
-								{
-									"name": "model",
-									"type": "string"
-								},
-								{
-									"name": "api_response",
-									"type": "unknown"
-								},
-								{
-									"name": "progress_token",
-									"type": "(string & $brand<\"Uuid\">) | undefined",
-									"optional": true
-								}
-							],
-							"returnType": "{ completion_response: { created: string & $brand<\"Datetime\">; provider_name: \"claude\" | \"chatgpt\" | \"gemini\"; model: string; data: { type: \"claude\"; value: any; } | { type: \"chatgpt\"; value: any; } | { ...; }; }; _meta?: { ...; } | undefined; }"
 						}
 					],
-					"dependencies": ["action_collections.ts", "model.svelte.ts", "provider_types.ts"],
+					"dependencies": ["action_collections.ts"],
 					"dependents": ["chat.svelte.ts", "frontend_action_handlers.ts", "thread_helpers.ts"]
-				},
-				{
-					"path": "schema_registry.ts",
-					"declarations": [
-						{
-							"name": "VocabName",
-							"kind": "type",
-							"typeSignature": "VocabName",
-							"sourceLine": 17,
-							"intersects": ["Flavored<string, 'VocabName'>"],
-							"members": [
-								{
-									"name": "[key: number]",
-									"kind": "variable",
-									"typeSignature": "string"
-								}
-							]
-						},
-						{
-							"name": "SchemaRegistry",
-							"kind": "class",
-							"docComment": "A central registry for schemas and actions.\nProvides a single source of truth for schema definitions.",
-							"sourceLine": 23,
-							"members": [
-								{
-									"name": "schemas",
-									"kind": "variable",
-									"docComment": "All schemas, including model schemas, action params, and responses.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "model_schemas",
-									"kind": "variable",
-									"docComment": "Model schemas are distinct from the action schemas.\nModels are the nouns compared to the Action verbs,\nand compared to Views they are data not Svelte components.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "action_params_schemas",
-									"kind": "variable",
-									"docComment": "Action parameter schemas.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "action_response_schemas",
-									"kind": "variable",
-									"docComment": "Action response schemas.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "schema_by_name",
-									"kind": "variable",
-									"docComment": "Map of schema names to schemas.",
-									"typeSignature": "Map<VocabName, z.ZodType>"
-								},
-								{
-									"name": "name_by_schema",
-									"kind": "variable",
-									"docComment": "Map of schemas to their names, for reverse lookup.\nZod schemas don't have a `name` property and we don't want to abuse `description`.",
-									"typeSignature": "Map<z.ZodType, VocabName>"
-								},
-								{
-									"name": "action_specs",
-									"kind": "variable",
-									"docComment": "Collection of all action specs.",
-									"typeSignature": "Array<ActionSpecUnion>"
-								},
-								{
-									"name": "request_response_action_specs",
-									"kind": "variable",
-									"docComment": "Collection of 'request_response' action specs.",
-									"typeSignature": "Array<RequestResponseActionSpec>"
-								},
-								{
-									"name": "remote_notification_action_specs",
-									"kind": "variable",
-									"docComment": "Collection of 'remote_notification' action specs.",
-									"typeSignature": "Array<RemoteNotificationActionSpec>"
-								},
-								{
-									"name": "local_call_action_specs",
-									"kind": "variable",
-									"docComment": "Collection of 'local_call' action specs.",
-									"typeSignature": "Array<LocalCallActionSpec>"
-								},
-								{
-									"name": "action_spec_by_name_map",
-									"kind": "variable",
-									"docComment": "Map of action spec names to action specs.",
-									"typeSignature": "Map<ActionMethod, ActionSpecUnion>"
-								},
-								{
-									"name": "add_schema",
-									"kind": "function",
-									"docComment": "Add a schema to the appropriate registries.",
-									"typeSignature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; ... 8 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }): void",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "VocabName"
-										},
-										{
-											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 7 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "register_many",
-									"kind": "function",
-									"docComment": "Register multiple schemas at once.",
-									"typeSignature": "(schemas: Record<string, any>): void",
-									"parameters": [
-										{
-											"name": "schemas",
-											"type": "Record<string, any>"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "lookup_schema_name",
-									"kind": "function",
-									"docComment": "Lookup a schema name, guaranteed to return a string, or throws.",
-									"typeSignature": "(schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): VocabName",
-									"parameters": [
-										{
-											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>"
-										}
-									],
-									"returnType": "VocabName"
-								},
-								{
-									"name": "get_action_spec",
-									"kind": "function",
-									"docComment": "Get an action specification by method name.",
-									"typeSignature": "(method: \"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
-									"parameters": [
-										{
-											"name": "method",
-											"type": "\"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\""
-										}
-									],
-									"returnType": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }..."
-								},
-								{
-									"name": "get_schema",
-									"kind": "function",
-									"docComment": "Get a schema by name.",
-									"typeSignature": "(name: VocabName): ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | undefined",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "VocabName"
-										}
-									],
-									"returnType": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | undefined"
-								},
-								{
-									"name": "schema_names",
-									"kind": "variable",
-									"docComment": "Get all schema names.",
-									"typeSignature": "VocabName[]",
-									"modifiers": ["getter"]
-								}
-							]
-						},
-						{
-							"name": "global_schema_registry",
-							"kind": "variable",
-							"docComment": "Global instance of the schema registry for convenience.",
-							"typeSignature": "SchemaRegistry",
-							"sourceLine": 165
-						}
-					],
-					"dependencies": ["action_metatypes.ts"]
 				},
 				{
 					"path": "scrollable.svelte.ts",
@@ -57629,52 +57526,22 @@
 					"path": "zod_helpers.ts",
 					"declarations": [
 						{
-							"name": "Any",
-							"kind": "type",
-							"typeSignature": "ZodAny",
-							"sourceLine": 5
-						},
-						{
-							"name": "HttpStatus",
-							"kind": "type",
-							"typeSignature": "ZodNumber",
-							"sourceLine": 8
-						},
-						{
-							"name": "TypeLiteral",
-							"kind": "type",
-							"typeSignature": "$ZodBranded<ZodString, \"TypeLiteral\", \"out\">",
-							"sourceLine": 11
-						},
-						{
 							"name": "PathWithTrailingSlash",
 							"kind": "type",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 16
+							"sourceLine": 6
 						},
 						{
 							"name": "PathWithoutTrailingSlash",
 							"kind": "type",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 19
+							"sourceLine": 9
 						},
 						{
 							"name": "PathWithLeadingSlash",
 							"kind": "type",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 22
-						},
-						{
-							"name": "PathWithoutLeadingSlash",
-							"kind": "type",
-							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 25
-						},
-						{
-							"name": "SvelteMapSchema",
-							"kind": "type",
-							"typeSignature": "ZodCustom<SvelteMap<unknown, unknown>, SvelteMap<unknown, unknown>>",
-							"sourceLine": 28
+							"sourceLine": 12
 						}
 					],
 					"dependents": ["constants.ts", "diskfile_types.ts"]
