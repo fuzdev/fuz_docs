@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type {Snippet} from 'svelte';
 	import type {SvelteHTMLElements} from 'svelte/elements';
-	import {from_hex} from '@fuzdev/fuz_util/hex.js';
-	import {format_bytes} from '@fuzdev/fuz_util/bytes.js';
+	import {from_hex} from '@fuzdev/fuz_util/hex.ts';
+	import {format_bytes} from '@fuzdev/fuz_util/bytes.ts';
 
 	type InputMode = 'text' | 'file' | 'hex' | 'base64';
 

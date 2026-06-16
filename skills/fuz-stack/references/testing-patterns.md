@@ -173,11 +173,11 @@ integration with that vendor.
 ### Async Rejection Testing
 
 For async functions that should reject, use `assert_rejects` from
-`@fuzdev/fuz_util/testing.js`. It places `assert.fail` outside the catch
+`@fuzdev/fuz_util/testing.ts`. It places `assert.fail` outside the catch
 block so the test's own assertion errors aren't accidentally caught:
 
 ```typescript
-import {assert_rejects} from '@fuzdev/fuz_util/testing.js';
+import {assert_rejects} from '@fuzdev/fuz_util/testing.ts';
 
 // Simple — just check the error pattern
 await assert_rejects(
@@ -356,13 +356,13 @@ WASM instance via module-level cache. Subsequent calls reset the schema
 
 ## Test Helpers
 
-### Shared Helpers (`@fuzdev/fuz_util/testing.js`)
+### Shared Helpers (`@fuzdev/fuz_util/testing.ts`)
 
-Cross-repo test assertions live in `@fuzdev/fuz_util/testing.js`. Depends
+Cross-repo test assertions live in `@fuzdev/fuz_util/testing.ts`. Depends
 only on vitest — safe for fuz_util's zero-runtime-deps constraint.
 
 ```typescript
-import {assert_rejects, create_mock_logger} from '@fuzdev/fuz_util/testing.js';
+import {assert_rejects, create_mock_logger} from '@fuzdev/fuz_util/testing.ts';
 
 // Async rejection — pattern is optional, returns Error
 const err = await assert_rejects(() => do_thing(), /expected pattern/);
@@ -903,7 +903,7 @@ the surface + live app.
 ### WebSocket Round-Trip Tests
 
 WebSocket JSON-RPC endpoints are tested in-process via
-`@fuzdev/fuz_app/testing/ws_round_trip.js` — no HTTP server, no Deno. The
+`@fuzdev/fuz_app/testing/ws_round_trip.ts` — no HTTP server, no Deno. The
 harness drives the real `register_action_ws` dispatcher and
 `BackendWebsocketTransport` against `MockWsClient` connections, so per-action
 auth, input validation, `ctx.notify`, and broadcast fan-out all run through
@@ -912,7 +912,7 @@ real code paths.
 Convention (used in zap, zzz):
 
 1. **All round-trip helpers live in fuz_app**
-   (`@fuzdev/fuz_app/testing/ws_round_trip.js`):
+   (`@fuzdev/fuz_app/testing/ws_round_trip.ts`):
    - `create_ws_test_harness({specs, handlers, ...})` → `{transport,
      connect}`. `connect(identity?)` is async, resolving after
      `on_socket_open` completes. Passes through `register_action_ws`
@@ -940,7 +940,7 @@ Convention (used in zap, zzz):
    setup** — not a re-implementation of the above. Repos with memoized
    per-worker state (pglite + schema + seed) can add one; zap and zzz
    have none, importing directly from
-   `@fuzdev/fuz_app/testing/ws_round_trip.js`.
+   `@fuzdev/fuz_app/testing/ws_round_trip.ts`.
 
 3. **Split test files by aspect** (see _Test File Naming_ above):
    - `ws.integration.dispatch.test.ts` — request/response, `ctx.notify`,

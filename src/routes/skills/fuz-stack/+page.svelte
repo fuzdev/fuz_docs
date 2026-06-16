@@ -3,7 +3,7 @@
 <script lang="ts">
 	import Mdz from '@fuzdev/mdz/Mdz.svelte';
 
-	import {skill_main} from './skill_data.js';
+	import {skill_main} from './skill_data.ts';
 </script>
 
 <Mdz content={skill_main.content} base="/skills/fuz-stack/" />

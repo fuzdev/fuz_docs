@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {resolve} from '$app/paths';
 
-	import {tools} from './tools_manifest.js';
+	import {tools} from './tools_manifest.ts';
 </script>
 
 <h1>Tools</h1>

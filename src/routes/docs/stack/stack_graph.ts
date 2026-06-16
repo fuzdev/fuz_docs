@@ -6,9 +6,9 @@ export type {
 	StackCategory,
 	StackLanguage,
 	StackEdgeKind,
-} from '$lib/stack_graph_types.js';
+} from '$lib/stack_graph_types.ts';
 
-import type {StackNode, StackEdge} from '$lib/stack_graph_types.js';
+import type {StackNode, StackEdge} from '$lib/stack_graph_types.ts';
 
 /** All public stack repos as positioned graph nodes, sorted by name. */
 export const stack_nodes: Array<StackNode> = [

@@ -1,6 +1,6 @@
 # Type Utilities
 
-TypeScript type helpers in `@fuzdev/fuz_util/types.js` — nominal typing,
+TypeScript type helpers in `@fuzdev/fuz_util/types.ts` — nominal typing,
 stricter standard utilities, and selective partial types.
 
 ## Nominal Typing

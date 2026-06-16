@@ -4,14 +4,14 @@ Shared utilities from `@fuzdev/fuz_util`.
 
 ## Result Type
 
-`@fuzdev/fuz_util/result.js` — `Result<TValue, TError>` discriminated union
+`@fuzdev/fuz_util/result.ts` — `Result<TValue, TError>` discriminated union
 for error handling without exceptions. Uses intersection:
 `({ok: true} & TValue) | ({ok: false} & TError)`, so properties go directly
 on the result object (not nested under `.value`/`.error` wrappers).
 
 ```typescript
-import type {Result} from '@fuzdev/fuz_util/result.js';
-import {unwrap} from '@fuzdev/fuz_util/result.js';
+import type {Result} from '@fuzdev/fuz_util/result.ts';
+import {unwrap} from '@fuzdev/fuz_util/result.ts';
 
 function parse_config(text: string): Result<{value: Config}, {message: string}> {
 	try {
@@ -66,10 +66,10 @@ opposite of `unwrap` returning just `.value`.
 
 ## Logger
 
-Hierarchical logging via `@fuzdev/fuz_util/log.js`:
+Hierarchical logging via `@fuzdev/fuz_util/log.ts`:
 
 ```typescript
-import {Logger} from '@fuzdev/fuz_util/log.js';
+import {Logger} from '@fuzdev/fuz_util/log.ts';
 
 const log = new Logger('my_module');
 log.info('starting');
@@ -155,11 +155,11 @@ Colors automatically disabled when `NO_COLOR` or `CLAUDECODE` env vars are set.
 
 ## Timings
 
-Performance measurement via `@fuzdev/fuz_util/timings.js`. Tracks multiple
+Performance measurement via `@fuzdev/fuz_util/timings.ts`. Tracks multiple
 named timing operations; used in Gro's `TaskContext` for task performance.
 
 ```typescript
-import {Timings} from '@fuzdev/fuz_util/timings.js';
+import {Timings} from '@fuzdev/fuz_util/timings.ts';
 
 const timings = new Timings();
 
@@ -192,7 +192,7 @@ stop_outer();
 
 ### Integration with Logger
 
-`print_timings(timings, log)` from `@fuzdev/fuz_util/print.js` outputs timing
+`print_timings(timings, log)` from `@fuzdev/fuz_util/print.ts` outputs timing
 data at debug level after task execution. `Timings` itself does not log.
 
 ### Stopwatch
@@ -202,7 +202,7 @@ function that tracks elapsed time from creation. Call with `true` to reset;
 default `decimals` is 2.
 
 ```typescript
-import {create_stopwatch, type Stopwatch} from '@fuzdev/fuz_util/timings.js';
+import {create_stopwatch, type Stopwatch} from '@fuzdev/fuz_util/timings.ts';
 
 const elapsed: Stopwatch = create_stopwatch();
 await work();
@@ -213,13 +213,13 @@ console.log(elapsed()); // ms since reset
 
 ## DAG Execution
 
-`@fuzdev/fuz_util/dag.js` — `run_dag()` executes dependency graphs
+`@fuzdev/fuz_util/dag.ts` — `run_dag()` executes dependency graphs
 concurrently. Nodes declare dependencies via `depends_on`; independent nodes
 run in parallel up to `max_concurrency`. Uses `AsyncSemaphore` for concurrency
 and `Deferred` for dependency signaling.
 
 ```typescript
-import {run_dag} from '@fuzdev/fuz_util/dag.js';
+import {run_dag} from '@fuzdev/fuz_util/dag.ts';
 
 const result = await run_dag({
 	nodes,
@@ -237,14 +237,14 @@ typing and strict utility types.
 
 ## DOM Helpers
 
-`@fuzdev/fuz_util/dom.js` — browser DOM utilities.
+`@fuzdev/fuz_util/dom.ts` — browser DOM utilities.
 
 ### `swallow`
 
 Claims an event by preventing its default action and stopping propagation:
 
 ```typescript
-import {swallow} from '@fuzdev/fuz_util/dom.js';
+import {swallow} from '@fuzdev/fuz_util/dom.ts';
 
 swallow(event);                  // preventDefault + stopImmediatePropagation
 swallow(event, false);           // preventDefault + stopPropagation (non-immediate)
@@ -261,7 +261,7 @@ claim should use the `capture` phase. See ./svelte-patterns.md
 Wraps an input event callback with value extraction and optional swallowing:
 
 ```typescript
-import {handle_target_value} from '@fuzdev/fuz_util/dom.js';
+import {handle_target_value} from '@fuzdev/fuz_util/dom.ts';
 
 // Swallows by default (preventDefault + stopImmediatePropagation)
 <input oninput={handle_target_value((value) => { name = value; })} />

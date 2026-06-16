@@ -1,8 +1,8 @@
 <script lang="ts">
 	import {onMount} from 'svelte';
 	import CopyToClipboard from '@fuzdev/fuz_ui/CopyToClipboard.svelte';
-	import {hash_sha1, hash_sha256, hash_sha384, hash_sha512} from '@fuzdev/fuz_util/hash.js';
-	import {to_hex} from '@fuzdev/fuz_util/hex.js';
+	import {hash_sha1, hash_sha256, hash_sha384, hash_sha512} from '@fuzdev/fuz_util/hash.ts';
+	import {to_hex} from '@fuzdev/fuz_util/hex.ts';
 
 	import DataInput from '$lib/DataInput.svelte';
 
@@ -22,10 +22,10 @@
 	});
 
 	// dynamically imported to avoid SSR — blake3_wasm is a top-level import in hash_blake3.ts
-	let blake3_mod: typeof import('@fuzdev/fuz_util/hash_blake3.js') | null = null;
+	let blake3_mod: typeof import('@fuzdev/fuz_util/hash_blake3.ts') | null = null;
 
 	onMount(async () => {
-		blake3_mod = await import('@fuzdev/fuz_util/hash_blake3.js');
+		blake3_mod = await import('@fuzdev/fuz_util/hash_blake3.ts');
 		await blake3_mod.blake3_ready;
 		blake3_loaded = true;
 	});

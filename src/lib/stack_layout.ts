@@ -1,4 +1,4 @@
-import type {StackEdge, StackEdgeKind, StackNode} from './stack_graph_types.js';
+import type {StackEdge, StackEdgeKind, StackNode} from './stack_graph_types.ts';
 
 /**
  * Pure, deterministic layout for the public `@fuzdev` stack dependency graph.

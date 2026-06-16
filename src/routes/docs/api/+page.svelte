@@ -2,11 +2,11 @@
 	import TomeContent from '@fuzdev/fuz_ui/TomeContent.svelte';
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.ts';
 	import {resolve} from '$app/paths';
 
-	import {stack} from '$routes/stack.js';
-	import {libraries_map} from '$routes/libraries.js';
+	import {stack} from '$routes/stack.ts';
+	import {libraries_map} from '$routes/libraries.ts';
 
 	const tome = tome_get_by_slug('api');
 

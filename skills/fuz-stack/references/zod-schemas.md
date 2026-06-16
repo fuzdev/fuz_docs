@@ -419,7 +419,7 @@ export const DeployArgs = z.strictObject({
 
 ### Sensitivity Metadata (fuz_app)
 
-`SchemaFieldMeta` (from `@fuzdev/fuz_app/schema_meta.js`) extends `.meta()` with
+`SchemaFieldMeta` (from `@fuzdev/fuz_app/schema_meta.ts`) extends `.meta()` with
 a `sensitivity` key:
 
 ```typescript

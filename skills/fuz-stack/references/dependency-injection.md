@@ -216,7 +216,7 @@ Focused deps interface for cache file I/O. Files: `deps.ts` + `deps_defaults.ts`
 
 ```typescript
 // deps.ts
-import type {FsError} from '@fuzdev/fuz_util/fs.js';
+import type {FsError} from '@fuzdev/fuz_util/fs.ts';
 
 export interface CacheDeps {
 	read_text: (options: {path: string}) => Promise<Result<{value: string}, FsError>>;
@@ -225,7 +225,7 @@ export interface CacheDeps {
 }
 
 // deps_defaults.ts — every fs throw routes through fs_classify_error
-import {fs_classify_error} from '@fuzdev/fuz_util/fs.js';
+import {fs_classify_error} from '@fuzdev/fuz_util/fs.ts';
 
 export const default_cache_deps: CacheDeps = {
 	read_text: async ({path}) => {
@@ -432,7 +432,7 @@ export interface GitOperations {
 ### L1 filesystem contract: uniform Result with typed `FsError`
 
 L1 domain filesystem wrappers (`CacheDeps`, `FsOperations`, mageguild's
-`FsOperations`) use a uniform shape from `@fuzdev/fuz_util/fs.js`: reads,
+`FsOperations`) use a uniform shape from `@fuzdev/fuz_util/fs.ts`: reads,
 writes, and queries all return `Result<{value: T}, FsError>` — no mixing
 `string | null` reads with `Result` writes. Implementations route thrown errors
 through `fs_classify_error(error)`, which maps Node `code`
@@ -491,7 +491,7 @@ const mock_git: GitOperations = {
 
 ```typescript
 // Good — small standalone interface:
-import type {EnvDeps} from '@fuzdev/fuz_app/runtime/deps.js';
+import type {EnvDeps} from '@fuzdev/fuz_app/runtime/deps.ts';
 
 // Good — intersection of exactly what's needed:
 deps: FsReadDeps & FsWriteDeps & CommandDeps

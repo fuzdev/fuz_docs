@@ -76,7 +76,7 @@ path (form 1) — `../other-repo/src/lib/foo.ts` or `~/dev/other-repo/...`. The
 backticked module form (form 2) is **same-repo only**: it resolves against the
 current repo's module index, so it can't name another package's module. For a
 published package's module, the import-specifier form is the right code
-reference (`@scope/pkg/foo.js`); a bare relative path is for navigation.
+reference (`@scope/pkg/foo.ts`); a bare relative path is for navigation.
 
 Two constraints follow:
 
@@ -93,6 +93,29 @@ Each file's relative paths assume the reader is in the file's parent directory.
 From `~/dev/CLAUDE.md`, project paths are `./project/`. From a deeply nested
 file, prefer a workspace-root-anchored path (`setup/scripts/foo.md`) over deep
 `../../../scripts/foo.md`.
+
+## 5. Import specifiers (code imports, not doc prose)
+
+The forms above govern paths *written in docs/prose*. Import specifiers in
+**source** follow the parallel rule — the real source extension, never the old
+`.js`-for-a-`.ts`-file form:
+
+- **Relative** (`./`, `../`) → `.ts` / `.svelte.ts`. Used throughout library
+  code (`src/lib`): `import {x} from './sibling.ts'`. The build rewrites these
+  to `.js` on the way to `dist`.
+- **Cross-package** `@fuzdev/<pkg>/sub.ts` → resolves via the target package's
+  `exports` `.js`/`.ts` mirror to its `dist`; never rewritten, needs no consumer
+  flag. (Non-mirror packages like `@fuzdev/blake3_wasm` keep `.js`.)
+- **SvelteKit aliases** `$lib/…` / `$routes/…` → kept **as aliases**, with the
+  `.ts` extension (`$lib/db/db.ts`), in **app code** (`src/routes`, `src/test`).
+  They're idiomatic there and resolve in dev/build via Vite — not shipped, so
+  they only need to resolve locally; don't relativize them. Library code
+  (`src/lib`) doesn't use the aliases — it imports relative.
+
+Left as-is: `.svelte` component imports (already the source extension) and
+virtual aliases (`$app/*`, `$env/*`). The rule covers type-position imports too
+— `import('$lib/db/db.ts').Db`, `typeof import('./mod.ts')`. The
+`survey_import_extensions` survey enforces this across the ecosystem.
 
 ## Web-rendered caveat
 

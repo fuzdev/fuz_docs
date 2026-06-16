@@ -62,9 +62,9 @@ of the import path, not hidden behind re-exports. No barrel/`index.ts`; package
 `exports` use wildcard patterns (`"./*.js"`) so every module is importable.
 
 ```typescript
-import {load_env} from '@fuzdev/fuz_app/env/load.js';
-import {resolve_env_vars} from '@fuzdev/fuz_app/env/resolve.js';
-import {create_app_backend} from '@fuzdev/fuz_app/server/app_backend.js';
+import {load_env} from '@fuzdev/fuz_app/env/load.ts';
+import {resolve_env_vars} from '@fuzdev/fuz_app/env/resolve.ts';
+import {create_app_backend} from '@fuzdev/fuz_app/server/app_backend.ts';
 ```
 
 ## Tests Mirror the Subdirectory Structure

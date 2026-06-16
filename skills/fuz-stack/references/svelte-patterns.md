@@ -326,7 +326,7 @@ for in-place mutations, `readonly $derived` for computed values). See
 
 ### Creating Context
 
-`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.js`. Two overloads:
+`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.ts`. Two overloads:
 without a fallback, `get()` throws if unset and `get_maybe()` returns `undefined`;
 with a fallback, `get()` uses it and the `set()` value is optional:
 
@@ -586,11 +586,11 @@ if (DEV) {
 
 ### `effect_with_count()`
 
-From `@fuzdev/fuz_ui/rune_helpers.svelte.js` — passes call count to the
+From `@fuzdev/fuz_ui/rune_helpers.svelte.ts` — passes call count to the
 effect, useful for skipping the initial run:
 
 ```typescript
-import {effect_with_count} from '@fuzdev/fuz_ui/rune_helpers.svelte.js';
+import {effect_with_count} from '@fuzdev/fuz_ui/rune_helpers.svelte.ts';
 
 // Skip the first run (count === 1), save on subsequent changes
 effect_with_count((count) => {
@@ -664,7 +664,7 @@ export const autofocus =
 
 ```svelte
 <script>
-	import {autofocus} from '@fuzdev/fuz_ui/autofocus.svelte.js';
+	import {autofocus} from '@fuzdev/fuz_ui/autofocus.svelte.ts';
 </script>
 
 <!-- Basic usage -->
@@ -693,7 +693,7 @@ export const intersect =
 
 ```svelte
 <script>
-	import {intersect} from '@fuzdev/fuz_ui/intersect.svelte.js';
+	import {intersect} from '@fuzdev/fuz_ui/intersect.svelte.ts';
 </script>
 
 <!-- Simple callback (receives IntersectState: intersecting, intersections, el, observer, disconnect) -->
@@ -890,7 +890,7 @@ const cleanup = on(element, 'wheel', onwheel, {passive: false});
 
 ### `swallow` — Claiming Events
 
-`swallow()` from `@fuzdev/fuz_util/dom.js` combines `preventDefault()` and
+`swallow()` from `@fuzdev/fuz_util/dom.ts` combines `preventDefault()` and
 `stopImmediatePropagation()` (or `stopPropagation()` with `immediate: false`).
 
 **Design principle: handling an event = claiming it.** Calling `preventDefault`
@@ -900,7 +900,7 @@ already says "I own this event's default behavior"; `swallow` extends that to
 them, use the `capture` phase explicitly — don't rely on implicit bubbling.
 
 ```typescript
-import {swallow} from '@fuzdev/fuz_util/dom.js';
+import {swallow} from '@fuzdev/fuz_util/dom.ts';
 
 // swallow(event, immediate?, preventDefault?)
 swallow(e); // preventDefault + stopImmediatePropagation (default)
@@ -915,7 +915,7 @@ preventing game input from seeing keystrokes in a chat input), use
 ```svelte
 <!-- Claiming an event in a handler -->
 <script lang="ts">
-	import {swallow} from '@fuzdev/fuz_util/dom.js';
+	import {swallow} from '@fuzdev/fuz_util/dom.ts';
 
 	const on_keydown = (e: KeyboardEvent): void => {
 		if (e.key === 'Enter') {
@@ -1086,7 +1086,7 @@ component sets it once:
 
 ```typescript
 // world_ui_state.svelte.ts
-import {create_context} from '@fuzdev/fuz_ui/context_helpers.js';
+import {create_context} from '@fuzdev/fuz_ui/context_helpers.ts';
 
 export const world_ui_context = create_context<WorldUiState>();
 

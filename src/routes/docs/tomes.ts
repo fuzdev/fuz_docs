@@ -1,10 +1,10 @@
-import type {Tome} from '@fuzdev/fuz_ui/tome.js';
-import ApiPage from '$routes/docs/api/+page.svelte';
-import FuzStackPage from '$routes/docs/fuz-stack/+page.svelte';
-import GrimoirePage from '$routes/docs/grimoire/+page.svelte';
-import IntroductionPage from '$routes/docs/introduction/+page.svelte';
-import LibraryPage from '$routes/docs/library/+page.svelte';
-import StackPage from '$routes/docs/stack/+page.svelte';
+import type {Tome} from '@fuzdev/fuz_ui/tome.ts';
+import ApiPage from './api/+page.svelte';
+import FuzStackPage from './fuz-stack/+page.svelte';
+import GrimoirePage from './grimoire/+page.svelte';
+import IntroductionPage from './introduction/+page.svelte';
+import LibraryPage from './library/+page.svelte';
+import StackPage from './stack/+page.svelte';
 
 export const tomes: Array<Tome> = [
 	{

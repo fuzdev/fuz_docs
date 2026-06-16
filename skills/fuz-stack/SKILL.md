@@ -168,7 +168,7 @@ All exported identifiers must have **unique names across all modules**:
   `*.ts` utilities, `*.svelte.ts` runes/reactive code, `*.gen.ts` generated files
 - **`src/test/`** — tests (NOT co-located), mirroring `lib/` structure
 - **`src/routes/`** — SvelteKit routes (if applicable)
-- **No barrels** — import every module by full path (`@fuzdev/fuz_app/env/load.js`);
+- **No barrels** — import every module by full path (`@fuzdev/fuz_app/env/load.ts`);
   package `exports` use wildcards so each module is importable
 - **Subdirectories** — group a domain into `lib/domain/` at 3+ related files;
   a lone file stays at `lib/` root. Tests mirror the subdir structure.
@@ -181,8 +181,14 @@ import/test-mirroring details.
 - **TypeScript**: Strict mode, explicit types
 - **Svelte**: Svelte 5 with runes API ($state, $derived, $effect)
 - **Formatting**: Prettier with tabs, 100 char width
-- **Extensions**: Always include `.js` in imports (even for `.ts` files):
-  `import {foo} from './bar.js'` (for a `bar.ts` file)
+- **Extensions**: Use the real source extension in imports — `.ts` /
+  `.svelte.ts` (not the old `.js`-for-a-`.ts`-file form): `import {foo} from
+  './bar.ts'`. Cross-package `@fuzdev/pkg/foo.ts` resolves via the package's
+  `exports` `.js`/`.ts` mirror; the build rewrites relative `.ts`→`.js` into
+  `dist`. `.svelte` component imports stay `.svelte`. Library code (`src/lib`)
+  imports relative; app code (`src/routes`, `src/test`) keeps the
+  `$lib`/`$routes` aliases with the `.ts` extension (`$lib/db/db.ts`), not
+  relativized. See ./references/path-references.md §5.
 - **Comments**:
   - JSDoc (`/** ... */`) = proper sentences with periods
   - Inline (`//`) = fragments, no capital or period
@@ -276,7 +282,7 @@ for computed values, `$effect` for side effects.
 ### Context Pattern
 
 Standardized via `create_context<T>()` from
-`@fuzdev/fuz_ui/context_helpers.js`. Common contexts: `theme_state_context`
+`@fuzdev/fuz_ui/context_helpers.ts`. Common contexts: `theme_state_context`
 (theme), `library_context` (package API metadata), `tome_context` (current
 doc page).
 
@@ -327,7 +333,7 @@ Forms by typography:
   `./`, `../`, or redundant `src/lib/` prefix (e.g. "`auth/account_schema.ts`");
   the backticks frame a module identifier, so traversal/prefix contradicts the framing
 - **Cross-repo references** — bare `../other-repo/...` for navigation, or the
-  `@scope/pkg/foo.js` import specifier for a module's identity; the backticked
+  `@scope/pkg/foo.ts` import specifier for a module's identity; the backticked
   src/lib form is same-repo only, and TSDoc must not point outside its own repo
 - **Code-shaped non-paths** — backticks for CLI commands (`gro check`),
   top-level files (`package.json`), and config identifiers (`~/.fuz/`)
@@ -452,7 +458,7 @@ conventions, consumption patterns, RuntimeDeps, and mock factories.
   handling without exceptions. Properties go directly on the result object via
   intersection: `({ok: true} & TValue) | ({ok: false} & TError)`.
 - **`to_error_message`** — `to_error_message(value, fallback?)` from
-  `@fuzdev/fuz_util/error.js` normalizes an unknown caught value to a string
+  `@fuzdev/fuz_util/error.ts` normalizes an unknown caught value to a string
   (`value.message` for `Error`, else `fallback ?? String(value)`)
 - **Logger** — hierarchical logging via `new Logger('module')`, controlled by
   `PUBLIC_LOG_LEVEL` env var

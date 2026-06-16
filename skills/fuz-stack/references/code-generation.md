@@ -34,7 +34,7 @@ A gen file exports a `gen` value — either a function or a config object:
 type Gen = GenFunction | GenConfig;
 ```
 
-Both importable from `@fuzdev/gro` or `@fuzdev/gro/gen.js`.
+Both importable from `@fuzdev/gro` or `@fuzdev/gro/gen.ts`.
 
 ### GenFunction (simple form)
 
@@ -277,7 +277,7 @@ There is no committed `library.gen.ts`, `library.json`, or `library.ts`.
 `fuz_blog` provides `blog.gen.ts` for Atom feeds, feed data, and slug routes:
 
 ```typescript
-export * from '@fuzdev/fuz_blog/blog.gen.js';
+export * from '@fuzdev/fuz_blog/blog.gen.ts';
 ```
 
 Consumer projects re-export the gen. Returns an array of `feed.xml` (at an
@@ -304,7 +304,7 @@ Gen files can generate TypeScript types from runtime registries. zzz reads
 action specs to produce typed collections, metatypes, and handler interfaces:
 
 ```typescript
-import type {Gen} from '@fuzdev/gro/gen.js';
+import type {Gen} from '@fuzdev/gro/gen.ts';
 
 import {all_action_specs} from './action_specs.js';
 
@@ -317,7 +317,7 @@ export const gen: Gen = ({origin_path}) => `
 ```
 
 zzz's real generators delegate the heavy lifting to fuz_app's
-`@fuzdev/fuz_app/actions/action_codegen.js` helpers (`compose_gen_file`,
+`@fuzdev/fuz_app/actions/action_codegen.ts` helpers (`compose_gen_file`,
 `generate_action_method_enums`, …) over `all_action_specs`.
 
 ### Multi-file route generation
@@ -326,7 +326,7 @@ A single gen file can generate entire route trees. `skill_docs.gen.ts`
 auto-discovers skills and generates manifests, data files, and `+page.svelte` routes:
 
 ```typescript
-import type {Gen} from '@fuzdev/gro/gen.js';
+import type {Gen} from '@fuzdev/gro/gen.ts';
 
 export const gen: Gen = ({origin_path}) => {
 	// ... discover skills, read markdown ...
@@ -343,14 +343,14 @@ export const gen: Gen = ({origin_path}) => {
 
 | Export                  | Type      | Source               | Purpose                                    |
 | ----------------------- | --------- | -------------------- | ------------------------------------------ |
-| `Gen`                   | Type      | `@fuzdev/gro/gen.js` | GenFunction or GenConfig                   |
-| `GenFunction`           | Type      | `@fuzdev/gro/gen.js` | `(ctx: GenContext) => RawGenResult`        |
-| `GenConfig`             | Interface | `@fuzdev/gro/gen.js` | generate + optional dependencies           |
-| `GenContext`            | Interface | `@fuzdev/gro/gen.js` | context passed to gen functions            |
-| `RawGenResult`          | Type      | `@fuzdev/gro/gen.js` | string, RawGenFile, null, or nested array  |
-| `RawGenFile`            | Interface | `@fuzdev/gro/gen.js` | output file with content, filename, format |
-| `GenDependencies`       | Type      | `@fuzdev/gro/gen.js` | 'all', config object, or resolver function |
-| `GenDependenciesConfig` | Interface | `@fuzdev/gro/gen.js` | patterns? (RegExp[]) and files? (PathId[]) |
+| `Gen`                   | Type      | `@fuzdev/gro/gen.ts` | GenFunction or GenConfig                   |
+| `GenFunction`           | Type      | `@fuzdev/gro/gen.ts` | `(ctx: GenContext) => RawGenResult`        |
+| `GenConfig`             | Interface | `@fuzdev/gro/gen.ts` | generate + optional dependencies           |
+| `GenContext`            | Interface | `@fuzdev/gro/gen.ts` | context passed to gen functions            |
+| `RawGenResult`          | Type      | `@fuzdev/gro/gen.ts` | string, RawGenFile, null, or nested array  |
+| `RawGenFile`            | Interface | `@fuzdev/gro/gen.ts` | output file with content, filename, format |
+| `GenDependencies`       | Type      | `@fuzdev/gro/gen.ts` | 'all', config object, or resolver function |
+| `GenDependenciesConfig` | Interface | `@fuzdev/gro/gen.ts` | patterns? (RegExp[]) and files? (PathId[]) |
 
 `Gen` and `GenContext` are also re-exported from `@fuzdev/gro` (the package
 index).

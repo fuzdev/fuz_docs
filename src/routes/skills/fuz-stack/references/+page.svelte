@@ -3,7 +3,7 @@
 <script lang="ts">
 	import {resolve} from '$app/paths';
 
-	import {skill_references} from '../skill_data.js';
+	import {skill_references} from '../skill_data.ts';
 </script>
 
 <h1>References</h1>

@@ -1,14 +1,14 @@
 import type {Gen} from '@fuzdev/gro';
-import {library_load_from_repo} from '@fuzdev/gro/library_load.js';
-import type {LibraryJson} from '@fuzdev/fuz_util/library_json.js';
-import {package_is_published} from '@fuzdev/fuz_util/package_helpers.js';
-import {pkg_json_from_package_json} from '@fuzdev/fuz_util/pkg_json.js';
+import {library_load_from_repo} from '@fuzdev/gro/library_load.ts';
+import type {LibraryJson} from '@fuzdev/fuz_util/library_json.ts';
+import {package_is_published} from '@fuzdev/fuz_util/package_helpers.ts';
+import {pkg_json_from_package_json} from '@fuzdev/fuz_util/pkg_json.ts';
 import {compactReplacer} from 'svelte-docinfo/declaration-helpers.js';
 import {readFileSync, existsSync} from 'node:fs';
 import {execSync} from 'node:child_process';
 import {join} from 'node:path';
 
-import {stack_repos} from '$lib/stack_repos.js';
+import {stack_repos} from '$lib/stack_repos.ts';
 
 const DEV_DIR = join(process.env.HOME!, 'dev');
 
@@ -213,8 +213,8 @@ ${banner}
 
 	const libraries_ts = `${banner}
 
-import type {LibraryJson} from '@fuzdev/fuz_util/library_json.js';
-import {Library} from '@fuzdev/fuz_ui/library.svelte.js';
+import type {LibraryJson} from '@fuzdev/fuz_util/library_json.ts';
+import {Library} from '@fuzdev/fuz_ui/library.svelte.ts';
 
 import json from './libraries.json' with {type: 'json'};
 

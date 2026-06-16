@@ -13,7 +13,7 @@
  * @module
  */
 
-import type {StackCategory, StackLanguage} from './stack_graph_types.js';
+import type {StackCategory, StackLanguage} from './stack_graph_types.ts';
 
 /** One public stack repo, identified by its workspace directory name. */
 export interface StackRepo {

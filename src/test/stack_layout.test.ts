@@ -1,7 +1,7 @@
 import {describe, test, assert} from 'vitest';
 
-import {compute_stack_layout, ROW_GAP, type StackNodeInput} from '$lib/stack_layout.js';
-import type {StackEdge} from '$lib/stack_graph_types.js';
+import {compute_stack_layout, ROW_GAP, type StackNodeInput} from '$lib/stack_layout.ts';
+import type {StackEdge} from '$lib/stack_graph_types.ts';
 
 const node = (name: string): StackNodeInput => ({
 	name,

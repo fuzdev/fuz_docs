@@ -143,7 +143,7 @@ the ecosystem default (SvelteKit and any other Vite project):
 
 ```typescript
 // vite.config.ts
-import {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.js';
+import {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';
 export default defineConfig({plugins: [vite_plugin_fuz_css()]});
 
 // src/routes/+layout.svelte (or main.ts)

@@ -1,7 +1,7 @@
 # Async Patterns
 
-Async concurrency utilities in `@fuzdev/fuz_util/async.js` and
-`@fuzdev/fuz_util/dag.js` — controlled concurrency for file I/O, network
+Async concurrency utilities in `@fuzdev/fuz_util/async.ts` and
+`@fuzdev/fuz_util/dag.ts` — controlled concurrency for file I/O, network
 requests, task execution, and DAG scheduling.
 
 ## AsyncStatus
@@ -186,13 +186,13 @@ Used by `run_dag()` to bound node execution concurrency.
 
 ## DAG Execution
 
-`run_dag()` in `@fuzdev/fuz_util/dag.js` executes dependency-graph nodes
+`run_dag()` in `@fuzdev/fuz_util/dag.ts` executes dependency-graph nodes
 concurrently. Nodes declare dependencies via `depends_on`; independent nodes
 run in parallel up to `max_concurrency`. Uses `AsyncSemaphore` for concurrency
 and `Deferred` for dependency signaling.
 
 ```typescript
-import {run_dag, type DagNode} from '@fuzdev/fuz_util/dag.js';
+import {run_dag, type DagNode} from '@fuzdev/fuz_util/dag.ts';
 
 interface BuildStep extends DagNode {
 	command: string;
@@ -214,7 +214,7 @@ if (!result.success) {
 
 ### DagNode interface
 
-`Sortable` is from `@fuzdev/fuz_util/sort.js` (topological sort validation).
+`Sortable` is from `@fuzdev/fuz_util/sort.ts` (topological sort validation).
 
 ```typescript
 interface DagNode extends Sortable {

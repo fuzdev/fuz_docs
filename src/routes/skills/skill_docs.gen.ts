@@ -1,4 +1,4 @@
-import type {Gen} from '@fuzdev/gro/gen.js';
+import type {Gen} from '@fuzdev/gro/gen.ts';
 import {readFileSync, readdirSync, existsSync} from 'node:fs';
 import {join, basename} from 'node:path';
 
@@ -152,7 +152,7 @@ ${banner}
 <script lang="ts">
 	import Mdz from '@fuzdev/mdz/Mdz.svelte';
 
-	import {skill_main} from './skill_data.js';
+	import {skill_main} from './skill_data.ts';
 </script>
 
 <Mdz content={skill_main.content} base="/skills/${skill_name}/" />
@@ -170,7 +170,7 @@ ${svelte_banner}
 <script lang="ts">
 	import {resolve} from '$app/paths';
 
-	import {skill_references} from '../skill_data.js';
+	import {skill_references} from '../skill_data.ts';
 </script>
 
 <h1>References</h1>
@@ -195,7 +195,7 @@ ${svelte_banner}
 <script lang="ts">
 	import Mdz from '@fuzdev/mdz/Mdz.svelte';
 
-	import {skill_references} from '../../skill_data.js';
+	import {skill_references} from '../../skill_data.ts';
 </script>
 
 <Mdz content={skill_references[${i}]!.content} base="/skills/${skill_name}/references/" />

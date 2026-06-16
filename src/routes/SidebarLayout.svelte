@@ -4,8 +4,8 @@
 	import type {Snippet} from 'svelte';
 	import Breadcrumb from '@fuzdev/fuz_ui/Breadcrumb.svelte';
 
-	import {skills} from './skills/skills_manifest.js';
-	import {tools} from './tools/tools_manifest.js';
+	import {skills} from './skills/skills_manifest.ts';
+	import {tools} from './tools/tools_manifest.ts';
 
 	const {children}: {children: Snippet} = $props();
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ApiIndex from '@fuzdev/fuz_ui/ApiIndex.svelte';
 	import ApiModule from '@fuzdev/fuz_ui/ApiModule.svelte';
-	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.ts';
 	import {resolve} from '$app/paths';
 
 	import {get_library} from '$routes/libraries.ts';

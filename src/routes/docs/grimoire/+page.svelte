@@ -5,7 +5,7 @@
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeLink from '@fuzdev/fuz_ui/TomeLink.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.js';
+	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.ts';
 
 	const tome = tome_get_by_slug('grimoire');
 </script>

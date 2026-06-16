@@ -173,7 +173,7 @@ Exit with non-zero code when the error is already logged. Primarily
 internal to `invoke_task.ts`:
 
 ```typescript
-import {SilentError} from '@fuzdev/gro/task.js';
+import {SilentError} from '@fuzdev/gro/task.ts';
 
 log.error('Detailed error information...');
 throw new SilentError();
@@ -256,5 +256,5 @@ sections can target different sub-tasks.
 | `Task`        | Interface | `@fuzdev/gro`         | Task definition (run, summary, Args)           |
 | `TaskContext` | Interface | `@fuzdev/gro`         | Context passed to task.run                     |
 | `TaskError`   | Class     | `@fuzdev/gro`         | Known failure (no stack trace)                 |
-| `SilentError` | Class     | `@fuzdev/gro/task.js` | Exit silently (error already logged)           |
-| `InvokeTask`  | Type      | `@fuzdev/gro/task.js` | `(task_name, args?, config?) => Promise<void>` |
+| `SilentError` | Class     | `@fuzdev/gro/task.ts` | Exit silently (error already logged)           |
+| `InvokeTask`  | Type      | `@fuzdev/gro/task.ts` | `(task_name, args?, config?) => Promise<void>` |
