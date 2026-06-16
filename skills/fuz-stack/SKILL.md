@@ -451,6 +451,9 @@ conventions, consumption patterns, RuntimeDeps, and mock factories.
 - **Result type** — `Result<TValue, TError>` discriminated union for error
   handling without exceptions. Properties go directly on the result object via
   intersection: `({ok: true} & TValue) | ({ok: false} & TError)`.
+- **`to_error_message`** — `to_error_message(value, fallback?)` from
+  `@fuzdev/fuz_util/error.js` normalizes an unknown caught value to a string
+  (`value.message` for `Error`, else `fallback ?? String(value)`)
 - **Logger** — hierarchical logging via `new Logger('module')`, controlled by
   `PUBLIC_LOG_LEVEL` env var
 - **Timings** — performance measurement via `timings.start('operation')`

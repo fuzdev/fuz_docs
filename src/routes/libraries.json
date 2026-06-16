@@ -2,7 +2,7 @@
 	"fuz_util": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.65.1",
+			"version": "0.65.2",
 			"description": "utility belt for JS",
 			"tagline": "ancient not extinct",
 			"glyph": "🦕",
@@ -2925,8 +2925,28 @@
 								}
 							],
 							"returnType": "void"
+						},
+						{
+							"name": "to_error_message",
+							"kind": "function",
+							"docComment": "Extract a human-readable message from an unknown thrown value. Returns\n`value.message` when `value` is an `Error`, otherwise `fallback`\n(defaulting to `String(value)`).",
+							"typeSignature": "(value: unknown, fallback?: string | undefined): string",
+							"sourceLine": 29,
+							"parameters": [
+								{
+									"name": "value",
+									"type": "unknown"
+								},
+								{
+									"name": "fallback",
+									"type": "string | undefined",
+									"optional": true
+								}
+							],
+							"returnType": "string"
 						}
-					]
+					],
+					"dependents": ["fs.ts", "process.ts", "svelte_preprocess_helpers.ts"]
 				},
 				{
 					"path": "fact_hash.ts",
@@ -3448,21 +3468,21 @@
 							"kind": "type",
 							"docComment": "Discriminated filesystem error kinds.\n\nThe shared error shape for `Result<{value: T}, FsError>`-returning filesystem\ndeps across the ecosystem. Callers branch on `kind` instead of regex-matching\n`message`. The set is deliberately small — add kinds only when a caller\nneeds to distinguish them.",
 							"typeSignature": "FsError",
-							"sourceLine": 18
+							"sourceLine": 19
 						},
 						{
 							"name": "FsJsonError",
 							"kind": "type",
 							"docComment": "Extends `FsError` with `invalid_json` for `read_json`-style ops where the\nfile exists but parse fails. Callers can distinguish missing from corrupt\n(e.g. self-healing config loads) without regex-matching `message`.",
 							"typeSignature": "FsJsonError",
-							"sourceLine": 29
+							"sourceLine": 30
 						},
 						{
 							"name": "fs_classify_error",
 							"kind": "function",
 							"docComment": "Classifies a thrown filesystem error into a discriminated `FsError`.\n\nReads the Node `code` property (`ENOENT`/`EACCES`/`EPERM`/`EEXIST`) — Deno\nsurfaces the same codes when throwing from `node:fs/promises`. Unknown codes\nfall through to `io_error`.",
 							"typeSignature": "(error: unknown): FsError",
-							"sourceLine": 38,
+							"sourceLine": 39,
 							"parameters": [
 								{
 									"name": "error",
@@ -3476,7 +3496,7 @@
 							"kind": "function",
 							"docComment": "Checks if a file or directory exists.",
 							"typeSignature": "(path: string): Promise<boolean>",
-							"sourceLine": 57,
+							"sourceLine": 58,
 							"parameters": [
 								{
 									"name": "path",
@@ -3490,7 +3510,7 @@
 							"kind": "function",
 							"docComment": "Empties a directory, recursively by default. If `should_remove` is provided, only entries where it returns `true` are removed.",
 							"typeSignature": "(dir: string, should_remove?: ((name: string) => boolean) | undefined, options?: RmOptions | undefined): Promise<void>",
-							"sourceLine": 69,
+							"sourceLine": 70,
 							"parameters": [
 								{
 									"name": "dir",
@@ -3513,7 +3533,7 @@
 							"name": "FsSearchOptions",
 							"kind": "interface",
 							"typeSignature": "FsSearchOptions",
-							"sourceLine": 79,
+							"sourceLine": 80,
 							"members": [
 								{
 									"name": "filter",
@@ -3556,7 +3576,7 @@
 							"name": "fs_search",
 							"kind": "function",
 							"typeSignature": "(dir: string, options?: FsSearchOptions): Promise<ResolvedPath[]>",
-							"sourceLine": 102,
+							"sourceLine": 103,
 							"parameters": [
 								{
 									"name": "dir",
@@ -3571,7 +3591,7 @@
 							"returnType": "Promise<ResolvedPath[]>"
 						}
 					],
-					"dependencies": ["array.ts", "object.ts", "path.ts", "string.ts"],
+					"dependencies": ["array.ts", "error.ts", "object.ts", "path.ts", "string.ts"],
 					"dependents": ["benchmark_baseline.ts", "git.ts"]
 				},
 				{
@@ -6401,7 +6421,7 @@
 							"kind": "interface",
 							"docComment": "Spawn failed before the process could run.\n\nNote: `child` is still present because `node:child_process.spawn` returns a\n`ChildProcess` synchronously and then emits `'error'` asynchronously — the\nhandle exists but the OS process never started.",
 							"typeSignature": "SpawnResultError",
-							"sourceLine": 27,
+							"sourceLine": 28,
 							"examples": ["ENOENT when command not found"],
 							"members": [
 								{
@@ -6431,7 +6451,7 @@
 							"kind": "interface",
 							"docComment": "Process ran and exited with a code.\n`ok` is true when `code` is 0.",
 							"typeSignature": "SpawnResultExited",
-							"sourceLine": 38,
+							"sourceLine": 39,
 							"members": [
 								{
 									"name": "kind",
@@ -6460,7 +6480,7 @@
 							"kind": "interface",
 							"docComment": "Process was terminated by a signal (e.g., SIGTERM, SIGKILL).",
 							"typeSignature": "SpawnResultSignaled",
-							"sourceLine": 48,
+							"sourceLine": 49,
 							"members": [
 								{
 									"name": "kind",
@@ -6489,14 +6509,14 @@
 							"kind": "type",
 							"docComment": "Discriminated union representing all possible spawn outcomes.\nNarrow via `result.kind === 'error' | 'exited' | 'signaled'`.",
 							"typeSignature": "SpawnResult",
-							"sourceLine": 59
+							"sourceLine": 60
 						},
 						{
 							"name": "SpawnProcessOptions",
 							"kind": "interface",
 							"docComment": "Options for spawning processes, extending Node's `SpawnOptions`.",
 							"typeSignature": "SpawnProcessOptions",
-							"sourceLine": 68,
+							"sourceLine": 69,
 							"extends": ["SpawnOptions"],
 							"members": [
 								{
@@ -6527,7 +6547,7 @@
 							"kind": "interface",
 							"docComment": "Options for killing processes.",
 							"typeSignature": "DespawnOptions",
-							"sourceLine": 88,
+							"sourceLine": 89,
 							"members": [
 								{
 									"name": "signal",
@@ -6551,14 +6571,14 @@
 							"kind": "type",
 							"docComment": "Result of spawning a detached process.",
 							"typeSignature": "SpawnDetachedResult",
-							"sourceLine": 104
+							"sourceLine": 105
 						},
 						{
 							"name": "SpawnedProcess",
 							"kind": "interface",
 							"docComment": "Handle for a spawned process with access to the child and completion promise.",
 							"typeSignature": "SpawnedProcess",
-							"sourceLine": 115,
+							"sourceLine": 116,
 							"members": [
 								{
 									"name": "child",
@@ -6579,7 +6599,7 @@
 							"kind": "interface",
 							"docComment": "Result of `spawn_out` with captured output streams.",
 							"typeSignature": "SpawnedOut",
-							"sourceLine": 125,
+							"sourceLine": 126,
 							"members": [
 								{
 									"name": "result",
@@ -6604,7 +6624,7 @@
 							"name": "ProcessRegistry",
 							"kind": "class",
 							"docComment": "Manages a collection of spawned processes for lifecycle tracking and cleanup.\n\nThe default instance `process_registry_default` is used by module-level functions.\nCreate separate instances for isolated process groups or testing.",
-							"sourceLine": 223,
+							"sourceLine": 224,
 							"examples": [
 								"```ts\n// Use default registry via module functions\nconst result = await spawn('echo', ['hello']);\n\n// Or create isolated registry for testing\nconst registry = new ProcessRegistry();\nconst {child, closed} = registry.spawn('node', ['server.js']);\nawait registry.despawn_all();\n```"
 							],
@@ -6751,14 +6771,14 @@
 							"kind": "variable",
 							"docComment": "Default process registry used by module-level spawn functions.\nFor testing or isolated process groups, create a new `ProcessRegistry` instance.",
 							"typeSignature": "ProcessRegistry",
-							"sourceLine": 454
+							"sourceLine": 455
 						},
 						{
 							"name": "spawn_process",
 							"kind": "function",
 							"docComment": "Spawns a process with graceful shutdown behavior.\nReturns a handle with access to the `child` process and `closed` promise.",
 							"typeSignature": "(command: string, args?: readonly string[], options?: SpawnProcessOptions | undefined): SpawnedProcess",
-							"sourceLine": 472,
+							"sourceLine": 473,
 							"examples": [
 								"```ts\nconst {child, closed} = spawn_process('node', ['server.js']);\n// Later...\nchild.kill();\nconst result = await closed;\n```"
 							],
@@ -6785,7 +6805,7 @@
 							"kind": "function",
 							"docComment": "Spawns a process and returns a promise that resolves when it exits.\nUse this for commands that complete (not long-running processes).",
 							"typeSignature": "(command: string, args?: readonly string[], options?: SpawnProcessOptions | undefined): Promise<SpawnResult>",
-							"sourceLine": 488,
+							"sourceLine": 489,
 							"examples": [
 								"```ts\nconst result = await spawn('npm', ['install']);\nif (!result.ok) console.error('Install failed');\n```"
 							],
@@ -6812,7 +6832,7 @@
 							"kind": "function",
 							"docComment": "Spawns a process and captures stdout/stderr as strings.",
 							"typeSignature": "(command: string, args?: readonly string[], options?: SpawnProcessOptions | undefined): Promise<SpawnedOut>",
-							"sourceLine": 503,
+							"sourceLine": 504,
 							"examples": [
 								"```ts\nconst {result, stdout} = await spawn_out('git', ['status', '--porcelain']);\nif (result.ok && stdout) console.log(stdout);\n```"
 							],
@@ -6839,7 +6859,7 @@
 							"kind": "function",
 							"docComment": "Kills a child process and returns the result.",
 							"typeSignature": "(child: ChildProcess, options?: DespawnOptions | undefined): Promise<SpawnResult>",
-							"sourceLine": 518,
+							"sourceLine": 519,
 							"examples": [
 								"```ts\nconst result = await despawn(child, {timeout_ms: 5000});\n// If process ignores SIGTERM, SIGKILL sent after 5s\n```"
 							],
@@ -6861,7 +6881,7 @@
 							"kind": "function",
 							"docComment": "Kills all processes in the default registry.",
 							"typeSignature": "(options?: DespawnOptions | undefined): Promise<SpawnResult[]>",
-							"sourceLine": 524,
+							"sourceLine": 525,
 							"parameters": [
 								{
 									"name": "options",
@@ -6876,7 +6896,7 @@
 							"kind": "function",
 							"docComment": "Attaches an `uncaughtException` handler to the default registry.",
 							"typeSignature": "(options?: { to_error_label?: ((err: Error, origin: UncaughtExceptionOrigin) => string | null) | undefined; map_error_text?: ((err: Error, origin: UncaughtExceptionOrigin) => string | null) | undefined; handle_error?: ((err: Error, origin: UncaughtExceptionOrigin) => void) | undefined; graceful_timeout_ms?: number | ... 1 more ... | undefined; } | undefined): () => void",
-							"sourceLine": 532,
+							"sourceLine": 533,
 							"seeAlso": ["`ProcessRegistry.attach_error_handler`"],
 							"parameters": [
 								{
@@ -6892,7 +6912,7 @@
 							"kind": "function",
 							"docComment": "Spawns a detached process that continues after parent exits.\n\nUnlike other spawn functions, this is NOT tracked in any `ProcessRegistry`.\nThe spawned process is meant to outlive the parent (e.g., daemon processes).",
 							"typeSignature": "(command: string, args?: readonly string[], options?: SpawnOptions | undefined): SpawnDetachedResult",
-							"sourceLine": 560,
+							"sourceLine": 561,
 							"examples": [
 								"```ts\n// Simple detached process\nconst result = spawn_detached('node', ['daemon.js'], {cwd: '/app'});\n\n// With log file (caller handles file opening)\nimport {openSync, closeSync} from 'node:fs';\nconst log_fd = openSync('/var/log/daemon.log', 'a');\nconst result = spawn_detached('node', ['daemon.js'], {\n  cwd: '/app',\n  stdio: ['ignore', log_fd, log_fd],\n});\ncloseSync(log_fd);\n```"
 							],
@@ -6921,7 +6941,7 @@
 							"kind": "function",
 							"docComment": "Formats a child process for display.",
 							"typeSignature": "(child: ChildProcess): string",
-							"sourceLine": 600,
+							"sourceLine": 601,
 							"examples": ["```ts\n`pid(1234) <- node server.js`\n```"],
 							"parameters": [
 								{
@@ -6936,7 +6956,7 @@
 							"kind": "function",
 							"docComment": "Formats a spawn result for display.\nReturns `'ok'` for success, or the error/signal/code for failures.",
 							"typeSignature": "(result: SpawnResult): string",
-							"sourceLine": 607,
+							"sourceLine": 608,
 							"parameters": [
 								{
 									"name": "result",
@@ -6950,7 +6970,7 @@
 							"kind": "function",
 							"docComment": "Formats a spawn result for use in error messages.",
 							"typeSignature": "(result: SpawnResult): string",
-							"sourceLine": 622,
+							"sourceLine": 623,
 							"parameters": [
 								{
 									"name": "result",
@@ -6964,7 +6984,7 @@
 							"kind": "interface",
 							"docComment": "Handle for a process that can be restarted.\nExposes `closed` promise for observing exits and implementing restart policies.",
 							"typeSignature": "RestartableProcess",
-							"sourceLine": 641,
+							"sourceLine": 642,
 							"members": [
 								{
 									"name": "restart",
@@ -7016,7 +7036,7 @@
 							"kind": "function",
 							"docComment": "Spawns a process that can be restarted.\nHandles concurrent restart calls gracefully.\n\nNote: The `signal` and `timeout_ms` options are reapplied on each restart.\nIf the AbortSignal is already aborted when `restart()` is called, the new\nprocess will be killed immediately.",
 							"typeSignature": "(command: string, args?: readonly string[], options?: SpawnProcessOptions | undefined): RestartableProcess",
-							"sourceLine": 710,
+							"sourceLine": 711,
 							"examples": [
 								"Simple restart on crash\n```ts\nconst rp = spawn_restartable_process('node', ['server.js']);\n\nwhile (rp.active) {\nconst result = await rp.closed;\nif (result.ok) break; // Clean exit\nawait rp.restart();\n}\n```",
 								"Restart with backoff\n```ts\nconst rp = spawn_restartable_process('node', ['server.js']);\nlet failures = 0;\n\nwhile (rp.active) {\nconst result = await rp.closed;\nif (result.ok || ++failures > 5) break;\nawait new Promise((r) => setTimeout(r, 1000 * failures));\nawait rp.restart();\n}\n```"
@@ -7044,7 +7064,7 @@
 							"kind": "function",
 							"docComment": "Checks if a process with the given PID is running.\nUses signal 0 which checks existence without sending a signal.",
 							"typeSignature": "(pid: number): boolean",
-							"sourceLine": 813,
+							"sourceLine": 814,
 							"parameters": [
 								{
 									"name": "pid",
@@ -7056,7 +7076,7 @@
 							"returnDescription": "`true` if the process exists (even without permission to signal it),\n`false` if the process doesn't exist or if pid is invalid (non-positive, non-integer, NaN, Infinity)"
 						}
 					],
-					"dependencies": ["function.ts", "log.ts", "print.ts"],
+					"dependencies": ["error.ts", "function.ts", "log.ts", "print.ts"],
 					"dependents": ["git.ts"]
 				},
 				{
@@ -8359,7 +8379,7 @@
 							"kind": "interface",
 							"docComment": "Import metadata for a single import specifier.",
 							"typeSignature": "PreprocessImportInfo",
-							"sourceLine": 26,
+							"sourceLine": 28,
 							"members": [
 								{
 									"name": "path",
@@ -8380,7 +8400,7 @@
 							"kind": "interface",
 							"docComment": "Information about a resolved component import.",
 							"typeSignature": "ResolvedComponentImport",
-							"sourceLine": 34,
+							"sourceLine": 36,
 							"members": [
 								{
 									"name": "import_node",
@@ -8401,7 +8421,7 @@
 							"kind": "function",
 							"docComment": "Finds an attribute by name on a component AST node.\n\nIterates the node's `attributes` array and returns the first `Attribute`\nnode whose `name` matches. Skips `SpreadAttribute`, directive, and other node types.",
 							"typeSignature": "(node: Component, name: string): Attribute | undefined",
-							"sourceLine": 49,
+							"sourceLine": 51,
 							"parameters": [
 								{
 									"name": "node",
@@ -8420,7 +8440,7 @@
 							"kind": "function",
 							"docComment": "Recursively evaluates an expression AST node to a static string value.\n\nHandles string `Literal`, `TemplateLiteral` (including interpolations when all\nexpressions resolve), `BinaryExpression` with `+`, and `Identifier` lookup\nvia an optional bindings map built by `build_static_bindings`.\nReturns `null` for dynamic expressions, non-string literals, or unsupported node types.",
 							"typeSignature": "(expr: Expression, bindings?: ReadonlyMap<string, string> | undefined): string | null",
-							"sourceLine": 70,
+							"sourceLine": 72,
 							"parameters": [
 								{
 									"name": "expr",
@@ -8442,7 +8462,7 @@
 							"kind": "function",
 							"docComment": "Extracts a static string value from a Svelte attribute value AST node.\n\nHandles three forms:\n- Boolean `true` (bare attribute like `inline`) -- returns `null`.\n- Array with a single `Text` node (quoted attribute like `content=\"text\"`) --\n  returns the text data.\n- `ExpressionTag` (expression like `content={'text'}`) -- delegates to `evaluate_static_expr`.\n\nReturns `null` for null literals, mixed arrays, dynamic expressions, and non-string values.",
 							"typeSignature": "(value: true | ExpressionTag | (ExpressionTag | Text)[], bindings?: ReadonlyMap<string, string> | undefined): string | null",
-							"sourceLine": 121,
+							"sourceLine": 123,
 							"parameters": [
 								{
 									"name": "value",
@@ -8464,7 +8484,7 @@
 							"kind": "interface",
 							"docComment": "A single branch in a conditional chain extracted from nested ternary expressions.",
 							"typeSignature": "ConditionalChainBranch",
-							"sourceLine": 145,
+							"sourceLine": 147,
 							"members": [
 								{
 									"name": "test_source",
@@ -8485,7 +8505,7 @@
 							"kind": "function",
 							"docComment": "Extracts a chain of conditional expressions where all leaf values are static strings.\n\nHandles nested ternaries like `a ? 'x' : b ? 'y' : 'z'` by iteratively walking\nthe right-recursive `ConditionalExpression` chain. At each level, evaluates the\nconsequent via `evaluate_static_expr` and continues into the alternate if it is\nanother `ConditionalExpression`. The final alternate is the else branch.\n\nReturns `null` if the attribute value is not an `ExpressionTag` containing a\n`ConditionalExpression`, if any leaf fails to resolve to a static string, or\nif the chain exceeds 10 branches (safety limit).\n\nA 2-branch result covers the simple ternary case (`a ? 'x' : 'y'`).",
 							"typeSignature": "(value: true | ExpressionTag | (ExpressionTag | Text)[], source: string, bindings: ReadonlyMap<string, string>): ConditionalChainBranch[] | null",
-							"sourceLine": 171,
+							"sourceLine": 173,
 							"parameters": [
 								{
 									"name": "value",
@@ -8511,7 +8531,7 @@
 							"kind": "function",
 							"docComment": "Builds a map of statically resolvable `const` bindings from a Svelte AST.\n\nScans top-level `const` variable declarations in both instance and module scripts.\nFor each declarator with a plain `Identifier` pattern and a statically evaluable\ninitializer, adds the binding to the map. Processes declarations in source order\nso that chained references resolve: `const a = 'x'; const b = a;` maps `b` to `'x'`.\n\nSkips destructuring patterns, `let`/`var` declarations, and declarations\nwhose initializers reference dynamic values.",
 							"typeSignature": "(ast: Root): Map<string, string>",
-							"sourceLine": 227,
+							"sourceLine": 229,
 							"parameters": [
 								{
 									"name": "ast",
@@ -8527,7 +8547,7 @@
 							"kind": "function",
 							"docComment": "Resolves local names that import from specified source paths.\n\nScans `ImportDeclaration` nodes in both the instance and module scripts.\nHandles default, named, and aliased imports. Skips namespace imports\nand `import type` declarations (both whole-declaration and per-specifier).\nReturns import node references alongside names to support import removal.",
 							"typeSignature": "(ast: Root, component_imports: string[]): Map<string, ResolvedComponentImport>",
-							"sourceLine": 258,
+							"sourceLine": 260,
 							"parameters": [
 								{
 									"name": "ast",
@@ -8548,7 +8568,7 @@
 							"kind": "function",
 							"docComment": "Finds the position to insert new import statements within a script block.\n\nReturns the end position of the last `ImportDeclaration`, or the start\nof the script body content if no imports exist.",
 							"typeSignature": "(script: Script): number",
-							"sourceLine": 288,
+							"sourceLine": 290,
 							"parameters": [
 								{
 									"name": "script",
@@ -8562,7 +8582,7 @@
 							"kind": "function",
 							"docComment": "Generates indented import statement lines from an import map.\n\nDefault imports produce `import Name from 'path';` lines.\nNamed imports are grouped by path into `import {a, b} from 'path';` lines.",
 							"typeSignature": "(imports: Map<string, PreprocessImportInfo>, indent?: string): string",
-							"sourceLine": 312,
+							"sourceLine": 314,
 							"parameters": [
 								{
 									"name": "imports",
@@ -8584,7 +8604,7 @@
 							"kind": "function",
 							"docComment": "Checks if an identifier with the given name appears anywhere in an AST subtree.\n\nRecursively walks all object and array properties of the tree, matching\nESTree `Identifier` nodes (`{type: 'Identifier', name}`). Nodes in the\n`skip` set are excluded from traversal — used to skip `ImportDeclaration`\nnodes so the import's own specifier identifier doesn't false-positive.\n\nSkips `Identifier` nodes in non-reference positions defined by\n`NON_REFERENCE_FIELDS` — for example, `obj.Mdz` (non-computed member property),\n`{ Mdz: value }` (non-computed object key), and statement labels.\n\nSafe for Svelte template ASTs: `Component.name` is a plain string property\n(not an `Identifier` node), so `<Mdz>` tags do not produce false matches.",
 							"typeSignature": "(node: unknown, name: string, skip?: Set<unknown> | undefined): boolean",
-							"sourceLine": 386,
+							"sourceLine": 388,
 							"parameters": [
 								{
 									"name": "node",
@@ -8611,7 +8631,7 @@
 							"kind": "function",
 							"docComment": "Escapes text for safe embedding in Svelte template markup.\n\nUses a single-pass regex replacement to avoid corruption that occurs with sequential\n`.replace()` calls (where the second replace matches characters introduced by the first).\n\nEscapes four characters:\n- `{` → `{'{'}` and `}` → `{'}'}` — prevents Svelte expression interpretation\n- `<` → `&lt;` — prevents HTML/Svelte tag interpretation\n- `&` → `&amp;` — prevents HTML entity interpretation\n\nThe `&` escaping is necessary because runtime `MdzNodeView.svelte` renders text\nwith `{node.content}` (a Svelte expression), which auto-escapes `&` to `&amp;`.\nThe preprocessor emits raw template text where `&` is NOT auto-escaped, so\nmanual escaping is required to match the runtime behavior.",
 							"typeSignature": "(text: string): string",
-							"sourceLine": 424,
+							"sourceLine": 426,
 							"parameters": [
 								{
 									"name": "text",
@@ -8625,7 +8645,7 @@
 							"kind": "function",
 							"docComment": "Removes a single-declarator `VariableDeclaration` from source using MagicString.\n\nConsumes leading whitespace (tabs/spaces) and trailing newline to avoid leaving\nblank lines. Only safe for single-declarator statements (`const x = 'val';`);\ncallers must verify `node.declarations.length === 1` before calling.",
 							"typeSignature": "(s: { remove: (start: number, end: number) => unknown; }, declaration_node: VariableDeclaration & { start: number; end: number; }, source: string): void",
-							"sourceLine": 450,
+							"sourceLine": 452,
 							"mutates": {
 								"s": "removes the declaration's character range"
 							},
@@ -8651,7 +8671,7 @@
 							"kind": "function",
 							"docComment": "Removes an `ImportDeclaration` from source using MagicString.\n\nConsumes leading whitespace (tabs/spaces) and trailing newline to avoid leaving\nblank lines.",
 							"typeSignature": "(s: { remove: (start: number, end: number) => unknown; }, import_node: ImportDeclaration & { start: number; end: number; }, source: string): void",
-							"sourceLine": 467,
+							"sourceLine": 469,
 							"mutates": {
 								"s": "removes the declaration's character range"
 							},
@@ -8677,7 +8697,7 @@
 							"kind": "function",
 							"docComment": "Removes a specifier from a multi-specifier import declaration by\nreconstructing the statement without the removed specifier.\n\nOverwrites the entire declaration range to avoid character-level comma surgery.\n\nHandles:\n- `import Mdz, {other} from '...'` → `import {other} from '...'`\n- `import {default as Mdz, other} from '...'` → `import {other} from '...'`\n- `import {Mdz, other} from '...'` → `import {other} from '...'`",
 							"typeSignature": "(s: { overwrite: (start: number, end: number, content: string) => unknown; }, node: ImportDeclaration & { start: number; end: number; }, specifier_to_remove: ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier, source: string, additional_lines?: string): void",
-							"sourceLine": 520,
+							"sourceLine": 522,
 							"mutates": {
 								"s": "overwrites the import declaration's character range"
 							},
@@ -8712,7 +8732,7 @@
 							"kind": "function",
 							"docComment": "Handles errors during Svelte preprocessing with configurable behavior.",
 							"typeSignature": "(error: unknown, prefix: string, filename: string | undefined, on_error: \"log\" | \"throw\"): void",
-							"sourceLine": 582,
+							"sourceLine": 584,
 							"throws": [
 								{
 									"type": "Error",
@@ -8742,7 +8762,8 @@
 							"returnType": "void"
 						}
 					],
-					"moduleComment": "Shared helper functions for Svelte preprocessors.\n\nProvides AST utilities for detecting static content, resolving imports,\nmanaging import statements, and escaping strings for Svelte templates.\nUsed by `svelte_preprocess_mdz` in fuz_ui, `svelte_preprocess_fuz_code`\nin fuz_code, and potentially other Svelte preprocessors.\n\nUses `import type` from `svelte/compiler` for AST types only — no runtime\nSvelte dependency. Consumers must have `svelte` installed for type resolution."
+					"moduleComment": "Shared helper functions for Svelte preprocessors.\n\nProvides AST utilities for detecting static content, resolving imports,\nmanaging import statements, and escaping strings for Svelte templates.\nUsed by `svelte_preprocess_mdz` in fuz_ui, `svelte_preprocess_fuz_code`\nin fuz_code, and potentially other Svelte preprocessors.\n\nUses `import type` from `svelte/compiler` for AST types only — no runtime\nSvelte dependency. Consumers must have `svelte` installed for type resolution.",
+					"dependencies": ["error.ts"]
 				},
 				{
 					"path": "testing.ts",
@@ -10450,34 +10471,34 @@
 							"name": "BUILD_CACHE_METADATA_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"build.json\"",
-							"sourceLine": 15
+							"sourceLine": 16
 						},
 						{
 							"name": "BUILD_CACHE_VERSION",
 							"kind": "variable",
 							"typeSignature": "\"1\"",
-							"sourceLine": 16
+							"sourceLine": 17
 						},
 						{
 							"name": "BuildOutputEntry",
 							"kind": "type",
 							"docComment": "Metadata about a single build output file.\nIncludes cryptographic hash for validation plus filesystem stats for debugging and optimization.",
 							"typeSignature": "ZodObject<{ path: ZodString; hash: ZodString; size: ZodNumber; mtime: ZodNumber; ctime: ZodNumber; mode: ZodNumber; }, $strict>",
-							"sourceLine": 22
+							"sourceLine": 23
 						},
 						{
 							"name": "BuildCacheMetadata",
 							"kind": "type",
 							"docComment": "Metadata stored in .gro/ directory to track build cache validity.\nSchema validates structure at load time to catch corrupted cache files.",
 							"typeSignature": "ZodObject<{ version: ZodString; git_commit: ZodNullable<ZodString>; build_cache_config_hash: ZodString; timestamp: ZodString; outputs: ZodArray<...>; }, $strict>",
-							"sourceLine": 40
+							"sourceLine": 41
 						},
 						{
 							"name": "compute_build_cache_key",
 							"kind": "function",
 							"docComment": "Computes the cache key components for a build.\nThis determines whether a cached build can be reused.",
 							"typeSignature": "(config: GroConfig, log: Logger, git_commit?: string | null | undefined): Promise<{ git_commit: string | null; build_cache_config_hash: string; }>",
-							"sourceLine": 61,
+							"sourceLine": 62,
 							"parameters": [
 								{
 									"name": "config",
@@ -10503,7 +10524,7 @@
 							"kind": "function",
 							"docComment": "Loads build cache metadata from .gro/ directory.\nInvalid or corrupted cache files are automatically deleted.",
 							"typeSignature": "(): Promise<{ version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; } | null>",
-							"sourceLine": 86,
+							"sourceLine": 87,
 							"returnType": "Promise<{ version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; } | null>"
 						},
 						{
@@ -10511,7 +10532,7 @@
 							"kind": "function",
 							"docComment": "Saves build cache metadata to .gro/ directory.\nErrors are logged but don't fail the build (cache is optional).",
 							"typeSignature": "(metadata: { version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; }, log?: Logger | undefined): Promise<...>",
-							"sourceLine": 128,
+							"sourceLine": 129,
 							"parameters": [
 								{
 									"name": "metadata",
@@ -10530,7 +10551,7 @@
 							"kind": "function",
 							"docComment": "Validates that a cached build is still valid by checking stats and hashing outputs.\nUses size as a fast negative check before expensive hashing.\nThis is comprehensive validation to catch manual tampering or corruption.",
 							"typeSignature": "(metadata: { version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; }): Promise<...>",
-							"sourceLine": 152,
+							"sourceLine": 153,
 							"parameters": [
 								{
 									"name": "metadata",
@@ -10544,7 +10565,7 @@
 							"kind": "function",
 							"docComment": "Main function to check if the build cache is valid.\nReturns true if the cached build can be used, false if a fresh build is needed.",
 							"typeSignature": "(config: GroConfig, log: Logger, git_commit?: string | null | undefined): Promise<boolean>",
-							"sourceLine": 192,
+							"sourceLine": 193,
 							"parameters": [
 								{
 									"name": "config",
@@ -10570,7 +10591,7 @@
 							"kind": "function",
 							"docComment": "Collects information about all files in build output directories.\nReturns an array of entries with path, hash, size, mtime, ctime, and mode.\n\nFiles are hashed in parallel for performance. For very large builds (10k+ files),\nthis may take several seconds but ensures complete cache validation.",
 							"typeSignature": "(build_dirs: string[]): Promise<{ path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]>",
-							"sourceLine": 238,
+							"sourceLine": 239,
 							"parameters": [
 								{
 									"name": "build_dirs",
@@ -10585,7 +10606,7 @@
 							"kind": "function",
 							"docComment": "Discovers all build output directories in the current working directory.\nReturns an array of directory names that exist: build/, dist/, dist_*",
 							"typeSignature": "(): Promise<string[]>",
-							"sourceLine": 310,
+							"sourceLine": 311,
 							"returnType": "Promise<string[]>"
 						},
 						{
@@ -10593,7 +10614,7 @@
 							"kind": "function",
 							"docComment": "Creates build cache metadata after a successful build.\nAutomatically discovers all build output directories (build/, dist/, dist_*).",
 							"typeSignature": "(config: GroConfig, log: Logger, git_commit?: string | null | undefined, build_dirs?: string[] | undefined): Promise<{ version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { ...; }[]; }>",
-							"sourceLine": 355,
+							"sourceLine": 356,
 							"parameters": [
 								{
 									"name": "config",
@@ -14011,21 +14032,21 @@
 							"kind": "variable",
 							"docComment": "Cache filename inside a repo's `.gro` directory for `library_load_from_repo`.",
 							"typeSignature": "\"library.json\"",
-							"sourceLine": 20
+							"sourceLine": 21
 						},
 						{
 							"name": "LIBRARY_CACHE_VERSION",
 							"kind": "variable",
 							"docComment": "Format version for the `.gro/library.json` cache. The cache key is the git\ncommit hash, which does NOT change when the cached *shape* changes — so bump\nthis whenever `LibraryCache`'s shape changes (e.g. the `LibraryJson` /\n`PkgJson` split, then slimming `LibraryJson` to the raw `pkg_json`/`source_json`\npair) to self-invalidate stale caches across the ecosystem rather than serve\nold-shaped data at an unchanged commit.",
 							"typeSignature": "1",
-							"sourceLine": 30
+							"sourceLine": 31
 						},
 						{
 							"name": "LibraryLoadResult",
 							"kind": "interface",
 							"docComment": "Result of loading a repo's library metadata: the curated `LibraryJson`\n(carrying the publish-safe `pkg_json`) plus the repo's full `package.json`.\n\nThe full `package_json` is kept alongside — not folded into `LibraryJson` —\nbecause tooling like fuz_gitops needs `dependencies`/`devDependencies`, which\nthe curated `LibraryJson.pkg_json` deliberately omits.",
 							"typeSignature": "LibraryLoadResult",
-							"sourceLine": 40,
+							"sourceLine": 41,
 							"members": [
 								{
 									"name": "library_json",
@@ -14044,7 +14065,7 @@
 							"kind": "interface",
 							"docComment": "On-disk shape of the `.gro/library.json` cache file.\nThe `hash` is the git-based cache key the result was computed at; `version`\nis the `LIBRARY_CACHE_VERSION` it was written under.",
 							"typeSignature": "LibraryCache",
-							"sourceLine": 50,
+							"sourceLine": 51,
 							"extends": ["LibraryLoadResult"],
 							"members": [
 								{
@@ -14063,7 +14084,7 @@
 							"name": "LibraryLoadOptions",
 							"kind": "interface",
 							"typeSignature": "LibraryLoadOptions",
-							"sourceLine": 55,
+							"sourceLine": 56,
 							"members": [
 								{
 									"name": "log",
@@ -14085,7 +14106,7 @@
 							"kind": "function",
 							"docComment": "Computes the cache key for a repo at `repo_dir`: the git `HEAD` commit hash.\n\nReturns `null` (uncacheable — analysis still runs, caching is skipped) when\nthe dir is not a git repo OR when the working tree is dirty. A dirty tree is\ndeliberately uncacheable: the commit hash doesn't capture uncommitted edits,\nso a single `-dirty` key would serve a stale analysis across successive edits.\nSkipping the cache while dirty guarantees fresh metadata; clean commits cache.",
 							"typeSignature": "(repo_dir: string): Promise<string | null>",
-							"sourceLine": 70,
+							"sourceLine": 71,
 							"parameters": [
 								{
 									"name": "repo_dir",
@@ -14099,7 +14120,7 @@
 							"kind": "function",
 							"docComment": "Reads and validates the `.gro/library.json` cache at `cache_path`.\n\nReturns the cached `{library_json, package_json}` only when the file exists\nand its stored `hash` matches `key`. Returns `null` on every miss - absent,\nstale (different `hash`), or unreadable/corrupt - signalling the caller to\nre-analyze.",
 							"typeSignature": "(cache_path: string, key: string, log?: Logger | undefined): Promise<LibraryLoadResult | null>",
-							"sourceLine": 90,
+							"sourceLine": 91,
 							"parameters": [
 								{
 									"name": "cache_path",
@@ -14125,7 +14146,7 @@
 							"kind": "function",
 							"docComment": "Writes `result` to the `.gro/library.json` cache at `cache_path`, keyed by\n`key` and stamped with the current `LIBRARY_CACHE_VERSION`, creating the\nparent directory as needed.\n\nBest effort: caching is optional, so write failures are logged as a warning\nand swallowed rather than thrown.",
 							"typeSignature": "(cache_path: string, key: string, result: LibraryLoadResult, log?: Logger | undefined): Promise<void>",
-							"sourceLine": 123,
+							"sourceLine": 124,
 							"parameters": [
 								{
 									"name": "cache_path",
@@ -14155,7 +14176,7 @@
 							"kind": "function",
 							"docComment": "Loads a repo's library metadata via `svelte-docinfo`, with a `.gro` cache\nkeyed by git hash.\n\nAnalyzes `repo_dir` with `analyzeFromFiles` and combines the result with the\nrepo's `package.json` into a `LibraryJson`, returned alongside the full\n`package.json`. Results are cached at `<repo_dir>/.gro/library.json` keyed by\nthe current git `HEAD`, so repeated loads at the same commit skip the\n(potentially slow) analysis. A dirty working tree (or a non-git dir) is\nuncacheable, so analysis re-runs on every load until the changes are\ncommitted - see `library_cache_key`.",
 							"typeSignature": "(repo_dir: string, options?: LibraryLoadOptions | undefined): Promise<LibraryLoadResult>",
-							"sourceLine": 157,
+							"sourceLine": 158,
 							"parameters": [
 								{
 									"name": "repo_dir",
@@ -17698,7 +17719,7 @@
 							"kind": "interface",
 							"docComment": "Cacheable extraction data fields shared between extraction and caching layers.\nUses `null` instead of empty collections to avoid allocation overhead.",
 							"typeSignature": "ExtractionData",
-							"sourceLine": 33,
+							"sourceLine": 34,
 							"members": [
 								{
 									"name": "classes",
@@ -17743,7 +17764,7 @@
 							"kind": "function",
 							"docComment": "Returns true if the extraction data has any non-null fields.",
 							"typeSignature": "(data: ExtractionData): boolean",
-							"sourceLine": 66,
+							"sourceLine": 67,
 							"parameters": [
 								{
 									"name": "data",
@@ -17757,7 +17778,7 @@
 							"kind": "interface",
 							"docComment": "Extraction result with classes mapped to their source locations.\nExtends `ExtractionData` with `tracked_vars` which is internal to AST walking.\n\nUses embedded diagnostics (rather than a Result type) because file extraction\ncan partially succeed: some classes may be extracted while others produce errors.\nThis differs from `CssLiteralParseResult` which uses a discriminated union\nbecause single-class parsing is binary success/failure.",
 							"typeSignature": "ExtractionResult",
-							"sourceLine": 85,
+							"sourceLine": 86,
 							"extends": ["ExtractionData"],
 							"members": [
 								{
@@ -17773,7 +17794,7 @@
 							"kind": "type",
 							"docComment": "Acorn plugin type - a function that extends the Parser class.",
 							"typeSignature": "AcornPlugin",
-							"sourceLine": 93,
+							"sourceLine": 94,
 							"members": [
 								{
 									"name": "(call)",
@@ -17794,7 +17815,7 @@
 							"kind": "interface",
 							"docComment": "Options for CSS class extraction.",
 							"typeSignature": "ExtractCssClassesOptions",
-							"sourceLine": 98,
+							"sourceLine": 99,
 							"members": [
 								{
 									"name": "filename",
@@ -17819,7 +17840,7 @@
 							"name": "SourceIndex",
 							"kind": "class",
 							"docComment": "Helper class for converting character offsets to line/column positions.\nSvelte template nodes (Comment, Text, ExpressionTag) only have char offsets,\nso this class enables efficient conversion.\n\nBuild: O(n) where n = source length\nLookup: O(log m) where m = number of lines (binary search)",
-							"sourceLine": 129,
+							"sourceLine": 130,
 							"members": [
 								{
 									"name": "constructor",
@@ -17859,7 +17880,7 @@
 							"kind": "function",
 							"docComment": "Extracts CSS classes from a Svelte file using AST parsing.",
 							"typeSignature": "(source: string, file?: string): ExtractionResult",
-							"sourceLine": 292,
+							"sourceLine": 293,
 							"parameters": [
 								{
 									"name": "source",
@@ -17881,7 +17902,7 @@
 							"kind": "function",
 							"docComment": "Extracts CSS classes from a TypeScript/JS file using AST parsing.",
 							"typeSignature": "(source: string, file?: string, acorn_plugins?: AcornPlugin[] | undefined): ExtractionResult",
-							"sourceLine": 482,
+							"sourceLine": 483,
 							"parameters": [
 								{
 									"name": "source",
@@ -17909,7 +17930,7 @@
 							"kind": "function",
 							"docComment": "Unified extraction function that auto-detects file type.\nReturns just the class names as a Set.",
 							"typeSignature": "(source: string, options?: ExtractCssClassesOptions): Set<string> | null",
-							"sourceLine": 554,
+							"sourceLine": 555,
 							"parameters": [
 								{
 									"name": "source",
@@ -17931,7 +17952,7 @@
 							"kind": "function",
 							"docComment": "Unified extraction function that auto-detects file type.\nReturns full extraction result with locations and diagnostics.",
 							"typeSignature": "(source: string, options?: ExtractCssClassesOptions): ExtractionResult",
-							"sourceLine": 570,
+							"sourceLine": 571,
 							"parameters": [
 								{
 									"name": "source",
@@ -17967,7 +17988,7 @@
 							"kind": "function",
 							"docComment": "Escapes special characters in a CSS class name for use in a selector.\nCSS selectors require escaping of characters like `:`, `%`, `(`, `)`, etc.",
 							"typeSignature": "(name: string): string",
-							"sourceLine": 42,
+							"sourceLine": 43,
 							"examples": [
 								"```ts\nescape_css_selector('display:flex') // 'display\\\\:flex'\nescape_css_selector('opacity:80%') // 'opacity\\\\:80\\\\%'\nescape_css_selector('nth-child(2n)') // 'nth-child\\\\(2n\\\\)'\n```"
 							],
@@ -17984,7 +18005,7 @@
 							"kind": "function",
 							"docComment": "Extracts the CSS property name from a single-property declaration string.\nReturns `null` for multi-property declarations (composites with multiple semicolons).",
 							"typeSignature": "(declaration: string): string | null",
-							"sourceLine": 56,
+							"sourceLine": 57,
 							"examples": [
 								"```ts\nextract_primary_property('border-radius: var(--border_radius_sm);') // 'border-radius'\nextract_primary_property('display: flex; align-items: center;') // null\n```"
 							],
@@ -18000,7 +18021,7 @@
 							"name": "CssClassDefinitionBase",
 							"kind": "interface",
 							"typeSignature": "CssClassDefinitionBase",
-							"sourceLine": 120,
+							"sourceLine": 121,
 							"members": [
 								{
 									"name": "comment",
@@ -18015,7 +18036,7 @@
 							"kind": "interface",
 							"docComment": "Pure utility composition (composes only).",
 							"typeSignature": "CssClassDefinitionComposition",
-							"sourceLine": 125,
+							"sourceLine": 126,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18042,7 +18063,7 @@
 							"kind": "interface",
 							"docComment": "Custom CSS declaration (optionally seeded with composes).",
 							"typeSignature": "CssClassDefinitionDeclaration",
-							"sourceLine": 132,
+							"sourceLine": 133,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18069,7 +18090,7 @@
 							"kind": "interface",
 							"docComment": "Full ruleset with selectors.",
 							"typeSignature": "CssClassDefinitionRuleset",
-							"sourceLine": 139,
+							"sourceLine": 140,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18096,21 +18117,21 @@
 							"kind": "type",
 							"docComment": "Static definitions (not interpreter-based).",
 							"typeSignature": "CssClassDefinitionStatic",
-							"sourceLine": 146
+							"sourceLine": 147
 						},
 						{
 							"name": "CssClassDefinition",
 							"kind": "type",
 							"docComment": "Full union including interpreters.",
 							"typeSignature": "CssClassDefinition",
-							"sourceLine": 152
+							"sourceLine": 153
 						},
 						{
 							"name": "CssClassInterpreterContext",
 							"kind": "interface",
 							"docComment": "Context passed to CSS class interpreters.\nProvides access to logging, diagnostics collection, and the class registry.",
 							"typeSignature": "CssClassInterpreterContext",
-							"sourceLine": 158,
+							"sourceLine": 159,
 							"members": [
 								{
 									"name": "log",
@@ -18144,7 +18165,7 @@
 							"kind": "interface",
 							"docComment": "Interpreter for dynamic CSS class generation based on pattern matching.",
 							"typeSignature": "CssClassDefinitionInterpreter",
-							"sourceLine": 170,
+							"sourceLine": 171,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18164,7 +18185,7 @@
 							"kind": "interface",
 							"docComment": "Result from CSS class generation.",
 							"typeSignature": "GenerateClassesCssResult",
-							"sourceLine": 185,
+							"sourceLine": 186,
 							"members": [
 								{
 									"name": "css",
@@ -18188,7 +18209,7 @@
 							"name": "GenerateClassesCssOptions",
 							"kind": "interface",
 							"typeSignature": "GenerateClassesCssOptions",
-							"sourceLine": 192,
+							"sourceLine": 193,
 							"members": [
 								{
 									"name": "class_names",
@@ -18236,7 +18257,7 @@
 							"name": "generate_classes_css",
 							"kind": "function",
 							"typeSignature": "(options: GenerateClassesCssOptions): GenerateClassesCssResult",
-							"sourceLine": 207,
+							"sourceLine": 208,
 							"parameters": [
 								{
 									"name": "options",
@@ -31300,7 +31321,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.88.0",
+			"version": "0.93.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -31436,16 +31457,23 @@
 						{
 							"name": "UsernameProvided",
 							"kind": "type",
-							"docComment": "Username submitted for login or lookup — minimal validation for forward-compatibility if format rules change.\n\nCanonicalized via `.trim().toLowerCase()` at parse time so login's\nper-account rate-limit key and DB lookup see a uniform value\nregardless of casing or surrounding whitespace. Mirrors the storage\ncanonicalization on `Username` so submission and storage agree.",
+							"docComment": "Username submitted for login or lookup — minimal validation for forward-compatibility if format rules change.\n\nCanonicalized via `.trim().toLowerCase()` at parse time so login's\nper-account rate-limit key and DB lookup see a uniform value\nregardless of casing or surrounding whitespace. Mirrors the storage\ncanonicalization on `Username` so submission and storage agree.\n\nThe trailing `.refine` rejects a whitespace-only identifier: `.min(1)`\nruns on the raw string (so `\"   \"` passes it), and without the post-trim\ncheck the value would canonicalize to `\"\"` and fall through to a\nlookup-miss 401 instead of a 400 — an empty identifier is malformed\ninput, not a wrong credential. Keeps the Rust spine's\n`account_login` (which rejects empty-after-trim) in parity.",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 57
+							"sourceLine": 64
+						},
+						{
+							"name": "EMAIL_LENGTH_MAX",
+							"kind": "variable",
+							"docComment": "Maximum email length in **bytes** — RFC 5321 §4.5.3.1.3 path-length limit\n(the limit is octets). `Email` bounds the UTF-8 byte length, matching the\nRust spine's `s.len()` check; for an all-ASCII address bytes == characters.",
+							"typeSignature": "254",
+							"sourceLine": 77
 						},
 						{
 							"name": "Email",
 							"kind": "type",
-							"docComment": "Email validation. Lives here rather than `@fuzdev/fuz_util` because every\ncurrent consumer pairs it with `Username` (signup, invites, audit log) —\nkeeping the two together avoids a cross-package import for the\nidentity-primitive bundle. Promote to fuz_util if a non-identity consumer\nsurfaces.",
-							"typeSignature": "ZodEmail",
-							"sourceLine": 71
+							"docComment": "Email validation. Lives here rather than `@fuzdev/fuz_util` because every\ncurrent consumer pairs it with `Username` (signup, invites, audit log) —\nkeeping the two together avoids a cross-package import for the\nidentity-primitive bundle. Promote to fuz_util if a non-identity consumer\nsurfaces.\n\nDeliberately permissive — a structural shape check (`EMAIL_REGEX` plus the\n`EMAIL_LENGTH_MAX` byte bound), not RFC 5322 conformance or deliverability\n(real delivery is proven by a confirmation email). Replaces Zod's stricter\n`z.email()` so the rule is one explicit regex the Rust spine's\n`is_valid_email` mirrors; `z.email()`'s internal regex (2+ char TLD, no\nconsecutive dots) was brittle to keep in cross-impl parity and rejected\naddresses like `a@b.c`. The length bound is the UTF-8 **byte** count (RFC\n5321 measures octets), so a multibyte address is bounded identically to the\nRust spine's `s.len()` rather than diverging on JS's UTF-16 `.length`. No\ntransform: case is preserved and surrounding whitespace is rejected (not\ntrimmed), so storage is verbatim and the case-insensitive lookup rides the\nDB-side `LOWER(email)`.",
+							"typeSignature": "ZodString",
+							"sourceLine": 118
 						}
 					],
 					"moduleComment": "Reusable validator-schema primitives — `Username`, `UsernameProvided`,\n`Email`. Lives at the top level (not inside `auth/` or `http/`) because\nthese shapes don't depend on or imply any domain — accounts hold a\nusername and email, but invites, password resets, future cell-sharing,\nand other surfaces all reach for the same primitives without going\nthrough auth.\n\nSplit out from `auth/account_schema.ts` so the auth module shrinks to\nentity types + client-safe JSON shapes (its real responsibility) and\nnon-auth consumers can import these primitives without dragging the\nauth domain along. Future cross-domain primitives (phone, url, slug)\nland here too."
@@ -31760,7 +31788,7 @@
 	"fuz_code": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_code",
-			"version": "0.46.1",
+			"version": "0.46.3",
 			"description": "syntax styling utilities and components for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
 			"logo": "logo.svg",
@@ -37284,7 +37312,7 @@
 							"kind": "interface",
 							"docComment": "Fully loaded local repo with `Library` and extracted dependency data.\nDoes not extend `LocalRepoPath` - `Library` is source of truth for name/repo_url/etc.",
 							"typeSignature": "LocalRepo",
-							"sourceLine": 23,
+							"sourceLine": 24,
 							"members": [
 								{
 									"name": "library",
@@ -37337,7 +37365,7 @@
 							"kind": "interface",
 							"docComment": "A repo that has been located on the filesystem (path exists).\nUsed before loading - just filesystem/git concerns.",
 							"typeSignature": "LocalRepoPath",
-							"sourceLine": 39,
+							"sourceLine": 40,
 							"members": [
 								{
 									"name": "type",
@@ -37376,7 +37404,7 @@
 							"kind": "interface",
 							"docComment": "A repo that is missing from the filesystem (needs cloning).",
 							"typeSignature": "LocalRepoMissing",
-							"sourceLine": 51,
+							"sourceLine": 52,
 							"members": [
 								{
 									"name": "type",
@@ -37410,7 +37438,7 @@
 							"kind": "function",
 							"docComment": "Loads repo data, optionally syncing the working tree first.\n\nWhen `sync` is `false` (the default for read-only diagnostics like\n`gitops_analyze`/`gitops_plan`), the repo is loaded exactly as it sits on\ndisk — no branch switch, pull, install, or clean-workspace check. This makes\nthose commands safe to run on an active workspace with uncommitted changes or\nfeature branches checked out.\n\nWhen `sync` is `true` (used by `gitops_sync`), the working tree is brought in\nline with the configured branch first:\n1. Records current commit hash (for detecting changes)\n2. Switches to target branch if needed (requires clean workspace unless `allow_dirty`)\n3. Pulls latest changes from remote (skipped for local-only repos)\n4. Validates workspace is clean after pull (skipped if `allow_dirty`)\n5. Auto-installs dependencies if `package.json` changed\n\nEither way it then:\n6. Loads `library_json` via `library_load_from_repo` (svelte-docinfo analysis)\n7. Creates `Library` and extracts dependency maps",
 							"typeSignature": "({ local_repo_path, log: _log, git_ops, npm_ops, sync, allow_dirty, }: { local_repo_path: LocalRepoPath; log?: Logger | undefined; git_ops?: GitOperations | undefined; npm_ops?: NpmOperations | undefined; sync?: boolean | undefined; allow_dirty?: boolean | undefined; }): Promise<...>",
-							"sourceLine": 84,
+							"sourceLine": 85,
 							"throws": [
 								{
 									"type": "if",
@@ -37429,7 +37457,7 @@
 							"name": "local_repos_ensure",
 							"kind": "function",
 							"typeSignature": "({ resolved_config, repos_dir, gitops_config, download, log, npm_ops, }: { resolved_config: ResolvedGitopsConfig; repos_dir: string; gitops_config: GitopsConfig; download: boolean; log?: Logger | undefined; npm_ops?: NpmOperations | undefined; }): Promise<...>",
-							"sourceLine": 251,
+							"sourceLine": 252,
 							"parameters": [
 								{
 									"name": "__0",
@@ -37442,7 +37470,7 @@
 							"name": "local_repos_load",
 							"kind": "function",
 							"typeSignature": "({ local_repo_paths, log, git_ops, npm_ops, parallel, concurrency, sync, allow_dirty, }: { local_repo_paths: LocalRepoPath[]; log?: Logger | undefined; git_ops?: GitOperations | undefined; npm_ops?: NpmOperations | undefined; parallel?: boolean | undefined; concurrency?: number | undefined; sync?: boolean | undefined; allow_dirty?: boolean | undefined; }): Promise<...>",
-							"sourceLine": 301,
+							"sourceLine": 302,
 							"parameters": [
 								{
 									"name": "__0",
@@ -37455,7 +37483,7 @@
 							"name": "local_repo_locate",
 							"kind": "function",
 							"typeSignature": "({ repo_config, repos_dir, }: { repo_config: GitopsRepoConfig; repos_dir: string; }): LocalRepoPath | LocalRepoMissing",
-							"sourceLine": 366,
+							"sourceLine": 367,
 							"parameters": [
 								{
 									"name": "__0",
@@ -58881,7 +58909,7 @@
 							"kind": "interface",
 							"docComment": "CLI options parsed from command line arguments.",
 							"typeSignature": "CliOptions",
-							"sourceLine": 51,
+							"sourceLine": 52,
 							"members": [
 								{
 									"name": "include",
@@ -58974,7 +59002,7 @@
 							"kind": "function",
 							"docComment": "Run the CLI with the given arguments.",
 							"typeSignature": "(argv?: string[]): Promise<number>",
-							"sourceLine": 125,
+							"sourceLine": 126,
 							"parameters": [
 								{
 									"name": "argv",
@@ -58994,6 +59022,7 @@
 						"declaration-helpers.ts",
 						"diagnostics.ts",
 						"discovery.ts",
+						"error.ts",
 						"log.ts"
 					],
 					"dependents": ["main.ts"]
@@ -60192,6 +60221,42 @@
 					"dependents": ["analyze.ts", "cli.ts", "index.ts", "vite.ts"]
 				},
 				{
+					"path": "error.ts",
+					"declarations": [
+						{
+							"name": "to_error_message",
+							"kind": "function",
+							"docComment": "Extract a human-readable message from an unknown thrown value.",
+							"typeSignature": "(value: unknown, fallback?: string | undefined): string",
+							"sourceLine": 15,
+							"parameters": [
+								{
+									"name": "value",
+									"type": "unknown"
+								},
+								{
+									"name": "fallback",
+									"type": "string | undefined",
+									"optional": true
+								}
+							],
+							"returnType": "string"
+						}
+					],
+					"moduleComment": "Error-message normalization.\n\n`to_error_message` is the single primitive for coercing an unknown caught\nvalue to a human-readable string — `value.message` for an `Error`, otherwise\na caller-supplied fallback or `String(value)`. Used wherever a `catch (err)`\nbinding (typed `unknown`) feeds a diagnostic message, log line, or error\nfield, replacing the inline `err instanceof Error ? err.message : String(err)`\nidiom.",
+					"dependents": [
+						"cli.ts",
+						"exports.ts",
+						"session.ts",
+						"svelte.ts",
+						"typescript-extract-class.ts",
+						"typescript-extract-function.ts",
+						"typescript-extract-shared.ts",
+						"typescript-extract-type-properties.ts",
+						"typescript-extract-type.ts"
+					]
+				},
+				{
 					"path": "exports.ts",
 					"declarations": [
 						{
@@ -60199,7 +60264,7 @@
 							"kind": "interface",
 							"docComment": "A parsed entry from package.json exports field.",
 							"typeSignature": "ExportEntry",
-							"sourceLine": 27,
+							"sourceLine": 28,
 							"members": [
 								{
 									"name": "specifier",
@@ -60226,7 +60291,7 @@
 							"kind": "interface",
 							"docComment": "Options for `discoverFromExports`.",
 							"typeSignature": "ExportsDiscoveryOptions",
-							"sourceLine": 39,
+							"sourceLine": 40,
 							"members": [
 								{
 									"name": "projectRoot",
@@ -60262,7 +60327,7 @@
 							"kind": "interface",
 							"docComment": "Result of discovering source files from package.json exports.\n\nSelf-contained: includes both the discovered files and any error diagnostics\n(e.g., files that exist but could not be read).",
 							"typeSignature": "ExportsDiscoveryResult",
-							"sourceLine": 56,
+							"sourceLine": 57,
 							"members": [
 								{
 									"name": "files",
@@ -60283,7 +60348,7 @@
 							"kind": "interface",
 							"docComment": "Result of reading and parsing package.json exports.",
 							"typeSignature": "ParsedExports",
-							"sourceLine": 70,
+							"sourceLine": 71,
 							"members": [
 								{
 									"name": "entries",
@@ -60304,7 +60369,7 @@
 							"kind": "function",
 							"docComment": "Read and parse the exports field from package.json.\n\nHandles all Node.js export formats: strings, objects with conditions,\nnested conditions, null exclusions, and wildcard patterns.",
 							"typeSignature": "(projectRoot: string): Promise<ParsedExports>",
-							"sourceLine": 93,
+							"sourceLine": 94,
 							"parameters": [
 								{
 									"name": "projectRoot",
@@ -60320,7 +60385,7 @@
 							"kind": "function",
 							"docComment": "Map a dist file path to its source file path.\n\nReplaces the dist directory prefix with the source directory and maps\nfile extensions based on the export condition.",
 							"typeSignature": "(distPath: string, condition: string, options: { distDir: string; sourceDir: string; }): string | null",
-							"sourceLine": 171,
+							"sourceLine": 172,
 							"parameters": [
 								{
 									"name": "distPath",
@@ -60346,7 +60411,7 @@
 							"kind": "function",
 							"docComment": "Discover source files using package.json exports field.\n\nReads package.json, parses exports, maps dist paths to source paths,\nexpands wildcard patterns, and loads file content.\n\nReturns `{files: null}` when no package.json or no exports field exists,\nsignaling the caller to fall back to glob discovery. Returns `{files: []}`\nwhen exports exist but resolve no source files (likely misconfigured mapping).\n\nFor concrete exports, maps directly to source paths and verifies existence.\nFor wildcard exports, globs the source directory for matching files.",
 							"typeSignature": "(options: ExportsDiscoveryOptions): Promise<ExportsDiscoveryResult>",
-							"sourceLine": 249,
+							"sourceLine": 250,
 							"parameters": [
 								{
 									"name": "options",
@@ -60359,7 +60424,7 @@
 						}
 					],
 					"moduleComment": "Package.json exports field discovery for source files.\n\nMaps dist paths in package.json `exports` to source file paths,\nenabling zero-config file discovery without glob patterns.\n\n@see `source.ts` for `SourceFileInfo`\n@see `analyze.ts` for `analyzeFromFiles` (primary consumer)",
-					"dependencies": ["concurrency.ts", "diagnostics.ts", "paths.ts", "source.ts"],
+					"dependencies": ["concurrency.ts", "diagnostics.ts", "error.ts", "paths.ts", "source.ts"],
 					"dependents": ["discovery.ts"]
 				},
 				{
@@ -61268,7 +61333,7 @@
 							"kind": "interface",
 							"docComment": "Options for a per-file or per-batch resolver override.\n\nIdentity is required (not optional) — silently coalescing missing identities\nto a function reference would destroy cache reuse when the same logical\nresolver is wrapped in fresh closures across calls.",
 							"typeSignature": "SetFileOptions",
-							"sourceLine": 69,
+							"sourceLine": 70,
 							"alsoExportedFrom": ["index.ts"],
 							"members": [
 								{
@@ -61285,7 +61350,7 @@
 							"kind": "interface",
 							"docComment": "Result of `setFile` (single-file ingest).\n\n`changed` is `true` when content or the mode-specific cache key (resolver\nidentity for lex+resolve; dependency snapshot for pre-resolved) differed\nfrom the cached entry — the owned entry was rewritten. An LS push\naccompanies the entry write only when the file is TS/JS or has a\nsuccessful Svelte virtual; CSS/JSON and transform-failed Svelte rewrite\nthe entry without touching the LS. `false` indicates a cache-hit no-op:\nthe cached `ingestDiagnostics` are returned but no work ran.",
 							"typeSignature": "SetFileResult",
-							"sourceLine": 93,
+							"sourceLine": 94,
 							"alsoExportedFrom": ["index.ts"],
 							"members": [
 								{
@@ -61307,7 +61372,7 @@
 							"kind": "interface",
 							"docComment": "Result of `setFiles` (batch ingest).\n\nCarries both aggregate views (`changedIds`, pre-flattened `diagnostics`)\nand a structured `perFile` map. HMR-style consumers want\n`changedIds.size > 0` as the hot check; LSP-style consumers want per-file\ndiagnostic association via `perFile`. Both are populated in the same\nsingle-pass walk over the batch — no extra cost.",
 							"typeSignature": "SetFilesResult",
-							"sourceLine": 109,
+							"sourceLine": 110,
 							"alsoExportedFrom": ["index.ts"],
 							"members": [
 								{
@@ -61335,7 +61400,7 @@
 							"kind": "interface",
 							"docComment": "Per-call input to `query`.",
 							"typeSignature": "QueryOptions",
-							"sourceLine": 133,
+							"sourceLine": 134,
 							"alsoExportedFrom": ["index.ts"],
 							"members": [
 								{
@@ -61359,7 +61424,7 @@
 							"kind": "interface",
 							"docComment": "Persistent analysis handle.\n\n**Concurrency**: not safe across overlapping calls. Serialize externally\n(each caller awaits the previous `setFile`/`setFiles` before starting the\nnext). The LS underneath is sync, but the resolver phase awaits I/O for\nasync resolvers (Vite/Rollup), so the session does cross await boundaries.\n\n**Cache-hit semantics**: per-entry, all-or-nothing. The implementation\nmust not split the guarantee across separate caches (e.g. transform-cache\nhit + lex re-run). The match criterion is mode-discriminated:\n\n- lex+resolve mode: `existing.content === incoming.content` AND\n  `existing.resolverIdentity === incoming.resolverIdentity`.\n- pre-resolved mode: `existing.content === incoming.content` AND\n  `arraysShallowEqual(existing.preResolvedDepsSnapshot, incoming.dependencies)`.\n\nMode flips (an entry previously ingested as lex+resolve now arrives with\n`dependencies`, or vice versa) always cache-miss.\n\n**Promise resolution**: `setFile` / `setFiles` resolve only after the\nserial LS push (phase 3) completes for every file in the batch. Awaiting\nthe returned promise is sufficient — no separate flush step.",
 							"typeSignature": "AnalysisSession",
-							"sourceLine": 164,
+							"sourceLine": 165,
 							"alsoExportedFrom": ["index.ts"],
 							"members": [
 								{
@@ -61474,7 +61539,7 @@
 							"kind": "interface",
 							"docComment": "Options for `createAnalysisSession`.\n\n`documentRegistry` flows through to the underlying `LanguageService` only.\n`tsconfig` and `compilerOptions` flow to both the LS *and* the lazy default\n`ImportResolver` (`getDefaultResolver` re-invokes `loadTsconfig` with them\nto produce a merged `ts.CompilerOptions` for module resolution). The two\npaths share the same merge semantics — user-supplied `compilerOptions`\noverride parsed tsconfig keys, but never bypass the tsconfig.json file\nrequirement.\n\n`projectRoot` and `virtualFiles` from the LS options shape are excluded —\nthe session derives `projectRoot` from `sourceOptions` and manages\nsvelte2tsx virtuals internally per file.",
 							"typeSignature": "AnalysisSessionOptions",
-							"sourceLine": 224,
+							"sourceLine": 225,
 							"alsoExportedFrom": ["index.ts"],
 							"extends": [
 								"Omit<\n\tAnalysisLanguageServiceOptions,\n\t'projectRoot' | 'virtualFiles'\n>"
@@ -61507,7 +61572,7 @@
 							"kind": "function",
 							"docComment": "Create a persistent analysis session.",
 							"typeSignature": "(options: AnalysisSessionOptions): AnalysisSession",
-							"sourceLine": 373,
+							"sourceLine": 374,
 							"examples": [
 								"Vite plugin integration\n```ts\nconst session = createAnalysisSession({sourceOptions, resolveImport, log});\nawait session.setFiles(initialFiles);\nconst result = session.query();\n// on watcher events:\nawait session.setFile({id, content});\nawait session.deleteFile(removedId);\nconst next = session.query();\n// on shutdown:\nsession.dispose();\n```",
 								"One-shot via the public wrapper\n```ts\n// Equivalent to `analyze(...)` — the wrapper goes through a session internally.\nconst session = createAnalysisSession({sourceOptions});\ntry {\nawait session.setFiles(sourceFiles);\nreturn session.query({onDuplicates: 'throw'});\n} finally {\nsession.dispose();\n}\n```"
@@ -61528,6 +61593,7 @@
 						"concurrency.ts",
 						"dep-resolver.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"log.ts",
 						"paths.ts",
 						"postprocess.ts",
@@ -61995,7 +62061,7 @@
 							"kind": "interface",
 							"docComment": "Pre-transformed Svelte virtual file data.\n\nProduced by `transformSvelteSource` and consumed by `analyzeSvelteModule`\nto provide checker-backed analysis of Svelte components.",
 							"typeSignature": "SvelteVirtualFile",
-							"sourceLine": 59,
+							"sourceLine": 60,
 							"members": [
 								{
 									"name": "virtualPath",
@@ -62028,7 +62094,7 @@
 							"kind": "interface",
 							"docComment": "Result of `transformSvelteSource` — a virtual file (when transform succeeded)\nplus any ingest-time diagnostics produced during the transform.\n\n`virtual` is `undefined` when svelte2tsx threw; in that case `diagnostics`\ncontains a `transform_failed` entry. When the transform succeeded but source\nmap construction failed, `virtual` is populated and `diagnostics` contains a\n`source_map_failed` entry. The session's owned-entry stores both — the\nvirtual (or `transformFailed: true` flag) and the ingest diagnostics.",
 							"typeSignature": "TransformResult",
-							"sourceLine": 80,
+							"sourceLine": 81,
 							"members": [
 								{
 									"name": "virtual",
@@ -62047,7 +62113,7 @@
 							"kind": "function",
 							"docComment": "Pre-transform a Svelte source file via svelte2tsx.\n\nProduces a `SvelteVirtualFile` containing the transformed TypeScript content\nand source map. The virtual file can be included in a TypeScript program\n(via `createAnalysisProgram({ virtualFiles })`) so that the checker can\nresolve imported types, `<script module>` exports, and re-exports.\n\nErrors at ingest are returned via `diagnostics` rather than thrown:\n- svelte2tsx throws → `transform_failed`, `virtual: undefined`\n- source map construction fails → `source_map_failed`, virtual populated\n\nDiagnostic file paths are the original `.svelte` source ID; downstream\nnormalization rewrites them to project-root-relative form.",
 							"typeSignature": "(sourceFile: SourceFileInfo): TransformResult",
-							"sourceLine": 104,
+							"sourceLine": 105,
 							"throws": [
 								{
 									"type": "Error",
@@ -62069,7 +62135,7 @@
 							"kind": "function",
 							"docComment": "Extract the content of the main `<script>` tag from Svelte source.\n\nMatches `<script>` with any attributes (e.g., `lang`, `generics`) but excludes\nmodule scripts (`<script module>`, `<script context=\"module\">`).",
 							"typeSignature": "(svelteSource: string): string | undefined",
-							"sourceLine": 278,
+							"sourceLine": 279,
 							"parameters": [
 								{
 									"name": "svelteSource",
@@ -62084,7 +62150,7 @@
 							"kind": "function",
 							"docComment": "Extract the content of the module `<script>` tag from Svelte source.\n\nCounterpart of `extractScriptContent` with the same attribute test inverted:\nmatches only module scripts (`<script module>`, `<script context=\"module\">`),\nso the two partition a source's script tags consistently.",
 							"typeSignature": "(svelteSource: string): string | undefined",
-							"sourceLine": 290,
+							"sourceLine": 291,
 							"parameters": [
 								{
 									"name": "svelteSource",
@@ -62099,7 +62165,7 @@
 							"kind": "function",
 							"docComment": "Extract `@module` comment from HTML comments in Svelte source.\n\nScans all `<!-- ... -->` comments for one containing `@module` at the\nstart of a line. This allows `@component` and `@module` to coexist as\nseparate HTML comments. Works for template-only components.",
 							"typeSignature": "(svelteSource: string): string | undefined",
-							"sourceLine": 320,
+							"sourceLine": 321,
 							"parameters": [
 								{
 									"name": "svelteSource",
@@ -62115,7 +62181,7 @@
 							"kind": "function",
 							"docComment": "Extract module-level comment from Svelte script content.\n\nParses the script content as TypeScript and delegates to `extractModuleComment`\nfor the shared `@module` tag detection logic. Works on either script's\ncontent — instance `<script>` and `<script module>` (see\n`extractScriptContent`/`extractModuleScriptContent`).",
 							"typeSignature": "(scriptContent: string): string | undefined",
-							"sourceLine": 359,
+							"sourceLine": 360,
 							"parameters": [
 								{
 									"name": "scriptContent",
@@ -62131,7 +62197,7 @@
 							"kind": "function",
 							"docComment": "Check if a type string represents a `Snippet` type.\n\nUses the already-resolved type string (from `checker.typeToString`) for reliable\ndetection. `Snippet` is an interface (not a type alias), so `aliasSymbol` is\nnot available — type string matching is the reliable detection path.",
 							"typeSignature": "(typeString: string): boolean",
-							"sourceLine": 625,
+							"sourceLine": 626,
 							"parameters": [
 								{
 									"name": "typeString",
@@ -62145,7 +62211,7 @@
 							"kind": "function",
 							"docComment": "Extract structured parameters from a `Snippet<[...]>` type.\n\n`Snippet` is an interface, so type arguments are on `TypeReference` (accessed\nvia `checker.getTypeArguments`), not on `aliasTypeArguments` (which is only\nfor type aliases).\n\nReturns full `ParameterJson` input objects (with `optional` and `rest` always set)\nfor runtime consistency with `extractSignatureParameters` in `typescript-extract-shared.ts`.",
 							"typeSignature": "(snippetType: Type, checker: TypeChecker): { name: string; type: string; optional?: boolean | undefined; rest?: boolean | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]",
-							"sourceLine": 642,
+							"sourceLine": 643,
 							"parameters": [
 								{
 									"name": "snippetType",
@@ -62164,7 +62230,7 @@
 							"kind": "function",
 							"docComment": "Check if a return type string matches svelte2tsx's snippet return type pattern.\n\nsvelte2tsx transforms exported snippets into arrow functions with\n`ReturnType<import('svelte').Snippet>` as the return type annotation.\nThe resolved return type includes `unique symbol` (from Svelte's non-exported\n`SnippetReturn` unique symbol) intersected with the branded render message.\nWe match on both parts to avoid false positives — the branded message alone\ncould theoretically be crafted by user code, but the `unique symbol` intersection\ncannot since `SnippetReturn` is not exported from svelte.",
 							"typeSignature": "(returnType: string): boolean",
-							"sourceLine": 679,
+							"sourceLine": 680,
 							"parameters": [
 								{
 									"name": "returnType",
@@ -62178,7 +62244,7 @@
 							"kind": "function",
 							"docComment": "Synthesize a `Snippet<[...]>` type string from structured parameters.\n\nUsed for `kind: 'snippet'` declarations where the raw svelte2tsx type\nis implementation noise. Produces type strings consistent with how\nthe checker formats Snippet types on props.",
 							"typeSignature": "(parameters: { name: string; type: string; optional?: boolean | undefined; rest?: boolean | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]): string",
-							"sourceLine": 693,
+							"sourceLine": 694,
 							"parameters": [
 								{
 									"name": "parameters",
@@ -62192,7 +62258,7 @@
 							"kind": "function",
 							"docComment": "Analyze a Svelte module using checker-backed analysis.\n\nRequires the svelte2tsx virtual output to be included in the TypeScript program\n(via `createAnalysisProgram({ virtualFiles })`). Provides full type resolution for:\n- Imported prop types (`let {x}: ImportedProps = $props()`)\n- `<script module>` exports (constants, types, re-exports)\n- Star exports and re-exports from Svelte files",
 							"typeSignature": "(sourceFile: SourceFileInfo & { dependents?: readonly string[] | undefined; }, modulePath: string, checker: TypeChecker, options: ModuleSourceOptions, diagnostics: ({ ...; } | ... 12 more ... | { ...; })[], program: Program, virtualFile: SvelteVirtualFile): ModuleAnalysis | undefined",
-							"sourceLine": 937,
+							"sourceLine": 938,
 							"parameters": [
 								{
 									"name": "sourceFile",
@@ -62238,6 +62304,7 @@
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"paths.ts",
 						"source-config.ts",
 						"source.ts",
@@ -63167,7 +63234,7 @@
 							"kind": "function",
 							"docComment": "Extract class information with rich member metadata.",
 							"typeSignature": "(node: Node, checker: TypeChecker, declaration: DeclarationJsonBuild, diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | ... 12 more ... | { ...; })[]): void",
-							"sourceLine": 40,
+							"sourceLine": 41,
 							"mutates": {
 								"declaration": "adds extends, implements, genericParams, members"
 							},
@@ -63200,6 +63267,7 @@
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"tsdoc.ts",
 						"types.ts",
 						"typescript-extract-shared.ts"
@@ -63214,7 +63282,7 @@
 							"kind": "function",
 							"docComment": "Extract function/method information including parameters\nwith descriptions and default values.",
 							"typeSignature": "(node: Node, symbol: Symbol, checker: TypeChecker, declaration: DeclarationJsonBuild, tsdoc: TsdocParsedComment | undefined, diagnostics: ({ ...; } | ... 12 more ... | { ...; })[]): void",
-							"sourceLine": 42,
+							"sourceLine": 43,
 							"mutates": {
 								"declaration": "adds typeSignature, returnType, returnDescription, parameters, genericParams, overloads (and `partial: true` on signature failure)",
 								"diagnostics": "adds `signature_analysis_failed` diagnostic on checker error"
@@ -63258,7 +63326,7 @@
 							"kind": "function",
 							"docComment": "Extract variable information.",
 							"typeSignature": "(node: Node, symbol: Symbol, checker: TypeChecker, declaration: DeclarationJsonBuild, diagnostics: ({ symbolName: string; file: string; ... 4 more ...; column?: number | undefined; } | ... 12 more ... | { ...; })[]): void",
-							"sourceLine": 102,
+							"sourceLine": 103,
 							"mutates": {
 								"declaration": "adds typeSignature, reactivity (when initialized with a Svelte rune)"
 							},
@@ -63296,6 +63364,7 @@
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"tsdoc.ts",
 						"typescript-extract-shared.ts"
 					],
@@ -63309,7 +63378,7 @@
 							"kind": "function",
 							"docComment": "Infer declaration kind from symbol and node.\n\nMaps TypeScript constructs to `DeclarationKind`:\n- Classes → `'class'`\n- Functions (declarations, expressions, arrows) → `'function'`\n- Interfaces → `'interface'`\n- Type aliases → `'type'`\n- Enums (regular and const) → `'enum'`\n- Variables → `'variable'` (unless function-valued → `'function'`)\n\nNote: namespace re-exports (`export * as ns from './x'`) have no inline\ndeclaration form in TypeScript and are caught upstream in `analyzeExports`\nvia `classifyNamespaceReExport`. They never reach this function. A direct\ncall here on a `ValueModule` symbol would fall through to `'variable'` and\nleak `typeof import(\"/abs/path\")` into the output — keep the namespace\ndispatch in `analyzeExports`.",
 							"typeSignature": "(symbol: Symbol, node: Node): \"function\" | \"type\" | \"variable\" | \"class\" | \"interface\" | \"enum\" | \"component\" | \"snippet\" | \"namespace\"",
-							"sourceLine": 50,
+							"sourceLine": 51,
 							"parameters": [
 								{
 									"name": "symbol",
@@ -63327,7 +63396,7 @@
 							"kind": "function",
 							"docComment": "Extract parameters from a TypeScript signature with TSDoc descriptions and default values.\n\nShared helper for extracting parameter information from both standalone functions\nand class methods/constructors.",
 							"typeSignature": "(sig: Signature, checker: TypeChecker, tsdocParams: Record<string, string> | undefined): { name: string; type: string; optional: boolean; rest: boolean; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]",
-							"sourceLine": 89,
+							"sourceLine": 90,
 							"parameters": [
 								{
 									"name": "sig",
@@ -63353,7 +63422,7 @@
 							"kind": "function",
 							"docComment": "Populate the callable fields of a declaration or member from its call/construct\nsignatures: `typeSignature`, `parameters`, `overloads`, and (unless\n`includeReturn` is false) `returnType` / `returnDescription`.\n\nThe shared core of every named-callable extractor — standalone functions,\ninterface methods, class methods/constructors, and type-alias function\nproperties. Callers differ in how they obtain `signatures` (symbol type,\nconstructor declarations, property call signatures) and in their own\ntry/catch + diagnostic kind, so those stay at the callsite; this captures\nonly the identical projection from a resolved signature list onto the build\ntarget. No-op when `signatures` is empty.",
 							"typeSignature": "(target: MemberJsonBuild | DeclarationJsonBuild, signatures: readonly Signature[], checker: TypeChecker, tsdoc: TsdocParsedComment | undefined, paramValidationNode: Node, name: string, diagnostics: ({ ...; } | ... 12 more ... | { ...; })[], includeReturn?: boolean): void",
-							"sourceLine": 325,
+							"sourceLine": 326,
 							"mutates": {
 								"target": "sets typeSignature, parameters, overloads, returnType, returnDescription",
 								"diagnostics": "via `validateParamKeys` / `extractOverloads`"
@@ -63406,7 +63475,7 @@
 							"kind": "function",
 							"docComment": "Determine whether an intersection branch refers to a type whose declarations\nall live in external files (e.g., `HTMLAttributes<HTMLDivElement>` from svelte's\nd.ts). Inline object-literal branches and unrecognized node shapes return false\n(treated as local).",
 							"typeSignature": "(branchNode: TypeNode, checker: TypeChecker, isExternalFile: IsExternalFile): boolean",
-							"sourceLine": 369,
+							"sourceLine": 370,
 							"parameters": [
 								{
 									"name": "branchNode",
@@ -63428,7 +63497,7 @@
 							"kind": "function",
 							"docComment": "Resolve the `IntersectionTypeNode` for a type node, walking through type\nalias indirection. Returns `undefined` when the underlying type is an\nintersection but no AST node is recoverable (rare — synthesized intersections).",
 							"typeSignature": "(type: Type, typeNode: Node): IntersectionTypeNode | undefined",
-							"sourceLine": 389,
+							"sourceLine": 390,
 							"parameters": [
 								{
 									"name": "type",
@@ -63446,7 +63515,7 @@
 							"kind": "function",
 							"docComment": "Partition a type's properties into local (kept) and external (dropped), and\ncollect the external type references that contributed the dropped ones.\n\nApplies to any composition shape — intersection, union, bare reference,\nindexed-access — not only intersections. Membership is decided per property\nby declaration origin (`isExternalProperty`), which is structure-agnostic:\nTypeScript preserves original declaration sources on derived properties, so\nthe test gives the right answer through utility-type wrappers (Partial, Pick,\n`OmitStrict`) too. A property with no declarations (synthesized) is treated as\nlocal and kept. The external-type labels for `intersects` come from an AST\nwalk (`collectExternalTypeRefs`) — the authoritative source for the\n`&`/`|`/index-access shape inference would otherwise erase.",
 							"typeSignature": "(type: Type, typeNode: Node, checker: TypeChecker, isExternalFile: IsExternalFile): { properties: Symbol[]; externalTypes: string[]; }",
-							"sourceLine": 494,
+							"sourceLine": 495,
 							"parameters": [
 								{
 									"name": "type",
@@ -63472,7 +63541,7 @@
 							"kind": "function",
 							"docComment": "Detect a Svelte 5 reactivity rune from a variable or property initializer.\n\nInspects the AST since runes erase to their inner type after type-checking.\nReturns `undefined` for any non-rune expression. See the `Reactivity` enum\nin `types.ts` for the rationale on running this on every file regardless of\nextension.",
 							"typeSignature": "(initializer: Expression | undefined): \"$state\" | \"$state.raw\" | \"$derived\" | \"$derived.by\" | undefined",
-							"sourceLine": 519,
+							"sourceLine": 520,
 							"parameters": [
 								{
 									"name": "initializer",
@@ -63486,7 +63555,7 @@
 							"kind": "function",
 							"docComment": "Extract line and column from a TypeScript node.\nReturns 1-based line and column numbers.",
 							"typeSignature": "(node: Node): { file: string; line: number; column: number; }",
-							"sourceLine": 558,
+							"sourceLine": 559,
 							"parameters": [
 								{
 									"name": "node",
@@ -63500,7 +63569,7 @@
 							"kind": "function",
 							"docComment": "Parse a TypeScript generic type parameter declaration into structured info.",
 							"typeSignature": "(param: TypeParameterDeclaration): { name: string; constraint?: string | undefined; defaultType?: string | undefined; }",
-							"sourceLine": 574,
+							"sourceLine": 575,
 							"parameters": [
 								{
 									"name": "param",
@@ -63516,7 +63585,7 @@
 							"kind": "function",
 							"docComment": "Extract modifier keywords from a node's modifiers.\n\nReturns an array of modifier strings like `['public', 'readonly', 'static']`.",
 							"typeSignature": "(modifiers: readonly ModifierLike[] | undefined): (\"public\" | \"protected\" | \"readonly\" | \"static\" | \"abstract\" | \"getter\" | \"setter\")[]",
-							"sourceLine": 595,
+							"sourceLine": 596,
 							"parameters": [
 								{
 									"name": "modifiers",
@@ -63530,7 +63599,7 @@
 							"kind": "function",
 							"docComment": "Append a `(call)` or `(construct)` signature member to a declaration.\n\nCaptures the extraction logic shared by interface processing\n(`extractTypeInfo`) and type-alias property processing\n(`extractTypeAliasProperties`): type signature, parameters, generics,\noverloads, and TSDoc. The TSDoc source node is supplied by the caller —\ninterfaces look it up in `node.members` (skipping TSDoc when no inline\nsignature is declared, even if one is inherited), type aliases use\n`sig.getDeclaration()`.",
 							"typeSignature": "(getSignatures: () => readonly Signature[], signatureKind: \"call\" | \"construct\", resolveTsdocNode: (sig: Signature) => Node | undefined, paramValidationFallbackNode: Node, declaration: DeclarationJsonBuild, checker: TypeChecker, diagnostics: ({ ...; } | ... 12 more ... | { ...; })[], errorContext: { ...; }): void",
-							"sourceLine": 641,
+							"sourceLine": 642,
 							"mutates": {
 								"declaration": "appends a member when signatures are present;",
 								"diagnostics": "adds `signature_analysis_failed` on checker error"
@@ -63585,6 +63654,7 @@
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"tsdoc.ts",
 						"types.ts",
 						"typescript-program.ts"
@@ -63606,7 +63676,7 @@
 							"kind": "function",
 							"docComment": "Extract properties from a type alias via the TypeScript checker API.\n\nHandles object literals, intersections, mapped types (Partial, Pick, Readonly, etc.),\ntype references, and function types. Extracts:\n- Named properties (with readonly/optional detection, TSDoc from declarations)\n- Index signatures (string/number)\n- Call signatures (`(call)`)\n- Construct signatures (`(construct)`)",
 							"typeSignature": "(node: TypeAliasDeclaration, nodeType: Type, checker: TypeChecker, declaration: DeclarationJsonBuild, diagnostics: ({ ...; } | ... 12 more ... | { ...; })[], isExternalFile: IsExternalFile): void",
-							"sourceLine": 195,
+							"sourceLine": 196,
 							"mutates": {
 								"declaration": "adds members"
 							},
@@ -63643,6 +63713,7 @@
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"tsdoc.ts",
 						"types.ts",
 						"typescript-extract-shared.ts",
@@ -63658,7 +63729,7 @@
 							"kind": "function",
 							"docComment": "Extract type/interface information with rich property metadata.",
 							"typeSignature": "(node: Node, checker: TypeChecker, declaration: DeclarationJsonBuild, diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | ... 12 more ... | { ...; })[], isExternalFile: IsExternalFile): void",
-							"sourceLine": 48,
+							"sourceLine": 49,
 							"mutates": {
 								"declaration": "adds typeSignature, genericParams, extends, intersects, members (and `partial: true` on extraction failure)",
 								"diagnostics": "adds `type_extraction_failed` / `signature_analysis_failed` diagnostics on checker errors"
@@ -63696,7 +63767,7 @@
 							"kind": "function",
 							"docComment": "Extract enum member information from an enum declaration.\n\nIterates `node.members` to extract each enum member's name, initializer value,\ntype, and JSDoc. Members are represented as `MemberJson` with kind `'variable'`.",
 							"typeSignature": "(node: Node, checker: TypeChecker, declaration: DeclarationJsonBuild, diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | ... 12 more ... | { ...; })[]): void",
-							"sourceLine": 238,
+							"sourceLine": 239,
 							"mutates": {
 								"declaration": "adds members and typeSignature"
 							},
@@ -63725,6 +63796,7 @@
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
+						"error.ts",
 						"tsdoc.ts",
 						"typescript-extract-shared.ts",
 						"typescript-extract-type-properties.ts",

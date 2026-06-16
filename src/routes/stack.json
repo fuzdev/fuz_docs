@@ -14,7 +14,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_util",
-			"version": "0.65.1",
+			"version": "0.65.2",
 			"path": "fuz_util",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
@@ -22,7 +22,7 @@
 			"published": true,
 			"module_count": 58,
 			"exported_module_count": 58,
-			"export_count": 454,
+			"export_count": 455,
 			"peer_dependencies": ["@fuzdev/blake3_wasm"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -112,7 +112,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.88.0",
+			"version": "0.93.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -120,7 +120,7 @@
 			"published": true,
 			"module_count": 6,
 			"exported_module_count": 6,
-			"export_count": 25,
+			"export_count": 26,
 			"peer_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -136,7 +136,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_code",
-			"version": "0.46.1",
+			"version": "0.46.3",
 			"path": "fuz_code",
 			"description": "syntax styling utilities and components for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
@@ -315,9 +315,9 @@
 			"glyph": "📜",
 			"homepage_url": "https://svelte-docinfo.fuz.dev/",
 			"published": true,
-			"module_count": 31,
-			"exported_module_count": 29,
-			"export_count": 198,
+			"module_count": 32,
+			"exported_module_count": 30,
+			"export_count": 199,
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
