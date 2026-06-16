@@ -16,6 +16,12 @@ Verify it against the workspaces periodically.
 Crates internal to a workspace (declared with `path = ...`) are not
 dependencies in this sense and never appear here.
 
+A few approved crates are pinned at the **member-crate** level rather than
+in `[workspace.dependencies]` — `js-sys` (optional, feature-gated in tsv's
+`tsv_wasm`) and `rand` (crate-pinned in `fuz_sign` for the `rand_core 0.6`
+constraint). They're real external deps and belong here even though no root
+`[workspace.dependencies]` lists them.
+
 ## Serialization & encoding
 
 | Crate | Purpose |
