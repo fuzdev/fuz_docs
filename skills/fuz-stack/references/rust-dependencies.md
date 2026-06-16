@@ -59,6 +59,7 @@ dependencies in this sense and never appear here.
 | Crate | Purpose |
 | ----- | ------- |
 | `parking_lot` | `Mutex`/`RwLock` for sync-only critical sections (no poisoning). See rust-perf.md §Async lock hygiene for when to use `tokio::sync` or `std::sync` instead. |
+| `lru` | Bounded LRU cache backing the `RateLimiter` — caps tracked keys so a key-enumeration attacker can't grow the map unboundedly (twin of fuz_app's `LruMap`). |
 
 ## Database
 
