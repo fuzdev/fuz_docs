@@ -37,7 +37,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.204.0",
+			"version": "0.206.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
@@ -45,9 +45,9 @@
 			"published": true,
 			"module_count": 81,
 			"exported_module_count": 59,
-			"export_count": 329,
+			"export_count": 331,
 			"peer_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
-			"runtime_dependencies": [],
+			"runtime_dependencies": ["@fuzdev/tsv_wasm"],
 			"dev_dependencies": [
 				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
@@ -60,7 +60,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.63.0",
+			"version": "0.63.2",
 			"path": "fuz_css",
 			"description": "CSS framework and design system for semantic HTML",
 			"glyph": "🪴",
@@ -83,7 +83,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.205.0",
+			"version": "0.205.4",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -112,7 +112,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.94.0",
+			"version": "0.95.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -294,7 +294,7 @@
 			"published": false,
 			"module_count": 211,
 			"exported_module_count": 208,
-			"export_count": 578,
+			"export_count": 557,
 			"peer_dependencies": ["@fuzdev/fuz_app", "@fuzdev/fuz_ui", "@fuzdev/fuz_util"],
 			"runtime_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/gro"],
 			"dev_dependencies": [
@@ -399,7 +399,7 @@
 	],
 	"dependency_graph": {
 		"@fuzdev/fuz_util": ["@fuzdev/blake3_wasm"],
-		"@fuzdev/gro": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util"],
+		"@fuzdev/gro": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util", "@fuzdev/tsv_wasm"],
 		"@fuzdev/fuz_css": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util", "@fuzdev/gro"],
 		"@fuzdev/fuz_ui": [
 			"@fuzdev/fuz_code",

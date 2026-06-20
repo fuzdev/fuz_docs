@@ -186,9 +186,9 @@ import/test-mirroring details.
   './bar.ts'`. Cross-package `@fuzdev/pkg/foo.ts` resolves via the package's
   `exports` `.js`/`.ts` mirror; the build rewrites relative `.ts`→`.js` into
   `dist`. `.svelte` component imports stay `.svelte`. Library code (`src/lib`)
-  imports relative; app code (`src/routes`, `src/test`) keeps the
-  `$lib`/`$routes` aliases with the `.ts` extension (`$lib/db/db.ts`), not
-  relativized. See ./references/path-references.md §5.
+  imports relative; everything else (`src/routes`, `src/test`) uses the
+  `#lib`/`#routes` package.json subpath imports with the `.ts` extension
+  (`#lib/db/db.ts`). See ./references/path-references.md §5.
 - **Comments**:
   - JSDoc (`/** ... */`) = proper sentences with periods
   - Inline (`//`) = fragments, no capital or period

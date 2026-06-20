@@ -97,25 +97,30 @@ file, prefer a workspace-root-anchored path (`setup/scripts/foo.md`) over deep
 ## 5. Import specifiers (code imports, not doc prose)
 
 The forms above govern paths *written in docs/prose*. Import specifiers in
-**source** follow the parallel rule — the real source extension, never the old
-`.js`-for-a-`.ts`-file form:
+**source** use the real source extension (`.ts` / `.svelte.ts` / `.svelte`),
+never the old `.js`-for-a-`.ts`-file form, and pick the alias by **whether the
+module ships**:
 
-- **Relative** (`./`, `../`) → `.ts` / `.svelte.ts`. Used throughout library
-  code (`src/lib`): `import {x} from './sibling.ts'`. The build rewrites these
-  to `.js` on the way to `dist`.
-- **Cross-package** `@fuzdev/<pkg>/sub.ts` → resolves via the target package's
-  `exports` `.js`/`.ts` mirror to its `dist`; never rewritten, needs no consumer
-  flag. (Non-mirror packages like `@fuzdev/blake3_wasm` keep `.js`.)
-- **SvelteKit aliases** `$lib/…` / `$routes/…` → kept **as aliases**, with the
-  `.ts` extension (`$lib/db/db.ts`), in **app code** (`src/routes`, `src/test`).
-  They're idiomatic there and resolve in dev/build via Vite — not shipped, so
-  they only need to resolve locally; don't relativize them. Library code
-  (`src/lib`) doesn't use the aliases — it imports relative.
+- **`src/lib` (ships as `dist`) → relative only** (`./`, `../`):
+  `import {x} from './sibling.ts'` — the build rewrites these to `.js` into
+  `dist`. Aliases break here: both `$lib`/`$routes` (Vite-only) and
+  `#lib`/`#routes` (resolve to `./src/lib/*`, absent from the tarball —
+  `"files": ["dist"]`) give consumers `ERR_MODULE_NOT_FOUND`.
+- **Everything else → `#lib/*` / `#routes/*`** package.json subpath imports
+  (`"imports": {"#lib/*": "./src/lib/*"}`): routes, components, vitest tests, and
+  spawn-outside-Vite entries (Deno/Node servers, benchmarks, `deno` / `bun` /
+  `gro run` scripts) — none of it shipped. One mechanism resolves across Vite,
+  Node, Bun, Deno, and Gro's loader, so the alias never depends on which runtime
+  spawns the file. (`$lib`/`$routes` are retired — Vite-only, so a raw `deno run`
+  fails `Import "$lib/…" not a dependency`.)
+- **Cross-package** `@fuzdev/<pkg>/sub.ts` → resolves via the target's `exports`
+  `.js`/`.ts` mirror to its `dist`. (Non-mirror packages like `@fuzdev/blake3_wasm`
+  keep `.js`.)
 
-Left as-is: `.svelte` component imports (already the source extension) and
-virtual aliases (`$app/*`, `$env/*`). The rule covers type-position imports too
-— `import('$lib/db/db.ts').Db`, `typeof import('./mod.ts')`. The
-`survey_import_extensions` survey enforces this across the ecosystem.
+`$app`/`$env` stay (virtual modules, not file paths). `@ryanatkn/eslint-config`
+bans `$lib`/`$routes` everywhere and `#lib`/`#routes` inside `src/lib`; the rule
+covers type-position imports too (`import('#lib/db/db.ts').Db`). The
+`survey_import_extensions` survey enforces the extension across the ecosystem.
 
 ## Web-rendered caveat
 

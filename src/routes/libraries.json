@@ -10277,7 +10277,7 @@
 	"gro": {
 		"pkg_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.204.0",
+			"version": "0.206.0",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -10418,7 +10418,6 @@
 					],
 					"dependents": [
 						"cli.ts",
-						"format.task.ts",
 						"gro_plugin_sveltekit_app.ts",
 						"invoke.ts",
 						"invoke_task.ts",
@@ -10450,34 +10449,34 @@
 							"name": "BUILD_CACHE_METADATA_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"build.json\"",
-							"sourceLine": 15
+							"sourceLine": 16
 						},
 						{
 							"name": "BUILD_CACHE_VERSION",
 							"kind": "variable",
 							"typeSignature": "\"1\"",
-							"sourceLine": 16
+							"sourceLine": 17
 						},
 						{
 							"name": "BuildOutputEntry",
 							"kind": "type",
 							"docComment": "Metadata about a single build output file.\nIncludes cryptographic hash for validation plus filesystem stats for debugging and optimization.",
 							"typeSignature": "ZodObject<{ path: ZodString; hash: ZodString; size: ZodNumber; mtime: ZodNumber; ctime: ZodNumber; mode: ZodNumber; }, $strict>",
-							"sourceLine": 22
+							"sourceLine": 23
 						},
 						{
 							"name": "BuildCacheMetadata",
 							"kind": "type",
 							"docComment": "Metadata stored in .gro/ directory to track build cache validity.\nSchema validates structure at load time to catch corrupted cache files.",
 							"typeSignature": "ZodObject<{ version: ZodString; git_commit: ZodNullable<ZodString>; build_cache_config_hash: ZodString; timestamp: ZodString; outputs: ZodArray<...>; }, $strict>",
-							"sourceLine": 40
+							"sourceLine": 41
 						},
 						{
 							"name": "compute_build_cache_key",
 							"kind": "function",
 							"docComment": "Computes the cache key components for a build.\nThis determines whether a cached build can be reused.",
 							"typeSignature": "(config: GroConfig, log: Logger, git_commit?: string | null | undefined): Promise<{ git_commit: string | null; build_cache_config_hash: string; }>",
-							"sourceLine": 61,
+							"sourceLine": 62,
 							"parameters": [
 								{
 									"name": "config",
@@ -10503,7 +10502,7 @@
 							"kind": "function",
 							"docComment": "Loads build cache metadata from .gro/ directory.\nInvalid or corrupted cache files are automatically deleted.",
 							"typeSignature": "(): Promise<{ version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; } | null>",
-							"sourceLine": 86,
+							"sourceLine": 87,
 							"returnType": "Promise<{ version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; } | null>"
 						},
 						{
@@ -10511,7 +10510,7 @@
 							"kind": "function",
 							"docComment": "Saves build cache metadata to .gro/ directory.\nErrors are logged but don't fail the build (cache is optional).",
 							"typeSignature": "(metadata: { version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; }, log?: Logger | undefined): Promise<...>",
-							"sourceLine": 128,
+							"sourceLine": 129,
 							"parameters": [
 								{
 									"name": "metadata",
@@ -10530,7 +10529,7 @@
 							"kind": "function",
 							"docComment": "Validates that a cached build is still valid by checking stats and hashing outputs.\nUses size as a fast negative check before expensive hashing.\nThis is comprehensive validation to catch manual tampering or corruption.",
 							"typeSignature": "(metadata: { version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]; }): Promise<...>",
-							"sourceLine": 152,
+							"sourceLine": 153,
 							"parameters": [
 								{
 									"name": "metadata",
@@ -10544,7 +10543,7 @@
 							"kind": "function",
 							"docComment": "Main function to check if the build cache is valid.\nReturns true if the cached build can be used, false if a fresh build is needed.",
 							"typeSignature": "(config: GroConfig, log: Logger, git_commit?: string | null | undefined): Promise<boolean>",
-							"sourceLine": 192,
+							"sourceLine": 193,
 							"parameters": [
 								{
 									"name": "config",
@@ -10570,7 +10569,7 @@
 							"kind": "function",
 							"docComment": "Collects information about all files in build output directories.\nReturns an array of entries with path, hash, size, mtime, ctime, and mode.\n\nFiles are hashed in parallel for performance. For very large builds (10k+ files),\nthis may take several seconds but ensures complete cache validation.",
 							"typeSignature": "(build_dirs: string[]): Promise<{ path: string; hash: string; size: number; mtime: number; ctime: number; mode: number; }[]>",
-							"sourceLine": 238,
+							"sourceLine": 239,
 							"parameters": [
 								{
 									"name": "build_dirs",
@@ -10585,7 +10584,7 @@
 							"kind": "function",
 							"docComment": "Discovers all build output directories in the current working directory.\nReturns an array of directory names that exist: build/, dist/, dist_*",
 							"typeSignature": "(): Promise<string[]>",
-							"sourceLine": 310,
+							"sourceLine": 311,
 							"returnType": "Promise<string[]>"
 						},
 						{
@@ -10593,7 +10592,7 @@
 							"kind": "function",
 							"docComment": "Creates build cache metadata after a successful build.\nAutomatically discovers all build output directories (build/, dist/, dist_*).",
 							"typeSignature": "(config: GroConfig, log: Logger, git_commit?: string | null | undefined, build_dirs?: string[] | undefined): Promise<{ version: string; git_commit: string | null; build_cache_config_hash: string; timestamp: string; outputs: { ...; }[]; }>",
-							"sourceLine": 355,
+							"sourceLine": 356,
 							"parameters": [
 								{
 									"name": "config",
@@ -10947,7 +10946,6 @@
 					"dependencies": ["args.ts", "constants.ts"],
 					"dependents": [
 						"changeset.task.ts",
-						"format_directory.ts",
 						"gro_plugin_gen.ts",
 						"gro_plugin_sveltekit_app.ts",
 						"lint.task.ts",
@@ -11020,197 +11018,179 @@
 							"sourceLine": 21
 						},
 						{
-							"name": "README_FILENAME",
-							"kind": "variable",
-							"typeSignature": "\"README.md\"",
-							"sourceLine": 22
-						},
-						{
 							"name": "SVELTE_CONFIG_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"svelte.config.js\"",
-							"sourceLine": 23
+							"sourceLine": 22
 						},
 						{
 							"name": "VITE_CONFIG_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"vite.config.ts\"",
-							"sourceLine": 24
+							"sourceLine": 23
 						},
 						{
 							"name": "NODE_MODULES_DIRNAME",
 							"kind": "variable",
 							"typeSignature": "\"node_modules\"",
-							"sourceLine": 25
+							"sourceLine": 24
 						},
 						{
 							"name": "PACKAGE_JSON_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"package.json\"",
-							"sourceLine": 26
+							"sourceLine": 25
 						},
 						{
 							"name": "LOCKFILE_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"package-lock.json\"",
-							"sourceLine": 27
+							"sourceLine": 26
 						},
 						{
 							"name": "SVELTEKIT_DEV_DIRNAME",
 							"kind": "variable",
 							"typeSignature": "\".svelte-kit\"",
-							"sourceLine": 28
+							"sourceLine": 27
 						},
 						{
 							"name": "SVELTEKIT_BUILD_DIRNAME",
 							"kind": "variable",
 							"typeSignature": "\"build\"",
-							"sourceLine": 29
+							"sourceLine": 28
 						},
 						{
 							"name": "SVELTEKIT_DIST_DIRNAME",
 							"kind": "variable",
 							"typeSignature": "\"dist\"",
-							"sourceLine": 30
+							"sourceLine": 29
 						},
 						{
 							"name": "SVELTEKIT_VITE_CACHE_PATH",
 							"kind": "variable",
 							"typeSignature": "string",
-							"sourceLine": 31
-						},
-						{
-							"name": "GITHUB_DIRNAME",
-							"kind": "variable",
-							"typeSignature": "\".github\"",
-							"sourceLine": 32
+							"sourceLine": 30
 						},
 						{
 							"name": "GIT_DIRNAME",
 							"kind": "variable",
 							"typeSignature": "\".git\"",
-							"sourceLine": 33
+							"sourceLine": 31
 						},
 						{
 							"name": "TSCONFIG_FILENAME",
 							"kind": "variable",
 							"typeSignature": "\"tsconfig.json\"",
-							"sourceLine": 34
+							"sourceLine": 32
 						},
 						{
 							"name": "TS_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 36
+							"sourceLine": 34
 						},
 						{
 							"name": "JS_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 37
+							"sourceLine": 35
 						},
 						{
 							"name": "JSON_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 38
+							"sourceLine": 36
 						},
 						{
 							"name": "SVELTE_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 39
+							"sourceLine": 37
 						},
 						{
 							"name": "SVELTE_RUNES_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 40
+							"sourceLine": 38
 						},
 						{
 							"name": "CSS_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 41
+							"sourceLine": 39
 						},
 						{
 							"name": "SVELTE_SCRIPT_MATCHER",
 							"kind": "variable",
 							"docComment": "Extracts the script content from Svelte files.",
 							"typeSignature": "RegExp",
-							"sourceLine": 43
+							"sourceLine": 41
 						},
 						{
 							"name": "SVELTEKIT_ENV_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 44
+							"sourceLine": 42
 						},
 						{
 							"name": "SVELTEKIT_GLOBAL_SPECIFIER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 45
+							"sourceLine": 43
 						},
 						{
 							"name": "EVERYTHING_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 46
+							"sourceLine": 44
 						},
 						{
 							"name": "JS_CLI_DEFAULT",
 							"kind": "variable",
 							"typeSignature": "\"node\"",
-							"sourceLine": 48
+							"sourceLine": 46
 						},
 						{
 							"name": "PM_CLI_DEFAULT",
 							"kind": "variable",
 							"typeSignature": "\"npm\"",
-							"sourceLine": 49
-						},
-						{
-							"name": "PRETTIER_CLI_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "\"prettier\"",
-							"sourceLine": 50
+							"sourceLine": 47
 						},
 						{
 							"name": "SVELTEKIT_CLI",
 							"kind": "variable",
 							"typeSignature": "\"svelte-kit\"",
-							"sourceLine": 51
+							"sourceLine": 48
 						},
 						{
 							"name": "SVELTE_CHECK_CLI",
 							"kind": "variable",
 							"typeSignature": "\"svelte-check\"",
-							"sourceLine": 52
+							"sourceLine": 49
 						},
 						{
 							"name": "SVELTE_PACKAGE_CLI",
 							"kind": "variable",
 							"typeSignature": "\"svelte-package\"",
-							"sourceLine": 53
+							"sourceLine": 50
 						},
 						{
 							"name": "SVELTE_PACKAGE_DEP_NAME",
 							"kind": "variable",
 							"typeSignature": "\"@sveltejs/package\"",
-							"sourceLine": 54
+							"sourceLine": 51
 						},
 						{
 							"name": "VITE_CLI",
 							"kind": "variable",
 							"typeSignature": "\"vite\"",
-							"sourceLine": 55
+							"sourceLine": 52
 						},
 						{
 							"name": "VITEST_CLI",
 							"kind": "variable",
 							"typeSignature": "\"vitest\"",
-							"sourceLine": 56
+							"sourceLine": 53
 						}
 					],
 					"dependents": [
@@ -11218,12 +11198,12 @@
 						"clean_fs.ts",
 						"cli.ts",
 						"deploy.task.ts",
+						"dist_rewrite_imports.ts",
 						"esbuild_plugin_svelte.ts",
 						"esbuild_plugin_sveltekit_local_imports.ts",
 						"esbuild_plugin_sveltekit_shim_app.ts",
 						"esbuild_plugin_sveltekit_shim_env.ts",
 						"filer.ts",
-						"format.task.ts",
 						"format_directory.ts",
 						"gen.task.ts",
 						"gro_config.ts",
@@ -11317,6 +11297,83 @@
 						}
 					],
 					"dependents": ["filer.ts"]
+				},
+				{
+					"path": "dist_rewrite_imports.ts",
+					"declarations": [
+						{
+							"name": "rewrite_relative_ts_imports",
+							"kind": "function",
+							"docComment": "Rewrites relative `.ts` (and `.svelte.ts`) import specifiers to `.js` (and\n`.svelte.js`) across a chunk of TypeScript source — a whole `.d.ts` file or a\n`.svelte` `<script>` block.",
+							"typeSignature": "(content: string): string",
+							"sourceLine": 61,
+							"parameters": [
+								{
+									"name": "content",
+									"type": "string"
+								}
+							],
+							"returnType": "string"
+						},
+						{
+							"name": "rewrite_svelte_ts_imports",
+							"kind": "function",
+							"docComment": "Rewrites relative `.ts` import specifiers to `.js` inside each `<script>` block\nof a `.svelte` file, leaving template markup untouched.",
+							"typeSignature": "(content: string): string",
+							"sourceLine": 71,
+							"parameters": [
+								{
+									"name": "content",
+									"type": "string"
+								}
+							],
+							"returnType": "string"
+						},
+						{
+							"name": "RewriteDistImportsResult",
+							"kind": "interface",
+							"typeSignature": "RewriteDistImportsResult",
+							"sourceLine": 80,
+							"members": [
+								{
+									"name": "scanned",
+									"kind": "variable",
+									"docComment": "Number of files scanned (`.js`, `.d.ts`, and `.svelte`).",
+									"typeSignature": "number"
+								},
+								{
+									"name": "rewritten",
+									"kind": "variable",
+									"docComment": "Number of scanned files whose contents changed.",
+									"typeSignature": "number"
+								}
+							]
+						},
+						{
+							"name": "rewrite_dist_imports",
+							"kind": "function",
+							"docComment": "Walks `dist_dir` and rewrites relative `.ts` import specifiers to `.js` in every\n`.js` runtime file and `.d.ts` declaration file (whole-file) and `.svelte` file\n(`<script>` blocks only). Source maps (`*.map`) are skipped.",
+							"typeSignature": "(dist_dir?: string, log?: Logger | undefined): Promise<RewriteDistImportsResult>",
+							"sourceLine": 98,
+							"parameters": [
+								{
+									"name": "dist_dir",
+									"type": "string",
+									"description": "the packaged output directory; defaults to `dist`",
+									"defaultValue": "SVELTEKIT_DIST_DIRNAME"
+								},
+								{
+									"name": "log",
+									"type": "Logger | undefined",
+									"optional": true
+								}
+							],
+							"returnType": "Promise<RewriteDistImportsResult>",
+							"returnDescription": "counts of files scanned and rewritten"
+						}
+					],
+					"dependencies": ["constants.ts"],
+					"dependents": ["gro_plugin_sveltekit_library.ts"]
 				},
 				{
 					"path": "env.ts",
@@ -12077,17 +12134,42 @@
 				},
 				{
 					"path": "format.task.ts",
-					"dependencies": ["args.ts", "constants.ts", "format_directory.ts", "paths.ts", "task.ts"]
+					"dependencies": ["format_directory.ts", "paths.ts", "task.ts"]
 				},
 				{
 					"path": "format_directory.ts",
 					"declarations": [
 						{
+							"name": "FormatDirectoryResult",
+							"kind": "interface",
+							"typeSignature": "FormatDirectoryResult",
+							"sourceLine": 35,
+							"members": [
+								{
+									"name": "ok",
+									"kind": "variable",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "formatted",
+									"kind": "variable",
+									"docComment": "The files that were formatted (or, in `check` mode, that need formatting).",
+									"typeSignature": "Array<string>"
+								},
+								{
+									"name": "errored",
+									"kind": "variable",
+									"docComment": "Files the formatter rejected (e.g. a syntax error), left untouched.",
+									"typeSignature": "Array<{id: string; error: unknown}>"
+								}
+							]
+						},
+						{
 							"name": "format_directory",
 							"kind": "function",
-							"docComment": "Formats files on the filesystem.\nWhen `patterns` is provided, formats those specific files/patterns.\nOtherwise formats `dir` with default extensions, plus root files if `dir` is `paths.source`.\nThis is separated from `./format_file` to avoid importing all of the `prettier` code\ninside modules that import this one. (which has a nontrivial cost)",
-							"typeSignature": "(log: Logger, dir: string, check?: boolean, extensions?: string, root_paths?: string, prettier_cli?: string | Cli, pm_cli?: string, additional_args?: Args | undefined, patterns?: string[] | undefined): Promise<...>",
-							"sourceLine": 35,
+							"docComment": "Formats files on the filesystem in-process via `format_file`.\nWhen `patterns` is provided, formats those specific files/globs.\nOtherwise formats `dir` (recursively, respecting `filter`) plus the root\nfiles when `dir` is `paths.source`.\n\nFiles the formatter rejects (e.g. a syntax error) are reported and fail the\nrun in both modes rather than being silently skipped.\n\nThis is separated from `./format_file` so modules that only need directory\ntraversal don't pull in the formatter (which loads the `tsv` WASM module).",
+							"typeSignature": "(log: Logger, dir: string, check?: boolean, filter?: PathFilter | PathFilter[] | undefined, patterns?: string[] | undefined): Promise<FormatDirectoryResult>",
+							"sourceLine": 59,
 							"parameters": [
 								{
 									"name": "log",
@@ -12100,32 +12182,14 @@
 								{
 									"name": "check",
 									"type": "boolean",
+									"description": "when `true`, reports unformatted files instead of writing them",
 									"defaultValue": "false"
 								},
 								{
-									"name": "extensions",
-									"type": "string",
-									"defaultValue": "EXTENSIONS_DEFAULT"
-								},
-								{
-									"name": "root_paths",
-									"type": "string",
-									"defaultValue": "ROOT_PATHS_DEFAULT"
-								},
-								{
-									"name": "prettier_cli",
-									"type": "string | Cli",
-									"defaultValue": "PRETTIER_CLI_DEFAULT"
-								},
-								{
-									"name": "pm_cli",
-									"type": "string",
-									"defaultValue": "PM_CLI_DEFAULT"
-								},
-								{
-									"name": "additional_args",
-									"type": "Args | undefined",
-									"optional": true
+									"name": "filter",
+									"type": "PathFilter | PathFilter[] | undefined",
+									"optional": true,
+									"description": "directory filters (e.g. `config.search_filters`) to skip;\nalso prunes `patterns` results so an explicit glob can't reach `node_modules`"
 								},
 								{
 									"name": "patterns",
@@ -12133,42 +12197,67 @@
 									"optional": true
 								}
 							],
-							"returnType": "Promise<SpawnResult>"
+							"returnType": "Promise<FormatDirectoryResult>"
 						}
 					],
-					"dependencies": ["cli.ts", "constants.ts", "paths.ts"],
+					"dependencies": ["constants.ts", "format_file.ts", "paths.ts"],
 					"dependents": ["format.task.ts"]
 				},
 				{
 					"path": "format_file.ts",
 					"declarations": [
 						{
+							"name": "FormatLang",
+							"kind": "type",
+							"docComment": "The source languages Gro can format in-process, backed by\n`@fuzdev/tsv_wasm` (`typescript`/`svelte`/`css`) plus a builtin `json`\nformatter. Anything else passes through unchanged.",
+							"typeSignature": "FormatLang",
+							"sourceLine": 9
+						},
+						{
+							"name": "FormatFileOptions",
+							"kind": "interface",
+							"typeSignature": "FormatFileOptions",
+							"sourceLine": 11,
+							"members": [
+								{
+									"name": "filepath",
+									"kind": "variable",
+									"docComment": "The file path, used to infer the language from its extension.",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "lang",
+									"kind": "variable",
+									"docComment": "The language to format as, overriding any inference from `filepath`.",
+									"typeSignature": "FormatLang",
+									"optional": true
+								}
+							]
+						},
+						{
 							"name": "format_file",
 							"kind": "function",
-							"docComment": "Formats a file with Prettier.",
-							"typeSignature": "(content: string, options: Options, base_options?: Options | null | undefined): Promise<string>",
-							"sourceLine": 14,
+							"docComment": "Formats a string of source code in-process.\nPasses the input through unchanged when the language is unsupported (an\nexpected no-op), but throws when the formatter rejects the source — e.g. a\nsyntax error — so callers can decide whether to log, skip, or fail rather\nthan silently treating broken input as already-formatted.",
+							"typeSignature": "(content: string, options?: FormatFileOptions): string",
+							"sourceLine": 27,
 							"parameters": [
 								{
 									"name": "content",
-									"type": "string"
+									"type": "string",
+									"description": "the source to format"
 								},
 								{
 									"name": "options",
-									"type": "Options"
-								},
-								{
-									"name": "base_options",
-									"type": "Options | null | undefined",
-									"description": "defaults to the cwd's `package.json` `prettier` value",
-									"defaultValue": "cached_base_options"
+									"type": "FormatFileOptions",
+									"description": "a `filepath` to infer the language, or an explicit `lang`",
+									"defaultValue": "{}"
 								}
 							],
-							"returnType": "Promise<string>"
+							"returnType": "string"
 						}
 					],
-					"dependencies": ["package_json.ts"],
-					"dependents": ["gen.task.ts", "run_gen.ts"]
+					"dependents": ["format_directory.ts", "gen.task.ts", "run_gen.ts"]
 				},
 				{
 					"path": "gen.task.ts",
@@ -12574,13 +12663,13 @@
 							"name": "AnalyzedGenResult",
 							"kind": "type",
 							"typeSignature": "AnalyzedGenResult",
-							"sourceLine": 199
+							"sourceLine": 203
 						},
 						{
 							"name": "analyze_gen_results",
 							"kind": "function",
 							"typeSignature": "(gen_results: GenResults): Promise<AnalyzedGenResult[]>",
-							"sourceLine": 213,
+							"sourceLine": 217,
 							"parameters": [
 								{
 									"name": "gen_results",
@@ -12593,7 +12682,7 @@
 							"name": "analyze_gen_result",
 							"kind": "function",
 							"typeSignature": "(file: GenFile): Promise<AnalyzedGenResult>",
-							"sourceLine": 220,
+							"sourceLine": 224,
 							"parameters": [
 								{
 									"name": "file",
@@ -12606,7 +12695,7 @@
 							"name": "write_gen_results",
 							"kind": "function",
 							"typeSignature": "(gen_results: GenResults, analyzed_gen_results: AnalyzedGenResult[], log: Logger): Promise<void>",
-							"sourceLine": 243,
+							"sourceLine": 247,
 							"parameters": [
 								{
 									"name": "gen_results",
@@ -12627,7 +12716,7 @@
 							"name": "FoundGenfiles",
 							"kind": "interface",
 							"typeSignature": "FoundGenfiles",
-							"sourceLine": 266,
+							"sourceLine": 270,
 							"members": [
 								{
 									"name": "resolved_input_files",
@@ -12650,20 +12739,20 @@
 							"name": "FindGenfilesResult",
 							"kind": "type",
 							"typeSignature": "FindGenfilesResult",
-							"sourceLine": 272
+							"sourceLine": 276
 						},
 						{
 							"name": "FindGenfilesFailure",
 							"kind": "type",
 							"typeSignature": "FindGenfilesFailure",
-							"sourceLine": 273
+							"sourceLine": 277
 						},
 						{
 							"name": "find_genfiles",
 							"kind": "function",
 							"docComment": "Finds modules from input paths. (see `input_path.ts` for more)",
 							"typeSignature": "(input_paths: InputPath[], root_dirs: PathId[], config: GroConfig, timings?: Timings | undefined): Promise<FindGenfilesResult>",
-							"sourceLine": 292,
+							"sourceLine": 296,
 							"parameters": [
 								{
 									"name": "input_paths",
@@ -12689,7 +12778,7 @@
 							"name": "GenfileModule",
 							"kind": "interface",
 							"typeSignature": "GenfileModule",
-							"sourceLine": 360,
+							"sourceLine": 364,
 							"members": [
 								{
 									"name": "gen",
@@ -12702,13 +12791,13 @@
 							"name": "GenfileModuleMeta",
 							"kind": "type",
 							"typeSignature": "GenfileModuleMeta",
-							"sourceLine": 364
+							"sourceLine": 368
 						},
 						{
 							"name": "LoadedGenfiles",
 							"kind": "interface",
 							"typeSignature": "LoadedGenfiles",
-							"sourceLine": 366,
+							"sourceLine": 370,
 							"members": [
 								{
 									"name": "modules",
@@ -12726,19 +12815,19 @@
 							"name": "LoadGenfilesResult",
 							"kind": "type",
 							"typeSignature": "LoadGenfilesResult",
-							"sourceLine": 371
+							"sourceLine": 375
 						},
 						{
 							"name": "LoadGenfilesFailure",
 							"kind": "type",
 							"typeSignature": "LoadGenfilesFailure",
-							"sourceLine": 372
+							"sourceLine": 376
 						},
 						{
 							"name": "load_genfiles",
 							"kind": "function",
 							"typeSignature": "(found_genfiles: FoundGenfiles, timings?: Timings | undefined): Promise<LoadGenfilesResult>",
-							"sourceLine": 374,
+							"sourceLine": 378,
 							"parameters": [
 								{
 									"name": "found_genfiles",
@@ -12756,7 +12845,7 @@
 							"name": "validate_gen_module",
 							"kind": "function",
 							"typeSignature": "(mod: Record<string, any>): mod is GenfileModule",
-							"sourceLine": 393,
+							"sourceLine": 397,
 							"parameters": [
 								{
 									"name": "mod",
@@ -12769,7 +12858,7 @@
 							"name": "normalize_gen_config",
 							"kind": "function",
 							"typeSignature": "(gen: Gen): GenConfig",
-							"sourceLine": 401,
+							"sourceLine": 405,
 							"parameters": [
 								{
 									"name": "gen",
@@ -13126,7 +13215,7 @@
 							"kind": "function",
 							"docComment": "Transforms a `RawGroConfig` to the more strict `GroConfig`.\nThis allows users to provide a more relaxed config.\nHashes the `build_cache_config` and deletes the raw value for security.",
 							"typeSignature": "(raw_config: RawGroConfig): Promise<GroConfig>",
-							"sourceLine": 162,
+							"sourceLine": 166,
 							"parameters": [
 								{
 									"name": "raw_config",
@@ -13139,7 +13228,7 @@
 							"name": "GroConfigModule",
 							"kind": "interface",
 							"typeSignature": "GroConfigModule",
-							"sourceLine": 211,
+							"sourceLine": 215,
 							"members": [
 								{
 									"name": "default",
@@ -13153,7 +13242,7 @@
 							"name": "load_gro_config",
 							"kind": "function",
 							"typeSignature": "(dir?: string): Promise<GroConfig>",
-							"sourceLine": 215,
+							"sourceLine": 219,
 							"parameters": [
 								{
 									"name": "dir",
@@ -13167,7 +13256,7 @@
 							"name": "validate_gro_config_module",
 							"kind": "function",
 							"typeSignature": "(config_module: any, config_path: string): asserts config_module is GroConfigModule",
-							"sourceLine": 238,
+							"sourceLine": 242,
 							"parameters": [
 								{
 									"name": "config_module",
@@ -13253,79 +13342,6 @@
 					],
 					"dependencies": ["constants.ts"],
 					"dependents": ["gro.ts", "run.task.ts"]
-				},
-				{
-					"path": "gro_plugin_deno_compile.ts",
-					"declarations": [
-						{
-							"name": "GroPluginDenoCompileOptions",
-							"kind": "interface",
-							"typeSignature": "GroPluginDenoCompileOptions",
-							"sourceLine": 24,
-							"members": [
-								{
-									"name": "entry",
-									"kind": "variable",
-									"docComment": "Entry point TypeScript file.",
-									"typeSignature": "string"
-								},
-								{
-									"name": "output_name",
-									"kind": "variable",
-									"docComment": "Output binary name (without path).",
-									"typeSignature": "string"
-								},
-								{
-									"name": "output_dir",
-									"kind": "variable",
-									"docComment": "Output directory for the binary.",
-									"typeSignature": "string",
-									"optional": true,
-									"defaultValue": "'dist_cli'"
-								},
-								{
-									"name": "permissions",
-									"kind": "variable",
-									"docComment": "Deno permissions to grant.",
-									"typeSignature": "Array<string>",
-									"optional": true,
-									"defaultValue": "['--allow-all']"
-								},
-								{
-									"name": "flags",
-									"kind": "variable",
-									"docComment": "Additional deno compile flags.",
-									"typeSignature": "Array<string>",
-									"optional": true,
-									"defaultValue": "[]"
-								},
-								{
-									"name": "generate_hash",
-									"kind": "variable",
-									"docComment": "Generate a SHA-256 hash file alongside the binary.\nThe hash file is named `{output_name}.sha256` and uses sha256sum format.",
-									"typeSignature": "boolean",
-									"optional": true,
-									"defaultValue": "true"
-								}
-							]
-						},
-						{
-							"name": "gro_plugin_deno_compile",
-							"kind": "function",
-							"docComment": "Creates a gro plugin that compiles TypeScript to a binary using `deno compile`.\nRuns during the `adapt` phase (production build only).",
-							"typeSignature": "(options: GroPluginDenoCompileOptions): Plugin<PluginContext<object>>",
-							"sourceLine": 65,
-							"parameters": [
-								{
-									"name": "options",
-									"type": "GroPluginDenoCompileOptions"
-								}
-							],
-							"returnType": "Plugin<PluginContext<object>>"
-						}
-					],
-					"moduleComment": "Gro build plugin for compiling TypeScript to a standalone binary via `deno compile`.\n\nRuns during the `adapt` phase (production build only).\nOptionally generates a SHA-256 hash file for verification.\n\nTo avoid bundling all npm devDependencies from `package.json`, we:\n1. Extract just the \"imports\" from root deno.json\n2. Rebase relative paths (e.g. `../fuz_app/` → `../../fuz_app/`) since\n   compilation runs from the output subdirectory\n3. Write a minimal deno.json to the output directory\n4. Compile from that directory (which has no `package.json`)",
-					"dependencies": ["plugin.ts", "task.ts"]
 				},
 				{
 					"path": "gro_plugin_deno_server.ts",
@@ -13721,7 +13737,7 @@
 							"name": "GroPluginSveltekitLibraryOptions",
 							"kind": "interface",
 							"typeSignature": "GroPluginSveltekitLibraryOptions",
-							"sourceLine": 9,
+							"sourceLine": 10,
 							"members": [
 								{
 									"name": "svelte_package_options",
@@ -13745,7 +13761,7 @@
 							"name": "gro_plugin_sveltekit_library",
 							"kind": "function",
 							"typeSignature": "({ svelte_package_options, svelte_package_cli, }?: GroPluginSveltekitLibraryOptions): Plugin<PluginContext<object>>",
-							"sourceLine": 22,
+							"sourceLine": 23,
 							"parameters": [
 								{
 									"name": "__0",
@@ -13758,6 +13774,7 @@
 					],
 					"dependencies": [
 						"constants.ts",
+						"dist_rewrite_imports.ts",
 						"package_json.ts",
 						"plugin.ts",
 						"sveltekit_helpers.ts",
@@ -14084,21 +14101,21 @@
 							"kind": "variable",
 							"docComment": "Cache filename inside a repo's `.gro` directory for `library_load_from_repo`.",
 							"typeSignature": "\"library.json\"",
-							"sourceLine": 20
+							"sourceLine": 21
 						},
 						{
 							"name": "LIBRARY_CACHE_VERSION",
 							"kind": "variable",
 							"docComment": "Format version for the `.gro/library.json` cache. The cache key is the git\ncommit hash, which does NOT change when the cached *shape* changes — so bump\nthis whenever `LibraryCache`'s shape changes (e.g. the `LibraryJson` /\n`PkgJson` split, then slimming `LibraryJson` to the raw `pkg_json`/`source_json`\npair) to self-invalidate stale caches across the ecosystem rather than serve\nold-shaped data at an unchanged commit.",
 							"typeSignature": "1",
-							"sourceLine": 30
+							"sourceLine": 31
 						},
 						{
 							"name": "LibraryLoadResult",
 							"kind": "interface",
 							"docComment": "Result of loading a repo's library metadata: the curated `LibraryJson`\n(carrying the publish-safe `pkg_json`) plus the repo's full `package.json`.\n\nThe full `package_json` is kept alongside — not folded into `LibraryJson` —\nbecause tooling like fuz_gitops needs `dependencies`/`devDependencies`, which\nthe curated `LibraryJson.pkg_json` deliberately omits.",
 							"typeSignature": "LibraryLoadResult",
-							"sourceLine": 40,
+							"sourceLine": 41,
 							"members": [
 								{
 									"name": "library_json",
@@ -14117,7 +14134,7 @@
 							"kind": "interface",
 							"docComment": "On-disk shape of the `.gro/library.json` cache file.\nThe `hash` is the git-based cache key the result was computed at; `version`\nis the `LIBRARY_CACHE_VERSION` it was written under.",
 							"typeSignature": "LibraryCache",
-							"sourceLine": 50,
+							"sourceLine": 51,
 							"extends": ["LibraryLoadResult"],
 							"members": [
 								{
@@ -14136,7 +14153,7 @@
 							"name": "LibraryLoadOptions",
 							"kind": "interface",
 							"typeSignature": "LibraryLoadOptions",
-							"sourceLine": 55,
+							"sourceLine": 56,
 							"members": [
 								{
 									"name": "log",
@@ -14158,7 +14175,7 @@
 							"kind": "function",
 							"docComment": "Computes the cache key for a repo at `repo_dir`: the git `HEAD` commit hash.\n\nReturns `null` (uncacheable — analysis still runs, caching is skipped) when\nthe dir is not a git repo OR when the working tree is dirty. A dirty tree is\ndeliberately uncacheable: the commit hash doesn't capture uncommitted edits,\nso a single `-dirty` key would serve a stale analysis across successive edits.\nSkipping the cache while dirty guarantees fresh metadata; clean commits cache.",
 							"typeSignature": "(repo_dir: string): Promise<string | null>",
-							"sourceLine": 70,
+							"sourceLine": 71,
 							"parameters": [
 								{
 									"name": "repo_dir",
@@ -14172,7 +14189,7 @@
 							"kind": "function",
 							"docComment": "Reads and validates the `.gro/library.json` cache at `cache_path`.\n\nReturns the cached `{library_json, package_json}` only when the file exists\nand its stored `hash` matches `key`. Returns `null` on every miss - absent,\nstale (different `hash`), or unreadable/corrupt - signalling the caller to\nre-analyze.",
 							"typeSignature": "(cache_path: string, key: string, log?: Logger | undefined): Promise<LibraryLoadResult | null>",
-							"sourceLine": 90,
+							"sourceLine": 91,
 							"parameters": [
 								{
 									"name": "cache_path",
@@ -14198,7 +14215,7 @@
 							"kind": "function",
 							"docComment": "Writes `result` to the `.gro/library.json` cache at `cache_path`, keyed by\n`key` and stamped with the current `LIBRARY_CACHE_VERSION`, creating the\nparent directory as needed.\n\nBest effort: caching is optional, so write failures are logged as a warning\nand swallowed rather than thrown.",
 							"typeSignature": "(cache_path: string, key: string, result: LibraryLoadResult, log?: Logger | undefined): Promise<void>",
-							"sourceLine": 123,
+							"sourceLine": 124,
 							"parameters": [
 								{
 									"name": "cache_path",
@@ -14228,7 +14245,7 @@
 							"kind": "function",
 							"docComment": "Loads a repo's library metadata via `svelte-docinfo`, with a `.gro` cache\nkeyed by git hash.\n\nAnalyzes `repo_dir` with `analyzeFromFiles` and combines the result with the\nrepo's `package.json` into a `LibraryJson`, returned alongside the full\n`package.json`. Results are cached at `<repo_dir>/.gro/library.json` keyed by\nthe current git `HEAD`, so repeated loads at the same commit skip the\n(potentially slow) analysis. A dirty working tree (or a non-git dir) is\nuncacheable, so analysis re-runs on every load until the changes are\ncommitted - see `library_cache_key`.",
 							"typeSignature": "(repo_dir: string, options?: LibraryLoadOptions | undefined): Promise<LibraryLoadResult>",
-							"sourceLine": 157,
+							"sourceLine": 158,
 							"parameters": [
 								{
 									"name": "repo_dir",
@@ -14879,7 +14896,6 @@
 					"dependents": [
 						"changeset.task.ts",
 						"check.task.ts",
-						"format_file.ts",
 						"gro.config.default.ts",
 						"gro_config.ts",
 						"gro_plugin_sveltekit_library.ts",
@@ -15387,7 +15403,6 @@
 						"build.task.ts",
 						"dev.task.ts",
 						"gro_config.ts",
-						"gro_plugin_deno_compile.ts",
 						"gro_plugin_deno_server.ts",
 						"gro_plugin_gen.ts",
 						"gro_plugin_server.ts",
@@ -15511,7 +15526,7 @@
 						{
 							"name": "run_gen",
 							"kind": "function",
-							"typeSignature": "(gen_modules: GenfileModuleMeta[], config: GroConfig, filer: Filer, log: Logger, timings: Timings, invoke_task: InvokeTask, format_file?: ((content: string, options: Options, base_options?: Options | ... 1 more ... | undefined) => Promise<...>) | undefined): Promise<...>",
+							"typeSignature": "(gen_modules: GenfileModuleMeta[], config: GroConfig, filer: Filer, log: Logger, timings: Timings, invoke_task: InvokeTask, format_file?: ((content: string, options?: FormatFileOptions) => string) | undefined): Promise<...>",
 							"sourceLine": 25,
 							"parameters": [
 								{
@@ -15540,7 +15555,7 @@
 								},
 								{
 									"name": "format_file",
-									"type": "((content: string, options: Options, base_options?: Options | null | undefined) => Promise<string>) | undefined",
+									"type": "((content: string, options?: FormatFileOptions) => string) | undefined",
 									"optional": true
 								}
 							],
@@ -15831,7 +15846,7 @@
 							"kind": "function",
 							"docComment": "If the SvelteKit CLI is found and its `.svelte-kit` directory is not, run `svelte-kit sync`.",
 							"typeSignature": "(sveltekit_cli?: string | Cli): Promise<void>",
-							"sourceLine": 73,
+							"sourceLine": 75,
 							"parameters": [
 								{
 									"name": "sveltekit_cli",
@@ -15846,7 +15861,7 @@
 							"kind": "function",
 							"docComment": "If the SvelteKit CLI is found and its `.svelte-kit` directory is not, run `svelte-kit sync`.",
 							"typeSignature": "(sveltekit_cli?: string | Cli): Promise<void>",
-							"sourceLine": 86,
+							"sourceLine": 88,
 							"parameters": [
 								{
 									"name": "sveltekit_cli",
@@ -15861,7 +15876,7 @@
 							"kind": "interface",
 							"docComment": "Options to the SvelteKit packaging CLI.",
 							"typeSignature": "SveltePackageOptions",
-							"sourceLine": 104,
+							"sourceLine": 106,
 							"seeAlso": ["https://svelte.dev/docs/kit/packaging#options"],
 							"members": [
 								{
@@ -15933,7 +15948,7 @@
 							"name": "run_svelte_package",
 							"kind": "function",
 							"typeSignature": "(package_json: { [x: string]: unknown; name: string; version?: string | undefined; private?: boolean | undefined; description?: string | undefined; tagline?: string | undefined; glyph?: string | undefined; ... 24 more ...; exports?: string | ... 2 more ... | undefined; }, options: SveltePackageOptions | undefined, cli: string | Cli, log: Logger, pm_cli: string): Promise<...>",
-							"sourceLine": 150,
+							"sourceLine": 152,
 							"parameters": [
 								{
 									"name": "package_json",
@@ -15963,7 +15978,7 @@
 							"kind": "function",
 							"docComment": "Map an import specifier with the SvelteKit aliases.",
 							"typeSignature": "(specifier: string, aliases: [string, string][]): string",
-							"sourceLine": 181,
+							"sourceLine": 185,
 							"parameters": [
 								{
 									"name": "specifier",
@@ -16338,7 +16353,7 @@
 								{
 									"name": "TArgsSchema",
 									"constraint": "z.ZodType<Args, Args>",
-									"defaultType": "z.ZodType<Args, Args>"
+									"defaultType": "z.ZodType<\n\t\tArgs,\n\t\tArgs\n\t>"
 								},
 								{
 									"name": "TReturn",
@@ -16369,7 +16384,7 @@
 							"name": "TaskContext",
 							"kind": "interface",
 							"typeSignature": "TaskContext<TArgs>",
-							"sourceLine": 34,
+							"sourceLine": 37,
 							"genericParams": [
 								{
 									"name": "TArgs",
@@ -16418,7 +16433,7 @@
 							"name": "InvokeTask",
 							"kind": "type",
 							"typeSignature": "InvokeTask",
-							"sourceLine": 44,
+							"sourceLine": 47,
 							"members": [
 								{
 									"name": "(call)",
@@ -16448,25 +16463,25 @@
 							"name": "TASK_FILE_SUFFIX_TS",
 							"kind": "variable",
 							"typeSignature": "\".task.ts\"",
-							"sourceLine": 46
+							"sourceLine": 49
 						},
 						{
 							"name": "TASK_FILE_SUFFIX_JS",
 							"kind": "variable",
 							"typeSignature": "\".task.js\"",
-							"sourceLine": 47
+							"sourceLine": 50
 						},
 						{
 							"name": "TASK_FILE_SUFFIXES",
 							"kind": "variable",
 							"typeSignature": "string[]",
-							"sourceLine": 48
+							"sourceLine": 51
 						},
 						{
 							"name": "is_task_path",
 							"kind": "function",
 							"typeSignature": "(path: string): boolean",
-							"sourceLine": 50,
+							"sourceLine": 53,
 							"parameters": [
 								{
 									"name": "path",
@@ -16479,7 +16494,7 @@
 							"name": "to_task_name",
 							"kind": "function",
 							"typeSignature": "(id: PathId, task_root_dir: PathId, input_path: InputPath, root_path: PathId): string",
-							"sourceLine": 53,
+							"sourceLine": 56,
 							"parameters": [
 								{
 									"name": "id",
@@ -16504,21 +16519,21 @@
 							"name": "TaskError",
 							"kind": "class",
 							"docComment": "This is used by tasks to signal a known failure.\nIt's useful for cleaning up logging because\nwe usually don't need their stack trace.",
-							"sourceLine": 82,
+							"sourceLine": 85,
 							"extends": "Error"
 						},
 						{
 							"name": "SilentError",
 							"kind": "class",
 							"docComment": "This is used to tell Gro to exit silently, usually still with with a non-zero exit code.\nUsing it means error logging is handled by the code that threw it.",
-							"sourceLine": 88,
+							"sourceLine": 91,
 							"extends": "Error"
 						},
 						{
 							"name": "FoundTask",
 							"kind": "interface",
 							"typeSignature": "FoundTask",
-							"sourceLine": 90,
+							"sourceLine": 93,
 							"members": [
 								{
 									"name": "input_path",
@@ -16541,7 +16556,7 @@
 							"name": "FoundTasks",
 							"kind": "interface",
 							"typeSignature": "FoundTasks",
-							"sourceLine": 96,
+							"sourceLine": 99,
 							"members": [
 								{
 									"name": "resolved_input_files",
@@ -16574,20 +16589,20 @@
 							"name": "FindTasksResult",
 							"kind": "type",
 							"typeSignature": "FindTasksResult",
-							"sourceLine": 104
+							"sourceLine": 107
 						},
 						{
 							"name": "FindModulesFailure",
 							"kind": "type",
 							"typeSignature": "FindModulesFailure",
-							"sourceLine": 105
+							"sourceLine": 108
 						},
 						{
 							"name": "find_tasks",
 							"kind": "function",
 							"docComment": "Finds modules from input paths. (see `input_path.ts` for more)",
 							"typeSignature": "(input_paths: InputPath[], task_root_dirs: PathId[], config: GroConfig, timings?: Timings | undefined): Promise<FindTasksResult>",
-							"sourceLine": 128,
+							"sourceLine": 131,
 							"parameters": [
 								{
 									"name": "input_paths",
@@ -16613,7 +16628,7 @@
 							"name": "LoadedTasks",
 							"kind": "interface",
 							"typeSignature": "LoadedTasks",
-							"sourceLine": 200,
+							"sourceLine": 203,
 							"members": [
 								{
 									"name": "modules",
@@ -16631,7 +16646,7 @@
 							"name": "TaskModule",
 							"kind": "interface",
 							"typeSignature": "TaskModule",
-							"sourceLine": 205,
+							"sourceLine": 208,
 							"members": [
 								{
 									"name": "task",
@@ -16644,7 +16659,7 @@
 							"name": "TaskModuleMeta",
 							"kind": "interface",
 							"typeSignature": "TaskModuleMeta",
-							"sourceLine": 209,
+							"sourceLine": 212,
 							"extends": ["ModuleMeta<TaskModule>"],
 							"members": [
 								{
@@ -16658,19 +16673,19 @@
 							"name": "LoadTasksResult",
 							"kind": "type",
 							"typeSignature": "LoadTasksResult",
-							"sourceLine": 213
+							"sourceLine": 216
 						},
 						{
 							"name": "LoadTasksFailure",
 							"kind": "type",
 							"typeSignature": "LoadTasksFailure",
-							"sourceLine": 214
+							"sourceLine": 217
 						},
 						{
 							"name": "load_tasks",
 							"kind": "function",
 							"typeSignature": "(found_tasks: FoundTasks, root_path?: PathId): Promise<LoadTasksResult>",
-							"sourceLine": 216,
+							"sourceLine": 219,
 							"parameters": [
 								{
 									"name": "found_tasks",
@@ -16688,7 +16703,7 @@
 							"name": "validate_task_module",
 							"kind": "function",
 							"typeSignature": "(mod: Record<string, any>): mod is TaskModule",
-							"sourceLine": 244,
+							"sourceLine": 247,
 							"parameters": [
 								{
 									"name": "mod",
@@ -16718,7 +16733,6 @@
 						"gen.task.ts",
 						"gen.ts",
 						"gen_helpers.ts",
-						"gro_plugin_deno_compile.ts",
 						"gro_plugin_sveltekit_app.ts",
 						"gro_plugin_sveltekit_library.ts",
 						"index.ts",
@@ -16978,7 +16992,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.63.0",
+			"version": "0.63.2",
 			"description": "CSS framework and design system for semantic HTML",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -17425,7 +17439,7 @@
 							"kind": "interface",
 							"docComment": "Options for bundled CSS output generation.",
 							"typeSignature": "GenerateBundledCssOptions",
-							"sourceLine": 446,
+							"sourceLine": 452,
 							"members": [
 								{
 									"name": "include_theme",
@@ -17458,7 +17472,7 @@
 							"kind": "function",
 							"docComment": "Generates combined CSS output from resolution result.",
 							"typeSignature": "(result: CssResolutionResult, utility_css: string, options?: GenerateBundledCssOptions): string",
-							"sourceLine": 463,
+							"sourceLine": 469,
 							"parameters": [
 								{
 									"name": "result",
@@ -17733,7 +17747,7 @@
 							"kind": "function",
 							"docComment": "Merges user class definitions with the built-in defaults.\nUser definitions take precedence over defaults with the same name.",
 							"typeSignature": "(user_definitions: Record<string, CssClassDefinition | undefined> | undefined, include_defaults: boolean): Record<string, CssClassDefinition | undefined>",
-							"sourceLine": 329,
+							"sourceLine": 337,
 							"throws": [
 								{
 									"type": "Error",
@@ -17773,7 +17787,7 @@
 							"kind": "interface",
 							"docComment": "Cacheable extraction data fields shared between extraction and caching layers.\nUses `null` instead of empty collections to avoid allocation overhead.",
 							"typeSignature": "ExtractionData",
-							"sourceLine": 33,
+							"sourceLine": 34,
 							"members": [
 								{
 									"name": "classes",
@@ -17818,7 +17832,7 @@
 							"kind": "function",
 							"docComment": "Returns true if the extraction data has any non-null fields.",
 							"typeSignature": "(data: ExtractionData): boolean",
-							"sourceLine": 66,
+							"sourceLine": 67,
 							"parameters": [
 								{
 									"name": "data",
@@ -17832,7 +17846,7 @@
 							"kind": "interface",
 							"docComment": "Extraction result with classes mapped to their source locations.\nExtends `ExtractionData` with `tracked_vars` which is internal to AST walking.\n\nUses embedded diagnostics (rather than a Result type) because file extraction\ncan partially succeed: some classes may be extracted while others produce errors.\nThis differs from `CssLiteralParseResult` which uses a discriminated union\nbecause single-class parsing is binary success/failure.",
 							"typeSignature": "ExtractionResult",
-							"sourceLine": 85,
+							"sourceLine": 86,
 							"extends": ["ExtractionData"],
 							"members": [
 								{
@@ -17848,7 +17862,7 @@
 							"kind": "type",
 							"docComment": "Acorn plugin type - a function that extends the Parser class.",
 							"typeSignature": "AcornPlugin",
-							"sourceLine": 93,
+							"sourceLine": 94,
 							"members": [
 								{
 									"name": "(call)",
@@ -17869,7 +17883,7 @@
 							"kind": "interface",
 							"docComment": "Options for CSS class extraction.",
 							"typeSignature": "ExtractCssClassesOptions",
-							"sourceLine": 98,
+							"sourceLine": 99,
 							"members": [
 								{
 									"name": "filename",
@@ -17894,7 +17908,7 @@
 							"name": "SourceIndex",
 							"kind": "class",
 							"docComment": "Helper class for converting character offsets to line/column positions.\nSvelte template nodes (Comment, Text, ExpressionTag) only have char offsets,\nso this class enables efficient conversion.\n\nBuild: O(n) where n = source length\nLookup: O(log m) where m = number of lines (binary search)",
-							"sourceLine": 129,
+							"sourceLine": 130,
 							"members": [
 								{
 									"name": "constructor",
@@ -17934,7 +17948,7 @@
 							"kind": "function",
 							"docComment": "Extracts CSS classes from a Svelte file using AST parsing.",
 							"typeSignature": "(source: string, file?: string): ExtractionResult",
-							"sourceLine": 292,
+							"sourceLine": 293,
 							"parameters": [
 								{
 									"name": "source",
@@ -17956,7 +17970,7 @@
 							"kind": "function",
 							"docComment": "Extracts CSS classes from a TypeScript/JS file using AST parsing.",
 							"typeSignature": "(source: string, file?: string, acorn_plugins?: AcornPlugin[] | undefined): ExtractionResult",
-							"sourceLine": 482,
+							"sourceLine": 483,
 							"parameters": [
 								{
 									"name": "source",
@@ -17984,7 +17998,7 @@
 							"kind": "function",
 							"docComment": "Unified extraction function that auto-detects file type.\nReturns just the class names as a Set.",
 							"typeSignature": "(source: string, options?: ExtractCssClassesOptions): Set<string> | null",
-							"sourceLine": 554,
+							"sourceLine": 555,
 							"parameters": [
 								{
 									"name": "source",
@@ -18006,7 +18020,7 @@
 							"kind": "function",
 							"docComment": "Unified extraction function that auto-detects file type.\nReturns full extraction result with locations and diagnostics.",
 							"typeSignature": "(source: string, options?: ExtractCssClassesOptions): ExtractionResult",
-							"sourceLine": 570,
+							"sourceLine": 571,
 							"parameters": [
 								{
 									"name": "source",
@@ -18042,7 +18056,7 @@
 							"kind": "function",
 							"docComment": "Escapes special characters in a CSS class name for use in a selector.\nCSS selectors require escaping of characters like `:`, `%`, `(`, `)`, etc.",
 							"typeSignature": "(name: string): string",
-							"sourceLine": 42,
+							"sourceLine": 43,
 							"examples": [
 								"```ts\nescape_css_selector('display:flex') // 'display\\\\:flex'\nescape_css_selector('opacity:80%') // 'opacity\\\\:80\\\\%'\nescape_css_selector('nth-child(2n)') // 'nth-child\\\\(2n\\\\)'\n```"
 							],
@@ -18059,7 +18073,7 @@
 							"kind": "function",
 							"docComment": "Extracts the CSS property name from a single-property declaration string.\nReturns `null` for multi-property declarations (composites with multiple semicolons).",
 							"typeSignature": "(declaration: string): string | null",
-							"sourceLine": 56,
+							"sourceLine": 57,
 							"examples": [
 								"```ts\nextract_primary_property('border-radius: var(--border_radius_sm);') // 'border-radius'\nextract_primary_property('display: flex; align-items: center;') // null\n```"
 							],
@@ -18075,7 +18089,7 @@
 							"name": "CssClassDefinitionBase",
 							"kind": "interface",
 							"typeSignature": "CssClassDefinitionBase",
-							"sourceLine": 120,
+							"sourceLine": 121,
 							"members": [
 								{
 									"name": "comment",
@@ -18090,7 +18104,7 @@
 							"kind": "interface",
 							"docComment": "Pure utility composition (composes only).",
 							"typeSignature": "CssClassDefinitionComposition",
-							"sourceLine": 125,
+							"sourceLine": 126,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18117,7 +18131,7 @@
 							"kind": "interface",
 							"docComment": "Custom CSS declaration (optionally seeded with composes).",
 							"typeSignature": "CssClassDefinitionDeclaration",
-							"sourceLine": 132,
+							"sourceLine": 133,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18144,7 +18158,7 @@
 							"kind": "interface",
 							"docComment": "Full ruleset with selectors.",
 							"typeSignature": "CssClassDefinitionRuleset",
-							"sourceLine": 139,
+							"sourceLine": 140,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18171,21 +18185,21 @@
 							"kind": "type",
 							"docComment": "Static definitions (not interpreter-based).",
 							"typeSignature": "CssClassDefinitionStatic",
-							"sourceLine": 146
+							"sourceLine": 147
 						},
 						{
 							"name": "CssClassDefinition",
 							"kind": "type",
 							"docComment": "Full union including interpreters.",
 							"typeSignature": "CssClassDefinition",
-							"sourceLine": 152
+							"sourceLine": 153
 						},
 						{
 							"name": "CssClassInterpreterContext",
 							"kind": "interface",
 							"docComment": "Context passed to CSS class interpreters.\nProvides access to logging, diagnostics collection, and the class registry.",
 							"typeSignature": "CssClassInterpreterContext",
-							"sourceLine": 158,
+							"sourceLine": 159,
 							"members": [
 								{
 									"name": "log",
@@ -18219,7 +18233,7 @@
 							"kind": "interface",
 							"docComment": "Interpreter for dynamic CSS class generation based on pattern matching.",
 							"typeSignature": "CssClassDefinitionInterpreter",
-							"sourceLine": 170,
+							"sourceLine": 171,
 							"extends": ["CssClassDefinitionBase"],
 							"members": [
 								{
@@ -18239,7 +18253,7 @@
 							"kind": "interface",
 							"docComment": "Result from CSS class generation.",
 							"typeSignature": "GenerateClassesCssResult",
-							"sourceLine": 185,
+							"sourceLine": 186,
 							"members": [
 								{
 									"name": "css",
@@ -18263,7 +18277,7 @@
 							"name": "GenerateClassesCssOptions",
 							"kind": "interface",
 							"typeSignature": "GenerateClassesCssOptions",
-							"sourceLine": 192,
+							"sourceLine": 193,
 							"members": [
 								{
 									"name": "class_names",
@@ -18311,7 +18325,7 @@
 							"name": "generate_classes_css",
 							"kind": "function",
 							"typeSignature": "(options: GenerateClassesCssOptions): GenerateClassesCssResult",
-							"sourceLine": 207,
+							"sourceLine": 208,
 							"parameters": [
 								{
 									"name": "options",
@@ -18591,14 +18605,14 @@
 							"kind": "variable",
 							"docComment": "Interpreter for CSS-literal classes (e.g., `display:flex`, `hover:opacity:80%`).\nGenerates full CSS rulesets including any modifier wrappers.",
 							"typeSignature": "CssClassDefinitionInterpreter",
-							"sourceLine": 156
+							"sourceLine": 160
 						},
 						{
 							"name": "css_class_interpreters",
 							"kind": "variable",
 							"docComment": "Collection of all builtin interpreters for dynamic CSS class generation.\nOrder matters: `modified_class_interpreter` runs first to handle `hover:box` before\n`css_literal_interpreter` tries to interpret it as `hover:box` (property:value).",
 							"typeSignature": "CssClassDefinitionInterpreter[]",
-							"sourceLine": 193
+							"sourceLine": 197
 						}
 					],
 					"dependencies": [
@@ -19058,7 +19072,7 @@
 							"kind": "function",
 							"docComment": "Parses a CSS-literal class name into its components.",
 							"typeSignature": "(class_name: string, css_properties: Set<string> | null): CssLiteralParseResult",
-							"sourceLine": 451,
+							"sourceLine": 453,
 							"parameters": [
 								{
 									"name": "class_name",
@@ -19079,7 +19093,7 @@
 							"kind": "function",
 							"docComment": "Generates the CSS selector for a parsed CSS-literal class.\nIncludes state pseudo-classes and pseudo-element in the selector.",
 							"typeSignature": "(escaped_class_name: string, parsed: ParsedCssLiteral): string",
-							"sourceLine": 553,
+							"sourceLine": 555,
 							"parameters": [
 								{
 									"name": "escaped_class_name",
@@ -19097,7 +19111,7 @@
 							"kind": "function",
 							"docComment": "Generates the CSS declaration for a parsed CSS-literal class.",
 							"typeSignature": "(parsed: ParsedCssLiteral): string",
-							"sourceLine": 572,
+							"sourceLine": 574,
 							"parameters": [
 								{
 									"name": "parsed",
@@ -19111,7 +19125,7 @@
 							"kind": "interface",
 							"docComment": "Information needed to generate CSS output for a CSS-literal class.",
 							"typeSignature": "CssLiteralOutput",
-							"sourceLine": 579,
+							"sourceLine": 581,
 							"members": [
 								{
 									"name": "declaration",
@@ -19144,7 +19158,7 @@
 							"kind": "function",
 							"docComment": "Interprets a CSS-literal class and returns CSS generation info.\n\nCallers should first check `is_possible_css_literal()` to filter non-CSS-literal classes.",
 							"typeSignature": "(class_name: string, escaped_class_name: string, css_properties: Set<string> | null): InterpretCssLiteralResult",
-							"sourceLine": 601,
+							"sourceLine": 603,
 							"parameters": [
 								{
 									"name": "class_name",
@@ -19170,14 +19184,14 @@
 							"kind": "type",
 							"docComment": "Result of attempting to resolve a CSS literal for composition.",
 							"typeSignature": "LiteralResolutionResult",
-							"sourceLine": 633
+							"sourceLine": 635
 						},
 						{
 							"name": "has_modifiers",
 							"kind": "function",
 							"docComment": "Checks if a parsed CSS literal has any modifiers.",
 							"typeSignature": "(parsed: ParsedCssLiteral): boolean",
-							"sourceLine": 640,
+							"sourceLine": 642,
 							"parameters": [
 								{
 									"name": "parsed",
@@ -19191,7 +19205,7 @@
 							"kind": "function",
 							"docComment": "Checks if extracted modifiers contain any modifier.\nUseful for tooling that needs to detect modified classes.",
 							"typeSignature": "(modifiers: ExtractedModifiers): boolean",
-							"sourceLine": 648,
+							"sourceLine": 650,
 							"parameters": [
 								{
 									"name": "modifiers",
@@ -19205,7 +19219,7 @@
 							"kind": "function",
 							"docComment": "Attempts to resolve a class name as an unmodified CSS literal for composition.\n\nUsed by `resolve_composes` to support literals in `composes` arrays.\nReturns the declaration if successful, null if not a literal, or an error\nif it's a literal with issues (modifiers, invalid property, etc.).",
 							"typeSignature": "(class_name: string, css_properties: Set<string> | null, context_class_name: string): LiteralResolutionResult",
-							"sourceLine": 669,
+							"sourceLine": 671,
 							"parameters": [
 								{
 									"name": "class_name",
@@ -19231,7 +19245,7 @@
 							"kind": "function",
 							"docComment": "Generates simple CSS for a CSS-literal class (without grouping).\nUsed by the interpreter for basic output.",
 							"typeSignature": "(output: CssLiteralOutput): string",
-							"sourceLine": 727,
+							"sourceLine": 729,
 							"parameters": [
 								{
 									"name": "output",
@@ -20151,7 +20165,7 @@
 							"name": "CssGenerationError",
 							"kind": "class",
 							"docComment": "Error thrown when CSS generation encounters errors or warnings\n(depending on `on_error` and `on_warning` settings).\nContains the full diagnostics array for programmatic access.",
-							"sourceLine": 118,
+							"sourceLine": 120,
 							"extends": "Error",
 							"members": [
 								{
@@ -24499,7 +24513,7 @@
 							"returnType": "Plugin<any>"
 						}
 					],
-					"moduleComment": "Vite plugin for fuz_css CSS generation.\n\nUses Vite's transform hook to extract CSS classes from source files\nas they're processed, including node_modules dependencies. In bundled\nmode (the default) it also resolves the base reset and theme variables,\nemitting only the rules, elements, and variables the source actually uses.\nGenerates CSS on-demand via virtual module with HMR support.\n\n@example\n```ts\n// vite.config.ts\nimport {defineConfig} from 'vite';\nimport jsx from 'acorn-jsx';\nimport {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.js';\n\nexport default defineConfig({\n  plugins: [\n    vite_plugin_fuz_css({\n      acorn_plugins: [jsx()],\n    }),\n  ],\n});\n```",
+					"moduleComment": "Vite plugin for fuz_css CSS generation.\n\nUses Vite's transform hook to extract CSS classes from source files\nas they're processed, including node_modules dependencies. In bundled\nmode (the default) it also resolves the base reset and theme variables,\nemitting only the rules, elements, and variables the source actually uses.\nGenerates CSS on-demand via virtual module with HMR support.\n\n@example\n```ts\n// vite.config.ts\nimport {defineConfig} from 'vite';\nimport jsx from 'acorn-jsx';\nimport {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';\n\nexport default defineConfig({\n  plugins: [\n    vite_plugin_fuz_css({\n      acorn_plugins: [jsx()],\n    }),\n  ],\n});\n```",
 					"dependencies": [
 						"bundled_resources.ts",
 						"class_variable_index.ts",
@@ -24525,7 +24539,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.205.0",
+			"version": "0.205.4",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -27735,7 +27749,7 @@
 						{
 							"name": "docs_slugify",
 							"kind": "function",
-							"docComment": "Convert a string to a URL-safe fragment identifier, preserving case.\nUnlike `slugify` from `@fuzdev/fuz_util/path.js` which lowercases,\nthis keeps the original casing so API declarations like `AsyncStatus`\nand `async_status` produce distinct fragment IDs.\nUsed by the `Tome` documentation system for heading and section anchors.",
+							"docComment": "Convert a string to a URL-safe fragment identifier, preserving case.\nUnlike `slugify` from `@fuzdev/fuz_util/path.ts` which lowercases,\nthis keeps the original casing so API declarations like `AsyncStatus`\nand `async_status` produce distinct fragment IDs.\nUsed by the `Tome` documentation system for heading and section anchors.",
 							"typeSignature": "(str: string): string",
 							"sourceLine": 18,
 							"parameters": [
@@ -29467,7 +29481,7 @@
 							"returnDescription": "root-relative URL starting with '/'"
 						}
 					],
-					"moduleComment": "Library documentation URL helpers.\n\nRuntime UI helpers for building URLs in the library documentation system.\nThese depend on fuz_ui's documentation paths and SvelteKit's runtime state.\n\nFor generic package/repository URL helpers, see `@fuzdev/fuz_util/package_helpers.js`.",
+					"moduleComment": "Library documentation URL helpers.\n\nRuntime UI helpers for building URLs in the library documentation system.\nThese depend on fuz_ui's documentation paths and SvelteKit's runtime state.\n\nFor generic package/repository URL helpers, see `@fuzdev/fuz_util/package_helpers.ts`.",
 					"dependents": ["contextmenu_state.svelte.ts"]
 				},
 				{
@@ -31367,7 +31381,7 @@
 							"returnType": "Plugin<any>"
 						}
 					],
-					"moduleComment": "Vite plugin serving a curated, publish-safe `package.json` as the virtual\nmodule `virtual:pkg.json`.\n\nConsumers' `src/routes/library.ts` (and root layouts) need package identity —\nname, version, the Fuz extension fields — in the client. Importing the root\n`package.json` directly inlines the *whole* file into the client bundle\n(`scripts`, `dependencies`, `devDependencies`, private config) and trips\nSvelteKit's `server.fs.allow` on cold HMR reloads. This plugin reads the\nproject's `package.json` at build time, strips it to `pkg_json_keys`, and\nserves only that subset. Consumers combine it with `virtual:svelte-docinfo`'s\nanalyzed `modules` via `library_json_from_modules` to build a `LibraryJson`\n(see `src/routes/library.ts` for the canonical pattern).\n\nThe `.json` suffix on the virtual id is load-bearing, mirroring how\n`vite_plugin_fuz_css`'s `virtual:fuz.css` relies on `.css`: `load()` returns\nraw JSON text and Vite's built-in `vite:json` plugin transforms it into an ES\nmodule (default export plus named exports), so consumers write\n`import package_json from 'virtual:pkg.json'`. Do *not* return a JS module\nhere — the `.json` id would double-transform it.\n\n```ts\n// vite.config.ts\nimport {vite_plugin_pkg_json} from '@fuzdev/fuz_ui/vite_plugin_pkg_json.js';\nexport default defineConfig({plugins: [vite_plugin_pkg_json(), sveltekit()]});\n```\n\nThe kept field set defaults to `pkg_json_keys`. To expose extra publish-safe\nfields, pass a wider `keys` list — typically composed from the default with a\nspread (`` keys: [...pkg_json_keys, 'keywords'] ``). Because `library_json_from_modules`\nre-strips at runtime, the *same* list must reach that call (and the consumer's\n`virtual:pkg.json` ambient type) for the extras to survive end to end — share\none const across all three sites:\n\n```ts\n// src/routes/pkg_json_keys.ts\nimport {pkg_json_keys} from '@fuzdev/fuz_util/pkg_json.js';\nexport const pkg_json_keys_custom = [...pkg_json_keys, 'keywords'] as const;\n\n// vite.config.ts        → vite_plugin_pkg_json({keys: pkg_json_keys_custom})\n// src/routes/library.ts → library_json_from_modules(pkg_json, modules, pkg_json_keys_custom)\n```"
+					"moduleComment": "Vite plugin serving a curated, publish-safe `package.json` as the virtual\nmodule `virtual:pkg.json`.\n\nConsumers' `src/routes/library.ts` (and root layouts) need package identity —\nname, version, the Fuz extension fields — in the client. Importing the root\n`package.json` directly inlines the *whole* file into the client bundle\n(`scripts`, `dependencies`, `devDependencies`, private config) and trips\nSvelteKit's `server.fs.allow` on cold HMR reloads. This plugin reads the\nproject's `package.json` at build time, strips it to `pkg_json_keys`, and\nserves only that subset. Consumers combine it with `virtual:svelte-docinfo`'s\nanalyzed `modules` via `library_json_from_modules` to build a `LibraryJson`\n(see `src/routes/library.ts` for the canonical pattern).\n\nThe `.json` suffix on the virtual id is load-bearing, mirroring how\n`vite_plugin_fuz_css`'s `virtual:fuz.css` relies on `.css`: `load()` returns\nraw JSON text and Vite's built-in `vite:json` plugin transforms it into an ES\nmodule (default export plus named exports), so consumers write\n`import package_json from 'virtual:pkg.json'`. Do *not* return a JS module\nhere — the `.json` id would double-transform it.\n\n```ts\n// vite.config.ts\nimport {vite_plugin_pkg_json} from '@fuzdev/fuz_ui/vite_plugin_pkg_json.ts';\nexport default defineConfig({plugins: [vite_plugin_pkg_json(), sveltekit()]});\n```\n\nThe kept field set defaults to `pkg_json_keys`. To expose extra publish-safe\nfields, pass a wider `keys` list — typically composed from the default with a\nspread (`` keys: [...pkg_json_keys, 'keywords'] ``). Because `library_json_from_modules`\nre-strips at runtime, the *same* list must reach that call (and the consumer's\n`virtual:pkg.json` ambient type) for the extras to survive end to end — share\none const across all three sites:\n\n```ts\n// src/routes/pkg_json_keys.ts\nimport {pkg_json_keys} from '@fuzdev/fuz_util/pkg_json.ts';\nexport const pkg_json_keys_custom = [...pkg_json_keys, 'keywords'] as const;\n\n// vite.config.ts        → vite_plugin_pkg_json({keys: pkg_json_keys_custom})\n// src/routes/library.ts → library_json_from_modules(pkg_json, modules, pkg_json_keys_custom)\n```"
 				}
 			]
 		}
@@ -31375,7 +31389,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.94.0",
+			"version": "0.95.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -40954,8 +40968,7 @@
 						"action_icons.ts",
 						"actions.svelte.ts",
 						"frontend.svelte.ts",
-						"frontend_action_types.ts",
-						"schema_registry.ts"
+						"frontend_action_types.ts"
 					]
 				},
 				{
@@ -41628,19 +41641,19 @@
 							"kind": "variable",
 							"docComment": "Maximum number of ping records to keep.",
 							"typeSignature": "6",
-							"sourceLine": 16
+							"sourceLine": 18
 						},
 						{
 							"name": "CapabilitiesJson",
 							"kind": "type",
 							"typeSignature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; }, $strict>",
-							"sourceLine": 18
+							"sourceLine": 20
 						},
 						{
 							"name": "CapabilitiesJsonInput",
 							"kind": "type",
 							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; }",
-							"sourceLine": 20,
+							"sourceLine": 22,
 							"members": [
 								{
 									"name": "id",
@@ -41668,7 +41681,7 @@
 							"kind": "interface",
 							"docComment": "Generic interface for a capability with standardized status tracking.",
 							"typeSignature": "Capability<T>",
-							"sourceLine": 25,
+							"sourceLine": 27,
 							"genericParams": [
 								{
 									"name": "T"
@@ -41717,7 +41730,7 @@
 							"name": "PingData",
 							"kind": "interface",
 							"typeSignature": "PingData",
-							"sourceLine": 41,
+							"sourceLine": 43,
 							"members": [
 								{
 									"name": "ping_id",
@@ -41750,7 +41763,7 @@
 							"name": "ServerCapabilityData",
 							"kind": "interface",
 							"typeSignature": "ServerCapabilityData",
-							"sourceLine": 49,
+							"sourceLine": 51,
 							"members": [
 								{
 									"name": "round_trip_time",
@@ -41763,7 +41776,7 @@
 							"name": "WebsocketCapabilityData",
 							"kind": "interface",
 							"typeSignature": "WebsocketCapabilityData",
-							"sourceLine": 56,
+							"sourceLine": 58,
 							"members": [
 								{
 									"name": "url",
@@ -41811,7 +41824,7 @@
 							"name": "FilesystemCapabilityData",
 							"kind": "interface",
 							"typeSignature": "FilesystemCapabilityData",
-							"sourceLine": 67,
+							"sourceLine": 69,
 							"members": [
 								{
 									"name": "zzz_dir",
@@ -41829,7 +41842,7 @@
 							"name": "Capabilities",
 							"kind": "class",
 							"docComment": "A class that encapsulates system capabilities detection and management.\nThis is NOT generic or extensible - it contains hardcoded logic for\nall capabilities the system supports.",
-							"sourceLine": 77,
+							"sourceLine": 79,
 							"extends": "Cell<typeof CapabilitiesJson>",
 							"members": [
 								{
@@ -41855,28 +41868,11 @@
 									"reactivity": "$derived.by"
 								},
 								{
-									"name": "claude",
+									"name": "providers",
 									"kind": "variable",
-									"docComment": "Claude capability that derives its state from provider_status.",
-									"typeSignature": "Capability<null | undefined>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived.by"
-								},
-								{
-									"name": "chatgpt",
-									"kind": "variable",
-									"docComment": "ChatGPT capability that derives its state from provider_status.",
-									"typeSignature": "Capability<null | undefined>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived.by"
-								},
-								{
-									"name": "gemini",
-									"kind": "variable",
-									"docComment": "Gemini capability that derives its state from provider_status.",
-									"typeSignature": "Capability<null | undefined>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived.by"
+									"docComment": "Per-provider availability capabilities, keyed by `ProviderName`.\nEach derives its state from `provider_status`; see `ProviderCapability`.",
+									"typeSignature": "Record<ProviderName, ProviderCapability>",
+									"modifiers": ["readonly"]
 								},
 								{
 									"name": "pings",
@@ -42012,54 +42008,23 @@
 									"docComment": "Reset just the backend capability to uninitialized state.",
 									"typeSignature": "(): void",
 									"returnType": "void"
-								},
-								{
-									"name": "init_claude_check",
-									"kind": "function",
-									"docComment": "Check Claude availability only if it hasn't been checked before.",
-									"typeSignature": "(): Promise<void>",
-									"returnType": "Promise<void>"
-								},
-								{
-									"name": "check_claude",
-									"kind": "function",
-									"docComment": "Check Claude availability by loading provider status.",
-									"typeSignature": "(): Promise<void>",
-									"returnType": "Promise<void>"
-								},
-								{
-									"name": "init_chatgpt_check",
-									"kind": "function",
-									"docComment": "Check ChatGPT availability only if it hasn't been checked before.",
-									"typeSignature": "(): Promise<void>",
-									"returnType": "Promise<void>"
-								},
-								{
-									"name": "check_chatgpt",
-									"kind": "function",
-									"docComment": "Check ChatGPT availability by loading provider status.",
-									"typeSignature": "(): Promise<void>",
-									"returnType": "Promise<void>"
-								},
-								{
-									"name": "init_gemini_check",
-									"kind": "function",
-									"docComment": "Check Gemini availability only if it hasn't been checked before.",
-									"typeSignature": "(): Promise<void>",
-									"returnType": "Promise<void>"
-								},
-								{
-									"name": "check_gemini",
-									"kind": "function",
-									"docComment": "Check Gemini availability by loading provider status.",
-									"typeSignature": "(): Promise<void>",
-									"returnType": "Promise<void>"
 								}
 							]
 						}
 					],
-					"dependencies": ["cell.svelte.ts", "cell_types.ts", "diskfile_types.ts"],
-					"dependents": ["cell_classes.ts", "frontend.svelte.ts", "PingForm.svelte"]
+					"dependencies": [
+						"cell.svelte.ts",
+						"cell_types.ts",
+						"diskfile_types.ts",
+						"provider_capability.svelte.ts",
+						"provider_types.ts"
+					],
+					"dependents": [
+						"cell_classes.ts",
+						"frontend.svelte.ts",
+						"PingForm.svelte",
+						"provider_capability.svelte.ts"
+					]
 				},
 				{
 					"path": "CapabilitiesView.svelte",
@@ -44477,7 +44442,7 @@
 							"name": "default",
 							"kind": "function",
 							"typeSignature": "(): ZzzOptions",
-							"sourceLine": 22,
+							"sourceLine": 9,
 							"returnType": "ZzzOptions"
 						}
 					],
@@ -44487,83 +44452,29 @@
 					"path": "config_defaults.ts",
 					"declarations": [
 						{
-							"name": "SYSTEM_MESSAGE_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "\"You are a helpful assistant that responds succinctly unless asked for more.\"",
-							"sourceLine": 12
-						},
-						{
-							"name": "OUTPUT_TOKEN_MAX_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "1000",
-							"sourceLine": 14
-						},
-						{
-							"name": "TEMPERATURE_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "number | undefined",
-							"sourceLine": 15
-						},
-						{
-							"name": "SEED_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "number | undefined",
-							"sourceLine": 16
-						},
-						{
-							"name": "TOP_K_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "number | undefined",
-							"sourceLine": 17
-						},
-						{
-							"name": "TOP_P_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "number | undefined",
-							"sourceLine": 18
-						},
-						{
-							"name": "FREQUENCY_PENALTY_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "number | undefined",
-							"sourceLine": 19
-						},
-						{
-							"name": "PRESENCE_PENALTY_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "number | undefined",
-							"sourceLine": 20
-						},
-						{
-							"name": "STOP_SEQUENCES_DEFAULT",
-							"kind": "variable",
-							"typeSignature": "string[] | undefined",
-							"sourceLine": 21
-						},
-						{
 							"name": "BOTS_DEFAULT",
 							"kind": "variable",
 							"typeSignature": "{ namerbot: string; }",
-							"sourceLine": 22
+							"sourceLine": 11
 						},
 						{
 							"name": "providers_default",
 							"kind": "variable",
 							"typeSignature": "{ name: \"claude\" | \"chatgpt\" | \"gemini\"; title: string; url: string; homepage: string; company: string; api_key_url: string | null; id?: string | undefined; created?: string | undefined; updated?: string | undefined; }[]",
-							"sourceLine": 28
+							"sourceLine": 17
 						},
 						{
 							"name": "models_default",
 							"kind": "variable",
 							"typeSignature": "{ name: string; provider_name: \"claude\" | \"chatgpt\" | \"gemini\"; id?: string | undefined; created?: string | undefined; updated?: string | undefined; tags?: string[] | undefined; architecture?: string | undefined; ... 7 more ...; training_cutoff?: string | undefined; }[]",
-							"sourceLine": 57
+							"sourceLine": 46
 						},
 						{
 							"name": "chat_template_defaults",
 							"kind": "variable",
 							"docComment": "Default chat templates available in the application",
 							"typeSignature": "ChatTemplate[]",
-							"sourceLine": 78
+							"sourceLine": 67
 						}
 					],
 					"dependencies": ["chat_template.ts", "model.svelte.ts", "provider.svelte.ts"],
@@ -44601,51 +44512,6 @@
 									"name": "models",
 									"kind": "variable",
 									"typeSignature": "Array<ModelJsonInput>"
-								},
-								{
-									"name": "system_message",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "output_token_max",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "temperature",
-									"kind": "variable",
-									"typeSignature": "number | undefined"
-								},
-								{
-									"name": "seed",
-									"kind": "variable",
-									"typeSignature": "number | undefined"
-								},
-								{
-									"name": "top_k",
-									"kind": "variable",
-									"typeSignature": "number | undefined"
-								},
-								{
-									"name": "top_p",
-									"kind": "variable",
-									"typeSignature": "number | undefined"
-								},
-								{
-									"name": "frequency_penalty",
-									"kind": "variable",
-									"typeSignature": "number | undefined"
-								},
-								{
-									"name": "presence_penalty",
-									"kind": "variable",
-									"typeSignature": "number | undefined"
-								},
-								{
-									"name": "stop_sequences",
-									"kind": "variable",
-									"typeSignature": "Array<string> | undefined"
 								},
 								{
 									"name": "bots",
@@ -45222,48 +45088,6 @@
 									"reactivity": "$state.raw"
 								},
 								{
-									"name": "dependencies_by_id",
-									"kind": "variable",
-									"typeSignature": "Map<DiskfilePath, SerializableDisknode>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "dependents_by_id",
-									"kind": "variable",
-									"typeSignature": "Map<DiskfilePath, SerializableDisknode>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "dependency_ids",
-									"kind": "variable",
-									"typeSignature": "Array<DiskfilePath>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "dependent_ids",
-									"kind": "variable",
-									"typeSignature": "Array<DiskfilePath>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "has_dependencies",
-									"kind": "variable",
-									"typeSignature": "boolean",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "has_dependents",
-									"kind": "variable",
-									"typeSignature": "boolean",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
 									"name": "dependencies_count",
 									"kind": "variable",
 									"typeSignature": "number",
@@ -45301,13 +45125,6 @@
 									"reactivity": "$derived"
 								},
 								{
-									"name": "content_token_count",
-									"kind": "variable",
-									"typeSignature": "number | null",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
 									"name": "content_preview",
 									"kind": "variable",
 									"typeSignature": "string",
@@ -45331,7 +45148,7 @@
 							"name": "DiskfileSchema",
 							"kind": "variable",
 							"typeSignature": "ZodCustom<Diskfile, Diskfile>",
-							"sourceLine": 69
+							"sourceLine": 53
 						}
 					],
 					"dependencies": ["cell.svelte.ts", "diskfile_types.ts", "helpers.ts", "part.svelte.ts"],
@@ -45656,7 +45473,7 @@
 							"name": "is_path_absolute",
 							"kind": "function",
 							"typeSignature": "(path: string): boolean",
-							"sourceLine": 17,
+							"sourceLine": 9,
 							"parameters": [
 								{
 									"name": "path",
@@ -45669,7 +45486,7 @@
 							"name": "to_relative_path",
 							"kind": "function",
 							"typeSignature": "(path: string, parent: string): string",
-							"sourceLine": 20,
+							"sourceLine": 12,
 							"parameters": [
 								{
 									"name": "path",
@@ -45683,25 +45500,11 @@
 							"returnType": "string"
 						},
 						{
-							"name": "map_watcher_change_to_diskfile_change",
-							"kind": "function",
-							"docComment": "Maps watcher change types to diskfile change types.",
-							"typeSignature": "(type: WatcherChangeType): \"add\" | \"change\" | \"delete\"",
-							"sourceLine": 26,
-							"parameters": [
-								{
-									"name": "type",
-									"type": "WatcherChangeType"
-								}
-							],
-							"returnType": "\"add\" | \"change\" | \"delete\""
-						},
-						{
 							"name": "disknode_to_diskfile_json",
 							"kind": "function",
 							"docComment": "Converts a `SerializableDisknode` to the `DiskfileJson` format.",
 							"typeSignature": "(disknode: { id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }, existing_id?: string & $brand<...>): { ...; }",
-							"sourceLine": 39,
+							"sourceLine": 21,
 							"parameters": [
 								{
 									"name": "disknode",
@@ -45721,13 +45524,13 @@
 							"name": "SUPPORTED_CODE_FILETYPE_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 60
+							"sourceLine": 42
 						},
 						{
 							"name": "has_dependencies",
 							"kind": "function",
 							"typeSignature": "(diskfile: Diskfile): boolean",
-							"sourceLine": 61,
+							"sourceLine": 43,
 							"parameters": [
 								{
 									"name": "diskfile",
@@ -45735,23 +45538,6 @@
 								}
 							],
 							"returnType": "boolean"
-						},
-						{
-							"name": "to_serializable_disknode",
-							"kind": "function",
-							"typeSignature": "(disknode: Disknode, dir: string): { id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; ... 4 more ...; dependencies: [...][]; }",
-							"sourceLine": 67,
-							"parameters": [
-								{
-									"name": "disknode",
-									"type": "Disknode"
-								},
-								{
-									"name": "dir",
-									"type": "string"
-								}
-							],
-							"returnType": "{ id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }"
 						}
 					],
 					"dependencies": ["diskfile.svelte.ts", "diskfile_types.ts"],
@@ -46834,13 +46620,13 @@
 							"name": "DiskfilesJson",
 							"kind": "type",
 							"typeSignature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; diskfiles: ZodDefault<...>; selected_file_id: ZodDefault<...>; }, $strict>",
-							"sourceLine": 17
+							"sourceLine": 22
 						},
 						{
 							"name": "DiskfilesJsonInput",
 							"kind": "type",
 							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; diskfiles?: { source_dir: string; id?: string | undefined; created?: string | undefined; updated?: string | undefined; path?: string | ... 1 more ... | undefined; content?: string | ... 1 more ... | undefined; dependents?: [...][]...",
-							"sourceLine": 22,
+							"sourceLine": 27,
 							"members": [
 								{
 									"name": "id",
@@ -46879,13 +46665,13 @@
 							"name": "DiskfilesOptions",
 							"kind": "interface",
 							"typeSignature": "DiskfilesOptions",
-							"sourceLine": 24,
+							"sourceLine": 29,
 							"extends": ["CellOptions<typeof DiskfilesJson>"]
 						},
 						{
 							"name": "Diskfiles",
 							"kind": "class",
-							"sourceLine": 26,
+							"sourceLine": 31,
 							"extends": "Cell<typeof DiskfilesJson>",
 							"members": [
 								{
@@ -46953,6 +46739,19 @@
 										}
 									],
 									"returnType": "Diskfile"
+								},
+								{
+									"name": "add_initial",
+									"kind": "function",
+									"docComment": "Seed diskfiles from an initial file tree (e.g. session load or workspace open).",
+									"typeSignature": "(files: { id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }[]): void",
+									"parameters": [
+										{
+											"name": "files",
+											"type": "{ id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }[]"
+										}
+									],
+									"returnType": "void"
 								},
 								{
 									"name": "update",
@@ -47471,69 +47270,13 @@
 					"path": "format_helpers.ts",
 					"declarations": [
 						{
-							"name": "format_bytes",
-							"kind": "function",
-							"docComment": "Format bytes to human readable string.",
-							"typeSignature": "(bytes: number, decimals?: number): string",
-							"sourceLine": 4,
-							"parameters": [
-								{
-									"name": "bytes",
-									"type": "number"
-								},
-								{
-									"name": "decimals",
-									"type": "number",
-									"defaultValue": "1"
-								}
-							],
-							"returnType": "string"
-						},
-						{
 							"name": "format_gigabytes",
 							"kind": "function",
 							"typeSignature": "(gb: number): string",
-							"sourceLine": 17,
+							"sourceLine": 2,
 							"parameters": [
 								{
 									"name": "gb",
-									"type": "number"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "format_percentage",
-							"kind": "function",
-							"docComment": "Format a number as a percentage.",
-							"typeSignature": "(value: number, total: number, decimals?: number): string",
-							"sourceLine": 23,
-							"parameters": [
-								{
-									"name": "value",
-									"type": "number"
-								},
-								{
-									"name": "total",
-									"type": "number"
-								},
-								{
-									"name": "decimals",
-									"type": "number",
-									"defaultValue": "1"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "format_duration",
-							"kind": "function",
-							"docComment": "Format duration in milliseconds to human readable string.",
-							"typeSignature": "(ms: number): string",
-							"sourceLine": 31,
-							"parameters": [
-								{
-									"name": "ms",
 									"type": "number"
 								}
 							],
@@ -47549,19 +47292,19 @@
 							"name": "frontend_context",
 							"kind": "variable",
 							"typeSignature": "{ get: (error_message?: string | undefined) => Frontend; get_maybe: () => Frontend | undefined; set: (value: Frontend) => Frontend; }",
-							"sourceLine": 52
+							"sourceLine": 51
 						},
 						{
 							"name": "FrontendJson",
 							"kind": "type",
 							"typeSignature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; ui: ZodDefault<...>; }, $strict>",
-							"sourceLine": 54
+							"sourceLine": 53
 						},
 						{
 							"name": "FrontendJsonInput",
 							"kind": "type",
 							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; ui?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; show_main_dialog?: boolean | undefined; ... 6 more ...; desk_pinned?: boolean | undefined; } | undefined; }",
-							"sourceLine": 59,
+							"sourceLine": 58,
 							"members": [
 								{
 									"name": "id",
@@ -47594,7 +47337,7 @@
 							"name": "FrontendOptions",
 							"kind": "interface",
 							"typeSignature": "FrontendOptions",
-							"sourceLine": 61,
+							"sourceLine": 60,
 							"extends": ["OmitStrict<CellOptions<typeof FrontendJson>, 'app'>"],
 							"members": [
 								{
@@ -47664,7 +47407,7 @@
 							"name": "Frontend",
 							"kind": "class",
 							"docComment": "The base frontend app, typically used by creating your own `App extends Frontend`.\nGettable with `frontend_context.get()` inside a `FrontendRoot`.",
-							"sourceLine": 81,
+							"sourceLine": 80,
 							"extends": "Cell<typeof FrontendJson>",
 							"implements": ["ActionEventEnvironment"],
 							"members": [
@@ -47961,46 +47704,6 @@
 									"returnType": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }..."
 								},
 								{
-									"name": "lookup_action_input_schema",
-									"kind": "function",
-									"typeSignature": "<TMethod extends ActionMethod>(method: TMethod): { readonly heartbeat: ZodDefault<ZodObject<{}, $strict>>; readonly cancel: ZodObject<{ request_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 20 more ...; readonly workspace_changed: ZodObject<...>; }[TMethod] | undefined",
-									"parameters": [
-										{
-											"name": "method",
-											"type": "TMethod"
-										}
-									],
-									"returnType": "{ readonly heartbeat: ZodDefault<ZodObject<{}, $strict>>; readonly cancel: ZodObject<{ request_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 20 more ...; readonly workspace_changed: ZodObject<...>; }[TMethod] | undefined"
-								},
-								{
-									"name": "lookup_action_output_schema",
-									"kind": "function",
-									"typeSignature": "<TMethod extends ActionMethod>(method: TMethod): { readonly heartbeat: ZodObject<{}, $strict>; readonly cancel: ZodVoid; readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 19 more ...; readonly workspace_changed: ZodVoid; }[TMethod] | undefined",
-									"parameters": [
-										{
-											"name": "method",
-											"type": "TMethod"
-										}
-									],
-									"returnType": "{ readonly heartbeat: ZodObject<{}, $strict>; readonly cancel: ZodVoid; readonly ping: ZodObject<{ ping_id: ZodUnion<readonly [ZodString, ZodNumber]>; }, $strict>; ... 19 more ...; readonly workspace_changed: ZodVoid; }[TMethod] | undefined"
-								},
-								{
-									"name": "is_valid_phase_for_method",
-									"kind": "function",
-									"typeSignature": "(method: \"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\", phase: \"send\" | ... 7 more ... | \"execute\"): boolean",
-									"parameters": [
-										{
-											"name": "method",
-											"type": "\"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\""
-										},
-										{
-											"name": "phase",
-											"type": "\"send\" | \"send_request\" | \"receive_request\" | \"send_response\" | \"receive_response\" | \"send_error\" | \"receive_error\" | \"receive\" | \"execute\""
-										}
-									],
-									"returnType": "boolean"
-								},
-								{
 									"name": "zzz_dir",
 									"kind": "variable",
 									"docComment": "The `zzz_dir` is the path to Zzz's primary directory on the server's filesystem.\nThe server's `ScopedFs` instance restricts operations to this directory.\nThe value is `undefined` when uninitialized,\n`null` when loading, and `''` when disabled or no server.",
@@ -48104,6 +47807,7 @@
 						"PromptList.svelte",
 						"PromptPicker.svelte",
 						"PromptPickerDialog.svelte",
+						"provider_capability.svelte.ts",
 						"socket.svelte.ts",
 						"ThreadContextmenu.svelte",
 						"ThreadList.svelte",
@@ -48798,7 +48502,7 @@
 								{
 									"name": "add_many",
 									"kind": "function",
-									"docComment": "Add multiple items to the collection at once with improved performance.",
+									"docComment": "Add multiple items to the collection at once.",
 									"typeSignature": "(items: T[]): void",
 									"parameters": [
 										{
@@ -49279,7 +48983,6 @@
 						"parts.svelte.ts",
 						"prompts.svelte.ts",
 						"spaces.svelte.ts",
-						"threads.svelte.ts",
 						"workspaces.svelte.ts"
 					]
 				},
@@ -49386,8 +49089,7 @@
 						"chats.svelte.ts",
 						"diskfile_tabs.svelte.ts",
 						"prompt.svelte.ts",
-						"prompts.svelte.ts",
-						"threads.svelte.ts"
+						"prompts.svelte.ts"
 					]
 				},
 				{
@@ -49703,10 +49405,8 @@
 						"ModelSelect.svelte",
 						"ModelSummary.svelte",
 						"provider.svelte.ts",
-						"response_helpers.ts",
 						"thread.svelte.ts",
-						"thread_types.ts",
-						"threads.svelte.ts"
+						"thread_types.ts"
 					]
 				},
 				{
@@ -49719,7 +49419,7 @@
 							"props": [
 								{
 									"name": "model",
-									"type": "Model"
+									"type": "Model | undefined"
 								},
 								{
 									"name": "children",
@@ -50012,24 +49712,6 @@
 										}
 									],
 									"returnType": "Model[]"
-								},
-								{
-									"name": "remove_by_name",
-									"kind": "function",
-									"typeSignature": "(name: string): void",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "string"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "clear",
-									"kind": "function",
-									"typeSignature": "(): void",
-									"returnType": "void"
 								}
 							]
 						}
@@ -50188,11 +49870,11 @@
 						{
 							"name": "to_prompts_url",
 							"kind": "function",
-							"typeSignature": "(chat_id: (string & $brand<\"Uuid\">) | null): string",
+							"typeSignature": "(prompt_id: (string & $brand<\"Uuid\">) | null): string",
 							"sourceLine": 9,
 							"parameters": [
 								{
-									"name": "chat_id",
+									"name": "prompt_id",
 									"type": "(string & $brand<\"Uuid\">) | null"
 								}
 							],
@@ -52628,6 +52310,112 @@
 					]
 				},
 				{
+					"path": "provider_capability.svelte.ts",
+					"declarations": [
+						{
+							"name": "ProviderCapabilityOptions",
+							"kind": "interface",
+							"typeSignature": "ProviderCapabilityOptions",
+							"sourceLine": 8,
+							"members": [
+								{
+									"name": "app",
+									"kind": "variable",
+									"typeSignature": "Frontend"
+								},
+								{
+									"name": "name",
+									"kind": "variable",
+									"typeSignature": "ProviderName"
+								}
+							]
+						},
+						{
+							"name": "ProviderCapability",
+							"kind": "class",
+							"docComment": "Per-provider availability capability, derived from the backend's\n`provider_status`. Plain reactive class — not a Cell: it has no\npersisted state, everything is `$derived` from\n`app.lookup_provider_status(name)`. One instance per `ProviderName`\nlives in `Capabilities.providers`, collapsing what were three\nhand-rolled claude/chatgpt/gemini `$derived` blocks plus their\n`init_*_check`/`check_*` pairs into a single keyed shape.",
+							"sourceLine": 22,
+							"implements": ["Capability<null | undefined>"],
+							"members": [
+								{
+									"name": "app",
+									"kind": "variable",
+									"typeSignature": "Frontend",
+									"modifiers": ["readonly"]
+								},
+								{
+									"name": "name",
+									"kind": "variable",
+									"typeSignature": "ProviderName",
+									"modifiers": ["readonly"]
+								},
+								{
+									"name": "message_id",
+									"kind": "variable",
+									"typeSignature": "JsonrpcRequestId | null",
+									"modifiers": ["readonly"]
+								},
+								{
+									"name": "status",
+									"kind": "variable",
+									"typeSignature": "AsyncStatus",
+									"modifiers": ["readonly"],
+									"reactivity": "$derived"
+								},
+								{
+									"name": "data",
+									"kind": "variable",
+									"docComment": "`null` available, `undefined` unknown — matches the `Capability` data contract.",
+									"typeSignature": "null | undefined",
+									"modifiers": ["readonly"],
+									"reactivity": "$derived"
+								},
+								{
+									"name": "error_message",
+									"kind": "variable",
+									"typeSignature": "string | null",
+									"modifiers": ["readonly"],
+									"reactivity": "$derived"
+								},
+								{
+									"name": "updated",
+									"kind": "variable",
+									"typeSignature": "number | null",
+									"modifiers": ["readonly"],
+									"reactivity": "$derived"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"typeSignature": "(options: ProviderCapabilityOptions): ProviderCapability",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "ProviderCapabilityOptions"
+										}
+									]
+								},
+								{
+									"name": "init_check",
+									"kind": "function",
+									"docComment": "Check availability only if it hasn't been checked before\n(when status is `'initial'`).",
+									"typeSignature": "(): Promise<void>",
+									"returnType": "Promise<void>"
+								},
+								{
+									"name": "check",
+									"kind": "function",
+									"docComment": "Check availability by loading provider status from the backend.",
+									"typeSignature": "(): Promise<void>",
+									"returnType": "Promise<void>"
+								}
+							]
+						}
+					],
+					"dependencies": ["capabilities.svelte.ts", "frontend.svelte.ts", "provider_types.ts"],
+					"dependents": ["capabilities.svelte.ts"]
+				},
+				{
 					"path": "provider_types.ts",
 					"declarations": [
 						{
@@ -52682,14 +52470,15 @@
 					],
 					"dependents": [
 						"action_specs.ts",
+						"capabilities.svelte.ts",
 						"CapabilityProvider.svelte",
 						"completion_types.ts",
 						"frontend.svelte.ts",
 						"model.svelte.ts",
 						"provider.svelte.ts",
+						"provider_capability.svelte.ts",
 						"ProviderLogo.svelte",
-						"providers.svelte.ts",
-						"response_helpers.ts"
+						"providers.svelte.ts"
 					]
 				},
 				{
@@ -52896,24 +52685,6 @@
 										}
 									],
 									"returnType": "Provider | undefined"
-								},
-								{
-									"name": "remove_by_name",
-									"kind": "function",
-									"typeSignature": "(name: string): void",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "string"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "clear",
-									"kind": "function",
-									"typeSignature": "(): void",
-									"returnType": "void"
 								}
 							]
 						}
@@ -53552,7 +53323,7 @@
 							"kind": "function",
 							"docComment": "Extracts the text content from a completion response.",
 							"typeSignature": "(completion_response: { created: string & $brand<\"Datetime\">; provider_name: \"claude\" | \"chatgpt\" | \"gemini\"; model: string; data: { type: \"claude\"; value: any; } | { type: \"chatgpt\"; value: any; } | { ...; }; } | null | undefined): string | null",
-							"sourceLine": 14,
+							"sourceLine": 7,
 							"parameters": [
 								{
 									"name": "completion_response",
@@ -53560,214 +53331,10 @@
 								}
 							],
 							"returnType": "string | null"
-						},
-						{
-							"name": "to_completion_result",
-							"kind": "function",
-							"docComment": "Creates a standardized `CompletionResponse` message from provider-specific responses.",
-							"typeSignature": "(provider_name: \"claude\" | \"chatgpt\" | \"gemini\", model: string, api_response: unknown, progress_token?: (string & $brand<\"Uuid\">) | undefined): { completion_response: { ...; }; _meta?: { ...; } | undefined; }",
-							"sourceLine": 38,
-							"parameters": [
-								{
-									"name": "provider_name",
-									"type": "\"claude\" | \"chatgpt\" | \"gemini\""
-								},
-								{
-									"name": "model",
-									"type": "string"
-								},
-								{
-									"name": "api_response",
-									"type": "unknown"
-								},
-								{
-									"name": "progress_token",
-									"type": "(string & $brand<\"Uuid\">) | undefined",
-									"optional": true
-								}
-							],
-							"returnType": "{ completion_response: { created: string & $brand<\"Datetime\">; provider_name: \"claude\" | \"chatgpt\" | \"gemini\"; model: string; data: { type: \"claude\"; value: any; } | { type: \"chatgpt\"; value: any; } | { ...; }; }; _meta?: { ...; } | undefined; }"
 						}
 					],
-					"dependencies": ["action_collections.ts", "model.svelte.ts", "provider_types.ts"],
+					"dependencies": ["action_collections.ts"],
 					"dependents": ["chat.svelte.ts", "frontend_action_handlers.ts", "thread_helpers.ts"]
-				},
-				{
-					"path": "schema_registry.ts",
-					"declarations": [
-						{
-							"name": "VocabName",
-							"kind": "type",
-							"typeSignature": "VocabName",
-							"sourceLine": 17,
-							"intersects": ["Flavored<string, 'VocabName'>"],
-							"members": [
-								{
-									"name": "[key: number]",
-									"kind": "variable",
-									"typeSignature": "string"
-								}
-							]
-						},
-						{
-							"name": "SchemaRegistry",
-							"kind": "class",
-							"docComment": "A central registry for schemas and actions.\nProvides a single source of truth for schema definitions.",
-							"sourceLine": 23,
-							"members": [
-								{
-									"name": "schemas",
-									"kind": "variable",
-									"docComment": "All schemas, including model schemas, action params, and responses.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "model_schemas",
-									"kind": "variable",
-									"docComment": "Model schemas are distinct from the action schemas.\nModels are the nouns compared to the Action verbs,\nand compared to Views they are data not Svelte components.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "action_params_schemas",
-									"kind": "variable",
-									"docComment": "Action parameter schemas.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "action_response_schemas",
-									"kind": "variable",
-									"docComment": "Action response schemas.",
-									"typeSignature": "Array<z.ZodType>"
-								},
-								{
-									"name": "schema_by_name",
-									"kind": "variable",
-									"docComment": "Map of schema names to schemas.",
-									"typeSignature": "Map<VocabName, z.ZodType>"
-								},
-								{
-									"name": "name_by_schema",
-									"kind": "variable",
-									"docComment": "Map of schemas to their names, for reverse lookup.\nZod schemas don't have a `name` property and we don't want to abuse `description`.",
-									"typeSignature": "Map<z.ZodType, VocabName>"
-								},
-								{
-									"name": "action_specs",
-									"kind": "variable",
-									"docComment": "Collection of all action specs.",
-									"typeSignature": "Array<ActionSpecUnion>"
-								},
-								{
-									"name": "request_response_action_specs",
-									"kind": "variable",
-									"docComment": "Collection of 'request_response' action specs.",
-									"typeSignature": "Array<RequestResponseActionSpec>"
-								},
-								{
-									"name": "remote_notification_action_specs",
-									"kind": "variable",
-									"docComment": "Collection of 'remote_notification' action specs.",
-									"typeSignature": "Array<RemoteNotificationActionSpec>"
-								},
-								{
-									"name": "local_call_action_specs",
-									"kind": "variable",
-									"docComment": "Collection of 'local_call' action specs.",
-									"typeSignature": "Array<LocalCallActionSpec>"
-								},
-								{
-									"name": "action_spec_by_name_map",
-									"kind": "variable",
-									"docComment": "Map of action spec names to action specs.",
-									"typeSignature": "Map<ActionMethod, ActionSpecUnion>"
-								},
-								{
-									"name": "add_schema",
-									"kind": "function",
-									"docComment": "Add a schema to the appropriate registries.",
-									"typeSignature": "(name: VocabName, schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; ... 8 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }): void",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "VocabName"
-										},
-										{
-											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | { method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 7 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "register_many",
-									"kind": "function",
-									"docComment": "Register multiple schemas at once.",
-									"typeSignature": "(schemas: Record<string, any>): void",
-									"parameters": [
-										{
-											"name": "schemas",
-											"type": "Record<string, any>"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "lookup_schema_name",
-									"kind": "function",
-									"docComment": "Lookup a schema name, guaranteed to return a string, or throws.",
-									"typeSignature": "(schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): VocabName",
-									"parameters": [
-										{
-											"name": "schema",
-											"type": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>"
-										}
-									],
-									"returnType": "VocabName"
-								},
-								{
-									"name": "get_action_spec",
-									"kind": "function",
-									"docComment": "Get an action specification by method name.",
-									"typeSignature": "(method: \"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\"): { ...; } | ... 2 more ... | undefined",
-									"parameters": [
-										{
-											"name": "method",
-											"type": "\"ping\" | \"heartbeat\" | \"cancel\" | \"session_load\" | \"filer_change\" | \"diskfile_update\" | \"diskfile_delete\" | \"directory_create\" | \"completion_create\" | \"completion_progress\" | ... 12 more ... | \"workspace_changed\""
-										}
-									],
-									"returnType": "{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; }..."
-								},
-								{
-									"name": "get_schema",
-									"kind": "function",
-									"docComment": "Get a schema by name.",
-									"typeSignature": "(name: VocabName): ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | undefined",
-									"parameters": [
-										{
-											"name": "name",
-											"type": "VocabName"
-										}
-									],
-									"returnType": "ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | undefined"
-								},
-								{
-									"name": "schema_names",
-									"kind": "variable",
-									"docComment": "Get all schema names.",
-									"typeSignature": "VocabName[]",
-									"modifiers": ["getter"]
-								}
-							]
-						},
-						{
-							"name": "global_schema_registry",
-							"kind": "variable",
-							"docComment": "Global instance of the schema registry for convenience.",
-							"typeSignature": "SchemaRegistry",
-							"sourceLine": 165
-						}
-					],
-					"dependencies": ["action_metatypes.ts"]
 				},
 				{
 					"path": "scrollable.svelte.ts",
@@ -55399,7 +54966,7 @@
 								{
 									"name": "model",
 									"kind": "variable",
-									"typeSignature": "Model",
+									"typeSignature": "Model | undefined",
 									"modifiers": ["readonly"],
 									"reactivity": "$derived.by"
 								},
@@ -55800,14 +55367,14 @@
 						{
 							"name": "ThreadsJson",
 							"kind": "type",
-							"typeSignature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; items: ZodDefault<...>; selected_id: ZodDefault<...>; }, $strict>",
-							"sourceLine": 14
+							"typeSignature": "ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<...>; items: ZodDefault<...>; }, $strict>",
+							"sourceLine": 11
 						},
 						{
 							"name": "ThreadsJsonInput",
 							"kind": "type",
-							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { ...; }[] | undefined; enabled?: boolean | undefined; }[] | undefined; selected_id?: string |...",
-							"sourceLine": 19,
+							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; items?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { ...; }[] | undefined; enabled?: boolean | undefined; }[] | undefined; }",
+							"sourceLine": 15,
 							"members": [
 								{
 									"name": "id",
@@ -55833,12 +55400,6 @@
 									"kind": "variable",
 									"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { role: string; id?: string | undefined; created?: string | undefined; ... 5 more ...; error_message?: string | undefined; }[] | undefined; enabled?: boolean | undefined; }[]",
 									"optional": true
-								},
-								{
-									"name": "selected_id",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
 								}
 							]
 						},
@@ -55846,13 +55407,13 @@
 							"name": "ThreadsOptions",
 							"kind": "interface",
 							"typeSignature": "ThreadsOptions",
-							"sourceLine": 21,
+							"sourceLine": 17,
 							"extends": ["CellOptions<typeof ThreadsJson>"]
 						},
 						{
 							"name": "Threads",
 							"kind": "class",
-							"sourceLine": 23,
+							"sourceLine": 19,
 							"extends": "Cell<typeof ThreadsJson>",
 							"members": [
 								{
@@ -55860,34 +55421,6 @@
 									"kind": "variable",
 									"typeSignature": "IndexedCollection<Thread>",
 									"modifiers": ["readonly"]
-								},
-								{
-									"name": "selected_id",
-									"kind": "variable",
-									"typeSignature": "Uuid | null",
-									"reactivity": "$state.raw"
-								},
-								{
-									"name": "selected",
-									"kind": "variable",
-									"typeSignature": "Thread | undefined",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "selected_id_error",
-									"kind": "variable",
-									"typeSignature": "boolean",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
-								},
-								{
-									"name": "ordered_items",
-									"kind": "variable",
-									"docComment": "Ordered array of threads derived from the `manual_order` index.",
-									"typeSignature": "Array<Thread>",
-									"modifiers": ["readonly"],
-									"reactivity": "$derived"
 								},
 								{
 									"name": "constructor",
@@ -55901,56 +55434,16 @@
 									]
 								},
 								{
-									"name": "add",
-									"kind": "function",
-									"typeSignature": "(json?: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { role: string; id?: string | undefined; created?: string | undefined; ... 5 more ...; error_message?: string | undefined; }[] | undefined; enabled?: boolean | undefined; } | undefined, select?: boolean | undefined): Thread",
-									"parameters": [
-										{
-											"name": "json",
-											"type": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { role: string; id?: string | undefined; created?: string | undefined; ... 5 more ...; error_message?: string | undefined; }[] | undefined; enabled?: boolean | undefined; } | undefined",
-											"optional": true
-										},
-										{
-											"name": "select",
-											"type": "boolean | undefined",
-											"optional": true
-										}
-									],
-									"returnType": "Thread"
-								},
-								{
 									"name": "add_thread",
 									"kind": "function",
-									"typeSignature": "(thread: Thread, select?: boolean | undefined): Thread",
+									"typeSignature": "(thread: Thread): Thread",
 									"parameters": [
 										{
 											"name": "thread",
 											"type": "Thread"
-										},
-										{
-											"name": "select",
-											"type": "boolean | undefined",
-											"optional": true
 										}
 									],
 									"returnType": "Thread"
-								},
-								{
-									"name": "add_many",
-									"kind": "function",
-									"typeSignature": "(threads_json: { id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { role: string; id?: string | undefined; created?: string | undefined; ... 5 more ...; error_message?: string | undefined; }[] | undefined; enabled?: boolean | undefined; }[], select?: number | ... 1 more ... | undefined): Thread[]",
-									"parameters": [
-										{
-											"name": "threads_json",
-											"type": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; model_name?: string | undefined; turns?: { role: string; id?: string | undefined; created?: string | undefined; ... 5 more ...; error_message?: string | undefined; }[] | undefined; enabled?: boolean | undefined; }[]"
-										},
-										{
-											"name": "select",
-											"type": "number | boolean | undefined",
-											"optional": true
-										}
-									],
-									"returnType": "Thread[]"
 								},
 								{
 									"name": "remove",
@@ -55975,40 +55468,6 @@
 										}
 									],
 									"returnType": "number"
-								},
-								{
-									"name": "select",
-									"kind": "function",
-									"typeSignature": "(thread_id: (string & $brand<\"Uuid\">) | null): void",
-									"parameters": [
-										{
-											"name": "thread_id",
-											"type": "(string & $brand<\"Uuid\">) | null"
-										}
-									],
-									"returnType": "void"
-								},
-								{
-									"name": "select_next",
-									"kind": "function",
-									"typeSignature": "(): void",
-									"returnType": "void"
-								},
-								{
-									"name": "reorder_threads",
-									"kind": "function",
-									"typeSignature": "(from_index: number, to_index: number): void",
-									"parameters": [
-										{
-											"name": "from_index",
-											"type": "number"
-										},
-										{
-											"name": "to_index",
-											"type": "number"
-										}
-									],
-									"returnType": "void"
 								}
 							]
 						}
@@ -56018,9 +55477,6 @@
 						"cell_helpers.ts",
 						"cell_types.ts",
 						"indexed_collection.svelte.ts",
-						"indexed_collection_helpers.svelte.ts",
-						"list_helpers.ts",
-						"model.svelte.ts",
 						"thread.svelte.ts",
 						"thread_types.ts"
 					],
@@ -56234,9 +55690,9 @@
 									"returnType": "void"
 								},
 								{
-									"name": "destroy",
+									"name": "dispose",
 									"kind": "function",
-									"docComment": "Override `Cell`'s destroy method to ensure timer cleanup.",
+									"docComment": "Override `Cell.dispose` to stop the interval timer before unregistering.",
 									"typeSignature": "(): void",
 									"returnType": "void"
 								}
@@ -57345,6 +56801,19 @@
 									"returnType": "Workspace | undefined"
 								},
 								{
+									"name": "remove_by_path",
+									"kind": "function",
+									"docComment": "Remove the workspace at `path`, if one exists. No-op when absent.",
+									"typeSignature": "(path: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">): void",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">"
+										}
+									],
+									"returnType": "void"
+								},
+								{
 									"name": "activate",
 									"kind": "function",
 									"typeSignature": "(id: string & $brand<\"Uuid\">): void",
@@ -57463,52 +56932,22 @@
 					"path": "zod_helpers.ts",
 					"declarations": [
 						{
-							"name": "Any",
-							"kind": "type",
-							"typeSignature": "ZodAny",
-							"sourceLine": 5
-						},
-						{
-							"name": "HttpStatus",
-							"kind": "type",
-							"typeSignature": "ZodNumber",
-							"sourceLine": 8
-						},
-						{
-							"name": "TypeLiteral",
-							"kind": "type",
-							"typeSignature": "$ZodBranded<ZodString, \"TypeLiteral\", \"out\">",
-							"sourceLine": 11
-						},
-						{
 							"name": "PathWithTrailingSlash",
 							"kind": "type",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 16
+							"sourceLine": 6
 						},
 						{
 							"name": "PathWithoutTrailingSlash",
 							"kind": "type",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 19
+							"sourceLine": 9
 						},
 						{
 							"name": "PathWithLeadingSlash",
 							"kind": "type",
 							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 22
-						},
-						{
-							"name": "PathWithoutLeadingSlash",
-							"kind": "type",
-							"typeSignature": "ZodPipe<ZodString, ZodTransform<string, string>>",
-							"sourceLine": 25
-						},
-						{
-							"name": "SvelteMapSchema",
-							"kind": "type",
-							"typeSignature": "ZodCustom<SvelteMap<unknown, unknown>, SvelteMap<unknown, unknown>>",
-							"sourceLine": 28
+							"sourceLine": 12
 						}
 					],
 					"dependents": ["constants.ts", "diskfile_types.ts"]
