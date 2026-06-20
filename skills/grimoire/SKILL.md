@@ -300,7 +300,14 @@ contain. A single declarative registry of repo metadata — read by the checks
 rather than hardcoded into each one — gives this teeth: scope lives in one
 place, and because the registry is itself a claim, it too can be validated
 against the repos. Some observations are strict enough to block (a broken invariant),
-others just inform (a trend worth watching). How a grimoire structures this —
+others just inform (a trend worth watching). Crucially, these are ordinary
+deterministic checks — plain code that reads files and compares them against the
+registry, not model calls — so they run fast, offline, and identically every
+time. That predictability is what lets them gate: an invariant wants a mechanical
+guarantee, not a probabilistic judgment. The division of labor is the point —
+agents do the fuzzy, taste-laden authoring (prose, design, code), and the crisp,
+machine-checkable invariants get codified as checks that hold the line without an
+LLM or a network in the loop. How a grimoire structures this —
 `scripts/` for the checks, `scries/` for persisted findings, `surveys/` for
 read-only cross-repo observations — is still taking shape and isn't prescribed
 here; the durable idea is that a self-observing meta-repo can keep itself honest.

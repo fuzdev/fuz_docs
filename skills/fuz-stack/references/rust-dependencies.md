@@ -174,11 +174,17 @@ workspace for the same job.
 
 ## Adding a dependency
 
-New crates are added deliberately, not incidentally:
+New crates — whether a third-party dependency or a first-party workspace
+member — are added deliberately, not incidentally:
 
 - Prefer the standard library, then this list, before anything new.
 - A new dependency needs explicit approval — name it, its purpose, what it
   replaces or enables, and its transitive footprint.
+- Creating a new first-party crate (a new `crates/<name>/` workspace member)
+  likewise needs explicit approval — minting a new crate boundary is a
+  build-graph and release-surface decision. Adding a module, file, or
+  directory inside an existing crate doesn't; the gate is only on the new
+  crate itself.
 - Add it at the workspace level (`[workspace.dependencies]`) so member
   crates share one version, then record it here.
 - Removing an unused dependency is pre-authorized — no approval needed. Verify
