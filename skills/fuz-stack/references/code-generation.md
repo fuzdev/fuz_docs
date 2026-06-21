@@ -111,7 +111,7 @@ export const gen: Gen = () => {
 interface RawGenFile {
 	content: string;
 	filename?: string; // override output name (can be relative or absolute path)
-	format?: boolean; // run Prettier (default: true)
+	format?: boolean; // run the formatter (default: true)
 }
 ```
 

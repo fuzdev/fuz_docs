@@ -44,7 +44,7 @@ is authoritative for what it actually uses.
 | Package        | Description                                                                        |
 | -------------- | ---------------------------------------------------------------------------------- |
 | `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                  |
-| `gro`          | task runner and toolkit extending SvelteKit (temporary, until `fuz`)               |
+| `gro`          | task runner and toolkit extending SvelteKit (web-dev surface; internals adopting Rust)|
 | `fuz_css`      | CSS framework and design system — apps look good by default                        |
 | `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                         |
 | `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                     |
@@ -58,7 +58,7 @@ is authoritative for what it actually uses.
 | `zzz`          | software garage — produce software with AI assistance                              |
 | `zap`          | convergence — deploy and operate infrastructure                                    |
 
-`gro` is a temporary build tool, will be replaced by `fuz`.
+`gro` is a durable web-focused dev tool; its internals progressively adopt Rust (tsv, then `fuz` crates), and it stays complementary to `fuz` and `zap`.
 
 **Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_app -> zzz, zap, apps`
 
@@ -180,7 +180,7 @@ import/test-mirroring details.
 
 - **TypeScript**: Strict mode, explicit types
 - **Svelte**: Svelte 5 with runes API ($state, $derived, $effect)
-- **Formatting**: Prettier with tabs, 100 char width
+- **Formatting**: tsv with tabs, 100 char width
 - **Extensions**: Use the real source extension in imports — `.ts` /
   `.svelte.ts` (not the old `.js`-for-a-`.ts`-file form): `import {foo} from
   './bar.ts'`. Cross-package `@fuzdev/pkg/foo.ts` resolves via the package's
@@ -195,7 +195,7 @@ import/test-mirroring details.
 - **No backwards compatibility**: Delete unused code, rename directly, no
   deprecated stubs or shims. Document breaking changes in changesets.
 
-## Gro Commands (Temporary Build Tool)
+## Gro Commands (Web-Dev Tool)
 
 **IMPORTANT**: Gro is installed globally — always run `gro` directly, never
 `npx gro`.
@@ -205,7 +205,7 @@ import/test-mirroring details.
 ```bash
 gro test         # run vitest tests
 gro gen          # run code generators (*.gen.ts files)
-gro format       # format with Prettier
+gro format       # format with tsv
 gro lint         # run ESLint
 gro typecheck    # run TypeScript type checking
 ```
@@ -339,7 +339,7 @@ Forms by typography:
   top-level files (`package.json`), and config identifiers (`~/.fuz/`)
 
 See ./references/path-references.md for all forms in full, the web-rendered
-caveat, anti-patterns, and Prettier cautions.
+caveat, anti-patterns, and formatter cautions.
 
 ## Testing
 

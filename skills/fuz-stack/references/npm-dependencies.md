@@ -9,9 +9,12 @@ apps, sites, and tooling. Different-paradigm or pre-canonical repos carry
 their own deps and are out of scope here.
 
 **Source of truth**: each repo's `package.json` (`dependencies`,
-`devDependencies`, `peerDependencies`, `optionalDependencies`). This doc
-mirrors the union of those for human and agent audit; it is not generated.
-Verify it against the repos periodically.
+`devDependencies`, `peerDependencies`, `optionalDependencies`). This doc is a
+curated, hand-maintained reference to the stack-wide third-party deps — not
+generated, and deliberately **not exhaustive**: narrowly repo-specific deps (one
+app's domain library, an editor extension's typings, a benchmark-only reference
+impl) are left out so the list stays focused on what generalizes across the
+stack. Verify it against the repos periodically.
 
 Packages published by the workspace itself — the `@fuzdev` / `@ryanatkn`
 scopes and unscoped siblings like `svelte-docinfo` — are internal, not
@@ -33,6 +36,7 @@ third-party deps, and never appear here.
 | `svelte2tsx` | Svelte → TSX for typechecking |
 | `vite` | Build tool / dev server |
 | `vitest` | Test runner |
+| `jsdom` | DOM implementation for tests |
 
 ## Lint & format
 
@@ -43,9 +47,6 @@ third-party deps, and never appear here.
 | `typescript-eslint` | TypeScript lint integration |
 | `@eslint/js` | ESLint's built-in JS rule presets |
 | `globals` | Global-identifier sets for ESLint configs |
-| `prettier` | Formatter |
-| `prettier-plugin-svelte` | Svelte formatting |
-| `@prettier/plugin-xml` | XML formatting |
 
 ## Release tooling
 
@@ -78,7 +79,6 @@ third-party deps, and never appear here.
 | `dequal` | Deep equality |
 | `fast-deep-equal` | Deep equality (fast path) |
 | `date-fns` | Date utilities |
-| `immer` | Immutable state updates |
 
 ## Backend & server
 
@@ -105,17 +105,6 @@ third-party deps, and never appear here.
 | `dotenv` | `.env` loader |
 | `picomatch` / `tinyglobby` | Glob matching |
 | `commander` | CLI argument parsing |
-
-## Domain & feature
-
-| Package | Purpose |
-| ------- | ------- |
-| `maplibre-gl` | Vector map rendering |
-| `sharp` | Image processing |
-| `@xterm/xterm` | Terminal emulator |
-| `jsdom` | DOM implementation for tests |
-| `blake3-wasm` | BLAKE3 WASM build |
-| `@anthropic-ai/claude-agent-sdk` | Claude agent SDK |
 
 ## Adding a dependency
 

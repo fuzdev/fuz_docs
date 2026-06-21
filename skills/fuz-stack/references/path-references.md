@@ -145,9 +145,9 @@ The linkifier won't fire on these, costing tokens and navigability:
   Reserve `[text](url)` for cases where the visible token _isn't_ the path —
   e.g. a package-name-as-link: `[@fuzdev/fuz_app](../../fuz_app)`.
 
-## Formatter cautions (Prettier in particular — these have bitten real docs)
+## Formatter cautions (these have bitten real docs)
 
-- A line wrapping after `+` becomes a sublist. `cell + fact` followed by Prettier
+- A line wrapping after `+` becomes a sublist. `cell + fact` followed by a formatter
   wrapping to `+ cell_history` reflows as a bullet. Rephrase
   (`cell, fact, and cell_history`) or keep the `+` mid-line.
 - Bare `_` in inline prose mixed with backticked identifiers can be parsed as
