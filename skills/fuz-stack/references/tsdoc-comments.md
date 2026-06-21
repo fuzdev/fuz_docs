@@ -20,8 +20,8 @@ backticks, and the system handles the rest.**
 
 ### Prioritize "why" over "what"
 
-Don't restate the function name. Explain why this exists and what problem it
-solves.
+Don't restate the function name. Explain why this exists, what problem it
+solves, and its role in the system — what depends on it, what it enables.
 
 ```typescript
 // Weak — restates the function name and types
@@ -41,7 +41,7 @@ export const create_session = (deps: QueryDeps, account_id: AccountId): Session 
 
 ### Conciseness — anti-patterns
 
-A wrong or filler comment is worse than no comment. Four patterns recur
+A wrong or filler comment costs more than it adds. Four patterns recur
 in real audits.
 
 **1. Helper-contract `@throws` at every callsite.** When a function
@@ -124,9 +124,6 @@ Recurring shapes:
  */
 ```
 
-Multi-paragraph descriptions are *earned*; long prose without that payoff
-is the shape to flag (see [Voice](#voice)).
-
 ### Voice
 
 `@mutates` and `@throws` are terse fragments — `@mutates <target> -
@@ -167,20 +164,6 @@ non-obvious parameter choices.
  *
  * @param exclude_dev - If true, excludes dev dependencies to break cycles.
  *   Publishing uses exclude_dev=true to handle circular dev deps.
- */
-```
-
-### Explain system context
-
-State the function's role in the larger system — what depends on it, what
-it enables.
-
-```typescript
-/**
- * Waits for package version to propagate to NPM registry.
- *
- * Critical for multi-repo publishing: ensures published packages are available
- * before updating dependent packages.
  */
 ```
 
@@ -247,15 +230,9 @@ blank line:
  */
 ```
 
-Multi-sentence descriptions read as sentences:
-
-```typescript
-/**
- * Computes topological sort order for dependency graph.
- * @param exclude_dev - If true, excludes dev dependencies to break cycles.
- *   Publishing uses exclude_dev=true to handle circular dev deps.
- */
-```
+Multi-sentence descriptions read as sentences and wrap with continuation
+indentation — see the `exclude_dev` example under
+[Name algorithms](#name-algorithms-and-explain-rationale).
 
 ### `@returns`
 
@@ -358,21 +335,6 @@ Give the reader a clear mental model of how to use the API:
  * ```
  */
 
-// Good — shows minimal setup and the typical workflow
-/**
- * @example
- * ```ts
- * const {modules, diagnostics} = await analyze_from_files({
- *   project_root: process.cwd(),
- * });
- * if (diagnostics.has_errors()) {
- *   for (const err of diagnostics.errors()) {
- *     console.error(format_diagnostic(err));
- *   }
- * }
- * ```
- */
-
 // Weak — doesn't show what the function does or returns
 /**
  * @example
@@ -438,42 +400,23 @@ For nested modules, use the full lib-relative path:
 
 ### `@since`
 
-Supported by the parser but not currently used. Use when versioning matters.
-
-```typescript
-/**
- * Generates a UUID v4.
- * @since 1.5.0
- */
-```
+Supported by the parser but not currently used (`@since 1.5.0`). Use when
+versioning matters.
 
 ### `@default`
 
-Documents default values for interface fields and component props:
+Documents default values for interface fields and component props — place it
+on the field's doc comment:
 
 ```svelte
-const {
-	layout = 'centered',
-	index = 0,
-	content_selector = '.pane',
-}: {
-	/**
-	 * @default 'centered'
-	 */
-	layout?: DialogLayout;
-	/**
-	 * Index 0 is under 1 is under 2 — the topmost dialog is last in the array.
-	 * @default 0
-	 */
-	index?: number;
-	/**
-	 * If provided, prevents clicks that would close the dialog
-	 * from bubbling past any elements matching this selector.
-	 * @default '.pane'
-	 */
-	content_selector?: string | null;
-} = $props();
+/**
+ * Index 0 is under 1 is under 2 — the topmost dialog is last in the array.
+ * @default 0
+ */
+index?: number;
 ```
+
+See [Svelte components](#svelte-components) for a full `$props()` block.
 
 ### `@nodocs` (non-standard)
 
@@ -744,47 +687,9 @@ cross-references.
  */
 ```
 
-**Pipeline stages** — combines numbered steps with `@see` cross-references
-(see also the [Document workflows with numbered steps](#document-workflows-with-numbered-steps)
-pattern above):
-
-```typescript
-/**
- * Library metadata generation pipeline.
- *
- * Pipeline stages:
- * 1. **Collection** — `library_collect_source_files` gathers and filters
- * 2. **Analysis** — `library_analyze_module` extracts metadata
- * 3. **Validation** — `library_find_duplicates` checks flat namespace
- * 4. **Transformation** — `library_merge_re_exports` resolves re-exports
- * 5. **Output** — `library_sort_modules` prepares deterministic output
- *
- * @see library_generate.ts for the main generation entry point
- * @see library_analysis.ts for module-level analysis
- * @see library_output.ts for output file generation
- * @see library_gen.ts for Gro-specific integration
- *
- * @module
- */
-```
-
-**Design philosophy:**
-
-```typescript
-/**
- * mdz — strict markdown dialect for Fuz documentation.
- *
- * ## Design philosophy
- *
- * - **False negatives over false positives**: When in doubt, treat as
- *   plain text.
- * - **One way to do things**: Single unambiguous syntax per feature.
- * - **Explicit over implicit**: Clear delimiters avoid ambiguity.
- * - **Simple over complete**: Prefer simple parsing rules.
- *
- * @module
- */
-```
+**Pipeline stages** — combine the numbered-steps form
+([Document workflows](#document-workflows-with-numbered-steps)) with a `@see`
+cluster in a single `@module` comment.
 
 ### Functions
 
