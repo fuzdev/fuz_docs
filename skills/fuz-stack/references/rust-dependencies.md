@@ -123,6 +123,12 @@ constraint). They're real external deps and belong here even though no root
 See rust-patterns.md §WASM boundary errors and wasm-patterns.md for the
 binding-layer conventions these support.
 
+## Image processing
+
+| Crate | Purpose |
+| ----- | ------- |
+| `libvips` | Rust bindings to the system **libvips** image library — the same engine `sharp` wraps — for decode/resize/encode (JPEG/PNG/WebP/AVIF), EXIF-orientation baking, metadata stripping, and thumbnailing. For spine-consumer servers with an image-upload pipeline (e.g. `visiones_server`). Dynamically links system libvips, so it needs the `libvips` package at runtime + `libvips-dev` at build time (not a static-musl crate); on a Debian host `zap` installs it via apt. The `unsafe` FFI lives inside the binding — consumer crates keep `unsafe_code = "forbid"`. Chosen over the pure-Rust `image`/`ravif`/`image-webp` stack because matching `sharp`'s formats there pulls in `libwebp` (lossy WebP) + `dav1d` (AVIF decode) C deps anyway, across more crates and with worse parity. |
+
 ## Crate-vs-feature isolation (supply-chain)
 
 When a capability must be kept **out of** a binary's dependency graph for

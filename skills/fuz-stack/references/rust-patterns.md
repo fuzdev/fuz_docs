@@ -528,7 +528,7 @@ a real signature names what it needs.
 
 **Composite traits per handler tier** — when an action-spec dispatcher
 in a spine crate must be generic over multiple App types
-(`zzz_server::App`, `fuz_forge_server::App`, ...), a composite trait per tier
+(`zzz_server::App`, `fuz_forge_server::FuzForgeApp`, ...), a composite trait per tier
 with accessor methods inline is the path. Descriptive name (`*Actions`,
 `*Runtime`, `*Handler`), never `*Deps`. Default to one composite; split
 into multiple only when a consumer genuinely opts out of part of the
@@ -943,7 +943,7 @@ untrusted-size input unbounded.
   `read_checked`).
 - **For streams** (HTTP bodies, subprocess output): enforce a byte counter
   mid-stream and abort-on-overrun — a `Content-Length` header is a hint, not a
-  bound (`fuz_forge`'s `stream_to_storage`, `fuz_storage`'s forge backend; the
+  bound (`fuz_fact`'s `stream_to_storage`, `fuz_storage`'s forge backend; the
   `drain_capped` in the `fuz_subprocess` candidate). Unlink any partial output
   on overrun.
 
