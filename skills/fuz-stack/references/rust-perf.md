@@ -23,7 +23,8 @@ the right design, not a smell to optimize away.
 ## Measure first
 
 Always profile/bench with `--release` (debug runs with different hot paths).
-Curated tools:
+tsv keeps a `[profile.profiling]` (`inherits = "release"`, `debug = true`,
+`strip = false`) for symbolicated profiles. Curated tools:
 
 | Profiler            | Surface                                  | When                                            |
 | ------------------- | ---------------------------------------- | ----------------------------------------------- |
@@ -37,6 +38,31 @@ Curated tools:
 | Criterion     | Wall-clock + stats | default; CI regression integrations                              |
 | Divan         | Wall-clock + stats | lighter macros, native multithreaded benches                     |
 | Iai-Callgrind | Instruction counts | deterministic, no OS jitter; ideal for CI/micro (weaker non-x86) |
+
+## Arena allocation (`bumpalo`) — in use in tsv
+
+tsv's core allocation strategy: every parser is
+`parse<'arena>(source: &str, arena: &'arena Bump) -> Result<Ast<'arena>>` —
+the **caller owns the `Bump`**, ASTs borrow it, and formatting takes a
+separate doc arena. Conventions proven there:
+
+- **Per-thread reusable arenas for binding hot loops** (`tsv_arena`):
+  `with_ast_arena` / `with_doc_arena` hold one `thread_local!`
+  `RefCell<Bump>` per thread and `reset()` at the **start** of each call, so
+  the high-water chunk is retained and per-call malloc/free amortizes to
+  zero. Soundness contract: the callback must fully consume arena-borrowed
+  work into an owned return before the next reset. Non-reentrant (the
+  `RefCell` borrow spans the callback) — a nested parse inside formatting
+  uses a local `Bump`. Recovers cleanly after `catch_unwind` (the FFI path
+  relies on this). Under WASM the thread-local is effectively a module
+  static.
+- **Trap**: `bumpalo` collections don't run `Drop` for contents — arenas hold
+  POD (`Copy`, `&'arena str`). For types with destructors use `typed-arena`
+  (not currently used anywhere). Never round-trip global-heap collections
+  (`String`/`Vec`) through `into_bump_slice` — leaks.
+- One arena per phase (AST vs doc IR), dropped/reset at phase end.
+
+`bumpalo` stays safe-API-only, so `unsafe_code = "forbid"` holds.
 
 ## Async lock hygiene
 
@@ -66,23 +92,27 @@ Beyond generic hygiene:
   `codegen-units = 1` (./rust-patterns.md §Release Profile) inlines across crates
   without per-fn `#[inline]`. Reserve `#[cold]` + `#[inline(never)]` for rare
   error/panic formatters to keep the hot I-cache dense.
+- **Box the error, keep `Ok` pointer-sized**: tsv's lexer returns
+  `Result<_, Box<ParseError>>` so the hot `next_token` Ok path stays small; a
+  `From<Box<ParseError>>` unboxes at the parser boundary. Apply when the error
+  type is fat and the fallible call is hot.
+- **Don't round-trip a closed set through serde on a hot path**: zzz's
+  `ProviderName::parse(&str)` matches literals directly instead of allocating
+  a `Value::String` per request, with `as_str`/`Display`/serde-rename
+  single-sourced from one match.
+- **Compact span/token types**: tsv's `Span { start: u32, end: u32 }` (`Copy`)
+  halves span memory vs `usize` pairs and caps files at 4 GiB — pair the cap
+  with an explicit `FileTooLarge` guard.
 - **False sharing**: pad per-thread/per-shard hot atomics to a cache line
-  (`#[repr(align(64))]`) when multiple cores write adjacent counters — otherwise
-  one write invalidates the line on every core (5–10× on what look like
-  independent increments).
+  (`#[repr(align(64))]`) when multiple cores write adjacent counters —
+  otherwise one write invalidates the line on every core (5–10× on what look
+  like independent increments).
 
 ## Open questions / not-yet-used
 
 None of these are in any workspace crate today; noted tersely so the choice is
 in-context if the workload arrives.
 
-- **Arena allocation (`bumpalo`)** — default if AST/parser work motivates an
-  arena (bump-pointer alloc + one drop per arena: no per-node free-list
-  traversal, cache-friendly contiguous layout). Trap: `bumpalo::Vec` doesn't run
-  `Drop` for its contents, so arenas hold POD-only (`Copy`, `&'arena str`); for
-  types with destructors use `typed-arena`. One arena per phase, drop at phase
-  end. Never round-trip global-heap collections (`String`/`Vec`) through
-  `into_bump_slice` — leaks.
 - **Zero-copy archives (`rkyv`)** — candidate for content-addressed bodies and
   snapshot manifests read repeatedly without mutation (the on-disk bytes *are*
   the in-memory layout, no parse); not for mutation-heavy or read-once paths.

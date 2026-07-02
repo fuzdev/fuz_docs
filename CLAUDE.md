@@ -146,14 +146,16 @@ skills/
 │   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
 │   │   ├── npm-dependencies.md        # Approved external npm package allowlist for TS/Svelte repos
 │   │   ├── rust-dependencies.md       # Approved external crate allowlist for Rust workspaces
-│   │   ├── rust-patterns.md           # Rust workspace, lint, error, CLI patterns (fuz, tsv, blake3)
-│   │   ├── rust-perf.md               # Rust perf: profiling, allocators, locks, arenas, SIMD, false sharing
+│   │   ├── rust-patterns.md           # Rust lints, errors, DI ladder, idioms, CLI patterns (fuz, zap, tsv, blake3)
+│   │   ├── rust-perf.md               # Rust perf: profiling, arenas, locks, hot-path idioms, SIMD, false sharing
+│   │   ├── rust-spine.md              # Spine crate map, consumer servers (run_app), env, daemon lifecycle, check-release
 │   │   ├── svelte-patterns.md         # Svelte 5 runes, contexts, snippets, attachments
 │   │   ├── task-patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
 │   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions
 │   │   ├── tsdoc-comments.md          # TSDoc style guide and API docs system
+│   │   ├── twin-impl.md               # TS ↔ Rust twin implementations: convergence, naming parity, wire crates
 │   │   ├── type-utilities.md          # Nominal typing (Flavored/Branded), strict utility types
-│   │   ├── wasm-patterns.md           # WASM build targets, WIT, wasm-bindgen, component model (blake3, tsv)
+│   │   ├── wasm-patterns.md           # WASM/N-API build targets, WIT, wasm-bindgen, component model (blake3, tsv)
 │   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
 └── grimoire/
     └── SKILL.md                       # Grimoire pattern (lore, quests, skills)

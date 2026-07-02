@@ -500,20 +500,34 @@ crates consumed by `zzz_server`/`fuz_forge_server`, the `zap` convergence
 engine, the `blake3`/`tsv` bindings) share a distinct set of conventions from
 the TS/Svelte side. snake_case carries over for cross-language alignment, but
 Rust solves with the type system + crate graph what TS solves with `*Deps`
-injection. Three references, loaded on demand:
+injection. These references own *conventions and patterns* — adoptable by any
+Rust workspace, including new/external ones, with ecosystem repos as
+exemplars; each repo's `CLAUDE.md` owns its inventory (crates, commands, env
+vars). Five references, loaded on demand:
 
-- **./references/rust-patterns.md** — workspace layout, strict lints
-  (`unsafe_code = "forbid"`, pedantic + nursery + restriction lints), `thiserror`
-  error taxonomy + `.hint()`/`.exit_code()` binary helpers, the DI escalation
-  ladder (`*Options`/capability-traits/enum-dispatch-before-`dyn`/RPITIT), the
+- **./references/rust-patterns.md** — the new-workspace checklist, strict
+  lints (`unsafe_code = "forbid"`, pedantic + nursery + restriction lints;
+  the crate-override re-declare trap), release profile, `thiserror` error
+  taxonomy + `.hint()`/`.exit_code()` helpers and classifiers, graceful
+  shutdown, the DI escalation ladder
+  (`*Options`/capability-traits/enum-dispatch-before-`dyn`/RPITIT), the
   make-impossible-states-unrepresentable idiom (zap_types is the reference),
-  graceful shutdown, daemon lifecycle, CLI/xtask patterns, and the shared
-  spine-consumer patterns (`run_app`, env loading, `fuz_audit` check-release).
-- **./references/rust-perf.md** — profiling, allocation/lock hygiene, bounds-check
-  elision, inlining, the `unsafe` escape hatch, and what's out of scope.
+  CLI/exit-code patterns, and shared patterns (sandboxed eval, transactional
+  state files, CAS, bounded reads, type state, secret masking).
+- **./references/rust-spine.md** — the spine crate map, consumer-server
+  contracts (`run_app`, `RunAppOptions`, the `testing_*` sibling binary),
+  the `fuz_http` JSON-RPC envelope, env loading, daemon lifecycle by
+  transport, and `fuz_audit` check-release + crate-layering rules.
+- **./references/rust-perf.md** — profiling, arenas (`bumpalo` in tsv),
+  lock hygiene, hot-path idioms, the `unsafe` escape hatch, and what's out
+  of scope.
 - **./references/rust-dependencies.md** — the approved external-crate allowlist
   and the crate-vs-cargo-feature supply-chain isolation technique.
+- **./references/twin-impl.md** — the TS ↔ Rust twin-implementation
+  architecture: convergence discipline, identifier-level naming parity, the
+  cross-backend harness, wire crates, and serialization parity rules.
 
-WASM binding crates additionally follow ./references/wasm-patterns.md. Each
-Rust repo's `CLAUDE.md` is authoritative for project-specific conventions; these
-cover the shared patterns across workspaces.
+WASM, C-FFI, and N-API binding crates additionally follow
+./references/wasm-patterns.md. Each Rust repo's `CLAUDE.md` is authoritative
+for project-specific conventions; these cover the shared patterns across
+workspaces.

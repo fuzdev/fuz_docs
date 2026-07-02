@@ -5,29 +5,34 @@ across the ecosystem. Prefer these; reach outside the list only with
 explicit approval (see [§Adding a dependency](#adding-a-dependency)).
 
 **Scope**: the canonical (non-experimental) Rust workspaces — CLIs and
-daemons, the WASM bindings, the web servers and their spine crates.
+daemons, the WASM/FFI/N-API bindings, the web servers and their spine crates.
 Different-paradigm or pre-canonical repos (games, protocol research) carry
-their own deps and are out of scope here.
+their own deps and are out of scope here. For an external project adopting
+fuz-stack, the list is advisory — a vetted starting set, not a gate; the
+approval *process* below applies only inside the ecosystem workspaces.
 
 **Source of truth**: each repo's root `[workspace.dependencies]`. This doc
-mirrors the union of those for human and agent audit; it is not generated.
-Verify it against the workspaces periodically.
+mirrors the **union** of those for human and agent audit; it is not
+generated. Any single workspace carries a small subset (zap's direct
+external set is ~14 crates; the forge's ~24 — everything else arrives
+transitively via the spine). Verify against the workspaces periodically.
 
 Crates internal to a workspace (declared with `path = ...`) are not
-dependencies in this sense and never appear here.
+dependencies in this sense and never appear here — including cross-repo path
+deps onto the fuz spine crates.
 
-One approved crate is pinned at the **member-crate** level rather than in
-`[workspace.dependencies]` — `js-sys` (optional, feature-gated in tsv's
-`tsv_wasm`). It's a real external dep and belongs here even though no root
-`[workspace.dependencies]` lists it.
+A few approved crates are pinned at the **member-crate** level rather than in
+a root `[workspace.dependencies]`: `js-sys` (optional, feature-gated) and
+`wasm-bindgen` in `tsv_wasm`, `similar` and `tempfile` in `tsv_debug`,
+`libc` in `zzz_server`. They're real external deps and belong here.
 
 ## Serialization & encoding
 
 | Crate | Purpose |
 | ----- | ------- |
 | `serde` | Derive-based serialization framework |
-| `serde_json` | JSON |
-| `postcard` | Compact binary serialization (`no_std`-friendly) |
+| `serde_json` | JSON (tsv enables `preserve_order` + `float_roundtrip`) |
+| `postcard` | Compact binary serialization (the fuzd UDS wire) |
 | `hex` | Hex encoding/decoding |
 | `base64` | URL-safe base64 (tokens) |
 
@@ -43,9 +48,11 @@ One approved crate is pinned at the **member-crate** level rather than in
 | `url` | URL parsing |
 | `tempfile` | Temp files/dirs (`NamedTempFile`) |
 | `smallvec` | Stack-allocated small vectors |
+| `bumpalo` | Arena allocation (`collections` feature) — tsv's core AST strategy; see rust-perf.md §Arena allocation |
 | `string-interner` | String interning |
 | `phf` | Compile-time perfect-hash maps/sets (keyword tables) |
 | `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling |
+| `similar` | Text diffing (tsv's debug/compare tooling) |
 
 ## Async runtime & networking
 
@@ -107,26 +114,26 @@ One approved crate is pinned at the **member-crate** level rather than in
 | Crate | Purpose |
 | ----- | ------- |
 | `tracing` | Structured logging |
-| `tracing-subscriber` | Subscriber / formatting layers |
+| `tracing-subscriber` | Subscriber / formatting layers (consumed via `fuz_sys::logging`, not per-consumer) |
 | `tracing-appender` | Non-blocking file appender |
 
-## WASM & host
+## WASM, N-API & host
 
 | Crate | Purpose |
 | ----- | ------- |
 | `wasm-bindgen` | JS interop (wasm-pack) |
 | `js-sys` | engine-native `JSON.parse` for the wasm-bindgen parse exports (tsv) |
+| `napi` / `napi-derive` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep |
 | `wit-bindgen` | Component-model bindings |
 | `wasmtime` / `wasmtime-wasi` | WASM host (tests, benches) |
 
-See rust-patterns.md §WASM boundary errors and wasm-patterns.md for the
-binding-layer conventions these support.
+See wasm-patterns.md for the binding-layer conventions these support.
 
 ## Image processing
 
 | Crate | Purpose |
 | ----- | ------- |
-| `libvips` | Rust bindings to the system **libvips** image library — the same engine `sharp` wraps — for decode/resize/encode (JPEG/PNG/WebP/AVIF), EXIF-orientation baking, metadata stripping, and thumbnailing. For spine-consumer servers with an image-upload pipeline (e.g. `visiones_server`). Dynamically links system libvips, so it needs the `libvips` package at runtime + `libvips-dev` at build time (not a static-musl crate); on a Debian host `zap` installs it via apt. The `unsafe` FFI lives inside the binding — consumer crates keep `unsafe_code = "forbid"`. Chosen over the pure-Rust `image`/`ravif`/`image-webp` stack because matching `sharp`'s formats there pulls in `libwebp` (lossy WebP) + `dav1d` (AVIF decode) C deps anyway, across more crates and with worse parity. |
+| `libvips` | Rust bindings to the system **libvips** image library — the same engine `sharp` wraps — for decode/resize/encode (JPEG/PNG/WebP/AVIF), EXIF-orientation baking, metadata stripping, and thumbnailing. For spine-consumer servers with an image-upload pipeline (e.g. `visiones_server`). Dynamically links system libvips: `libvips42` (Debian) at runtime + `libvips-dev` at build time — not a static-musl crate; on a Debian host `zap` installs it via apt. The `unsafe` FFI lives inside the binding — consumer crates keep `unsafe_code = "forbid"`. Chosen over the pure-Rust `image`/`ravif`/`image-webp` stack because matching `sharp`'s formats there pulls in `libwebp` + `dav1d` C deps anyway, across more crates and with worse parity. |
 
 ## Crate-vs-feature isolation (supply-chain)
 
@@ -143,24 +150,29 @@ dependency graph or it is not, and that is auditable.
   test Argon2 params can't reach a production binary.
 - Enforcement is the `cargo xtask check-release` dep-graph audit (`fuz_audit`),
   which fails if any non-`testing_`-prefixed binary transitively links a
-  forbidden crate. Workspaces add per-workspace extra-forbidden crates
-  (`fuz_sign`) and per-binary forbids (`fuz`/`fuzd` must not link `fuzi_*`) by
-  passing an `AuditRules` POD (`extra_forbidden` + `per_binary:
-  &[PerBinaryForbid]`) to the single `run_check_release_cli_with_rules` entry
-  point. See rust-patterns.md §xtask for the xtask wiring.
+  forbidden crate; workspaces add extra forbids via `AuditRules`. See
+  rust-spine.md §xtask & check-release for the entry points and the
+  built-in layering rules.
 
 ## Shared low-level leaves (consolidation candidates)
 
-A few pure, IO-light utilities are independently reimplemented across
-workspaces and are candidates for a single leaf crate (kept spine-free — no
-`tokio`/HTTP/DB — so even `zap`, which takes no spine, can consume it):
+The pattern is proven: the sandboxed config-eval harness was extracted from
+zap into the spine's `fuz_eval` — a spine-free leaf (no tokio-server/HTTP/DB
+surface) consumable even by spine-free repos — and is now shared across
+consumers. Remaining candidates, still independently reimplemented:
 
-- a minimal dotenv (`KEY=VALUE`) parser (reimplemented in `zap_core` + `zzz`),
-- an env-isolating subprocess harness (`fuz_subprocess`: `SpawnOptions` +
-  `spawn_collect`/`spawn_streaming` with a capped output drain — already
-  prototyped in `fuz_forge_server`),
-- an exponential-backoff retry combinator (a generic one exists in
-  `fuz_storage`; `fuz_sidecar` hand-rolls a second).
+- a minimal dotenv (`KEY=VALUE`) parser — three copies today (`zap_core`,
+  plus two inside zzz: the CLI's daemon-env loader and its xtask),
+- an env-isolating subprocess harness with a capped output drain —
+  prototyped in `fuz_forge_server`, promotion deferred until a second
+  consumer,
+- the atomic-write/flock transactional-file dance for spine-free consumers —
+  `fuz_sys::fs::write_atomic` is canonical but zap can't link it and
+  hand-rolls both authority calibrations (rust-patterns.md §Transactional
+  state files),
+- an exponential-backoff retry combinator — no generic one exists;
+  `fuz_sidecar`'s crash-recovery respawn loop is the only backoff
+  implementation, and it's supervision-shaped, not request-retry.
 
 Signal-crate convention: prefer `nix` for syscall wrappers; reserve `libc` for
 types/constants `nix` doesn't expose (PTY). Avoid pulling both into one
@@ -173,7 +185,7 @@ workspace for the same job.
   exactly what the workspace uses; don't inherit a crate's default surface.
 - **`multiple_crate_versions = "allow"`** (rust-patterns.md §Lints) tolerates
   *forced* duplicate majors from the dep graph — e.g. `tsv` carries hashbrown
-  0.15 (via `string-interner`) and 0.16 (via `serde_json` → `indexmap`),
+  0.16 (via `string-interner`) and 0.17 (via `serde_json` → `indexmap`),
   unresolvable until `string-interner` bumps upstream. Not a license to ignore
   version drift you control.
 
