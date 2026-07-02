@@ -16,11 +16,10 @@ Verify it against the workspaces periodically.
 Crates internal to a workspace (declared with `path = ...`) are not
 dependencies in this sense and never appear here.
 
-A few approved crates are pinned at the **member-crate** level rather than
-in `[workspace.dependencies]` — `js-sys` (optional, feature-gated in tsv's
-`tsv_wasm`) and `rand` (crate-pinned in `fuz_sign` for the `rand_core 0.6`
-constraint). They're real external deps and belong here even though no root
-`[workspace.dependencies]` lists them.
+One approved crate is pinned at the **member-crate** level rather than in
+`[workspace.dependencies]` — `js-sys` (optional, feature-gated in tsv's
+`tsv_wasm`). It's a real external dep and belongs here even though no root
+`[workspace.dependencies]` lists it.
 
 ## Serialization & encoding
 
@@ -85,7 +84,7 @@ constraint). They're real external deps and belong here even though no root
 | `subtle` | Constant-time comparison |
 | `zeroize` | Secure memory clearing |
 | `getrandom` | OS randomness — the spine standard for new randomness (`fuz_sys::rand`, `fuz_auth`, `fuz_storage`) |
-| `rand` | RNG — pinned `0.8` **crate-level inside `fuz_sign` only** (the `ed25519-dalek` → `rand_core 0.6` constraint), not a general workspace dep. Prefer `getrandom` for new code. |
+| `rand` | RNG — pinned `0.8` in `[workspace.dependencies]`, consumed only by `fuz_sign` (the `ed25519-dalek` → `rand_core 0.6` constraint). Prefer `getrandom` for new code. |
 
 ## Filesystem & OS
 

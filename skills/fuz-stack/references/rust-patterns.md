@@ -516,7 +516,7 @@ bags and `*RouteState` for route-group shared state.
 **Capability traits** — `PasswordHasher`, `Storage`, `SocketRevoker`,
 `Keyring`, `BootstrapTokenStore`. Pure noun, no suffix. Climb to this
 rung when polymorphism is real: testability swap (production Argon2id ↔
-test fast hasher), multi-impl plug-in (file + object storage backends),
+test fast hasher), multi-impl plug-in (file + forge/ssh storage backends),
 or inversion of definition (the lower crate declares the need; a higher
 crate implements).
 
@@ -564,7 +564,7 @@ dispatch.
 
 Canonical exemplars across the workspaces: `fuz_storage` keeps a `Storage`
 trait for the genuinely-open `Arc<dyn Storage>` cold path **and** an
-`enum StorageBackend { File, Object, Forge }` that matches on `self` for the
+`enum StorageBackend { File, Forge, Ssh }` that matches on `self` for the
 closed set (note: the enum wrapper must forward each backend's provided-method
 overrides — e.g. the streaming `download_to_file`/`upload_file` — or it silently
 regresses every backend to the buffered default). `zzz_server::Provider`,
@@ -1012,13 +1012,20 @@ depends on no spine crate, so it can't name `fuz_auth` types or
 `fuz_actions::ActionSpec`. Each consumer instantiates the generics with a
 one-line concrete alias — `pub type ExtraActionSpecsFactory =
 fuz_actions::ExtraActionSpecsFactory<handlers::App>;` — which is its own type
-definition, not a re-export shim.) Align the `RunAppOptions` field vocabulary
-across consumers (prefer a `SocketAddr` bind over `u16`+hardcoded-loopback;
-always carry `drain_timeout`); `force_test_actions` is a legitimately
-consumer-specific field.
+definition, not a re-export shim.) All three consumers share the same
+`RunAppOptions` bind/drain vocabulary: `default_addr: SocketAddr` (strictly more
+expressive than `u16`+hardcoded-loopback — loopback-only consumers still default
+to `127.0.0.1:<port>` and override only the port) + `drain_timeout: Duration`;
+`force_test_actions` is a legitimately consumer-specific field. Bind *env-var
+names* stay per-consumer (`PORT`/`HOST` for forge, `ZZZ_PORT` for zzz,
+`FUZ_RUST_SPINE_STUB_PORT` for the stub) — a shared bind-config struct would
+force consumer-specific defaults through one type for no gain, so the
+convergence stops at the struct shape.
 
-`DEFAULT_DRAIN_TIMEOUT` belongs beside `fuz_http::serve_with_shutdown`, not
-copied per consumer. The daemon-token keeper-resolved wiring
+`DEFAULT_DRAIN_TIMEOUT` lives beside `fuz_http::serve_with_shutdown` as
+`fuz_http::DEFAULT_DRAIN_TIMEOUT`, single-sourced — every consumer's
+`RunAppOptions.drain_timeout` passes it rather than copying a per-crate const.
+The daemon-token keeper-resolved wiring
 (`BootstrapKeeperResolved` adapter + the boot-time `query_keeper_account_id`
 block) is spine-owned — provide it as a `fuz_auth` constructor/helper, don't
 re-implement it in each consumer.
@@ -1187,7 +1194,7 @@ When you introduce a unifying newtype to retire primitive drift, push it through
 the **wire/persistence shapes**, not just the compute helper — otherwise the
 `String` (or `bool`) it was meant to retire survives at the boundary.
 `fuz_crypto::ContentHash` exists to end `==`-vs-`ct_eq` bare-hex drift and the
-forge's `FactHash` adopted it end-to-end, but the distribution crates still carry
+forge adopted it end-to-end, but the distribution crates still carry
 bare-hex `String` in their manifest/meta fields and compare with `!=`. When the
 wire format is fixed (a signed manifest), add a per-field serde adapter that
 serializes the newtype to the legacy primitive (bare hex) so existing
