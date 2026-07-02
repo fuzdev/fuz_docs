@@ -127,7 +127,7 @@ identities. `$state.raw()` values holding plain data don't need it at all;
 for serialization, `JSON.stringify` and `structuredClone` walk proxies on
 their own.
 
-**Observed quirk** (Svelte 5.55 + vite-plugin-svelte): `const r = $state.snapshot(x)` is
+**Observed quirk** (Svelte 5.56 + vite-plugin-svelte): `const r = $state.snapshot(x)` is
 silently elided to `const r = x` somewhere downstream of Svelte's
 `compileModule` (whose output is correct). `return $state.snapshot(x)` and
 inline expression use work correctly. zzz Cell's `encode_property` is the
@@ -201,9 +201,10 @@ readonly model: Model | undefined = $derived.by(() =>
 );
 
 // From ContextmenuState - $derived for simple, $derived.by for multi-step
-readonly can_collapse = $derived(this.selections.length > 1);
+// (this older class predates the readonly convention; new code should add it)
+can_collapse = $derived(this.selections.length > 1);
 
-readonly can_expand = $derived.by(() => {
+can_expand = $derived.by(() => {
 	const selected = this.selections.at(-1);
 	return !!selected?.is_menu && selected.items.length > 0;
 });
@@ -271,7 +272,7 @@ export class DocsLinks {
 	readonly fragments_onscreen: SvelteSet<string> = new SvelteSet();
 
 	// $derived.by works with SvelteMap - recomputes when links change
-	readonly docs_links = $derived.by(() => {
+	docs_links = $derived.by(() => {
 		const children_map: Map<string | undefined, Array<DocsLinkInfo>> = new Map();
 		for (const link of this.links.values()) {
 			// ... build tree from SvelteMap entries
@@ -283,10 +284,10 @@ export class DocsLinks {
 
 Standard `Map`/`Set` are not tracked by Svelte's reactivity.
 
-For entity streams consumed by different lookups, maintain **multiple
-`SvelteMap` indexes** over the data — rebuild on snapshot events, update
-incrementally on delta events. Deriveds then use `.get()` lookups instead of
-array scans.
+For entity collections consumed by different lookups, maintain **multiple
+`SvelteMap` indexes** over the data (by id, plus one or more secondary keys),
+rebuilding or updating them as the source changes. Deriveds then do `.get()`
+lookups instead of array scans.
 
 ## Schema-Driven Reactive Classes
 
@@ -357,7 +358,7 @@ export const section_depth_context = create_context(() => 0);
 <!-- Provider component sets the context -->
 <script>
 	import type {Snippet} from 'svelte';
-	import {frontend_context} from './frontend.svelte.js';
+	import {frontend_context} from './frontend.svelte.ts';
 
 	const {app, children}: {app: Frontend; children: Snippet} = $props();
 	frontend_context.set(app);
@@ -369,7 +370,7 @@ export const section_depth_context = create_context(() => 0);
 ```svelte
 <!-- Consumer components get the context -->
 <script>
-	import {frontend_context} from './frontend.svelte.js';
+	import {frontend_context} from './frontend.svelte.ts';
 	const app = frontend_context.get();
 </script>
 ```
@@ -448,7 +449,9 @@ Content between component tags becomes `children`:
 
 ### Children with Parameters
 
-Children can be parameterized — `Dialog` passes a close function back to the consumer:
+Children can be parameterized — `Dialog` passes a `DialogContext` object back to
+the consumer (`DialogContext` from `@fuzdev/fuz_ui/dialog.ts` is
+`{close: (e?: Event) => void; register_surface: (el) => () => void}`):
 
 ```svelte
 <!-- Dialog.svelte -->
@@ -456,14 +459,16 @@ Children can be parameterized — `Dialog` passes a close function back to the c
 	const {
 		children,
 	}: {
-		children: Snippet<[close: (e?: Event) => void]>;
+		children: Snippet<[dialog: DialogContext]>;
 	} = $props();
 </script>
 
-{@render children(close)}
+{@render children(context)}
 ```
 
-`ThemeRoot` uses the same pattern with multiple values:
+Consumers reach `close` via `dialog.close`; `register_surface` marks
+click-outside-safe regions. `ThemeRoot` uses the same parameterized-children
+pattern with multiple values:
 `Snippet<[theme_state: ThemeState, style: string | null, theme_style_html: string | null]>`.
 
 ### Named Snippets
@@ -495,8 +500,10 @@ Children can be parameterized — `Dialog` passes a close function back to the c
 
 ### Snippets with Parameters
 
+A snippet prop can take parameters (`Snippet<[T]>`). Illustrative generic list
+renderer — fuz_ui's real `generics=` user is `Contextmenu.svelte`:
+
 ```svelte
-<!-- List.svelte -->
 <script lang="ts" generics="T">
 	import type {Snippet} from 'svelte';
 
@@ -541,15 +548,6 @@ Effects are an escape hatch — avoid when possible. Prefer:
 
 Don't wrap effect contents in `if (browser) {...}` — effects don't run on the
 server. Avoid updating `$state` inside effects.
-
-### Basic Effects
-
-```typescript
-$effect(() => {
-	// Runs when any tracked dependency changes
-	console.log('Count is now:', count);
-});
-```
 
 ### Effect Cleanup
 
@@ -958,7 +956,7 @@ Use `<script lang="ts" module>` for component-level exports (contexts, types):
 ```svelte
 <!-- TomeSection.svelte -->
 <script lang="ts" module>
-	import {create_context} from './context_helpers.js';
+	import {create_context} from './context_helpers.ts';
 
 	export type RegisterSectionHeader = (get_fragment: () => string) => string | undefined;
 	export const register_section_header_context = create_context<RegisterSectionHeader>();
@@ -1034,18 +1032,6 @@ Use `<script lang="ts" module>` for component-level exports (contexts, types):
 </svelte:element>
 ```
 
-### Transitions
-
-```svelte
-<script>
-	import {slide} from 'svelte/transition';
-</script>
-
-{#if open}
-	<div transition:slide>{@render children()}</div>
-{/if}
-```
-
 ## Runes in .svelte.ts Files
 
 `.svelte.ts` files use runes (`$state`, `$derived`, `$effect`) outside
@@ -1099,7 +1085,7 @@ export class WorldUiState {
 ```svelte
 <!-- +layout.svelte or similar root component -->
 <script>
-	import {WorldUiState, world_ui_context} from '$lib/world_ui_state.svelte.js';
+	import {WorldUiState, world_ui_context} from '$lib/world_ui_state.svelte.ts';
 	world_ui_context.set(new WorldUiState());
 </script>
 ```
@@ -1107,7 +1093,7 @@ export class WorldUiState {
 ```svelte
 <!-- any descendant component -->
 <script>
-	import {world_ui_context} from '$lib/world_ui_state.svelte.js';
+	import {world_ui_context} from '$lib/world_ui_state.svelte.ts';
 	const world_ui = world_ui_context.get();
 </script>
 ```
@@ -1120,7 +1106,7 @@ below) — the state is scoped to the returned object, not the module.
 ```typescript
 // api_search.svelte.ts
 export const create_api_search = (library: Library): ApiSearchState => {
-	let query = $state('');
+	let query = $state.raw(''); // raw — primitive replaced wholesale (the default)
 
 	const all_modules = $derived(library.modules_sorted);
 	const filtered_modules = $derived.by(() => {
@@ -1136,7 +1122,8 @@ export const create_api_search = (library: Library): ApiSearchState => {
 	const all_declarations = $derived(library.declarations);
 	const filtered_declarations = $derived.by(() => {
 		const items = query.trim() ? library.search_declarations(query) : all_declarations;
-		return items.sort((a, b) => a.name.localeCompare(b.name));
+		// spread before sort — `items` may be the shared source array
+		return [...items].sort((a, b) => a.name.localeCompare(b.name));
 	});
 
 	return {
@@ -1221,8 +1208,9 @@ Avoid destructuring if you need to mutate the item (e.g.,
 
 **Goal: minimal `<style>` blocks.** Components delegate styling to fuz_css
 utility classes and design tokens; many well-designed components have no
-`<style>` block at all. See `css-patterns.md` §Component Styling Philosophy
-for the full rationale, anti-patterns, and examples.
+`<style>` block at all. See `css-patterns.md` §Default styling is the baseline
+and §Component Styling In Practice for the full rationale, anti-patterns, and
+examples.
 
 When a `<style>` block is needed, keep it focused on component-specific
 layout logic (positioning, complex pseudo-states, responsive breakpoints),

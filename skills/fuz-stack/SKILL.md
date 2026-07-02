@@ -300,26 +300,34 @@ conventions: ./references/tsdoc-comments.md.
 
 ## mdz - Strict Markdown Dialect
 
-`mdz` is the Fuz markdown dialect for documentation (`@fuzdev/mdz/mdz.ts`); fuz_ui
-renders TSDoc prose through it, injecting `DocsLink` (inline code) and fuz_code's
-`Code` (code blocks) via its rendering seam.
+`mdz` (`@fuzdev/mdz/mdz.ts`) is the Fuz markdown dialect — a small, unambiguous
+grammar, **not a CommonMark/GFM superset** (ambiguous input stays literal text).
+fuz_ui renders TSDoc prose through it, injecting `DocsLink` (inline code) and
+fuz_code's `Code` (code blocks) via its rendering seam; backticked identifiers
+that resolve to API symbols become links.
 
 | Feature                | Syntax                                                                              |
 | ---------------------- | ----------------------------------------------------------------------------------- |
-| Code                   | "`code`"                                                                            |
-| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` (single `~` is literal)                        |
-| Links                  | auto-detected URLs, `/internal/path`, `[text](url)`                                 |
-| Headings               | `# Heading` (column 0 required, gets lowercase slugified `id` for fragment links)   |
-| Lists                  | `- item` / `1. item` (column 0 starts; indent nests, blank lines contained, items hold paragraphs/lists/code blocks) |
-| Blockquotes            | `> ` per line (no lazy continuation); `>>` nests; bare `>` separates paragraphs in-quote; blank line ends the quote |
-| Code blocks            | fenced with language hints                                                          |
-| Components             | `<Alert status="warning">content</Alert>` (registered via `mdz_components_context`) |
+| Code                   | `` `code` ``                                                                        |
+| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` — double delimiters only (single `*`/`_`/`~` literal; intraword `_` stays literal so `snake_case` renders verbatim) |
+| Links                  | auto-detected URLs, `/internal/path`, `./relative` / `../relative`, `[text](url)`   |
+| Headings               | `# Heading` … `######` (column 0; slugified lowercase `id` for fragment links)      |
+| Lists                  | `- item` / `1. item` (column 0; indent nests; items hold block children)            |
+| Blockquotes            | `> ` per line (no lazy continuation); `>>` nests; bare `>` = in-quote paragraph break; blank line ends |
+| Code blocks            | fenced with optional language hint                                                  |
+| Tables                 | `\| a \| b \|` rows + `\| --- \| :-: \|` delimiter (colons align); outer pipes required |
+| Horizontal rule        | `---` alone on a line                                                               |
+| Components / elements  | `<Alert>…</Alert>` (component) / `<aside>…</aside>` (HTML element) — both must be registered; **no attributes yet** |
 
 ```svelte
 <Mdz content="Some **bold** and `code` text." />
 ```
 
-Backticked identifiers auto-link to API docs in TSDoc rendering.
+Registration and rendering happen through getter contexts in
+`@fuzdev/mdz/mdz_contexts.ts` (`mdz_components_context`, `mdz_elements_context`,
+`mdz_code_context`, `mdz_codeblock_context`). Full dialect surface, the injection
+seam, backtick autolinking, and the `svelte_preprocess_mdz` build-time
+preprocessor: ./references/mdz.md.
 
 ### Path references
 
@@ -385,49 +393,72 @@ TaskContext, error handling, override patterns, and task composition.
 See ./references/css-patterns.md for setup, variables, composites, modifiers,
 extraction, and dynamic theming.
 
-**Semantic HTML first**: fuz_css styles HTML elements by default — buttons,
-inputs, headings, links, lists, code, tables, `<aside>`, `<blockquote>`,
-`<details>`, `<small>`, `<kbd>`, etc. all get sensible defaults via
-`:where()` selectors. About half of fuz_ui's components have no `<style>`
-block at all.
+**Default styling is the baseline — justify every deviation.** fuz_css styles
+semantic HTML by default (buttons, inputs, headings, links, lists, code, tables,
+`<aside>`, `<blockquote>`, `<details>`, `<small>`, `<kbd>`, …) via
+low-specificity `:where()` selectors, and block elements space themselves via
+the **flow-margin** system — so most content needs zero classes. The most common
+mistake is hand-adding `mb_*`/`gap_*`/`p_*` where flow margin already spaces, or
+re-declaring color/font the element already carries. Before any class or
+`<style>`, ask what specific gap in the defaults it closes. Real code bears this
+out: most app files have no `<style>` block at all (fuz_ui, a component library,
+is ~45% style-free; apps run 70–100%).
 
-**Layered styling ladder**: Stop at the first rung that suffices —
+```svelte
+<!-- BAD: these classes fight defaults the elements already have -->
+<section>
+	<h2 class="mb_md">{title}</h2>  <!-- headings already carry flow margin -->
+	<p class="mb_md">{body}</p>      <!-- so do paragraphs -->
+</section>
 
-1. Semantic HTML (right element, no class needed)
-2. Built-in class conventions (`.selected`, `.color_a`–`.color_j` on buttons,
-   `.inline`, `.unstyled`, `.sm`/`.md`)
-3. Composite classes (`box`, `row`, `column`, `panel`, `chip`, `ellipsis`)
-4. Token classes (`p_md`, `gap_lg`, `color_a_50`)
-5. Literal classes (`display:flex`, `hover:opacity:80%`)
-6. `<style>` block with design tokens — last resort
+<!-- GOOD: correct vertical rhythm with zero classes -->
+<section>
+	<h2>{title}</h2>
+	<p>{body}</p>
+</section>
+```
 
-See css-patterns.md §The Default Path and §Component Styling Philosophy.
+**Styling ladder** — stop at the first rung that suffices:
 
-**Class naming**: fuz_css tokens use `snake_case` (`p_md`, `gap_lg`).
-Component-local classes use `kebab-case` (`site-header`, `nav-links`).
+1. Semantic HTML (right element, no class)
+2. Built-in conventions (`.selected`, `.color_a`–`.color_j`, `.inline`, `.unstyled`)
+3. Composite classes (`row`, `column`, `box`, `panel`, `chip`, `ellipsis`)
+4. Token classes (`p_md`, `gap_lg`, `color_a_50`) — spacing tokens are the most-used family
+5. Literal classes (`display:flex`, `width:100%`, `hover:opacity:80%`)
+6. `<style>` block with design tokens
+
+Rungs 3–5 are one tier in practice — mix freely (a composite when one exactly
+matches, else tokens/literals); literal flex classes are common, not a rare last
+resort. The real cut points are semantic-vs-class and classes-vs-`<style>`. Don't
+churn existing `<style>` blocks into long class strings (4–6 classes is the
+comfortable ceiling). See css-patterns.md §Default styling is the baseline.
+
+**Class naming**: fuz_css tokens use `snake_case` (`p_md`, `gap_lg`);
+component-local classes use `kebab-case` (`site-header`) — the target convention,
+adopted in zzz and fuz_ui.
 
 ### 3-Layer Architecture
 
 - **Semantic styles** (`style.css`) — reset + element defaults (buttons, inputs, forms, tables)
 - **Style variables** (`theme.css`) — 600+ design tokens as CSS custom properties
-- **Utility classes** (`virtual:fuz.css`) — optional, generated per-project with only used classes
+- **Utility classes** (`virtual:fuz.css`) — generated per-project with only used classes
 
 ### CSS Classes
 
 - **Token classes** (`.p_md`, `.color_a_50`, `.gap_lg`) — map to style variables
-- **Composite classes** (`.box`, `.row`, `.ellipsis`) — multi-property shortcuts
+- **Composite classes** (`.box`, `.row`, `.ellipsis`) — multi-property shortcuts; size composites `xs`/`sm`/`md`/`lg`/`xl` rescale a whole subtree
 - **Literal classes** (`.display:flex`, `.hover:opacity:80%`) — arbitrary CSS `property:value`
 
-**Comment hints** for static extraction: `// @fuz-classes box row p_md`,
+**Comment hints** for static extraction (rarely needed): `// @fuz-classes box row p_md`,
 `// @fuz-elements button input`, `// @fuz-variables shade_40 text_50`.
 
 ### When to Use Classes vs Styles
 
 - **Own elements** — utility classes preferred; `<style>` for complex cases; inline OK
 - **Child components** — utility classes; not `<style>`; inline limited
-- **Hover / focus / responsive** — utility classes or `<style>`; never inline
+- **Hover / focus / responsive** — `<style>` (or an occasional literal modifier); never inline
 - **Runtime dynamic values** — inline `style:` only (not classes or `<style>`)
-- **IDE autocomplete** — best in `<style>`; partial inline; none on utility classes
+- **IDE autocomplete** — best in `<style>`; none on utility classes
 
 ## Dependency Injection
 

@@ -143,6 +143,7 @@ skills/
 │   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
 │   │   ├── file-organization.md       # src/ tree, domain subdirectories, full-path imports, test mirroring
+│   │   ├── mdz.md                     # mdz dialect: grammar surface, component/element registration, rendering seam, autolink, preprocessor
 │   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
 │   │   ├── npm-dependencies.md        # Approved external npm package allowlist for TS/Svelte repos
 │   │   ├── rust-dependencies.md       # Approved external crate allowlist for Rust workspaces

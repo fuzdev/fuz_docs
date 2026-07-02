@@ -1,73 +1,92 @@
 # CSS Patterns
 
-fuz_css: **semantic styles** (classless element defaults), **style variables**
-(design tokens as CSS custom properties), and optional **utility classes**
-generated per-project with only used classes.
+fuz_css is three parts: **semantic styles** (classless element defaults),
+**style variables** (design tokens as CSS custom properties), and optional
+**utility classes** generated per-project with only the classes you use.
 
-## The Default Path: Semantic HTML First
+## Default styling is the baseline
 
-**Most elements need zero classes.** fuz_css styles HTML elements by default —
-headings, buttons, inputs, links, lists, code, tables, `<aside>`,
-`<blockquote>`, `<details>`/`<summary>`, `<small>`, `<kbd>`/`<samp>`,
-`<abbr>`, `<sub>`/`<sup>`, `<hr>`, `<img>`/`<picture>`/`<svg>`/`<video>`
-all get sensible defaults via low-specificity `:where()` selectors. About
-half of fuz_ui's components have no `<style>` block at all.
+**The single most common mistake is styling elements fuz_css already styles.**
+Semantic HTML comes fully dressed — headings are tiered (`h1`–`h6`), form
+controls share sizing and focus/hover/disabled states, `<code>`/`<pre>` use the
+mono font, `<aside>` is a callout, and **block elements space themselves
+vertically** via the flow-margin system: `p`, `ul`, `ol`, `menu`, `form`,
+`fieldset`, `table`, `details`, `textarea`, `select`, `label`, `pre`,
+`blockquote`, `aside`, `nav`, `legend` each get
+`margin-bottom: var(--flow_margin, var(--space_lg))` unless `:last-child` or
+`.unstyled`. So a stack of paragraphs, a heading followed by prose, a list under
+a heading — all already have correct rhythm with **zero classes**.
 
-Work down this ladder when styling and stop at the first rung that suffices:
+Before adding any class or `<style>`, ask: *what specific gap in the defaults
+does this close?* Hand-adding `mb_*`/`gap_*`/`p_*` to elements flow margin
+already spaces, or re-declaring the color/font an element already carries, is
+churn that fights the framework. This isn't stylistic — real application code
+bears it out: most fuz app source files have **no `<style>` block at all**
+(zzz's library is ~82% style-free, mdz's ~100%), and where classes appear the
+overwhelming majority are a class or two, not long strings.
 
-1. **Semantic HTML** — pick the right element and you're often done. Headings
-   are pre-tiered (`h1`-`h6`), `<aside>` is a callout, `<blockquote>` is an
-   emphasis block, `<small>` shrinks text, `<code>`/`<pre>`/`<kbd>` use mono
-   font, form controls share consistent sizing and focus/hover/disabled states.
-2. **Built-in class conventions** — `.selected`, `.disabled`, `.color_a`
-   through `.color_j` (on buttons), `.deselectable`, `.inline`, `.unstyled`,
-   `.sm`/`.md` (size overrides). These layer on the semantic defaults.
-3. **Composite classes** — `box`, `row`, `column`, `panel`, `pane`, `chip`,
-   `menuitem`, `clickable`, `ellipsis`. One class replaces 4-8 properties.
-4. **Token classes** — `p_md`, `gap_lg`, `color_a_50`, `font_size_lg`. Map to
-   the design system; never hardcode spacing or color values.
-5. **Literal classes** — `display:flex`, `hover:opacity:80%`. For one-off CSS
-   or modifiers (responsive, hover, focus) without a `<style>` block.
-6. **`<style>` block with design tokens** — last resort, for component-specific
-   layout/animation/responsive behavior that classes can't express cleanly.
+Reach past the defaults only for genuine layout (flex rows/columns, grids),
+intent color (`color_c` for a destructive button), or component-specific
+behavior. The flex containers are the main reason to add classes at all —
+inside a `.row`, child flow margins reset to 0 (`.row > *` → `margin: 0`), so
+use `gap_*` for spacing there.
 
-The same hierarchy applies to text: prefer `<small>` over
-`font-size: var(--font_size_sm)`, prefer `<h2>` over a custom heading style,
-prefer `<aside>` over a custom callout box.
+## The Styling Ladder
 
-### Style tags vs utility classes — direction matters
+When you *do* style, work down this ladder and stop at the first rung that
+suffices:
 
-The ladder describes how to **author** styling from scratch, not a mandate to
-"rewrite every existing `<style>` block as utility classes." Pushing styling up
-the ladder is neutral-to-good; pushing it down (style block → class soup) is
-usually churn.
+1. **Semantic HTML** — the right element, no class. Often the whole job.
+2. **Built-in class conventions** — `.selected`, `.disabled`, `.color_a`–
+   `.color_j`, `.inline`, `.unstyled` — state/variant classes the semantic
+   styles already recognize.
+3. **Composite classes** — `box`, `row`, `column`, `panel`, `chip`, `ellipsis`
+   — one class for a whole layout pattern.
+4. **Token classes** — `p_md`, `gap_lg`, `color_a_50` — map to design tokens;
+   never hardcode spacing or color.
+5. **Literal classes** — `display:flex`, `width:100%`, `hover:opacity:80%` —
+   arbitrary `property:value`, including responsive/state modifiers.
+6. **`<style>` block with design tokens** — component-specific layout,
+   animation, complex selectors, theming APIs.
 
-**Rule of thumb when reviewing or refactoring:**
+**Rungs 3–5 are one tier in practice, not a strict frequency ranking.** They're
+all utility classes you mix freely on the same element. The ordering is a mild
+preference — reach for a composite when one *exactly* matches (`row` over
+`display:flex align-items:center`), tokens for spacing/color, literals for
+one-off layout. Empirically, spacing token classes (`mb_*`, `gap_*`, `p_*`) are
+the single most-used class family, and **literal flex classes (`display:flex`,
+`flex:1`, `width:100%`) are as common as composites** — heavily used in app
+code, not a rare last resort. The real cut points on the ladder are between
+rung 1 (semantic, no class) and the rest, and between rungs 1–5 (utility
+classes) and rung 6 (`<style>` block).
 
-- **Replacing classes with the right semantic element** — good (e.g.,
-  `<div class="callout">` → `<aside>`, `<span class="muted-small">` →
-  `<small class="text_70">`).
-- **Replacing a tiny `<style>` block with a composite/token class** —
-  good only when the block is **trivially redundant**: a 2–4 line block
-  whose entire content is one of `display: flex; flex-direction: column;
-gap: var(--space_md)` (→ `column gap_md`), `display: flex;
-align-items: center; gap: …` (→ `row gap_*`), or a single hardcoded
-  spacing/color that maps to a token. The original intent must survive
-  the rewrite verbatim.
-- **Replacing a non-trivial `<style>` block with a long class string** —
-  **don't**. If the block has hover/focus/active states, animations,
-  `@media` queries, parent-child selectors, pseudo-elements with
-  content, sticky/absolute positioning, theming-API CSS variables, or
-  more than ~6 utility classes' worth of properties, leave it as a
-  `<style>` block. A `<style>` block with design tokens reads better
-  than a 12-class string, gets IDE autocomplete, and survives
-  conditional logic without `clsx` gymnastics.
+The same hierarchy applies to text: `<small>` over
+`font-size: var(--font_size_sm)`, `<h2>` over a custom heading style, `<aside>`
+over a hand-built callout.
 
-**When in doubt, don't churn an existing `<style>` block** — the author chose
-it because the styling exceeded "simple." Refactor only when the block is
-plainly redundant with a single composite/token and the diff shrinks the file.
+### Direction matters — don't churn `<style>` into class soup
 
-### Elements That Come Pre-Styled
+The ladder describes how to **author** from scratch, not a mandate to rewrite
+`<style>` blocks as classes. Pushing styling *up* the ladder (a `<div
+class="callout">` → `<aside>`) is neutral-to-good; pushing it *down* (a working
+`<style>` block → a 12-class string) is usually churn.
+
+- **Class → right semantic element** — good.
+- **Trivially-redundant `<style>` → composite/token** — good only when the
+  block's entire content is one composite's worth: `display: flex;
+  flex-direction: column; gap: var(--space_md)` (→ `column gap_md`),
+  `display: flex; align-items: center; gap: …` (→ `row gap_*`), or a single
+  token-mappable value. Intent must survive the rewrite verbatim.
+- **Non-trivial `<style>` → long class string** — don't. If the block has
+  hover/focus state machines, animations, `@media`, parent-child selectors,
+  pseudo-element content, positioning, or theming-API variables, leave it. A
+  `<style>` block with design tokens reads better than a 12-class string, gets
+  IDE autocomplete, and survives conditional logic without `clsx` gymnastics.
+
+**When in doubt, don't churn an existing `<style>` block** — the author chose it
+because the styling exceeded "simple."
+
+## Elements That Come Pre-Styled
 
 | Element                           | What you get without classes                                                             |
 | --------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -93,37 +112,34 @@ plainly redundant with a single composite/token and the diff shrinks the file.
 | `<label> .title`                  | Bold, small bottom margin — field label inside a `<label>`                               |
 | `<fieldset>`/`<legend>`           | Column flex layout, larger legend text                                                   |
 
-Most block elements (`p`, `ul`, `ol`, `form`, `fieldset`, `table`, `details`,
-`textarea`, `select`, `label`, `pre`, `blockquote`, `aside`, `nav`, `legend`)
-get `margin-bottom: var(--flow_margin)` unless `:last-child` — the **flow
-margin** system. Inside a `.row` flex container, child margins reset to 0; use
-`gap_*` instead.
+Low-specificity `:where()` selectors carry all of this, so any class or style
+overrides it, regardless of import order.
 
-### Built-In Class Conventions
+## Built-In Class Conventions
 
-State/variant classes that fuz_css's semantic styles recognize — no utility
-classes needed:
+State/variant classes authored into the semantic styles (`style.css`) — reach
+for these before any utility class or custom CSS:
 
 | Class                 | Where it applies                                | Effect                                                     |
 | --------------------- | ----------------------------------------------- | ---------------------------------------------------------- |
-| `.selected`           | `button`, `a`, `label`, `.menuitem`             | Filled selected appearance, non-interactive                |
-| `.deselectable`       | `button.selected`                               | Keeps interactivity on a selected button                   |
-| `.disabled`           | `label`                                         | Muted color, default cursor                                |
+| `.selected`           | `button`, `a`, `label`, `.menuitem`             | Filled selected appearance; `button`/`label` also switch to `cursor: default` (links stay interactive) |
+| `.deselectable`       | selected `button`, and the `selectable`/`menuitem` composites | Keeps interactivity on a selected element                  |
+| `.disabled`           | `label`                                          | Muted color, default cursor                                |
 | `.color_a`–`.color_j` | `button`                                        | Hue variants (a=blue, b=green, c=red, etc.)                |
-| `.inline`             | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for inline use                        |
+| `.inline`             | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for use inside paragraph text         |
 | `.unstyled`           | Most elements                                   | Opts out of opinionated styling, keeps normalizations      |
-| `.sm`                 | Any container                                   | Tighter sizing (overrides `--font_size`, `--input_height`) |
-| `.md`                 | Any container                                   | Resets to default sizing (reverses cascaded `.sm`)         |
 
-Reach for these before custom CSS. A `<button class="color_c selected">` is
-already a "selected destructive action" — no hand-rolled state styling.
+A `<button class="color_c selected">` is already a "selected destructive
+action" — no hand-rolled state styling. (Size classes `sm`/`md`/`lg`/etc. read
+like conventions but are composites that require extraction — see
+[Composite Classes](#composite-classes).)
 
 ## Project Setup
 
 ### Import Order
 
-Import CSS in `+layout.svelte` (`src/routes`). First import is universal;
-others as needed:
+Import CSS in `+layout.svelte` (`src/routes`). First import is universal; others
+as needed:
 
 ```typescript
 import 'virtual:fuz.css'; // generated bundled CSS (all projects)
@@ -131,15 +147,15 @@ import '@fuzdev/fuz_code/theme.css'; // package-specific themes (if any)
 import '$routes/style.css'; // project-specific global styles (app projects)
 ```
 
-`$routes` resolves to `src/routes` in SvelteKit. Library/tool repos
-(fuz_css, fuz_ui, `gro`, etc.) often import only `virtual:fuz.css`. Application
-repos (fuz_template, fuz_blog, zzz, etc.) typically use all three.
+`$routes` resolves to `src/routes` in SvelteKit. Library/tool repos (fuz_css,
+fuz_ui, `gro`) often import only `virtual:fuz.css`; application repos
+(fuz_template, fuz_blog, zzz) typically use all three.
 
 ### CSS Generation
 
-The CSS is generated on demand by the `vite_plugin_fuz_css` Vite plugin and
-imported as the `virtual:fuz.css` module — no committed `fuz.css` file. This is
-the ecosystem default (SvelteKit and any other Vite project):
+CSS is generated on demand by the `vite_plugin_fuz_css` Vite plugin and imported
+as the `virtual:fuz.css` module — no committed `fuz.css` file. Ecosystem default
+for any Vite project:
 
 ```typescript
 // vite.config.ts
@@ -150,7 +166,7 @@ export default defineConfig({plugins: [vite_plugin_fuz_css()]});
 import 'virtual:fuz.css';
 ```
 
-For TypeScript, declare the module's type once in `src/app.d.ts`:
+Declare the module type once in `src/app.d.ts`:
 
 ```typescript
 declare module 'virtual:fuz.css' {
@@ -159,77 +175,25 @@ declare module 'virtual:fuz.css' {
 }
 ```
 
-The plugin supports HMR — source changes regenerate the CSS. Default bundled
-mode with tree-shaking needs no custom options. fuz_css itself passes
-`{additional_variables: 'all'}` to include all variables for its docs site demos.
+The plugin supports HMR; tree-shaken bundled mode needs no options. fuz_css
+itself passes `{additional_variables: 'all'}` to include all variables for its
+docs demos.
 
 **Gro generator alternative**: a `src/routes/fuz.gen.css.ts` exporting
-`gen_fuz_css()` writes a committed `fuz.css` genfile (regenerated via
-`gro gen`). The Vite plugin is preferred; reach for this only when a project
-can't run the plugin.
+`gen_fuz_css()` writes a committed `fuz.css` genfile (regenerated via `gro
+gen`). Prefer the Vite plugin; reach for this only when a project can't run it.
 
 ### Project `style.css`
 
-Project-specific global styles in `src/routes/style.css`:
-
-- Custom element overrides (e.g., heading fonts, textarea styling)
-- Patterns being prototyped before upstreaming to fuz_css
-- App-specific layout (e.g., sidebar widths, primary nav height)
-
-Keep minimal — most apps have near-empty `style.css` files.
-
-## Three-Layer Architecture
-
-| Layer              | File              | Purpose                                                   |
-| ------------------ | ----------------- | --------------------------------------------------------- |
-| 1. Semantic styles | `style.css`       | Reset + element defaults (buttons, inputs, forms, tables) |
-| 2. Style variables | `theme.css`       | 600+ design tokens as CSS custom properties               |
-| 3. Utility classes | `virtual:fuz.css` | Optional, generated per-project with only used classes    |
-
-### Semantic Styles
-
-`style.css` styles HTML elements without classes using low-specificity
-`:where()` selectors, so utility classes always win. See §The Default Path
-above for the full table of pre-styled elements and built-in class
-conventions. The lowered specificity also keeps fuz_css's stylesheet from
-interfering with the page's styles regardless of import order.
-
-Combine semantic HTML with utility classes for color and layout — the element
-gives typography and base styling, the classes layer on intent:
-
-```svelte
-<small class="text_50">{metadata}</small>
-<small class="text_70">{subtitle}</small>
-<small class="row gap_sm">{items}</small>
-```
-
-### `.unstyled` and `.inline` Modifiers
-
-`.unstyled` opts an element out of opinionated styling (colors, borders,
-decorative properties) while keeping normalizations (font inheritance,
-border-collapse). Common for nav menus, custom list components, and links
-used as buttons:
-
-```svelte
-<ul class="unstyled column gap_xs">  <!-- reset list, use as flex column -->
-<a class="unstyled">                 <!-- reset link styling -->
-<menu class="unstyled row gap_sm">   <!-- reset menu, use as flex row -->
-```
-
-`.inline` forces inline-block display for embedding interactive elements in
-paragraph text:
-
-```svelte
-<p>Click <button class="inline">here</button> to continue.</p>
-<p>Enter your <input class="inline" /> name.</p>
-```
-
-Applies to `code`, `input`, `textarea`, `select`, `button`. These also get
-inline-block automatically when nested inside `<p>` (no class needed).
+Project-specific global styles in `src/routes/style.css`: custom element
+overrides, patterns being prototyped before upstreaming to fuz_css, app-specific
+layout (sidebar widths, nav heights). Keep minimal — most apps have near-empty
+`style.css` files.
 
 ## Style Variables (Design Tokens)
 
-Defined in TypeScript, rendered to CSS. Each can have `light` and/or `dark` values.
+Defined in TypeScript, rendered to CSS. 600+ tokens; each can have `light`
+and/or `dark` values.
 
 ### Colors
 
@@ -240,59 +204,70 @@ Defined in TypeScript, rendered to CSS. Each can have `light` and/or `dark` valu
 - `f` (muted/brown), `g` (decorative/pink), `h` (caution/orange), `i`
   (info/cyan), `j` (flourish/teal)
 
-**Intensity scale**: 13 stops from `color_a_00` (lightest) → `color_a_50`
-(base) → `color_a_100` (darkest). Steps: `00`, `05`, `10`, `20`, `30`, `40`,
-`50`, `60`, `70`, `80`, `90`, `95`, `100`.
+**Intensity scale**: 13 stops from `color_a_00` (lightest) → `color_a_50` (base)
+→ `color_a_100` (darkest): `00`, `05`, `10`, `20`, `30`, `40`, `50`, `60`, `70`,
+`80`, `90`, `95`, `100`.
 
 ### Color-Scheme Variants
 
 | Prefix      | Behavior                                       | Use case                       |
 | ----------- | ---------------------------------------------- | ------------------------------ |
+| `text_*`    | Opaque, scheme-aware (low=subtle, high=bold)   | Text (alpha hurts performance) |
+| `shade_*`   | Opaque, tinted neutrals (00→100), scheme-aware | Backgrounds, surfaces          |
 | `fg_*`      | Toward contrast (darkens light, lightens dark) | Foreground overlays that stack |
 | `bg_*`      | Toward surface (lightens light, darkens dark)  | Background overlays that stack |
 | `darken_*`  | Always darkens (agnostic, alpha-based)         | Shadows, backdrops             |
 | `lighten_*` | Always lightens (agnostic, alpha-based)        | Highlights                     |
-| `text_*`    | Opaque, scheme-aware (low=subtle, high=bold)   | Text (alpha hurts performance) |
-| `shade_*`   | Opaque, tinted neutrals (00→100), scheme-aware | Backgrounds, surfaces          |
 
-`fg_*`/`bg_*` overlays use alpha and stack when nested (alpha accumulates),
-unlike opaque `shade_*`. Both `shade_*` and `text_*` include `_min`/`_max`
-variants for untinted extremes (pure black/white).
+`text_*` and `shade_*` are the everyday opaque, scheme-aware color tokens —
+reach for them first. `fg_*`/`bg_*` overlays use alpha and accumulate when
+nested. Both `shade_*` and `text_*` have `_min`/`_max` for untinted extremes
+(pure black/white). Fixed-appearance `_light`/`_dark` variants exist
+(`shade_40_light`, `color_a_50_dark`) but are rarely needed.
 
 ### Sizes
 
-`xs5` → `xs4` → `xs3` → `xs2` → `xs` → `sm` → `md` → `lg` → `xl` → `xl2` →
-... → `xl15` (23 stops for spacing). Other families use subsets:
+`xs5` → … → `xs` → `sm` → `md` → `lg` → `xl` → `xl2` → … → `xl15` (23 stops for
+spacing). Other families use subsets:
 
-- **Font sizes**: 13 stops (`xs`-`xl9`)
-- **Icon sizes**: 7 stops (`xs`-`xl3`, in px not rem)
-- **Border radii**: 7 stops (`xs3`-`xl`)
-- **Distances**: 5 stops (`xs`-`xl`, in px for absolute widths)
-- **Shadows, line heights**: 5 stops (`xs`-`xl`)
+- **Font sizes**: 13 stops (`xs`–`xl9`)
+- **Icon sizes**: 7 stops (`xs`–`xl3`, in px not rem)
+- **Border radii**: 7 stops (`xs3`–`xl`)
+- **Distances**: 5 stops (`xs`–`xl`, px — absolute widths: 200/320/800/1200/1600)
+- **Shadows, line heights**: 5 stops (`xs`–`xl`)
 
 ### Additional Variable Families
 
-- **`border_color_*`**: Alpha-based tinted borders (00-100 scale)
-- **`shadow_alpha_*`**: Shadow opacity scale (00-100)
-- **`darken_*`/`lighten_*`**: Non-adaptive alpha overlays (00-100)
-- **`border_width_*`**: Numbered 1-9 (in px)
-- **`duration_*`**: Numbered 1-6 (0.08s to 3s)
-- **`hue_*`**: Base hue values for each color (`hue_a` through `hue_j`)
-- **Non-adaptive variants**: `shade_XX_light`/`shade_XX_dark` and
-  `color_X_XX_light`/`color_X_XX_dark` for fixed appearance regardless of
-  color scheme
+- **`border_color_*`**, **`outline_color_*`**: alpha-based tinted borders/outlines (00–100)
+- **`shadow_alpha_*`**: shadow opacity scale (00–100)
+- **`border_width_*`**: numbered 1–9 (px)
+- **`duration_*`**: numbered 1–6 (0.08s to 3s)
+- **`hue_*`**: base hue values for each color (`hue_a` through `hue_j`)
 
 ### Theme Specificity
 
 Bundled mode: `:root` and `:root.dark`. Runtime theme switching (via
 `render_theme_style()`) repeats the selector for higher specificity (default
-`:root:root` and `:root:root.dark`) to handle unpredictable CSS insertion order.
-
+`:root:root` / `:root:root.dark`) to survive unpredictable CSS insertion order.
 Colors are HSL-based (OKLCH migration planned).
 
-## CSS Classes
+### Cascading Variable Pattern
 
-Three types of utility classes, generated on-demand:
+Many token classes set both a CSS property **and** a cascading custom property,
+so children inherit the value:
+
+- `font_size_lg` → `font-size` + `--font_size`
+- `color_a_50` → `color` + `--text_color`
+- `border_color_30` → `border-color` + `--border_color`
+- `outline_color_a_50` → `outline-color` + `--outline_color` (focus rings key off it)
+- `shadow_color_umbra` → `--shadow_color`
+
+A child of `font_size_lg` can reference `var(--font_size)` for the inherited
+value.
+
+## Utility Classes
+
+Three types, generated on-demand:
 
 | Type                  | Example                               | Purpose                      |
 | --------------------- | ------------------------------------- | ---------------------------- |
@@ -302,23 +277,19 @@ Three types of utility classes, generated on-demand:
 
 ### Token Classes
 
-Map directly to style variable values:
-
-- **Spacing**: `p_md`, `px_lg`, `mt_xl`, `gap_sm`, `mx_auto`, `m_0`
-- **Text colors**: `text_70`, `text_min`, `color_a_50`, `color_b_50`
-- **Background colors**: `shade_00`, `bg_10`, `fg_20`, `darken_30`,
-  `bg_a_50` (hue + intensity background)
-- **Typography**: `font_size_lg`, `font_family_mono`, `line_height_md`,
-  `icon_size_sm`
-- **Layout**: `width_md`, `width_atmost_lg`, `height_xl`, `top_sm`,
-  `inset_md`
-- **Borders**: `border_radius_xs`, `border_width_2`, `border_color_30`,
-  `border_color_a_50`
-- **Shadows**: `shadow_md`, `shadow_top_md`, `shadow_bottom_lg`,
-  `shadow_inset_xs`, `shadow_inset_top_sm`, `shadow_inset_bottom_xs`,
-  `shadow_alpha_50`, `shadow_color_umbra` (also `_highlight`, `_glow`,
-  `_shroud`)
-- **Hue**: `hue_a` through `hue_j` (sets `--hue` variable)
+- **Spacing**: `p_md`, `px_lg`, `mt_xl`, `gap_sm`, `mx_auto`, `m_0` — by far the
+  most-used family
+- **Text colors**: `text_70`, `text_min`, `color_a_50`
+- **Background colors**: `shade_00`, `bg_10`, `fg_20`, `darken_30`, `bg_a_50`
+- **Typography**: `font_size_lg`, `font_family_mono`, `line_height_md`, `icon_size_sm`
+- **Layout**: `width_md` (space scale), `top_sm`, `inset_md`, and the
+  **distance-scale** sizers `width_atmost_lg`/`width_atleast_sm`/`height_atmost_md`
+  — these emit `width: 100%; max-width: var(--distance_*)` (px caps: 200–1600),
+  distinct from `width_md` which maps to the space scale
+- **Borders**: `border_radius_xs`, `border_width_2`, `border_color_30`
+- **Shadows**: `shadow_md`, `shadow_top_md`, `shadow_inset_xs`, `shadow_alpha_50`,
+  `shadow_color_umbra` (also `_highlight`, `_glow`, `_shroud`)
+- **Hue**: `hue_a` through `hue_j` (sets `--hue`)
 
 ### Composite Classes
 
@@ -330,22 +301,30 @@ Map directly to style variable values:
 | `panel`       | Embedded container with tinted background and border-radius        |
 | `pane`        | Floating container with opaque background and shadow               |
 | `ellipsis`    | Block with text truncation (nowrap, overflow hidden, ellipsis)     |
-| `clickable`   | Hover/focus/active scale transform effects (includes state styles) |
-| `selectable`  | Button-like fill with hover/active/selected states                 |
-| `chip`        | Inline label with padding and `color_X` hue variants               |
+| `chip`        | Inline label styling (font/padding/bg/radius + `color_X` hues); display comes from the host element |
 | `menuitem`    | Full-width list item with icon, title, and selected state          |
 | `icon_button` | Square button sized to `--input_height` (flex-shrink: 0)           |
+| `selectable`  | Button-like fill with hover/active/selected states                 |
+| `clickable`   | Hover/focus/active scale transform effects (includes state styles) |
 | `plain`       | Transparent border/fill/shadow when not hovered                    |
-| `pixelated`   | Crisp pixel-art image rendering                                    |
-| `circular`    | `border-radius: 50%`                                               |
 | `chevron`     | Small right-pointing arrow via CSS border trick                    |
-| `sm`          | Tighter sizing by overriding `--font_size`, `--input_height`, etc. |
-| `md`          | Default sizing reset (reverses `sm` in a cascade)                  |
-| `mb_flow`     | Flow-aware `margin-bottom` (responds to `--flow_margin`)           |
-| `mt_flow`     | Flow-aware `margin-top` (responds to `--flow_margin`)              |
+| `circular`    | `border-radius: 50%`                                               |
+| `pixelated`   | Crisp pixel-art image rendering                                    |
+| `xs`/`sm`/`md`/`lg`/`xl` | **Size composites** — see below                         |
 
-**Gotcha**: Composites with rulesets (`clickable`, `selectable`, `menuitem`,
-`plain`, `chip`) already include state styles. `hover:clickable` is redundant.
+**Size composites cascade to a subtree.** `xs`/`sm`/`md`/`lg`/`xl` are a
+five-member family at fixed step offsets from the `md` default. Put one on any
+**container** and it rescales that subtree's `--font_size`, `--input_height`,
+`--icon_size`, padding, **and `--flow_margin`** in lockstep — so a `sm` panel
+gets tighter text, controls, icons, and vertical rhythm together. `md` resets to
+default within an already-sized parent. This is the idiomatic way to make a
+whole region denser or roomier without touching individual elements.
+
+**Gotcha**: composites with rulesets (`clickable`, `selectable`, `menuitem`,
+`plain`, `chip`) already include their state styles — `hover:clickable` is
+redundant. Several composites see near-zero real use (`circular`, `pixelated`,
+`pane`, `chevron`); the load-bearing ones are `row`, `column`, `box`, `panel`,
+`chip`, `menuitem`.
 
 ### Literal Classes
 
@@ -355,145 +334,83 @@ Map directly to style variable values:
 <div class="display:flex justify-content:center gap:var(--space_md)">
 ```
 
-**Space encoding**: Use `~` for spaces in multi-value properties:
+**Space encoding**: `~` for spaces in multi-value properties:
 
 ```svelte
 <div class="margin:0~auto padding:var(--space_sm)~var(--space_lg)">
 <div class="width:calc(100%~-~20px)">  <!-- calc requires ~ around +/- -->
 ```
 
-If you need more than 2-3 `~` characters, use a `<style>` block instead.
+If you need more than 2–3 `~` characters, use a `<style>` block instead.
 
 ## Modifiers
 
-State/responsive/color-scheme styling that inline styles can't do:
+State/responsive/color-scheme styling that inline styles can't do, prefixed onto
+a literal class. Each maps 1:1 to a CSS pseudo-class or at-rule (`hover:` →
+`:hover`, `disabled:` → `:disabled`, `print:` → `@media print`, `before:` →
+`::before`), so the full list is inferable; the exhaustive registry lives in
+fuz_css's `modifiers.ts`. The stack-specific parts worth knowing:
 
 ```svelte
-<!-- Responsive -->
-<div class="display:none md:display:flex">
-
-<!-- State -->
 <button class="hover:opacity:80% focus:outline:2px~solid~var(--color_a_50)">
-
-<!-- Color-scheme -->
+<div class="display:none md:display:flex">          <!-- responsive -->
 <div class="box-shadow:var(--shadow_lg) dark:box-shadow:var(--shadow_sm)">
-
-<!-- Pseudo-element (explicit content required) -->
-<div class='before:content:"" before:display:block before:width:2rem'>
+<div class='before:content:"" before:display:block'> <!-- pseudo needs explicit content -->
 ```
 
-### Available Modifiers
+- **Responsive breakpoints**: `sm:` (40rem), `md:` (48rem), `lg:` (64rem), `xl:`
+  (80rem), `2xl:` (96rem). Also `max-sm:`…, and arbitrary `min-width(800px):` /
+  `max-width(600px):`.
+- **Ancestor**: `dark:` / `light:` (color scheme).
+- **Order**: `[media]:[ancestor]:[state...]:[pseudo-element]:property:value` —
+  and **multiple states must be alphabetical** (`focus:hover:…`, not
+  `hover:focus:…`), which the parser enforces.
 
-**Responsive breakpoints**: `sm:` (40rem), `md:` (48rem), `lg:` (64rem), `xl:`
-(80rem), `2xl:` (96rem). Max-width variants: `max-sm:`, `max-md:`, etc.
-Arbitrary: `min-width(800px):`, `max-width(600px):`
-
-**State modifiers — interaction**: `hover:`, `focus:`, `focus-visible:`,
-`focus-within:`, `active:`, `visited:`, `any-link:`, `link:`, `target:`
-
-**State modifiers — form**: `disabled:`, `enabled:`, `checked:`,
-`indeterminate:`, `valid:`, `invalid:`, `user-valid:`, `user-invalid:`,
-`required:`, `optional:`, `autofill:`, `blank:`, `default:`, `in-range:`,
-`out-of-range:`, `placeholder-shown:`, `read-only:`, `read-write:`
-
-**State modifiers — structural**: `first:`, `last:`, `only:`, `odd:`, `even:`,
-`first-of-type:`, `last-of-type:`, `only-of-type:`, `empty:`. Parameterized:
-`nth-child(2n+1):`, `nth-last-child(2n):`, `nth-of-type(2n):`,
-`nth-last-of-type(2n):`
-
-**State modifiers — UI**: `fullscreen:`, `modal:`, `open:`, `popover-open:`,
-`paused:`, `playing:`
-
-**Media features**: `print:`, `motion-safe:`, `motion-reduce:`,
-`contrast-more:`, `contrast-less:`, `portrait:`, `landscape:`, `forced-colors:`
-
-**Ancestor modifiers**: `dark:`, `light:`
-
-**Pseudo-elements**: `before:`, `after:`, `placeholder:`, `selection:`,
-`marker:`, `first-letter:`, `first-line:`, `cue:`, `file:`, `backdrop:`
-
-### Modifier Order
-
-`[media]:[ancestor]:[state...]:[pseudo-element]:property:value`
-
-```svelte
-<!-- Correct -->
-<div class="md:dark:hover:opacity:80%">
-<div class="md:hover:before:opacity:100%">
-
-<!-- Multiple states must be alphabetical -->
-<button class="focus:hover:outline:2px~solid~blue">  <!-- focus < hover -->
-
-<!-- Wrong - will error -->
-<div class="dark:md:hover:opacity:80%">   <!-- ancestor before media -->
-<div class="hover:focus:opacity:80%">     <!-- h > f, not alphabetical -->
-```
-
-### Modifiers in Practice
-
-Responsive design typically uses `@media` queries in component `<style>`
-blocks. Modifier classes are most common for hover/focus states on literal
-classes. The full responsive modifier system is available, but convention
-favors `<style>` for complex responsive layouts.
+**In practice, modifier classes are rare in real code.** Responsive layout is
+overwhelmingly done with `@media` in component `<style>` blocks, and hover/focus
+states ride on stateful composites (`clickable`, `selectable`, `menuitem`,
+`plain`) or `<style>`. The modifier system is fully available and correct, but
+convention favors `<style>` for anything beyond an occasional one-off literal
+state.
 
 ## Class Extraction
 
-Classes extracted via AST parsing at build time:
+Classes are extracted via AST parsing at build time from:
 
 - `class="..."` attributes
 - `class={[...]}` and `class={{...}}` (Svelte 5.16+)
 - `class:name` directives
-- `clsx()`, `cn()`, `cx()` calls
-- Variables ending in `classes`/`className`
+- `clsx()`, `cn()`, `cx()`, `classNames()`, `classnames()` calls
+- variables whose names end in `class`/`classes`/`className(s)`/`classList(s)`
 
-### Dynamic Classes
+CSS variables are additionally caught by a `var(--name)` regex scan (only known
+theme variables are included; unknown ones silently ignored), which catches
+usage in component props like `size="var(--icon_size_xs)"` that AST extraction
+would miss.
 
-For dynamically constructed class strings the extractor can't see statically,
-use `@fuz-classes` comments:
+### Comment hints for the dynamic cases
+
+When a class/element/variable is constructed dynamically and the extractor can't
+see it statically, declare it explicitly:
 
 ```typescript
 // @fuz-classes opacity:50% opacity:75% opacity:100%
-const opacity_classes = [50, 75, 100].map((n) => `opacity:${n}%`);
-```
-
-Outside fuz_css's own docs site, AST extraction handles all cases and
-`@fuz-classes` is rarely needed.
-
-### Dynamic Elements
-
-`@fuz-elements` declares HTML elements whose base styles should be included when
-not statically detectable:
-
-```typescript
 // @fuz-elements button input textarea
-```
-
-### Dynamic Variables
-
-`@fuz-variables` includes specific theme variables even when not caught by the
-automatic `var(--name)` scan:
-
-```typescript
 // @fuz-variables shade_40 text_50
 ```
 
-**Automatic variable detection**: CSS variables are also detected via regex scan
-of `var(--name)` patterns. Only known theme variables are included; unknown ones
-silently ignored. Catches usage in component props like
-`size="var(--icon_size_xs)"` that AST-based extraction would miss.
-
-### Error Handling
-
-- **Auto-detected classes/elements/variables**: silently skip if unresolvable
-- **`@fuz-classes`/`@fuz-elements`/`@fuz-variables` entries**: error if
-  unresolvable (explicitly requested), with typo suggestions via string
-  similarity
+Behavior: auto-detected-but-unresolvable classes/elements/variables are
+**silently skipped** (they may belong to another framework); an explicit
+`@fuz-*` entry that can't be resolved is an **error** with typo suggestions via
+string similarity. Outside fuz_css's own docs site, AST extraction handles
+almost everything and `@fuz-*` hints are rarely needed.
 
 ## Dynamic Theming
 
 ### Runtime Variable Overrides
 
-Use Svelte's `style:` directive for runtime CSS variable overrides:
+Use Svelte's `style:` directive for runtime CSS variable overrides — components
+expose CSS variables as their theming API, consumers override inline:
 
 ```svelte
 <div style:--docs_menu_width={width}>
@@ -501,49 +418,41 @@ Use Svelte's `style:` directive for runtime CSS variable overrides:
 <HueInput style:--hue={value}>
 ```
 
-Components expose CSS variables as their theming API; consumers override inline.
-
 ### Color Scheme
 
-Dark/light mode controlled by `dark`/`light` class on the root element.
-`style.css` includes `:root.dark { color-scheme: dark; }` and
-`:root.light { color-scheme: light; }`. Theme state (persistence, system
-preference) is handled by fuz_ui's `ThemeState` class and `ThemeRoot`
-component.
+Dark/light mode is a `dark`/`light` class on the root element. `style.css`
+includes `:root.dark { color-scheme: dark; }` / `:root.light { color-scheme:
+light; }`. Persistence and system-preference handling live in fuz_ui's
+`ThemeState` class and `ThemeRoot` component.
 
 ### Theme Switching
 
-Three built-in themes: `base`, `low contrast`, `high contrast`. Custom themes
+Three built-in themes (`base`, `low contrast`, `high contrast`); custom themes
 are arrays of `StyleVariable` overrides. Theme CSS is rendered via
 `render_theme_style()` with higher specificity (default `:root:root`) to
-override bundled theme variables regardless of CSS insertion order.
+override bundled theme variables regardless of insertion order.
 
-## Component Styling Philosophy
+## Component Styling In Practice
 
-The fuz stack's core styling principle: **components should have minimal custom
-CSS, delegating to fuz_css**. Most need zero or near-zero lines in their
-`<style>` block. The design system exists so components don't reinvent layout,
-spacing, color, or typography.
+Everything above lands as one principle for component authors: **components
+should have minimal custom CSS, delegating to fuz_css.** Across fuz_ui's 64
+components, ~29 (45%) have no `<style>` block at all — and fuz_ui is a component
+library, the styling-heaviest code in the ecosystem. Application code skews far
+more classless (70–100% style-free). Where a `<style>` block exists it's usually
+5–30 lines (median ~16), with a tail up to ~90 for layout-heavy components
+(cards, dialogs, nav bars). Shared traits of well-styled components:
 
-### What "Minimal Styles" Looks Like
-
-Across fuz_ui's ~64 components, ~28 have no `<style>` block at all. The rest
-typically have 5-30 lines covering positioning, animations, or complex
-pseudo-states. Shared traits:
-
-- **No `<style>` block when possible** — all styling comes from semantic HTML
-  and utility classes
+- **No `<style>` block when possible** — styling from semantic HTML + utilities
 - **When `<style>` exists, it's component-specific** — positioning, transitions,
   responsive breakpoints, complex parent-child selectors
-- **All colors, spacing, typography come from design tokens** — never hardcoded
-  values
-- **Layout uses composites and utilities** — `box`, `row`, `column`, `panel`,
-  `p_md`, `gap_lg` instead of manual flex declarations
-- **Stateful styling is conventional** — `class={{selected: ...}}` on a button or
-  link rides on fuz_css's built-in `.selected` rules; no custom CSS needed
+- **All colors/spacing/typography from design tokens** — never hardcoded
+- **Layout uses composites/utilities** — `box`, `row`, `column`, `panel`,
+  `gap_lg` over manual flex
+- **Stateful styling is conventional** — `class={{selected: …}}` rides on the
+  built-in `.selected` rules
 
 ```svelte
-<!-- GOOD: No <style> block needed — semantic HTML + utility classes -->
+<!-- No <style> needed — semantic HTML + utility classes -->
 <aside class="column gap_md">
 	<h2>{title}</h2>
 	<small class="text_50">{subtitle}</small>
@@ -553,176 +462,86 @@ pseudo-states. Shared traits:
 </aside>
 ```
 
-Real example from fuz_ui's `Details.svelte`, `EcosystemLinks.svelte`,
-`Hashlink.svelte`, `LibrarySummary.svelte`: all use semantic
-HTML directly (`<details>`, `<summary>`, `<ul>`, `<li>`, `<a>`, `<p>`) and
-ride on the default element styling.
+fuz_ui's `Details.svelte` and `EcosystemLinks.svelte` are real examples: pure
+semantic HTML (`<details>`, `<summary>`, `<ul>`, `<a>`, `<p>`) riding on the
+default element styling, no `<style>` block.
 
 ### Anti-Patterns
 
-These patterns indicate a component is doing too much styling work:
-
-#### Reimplementing semantic defaults
+Each of these signals a component doing work fuz_css already does:
 
 ```svelte
-<!-- BAD: rebuilding what <small> already does -->
-<span class="subtitle">{text}</span>
+<!-- BAD: rebuilding what <small>/<aside> already do -->
+<span class="subtitle">{text}</span>          <!-- GOOD: <small class="text_70"> -->
+<div class="info-box">{message}</div>         <!-- GOOD: <aside> -->
 
-<!-- GOOD: the element does the work -->
-<small class="text_70">{text}</small>
-
-<style>
-	.subtitle {
-		color: var(--text_70);
-		font-size: var(--font_size_sm);
-	}
-</style>
-```
-
-```svelte
-<!-- BAD: rebuilding what <aside> already does -->
-<div class="info-box">{message}</div>
-
-<!-- GOOD: the element is the callout -->
-<aside>{message}</aside>
-
-<style>
-	.info-box {
-		border-left: 3px solid var(--border_color);
-		padding: var(--space_md);
-		background: var(--fg_10);
-	}
-</style>
-```
-
-#### Writing flex layout in `<style>` instead of using composites
-
-```svelte
 <!-- BAD: manual flex in <style> -->
-<div class="container">...</div>
-<div class="header">...</div>
+<div class="container">…</div>                <!-- GOOD: <div class="column gap_md"> -->
+<style>.container { display: flex; flex-direction: column; gap: var(--space_md); }</style>
 
-<!-- GOOD: utility classes -->
-<div class="column gap_md">...</div>
-<div class="row">...</div>
-
-<style>
-	.container {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space_md);
-	}
-	.header {
-		display: flex;
-		align-items: center;
-	}
-</style>
-```
-
-#### Custom button colors/states when class conventions work
-
-```svelte
 <!-- BAD: hand-rolled destructive button -->
-<button class={['delete-btn', {active: pending}]}>Delete</button>
+<button class={['delete-btn', {active}]}>Delete</button>
+<!-- GOOD: <button class={['color_c', {selected: pending}]}>Delete</button> -->
 
-<!-- GOOD: built-in conventions handle it -->
-<button class={['color_c', {selected: pending}]}>Delete</button>
-
-<style>
-	.delete-btn {
-		color: var(--color_c_50);
-		border-color: var(--color_c_50);
-	}
-	.delete-btn.active {
-		background: var(--color_c_40);
-	}
-</style>
-```
-
-#### Repeating the same layout patterns across components
-
-If multiple components each define their own `.sidebar`, `.header`, `.content`
-classes with the same flex/padding/border patterns, those should be utility
-classes, project `style.css` classes, or composites.
-
-#### Hardcoding pixel values
-
-```svelte
 <!-- BAD: hardcoded pixels -->
-<style>
-  .sidebar { width: 220px; padding-top: 40px; }
-</style>
-
-<!-- GOOD: design tokens or CSS custom properties -->
-<style>
-  .sidebar { width: var(--sidebar_width); padding-top: var(--space_xl2); }
-</style>
+<style>.sidebar { width: 220px; padding-top: 40px; }</style>
+<!-- GOOD: <style>.sidebar { width: var(--sidebar_width); padding-top: var(--space_xl2); }</style> -->
 ```
+
+If multiple components each define their own `.sidebar`/`.header`/`.content`
+with the same flex/padding, those belong in composites, project `style.css`, or
+utility classes — not repeated per component.
 
 ### When Custom CSS IS Justified
 
-Custom `<style>` blocks are appropriate for:
-
-- **Complex interactive states** — multi-property hover/active/selected
-  combinations, especially with `color-mix` shadows or parent-child selectors
-  like `.parent:hover .child`. Examples: tab shadow state machines,
-  hover-to-reveal controls (see fuz_ui's `Hashlink.svelte` for the
-  parent-hover-reveal pattern).
+- **Complex interactive states** — multi-property hover/active/selected,
+  `color-mix` shadows, parent-child selectors like `.parent:hover .child`
+  (fuz_ui's `Hashlink.svelte` is the canonical parent-hover-reveal example)
 - **Structural behavior** — `flex-direction: column-reverse` for bottom-up
-  scrolling, `position: sticky/absolute/fixed` with calculated offsets
-- **Responsive layouts** — `@media` queries for structural layout changes
-  (e.g., `Card.svelte` shrinks icon and font at narrow widths)
-- **Animations/transitions** — `@keyframes`, `transition` definitions
-- **Rendering contexts** — canvas, 3D, or other surfaces with inherently
-  custom layout
-- **Theming APIs for child consumers** — declaring CSS custom properties
-  that consumers override via `style:` (e.g., `Alert.svelte` exposes
-  `--text_color`)
+  scroll, `position: sticky/absolute/fixed` with calculated offsets
+- **Responsive layouts** — `@media` queries for structural changes
+- **Animations/transitions** — `@keyframes`, `transition`
+- **Rendering contexts** — canvas, 3D, custom-layout surfaces
+- **Theming APIs for children** — declaring CSS custom properties consumers
+  override via `style:` (e.g. `Alert.svelte` exposes `--text_color`)
 
-Even justified custom CSS should use design tokens (`var(--space_md)`,
-`var(--border_color)`), not hardcoded values.
+Even justified custom CSS uses design tokens (`var(--space_md)`), not hardcoded
+values.
 
-### Project `style.css` for Shared App Patterns
+### Project `style.css` for shared app patterns
 
-When a pattern recurs across multiple components in one app but isn't general
-enough for fuz_css, put it in the project's `style.css` (e.g.,
-`src/routes/style.css`) — the right place for app-scoped shared classes: button
-variants, layout columns, drag indicators, scroll shadows, etc.
+When a pattern recurs across components in one app but isn't general enough for
+fuz_css, put it in the project's `src/routes/style.css` — the right home for
+app-scoped shared classes (button variants, layout columns, scroll shadows).
+Mark candidates with `// TODO upstream` if they might belong in fuz_css. Keeps
+component `<style>` blocks focused and avoids premature generalization.
 
-Mark patterns with `// TODO upstream` if they might belong in fuz_css. This keeps
-component `<style>` blocks focused on truly component-specific logic while
-avoiding premature generalization into the design system.
-
-### Class Naming Conventions
+### Class Naming
 
 Two naming systems coexist:
 
-- **fuz_css design tokens**: `snake_case` — `p_md`, `color_a_50`, `gap_lg`,
-  `font_size_sm`. The global vocabulary.
-- **Component-local classes**: `kebab-case` — `nav-separator`, `edit-sidebar`,
-  `character-entry`. Distinguishes component-scoped styles from design
-  system classes at a glance.
+- **fuz_css design tokens**: `snake_case` — `p_md`, `color_a_50`, `gap_lg`. The
+  global vocabulary.
+- **Component-local classes**: `kebab-case` — `site-header`, `nav-links`,
+  `character-entry`. Distinguishes component-scoped styles from design-system
+  classes at a glance.
 
 ```svelte
 <!-- snake_case = fuz_css utility, kebab-case = component-local -->
 <div class="column gap_md site-header">
-	<nav class="row gap_sm nav-links">...</nav>
+	<nav class="row gap_sm nav-links">…</nav>
 </div>
 
 <style>
-	.site-header {
-		position: sticky;
-		top: 0;
-		z-index: 10;
-	}
-	.nav-links {
-		border-bottom: var(--border_width_1) var(--border_style) var(--border_color);
-	}
+	.site-header { position: sticky; top: 0; z-index: 10; }
+	.nav-links { border-bottom: var(--border_width_1) var(--border_style) var(--border_color); }
 </style>
 ```
 
-This convention is fully adopted across the ecosystem — component-local
-classes were migrated from `snake_case` to `kebab-case`.
+kebab-case for component-local classes is the **target** convention, fully
+adopted in zzz and fuz_ui; the fuz_css and fuz_docs docs sites still lean
+`snake_case` for local classes and haven't been migrated. New code should use
+kebab-case.
 
 ## When to Use Classes vs Styles
 
@@ -739,62 +558,10 @@ classes were migrated from `snake_case` to `kebab-case`.
 | Theming API (CSS vars consumers override) | No            | **Yes**         | Yes (override) |
 | Runtime dynamic values                    | No            | No              | **Yes**        |
 
-### Rules of Thumb
-
-`<style>` blocks are the default for non-trivial styling; existing ones
-shouldn't be churned into class strings (§Style tags vs utility classes —
-direction matters), and the table above maps each scenario to its tool. The one
-heuristic the table doesn't capture: **long class strings are a smell** — 4–6
-classes is the comfortable upper bound, and 8+ (especially with several literal
-`property:value` classes) usually reads worse than the equivalent `<style>`
-block with design tokens. `<style>` blocks also get IDE autocomplete and compose
-with conditional logic without `clsx` gymnastics.
-
-## Quick Reference
-
-### Common Spacing
-
-| Class     | CSS                                                             |
-| --------- | --------------------------------------------------------------- |
-| `p_md`    | `padding: var(--space_md)`                                      |
-| `px_lg`   | `padding-left: var(--space_lg); padding-right: var(--space_lg)` |
-| `mt_xl`   | `margin-top: var(--space_xl)`                                   |
-| `mx_auto` | `margin-left: auto; margin-right: auto`                         |
-| `gap_sm`  | `gap: var(--space_sm)`                                          |
-
-### Common Layout
-
-| Class / literal                 | What it does                    |
-| ------------------------------- | ------------------------------- |
-| `box`                           | Flex column, centered both axes |
-| `row`                           | Flex row, align-items centered  |
-| `column`                        | Flex column (uncentered)        |
-| `display:flex`                  | Flexbox                         |
-| `flex:1`                        | Flex grow                       |
-| `flex-wrap:wrap`                | Allow wrapping                  |
-| `align-items:center`            | Cross-axis center               |
-| `justify-content:space-between` | Even spacing                    |
-| `width:100%`                    | Full width                      |
-
-### Common Typography
-
-| Class                  | What it does                        |
-| ---------------------- | ----------------------------------- |
-| `font_size_lg`         | Large text                          |
-| `font_family_mono`     | Monospace font                      |
-| `ellipsis`             | Truncate with ...                   |
-| `text-align:center`    | Center text                         |
-| `white-space:pre-wrap` | Preserve whitespace, allow wrapping |
-
-### Cascading Variable Pattern
-
-Many token classes set both a CSS property and a cascading custom property, so
-children can inherit:
-
-- `font_size_lg` sets `font-size` and `--font_size`
-- `color_a_50` sets `color` and `--text_color`
-- `border_color_30` sets `border-color` and `--border_color`
-- `shadow_color_umbra` sets `--shadow_color`
-
-Children of `font_size_lg` can reference `var(--font_size)` for the inherited
-value.
+**One heuristic the table doesn't capture: long class strings are a smell.** 4–6
+classes is the comfortable upper bound (98%+ of real class attributes are ≤6
+tokens); 8+ (especially several literal `property:value` classes) usually reads
+worse than the equivalent `<style>` block with design tokens, which also gets
+IDE autocomplete and composes with conditional logic without `clsx` gymnastics.
+And per §Direction matters, don't churn *existing* `<style>` blocks into class
+strings.

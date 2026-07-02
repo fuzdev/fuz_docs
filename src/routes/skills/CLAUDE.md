@@ -47,10 +47,15 @@ Content is code-split: `skills_manifest.ts` has no markdown content (used by
 layout/index), while per-skill `skill_data.ts` files hold full content (loaded
 only when navigating to that skill).
 
-## mdz limitations
+## mdz rendering
 
-mdz does not support lists, tables, or blockquotes — these render as plain text.
-Headings, code blocks, inline code, bold, italic, and links render correctly.
+The skill docs render through mdz's full grammar — headings, lists, tables,
+blockquotes, code blocks, horizontal rules, and inline formatting (bold, italic,
+strikethrough, links, inline code) all render correctly. mdz is a strict
+dialect, not a CommonMark/GFM superset: single-delimiter emphasis (`*x*`,
+intraword `_`) stays literal, and component/element tags render only when
+registered and take no attributes yet. See the fuz-stack skill's `mdz.md`
+reference for the full surface.
 
 ## Adding a new skill
 

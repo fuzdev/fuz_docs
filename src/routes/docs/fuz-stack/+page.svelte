@@ -17,18 +17,25 @@
 		'async-patterns': 'Concurrency primitives — semaphore, deferred, concurrent map/each',
 		'code-generation': 'Gro gen system — .gen.* files, dependencies, output formats',
 		'common-utilities': 'Result type, Logger, Timings, DAG execution',
-		'css-patterns': 'fuz_css styling — variables, utility classes, modifiers, extraction',
+		'css-patterns': 'fuz_css styling — default-reliance, the styling ladder, variables, extraction',
 		'dependency-injection': 'Injectable *Deps interfaces, mock factories, composition patterns',
+		'documentation-system': 'Docs pipeline — Tome system, layout architecture, project setup',
+		'file-organization': 'src/ tree, domain subdirectories, full-path imports, test mirroring',
+		mdz: 'mdz dialect — grammar surface, component registration, rendering seam, autolink, preprocessor',
+		'path-references': 'Path typography — navigational vs src/lib module vs code-shaped',
 		'svelte-patterns': 'Svelte 5 runes, contexts, snippets, attachments, Cell pattern',
 		'task-patterns': 'Gro task system — .task.ts files, TaskContext, error handling',
 		'testing-patterns': 'Vitest patterns, fixtures, mocks, assertion helpers',
 		'tsdoc-comments': 'TSDoc style guide — tags, conventions, auditing',
 		'type-utilities': 'Nominal typing (Flavored/Branded), strict utility types',
-		'documentation-system': 'Docs pipeline — Tome system, layout architecture, project setup',
 		'zod-schemas': 'Zod conventions — strictObject, branded types, introspection',
-		'rust-conventions':
-			'Shared Rust patterns — edition 2024, unsafe forbid, lints, crate structure',
-		'wasm-patterns': 'WASM build targets — wasm-bindgen, component model, JS interop',
+		'npm-dependencies': 'Approved external npm package allowlist for TS/Svelte repos',
+		'rust-patterns': 'Rust lints, errors, DI ladder, idioms, CLI patterns',
+		'rust-perf': 'Rust perf — profiling, arenas, locks, hot-path idioms, SIMD',
+		'rust-spine': 'Spine crate map, consumer servers, env, daemon lifecycle',
+		'rust-dependencies': 'Approved external crate allowlist for Rust workspaces',
+		'twin-impl': 'TS ↔ Rust twin implementations — convergence, naming parity, wire crates',
+		'wasm-patterns': 'WASM/N-API build targets — wasm-bindgen, component model, JS interop',
 	};
 </script>
 
@@ -71,7 +78,8 @@
 				>
 				<tr
 					><td>Imports</td><td
-						>Always include <code>.js</code> extension, import directly from source module (no re-exports)</td
+						>Import by real source extension (<code>.ts</code>/<code>.svelte.ts</code>), directly
+						from source (no barrels/re-exports)</td
 					></tr
 				>
 				<tr><td>Formatting</td><td>Prettier with tabs, 100 char width</td></tr>
@@ -101,8 +109,8 @@ function truncate() {}  // action-first, self-descriptive
 type PackageJson = {};
 // file: DocsLink.svelte
 
-// .js extension in imports, even for .ts files
-import {git_push} from './git.js';`}
+// real source extension in imports (.ts, not the old .js form)
+import {git_push} from './git.ts';`}
 		/>
 	</TomeSection>
 
@@ -180,9 +188,11 @@ export interface FsDeps {
 		<TomeSectionHeader text="Stack" />
 		<pre>fuz_util → gro + fuz_css → fuz_ui → fuz_* apps</pre>
 		<p>
-			<code>gro</code> is a temporary build tool, to be replaced by <code>fuz</code> (Rust daemon +
+			<code>gro</code> is the durable web-dev workflow surface — its internals progressively adopt
+			Rust (<code>tsv</code>, then <code>fuz</code> crates) while it stays complementary to
+			<code>fuz</code> and <code>zap</code>.
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			CLI). See <TomeLink slug="stack" /> for the full dependency graph and package details.
+			See <TomeLink slug="stack" /> for the full dependency graph and package details.
 		</p>
 		<p>
 			For cross-repo coordination patterns — planning, TODOs, and multi-repo goals — see

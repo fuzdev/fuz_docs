@@ -14,20 +14,23 @@ package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
 | Stage             | What                                              | Key details                                                                                                                                                                                                                                                                                         |
 | ----------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Analysis**      | `svelte-docinfo`                                  | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata                                                                                                                                                                        |
-| **Generation**    | `svelte-docinfo/vite.js` + `vite_plugin_pkg_json` | Two Vite plugins run at build/dev time: `svelte-docinfo` exposes the analyzed `modules` as `virtual:svelte-docinfo`; `vite_plugin_pkg_json` (from fuz_ui) curates `package.json` to the publish-safe `PkgJson` and exposes it as `virtual:pkg.json`. No committed `library.json`/`library.ts` files |
+| **Generation**    | `svelte-docinfo/vite.js` + `vite_plugin_pkg_json` | Two Vite plugins run at build/dev time: `svelte-docinfo` exposes the analyzed `modules` as `virtual:svelte-docinfo`; `vite_plugin_pkg_json` (from fuz_ui) curates `package.json` to the publish-safe `PkgJson` and exposes it as `virtual:pkg.json`. No committed generated data (`library.gen.ts`/`library.json`) |
 | **Serialization** | `library_json_from_modules()`                     | From `@fuzdev/fuz_util/library_json.ts`; pairs the curated `pkg_json` (from `virtual:pkg.json`) with the analyzed `modules` (from `virtual:svelte-docinfo`) into the raw `{pkg_json, source_json}` `LibraryJson` (no derived values stored — those are computed by `Library`)                       |
 | **Runtime**       | `Library` class                                   | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps                                                                                                                                                                                   |
-| **Rendering**     | Tome pages + API routes                           | Manual tomes + auto-generated API docs. `mdz` auto-links backticked identifiers in TSDoc via `tsdoc_mdz.ts`                                                                                                                                                                                         |
+| **Rendering**     | Tome pages + API routes                           | Manual tomes + auto-generated API docs. Backticked identifiers in TSDoc auto-link to API docs via the mdz rendering seam — fuz_ui injects `DocsLink` as mdz's inline-code renderer, which resolves the identifier against the `Library` (see ./mdz.md)                                               |
 
 ### Analysis
 
 The `svelte-docinfo` package owns module analysis end to end: it walks source
 files, dispatches per file type (`.ts`/`.js` vs `.svelte`), parses TSDoc/JSDoc
 (`@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`, `@since`,
-`@nodocs`, `@mutates`), merges re-exports into `also_exported_from`, sorts
+`@module`, `@default`, `@nodocs`, `@mutates`), merges re-exports into
+`also_exported_from`, sorts
 modules, and checks for duplicate names in the flat namespace. It ships a CLI,
 a Vite plugin (`svelte-docinfo/vite.js`), and a build-tool-agnostic API. fuz_ui
-consumes its output but does not depend on it.
+depends on it as a dev dependency — importing its types and a few runtime
+helpers — while the heavy per-project module analysis runs in each *consumer's*
+build via the Vite plugin, not at fuz_ui's runtime.
 
 ## Tome System
 
@@ -137,9 +140,16 @@ declare module 'virtual:pkg.json' {
 `vite_plugin_pkg_json` reads `package.json` at build time and serves only the
 publish-safe `pkg_json_keys` subset, keeping `scripts`, `dependencies`, and
 private config out of the client bundle (and avoiding SvelteKit's
-`server.fs.allow` tripping on a cold HMR reload). There are no committed
-`library.gen.ts`, `library.json`, or `library.ts` files — the data is produced
-by the plugins at runtime.
+`server.fs.allow` tripping on a cold HMR reload). There is no committed
+generated data (`library.gen.ts`, `library.json`) — the plugins produce it at
+runtime; the only committed artifact is the tiny hand-written
+`src/routes/library.ts` glue (§3).
+
+**Footgun**: if a project widens the published `package.json` fields it exposes,
+the **same `keys` set must reach both** `vite_plugin_pkg_json` and
+`library_json_from_modules()` — a mismatch silently drops fields end-to-end with
+no error. The canonical wiring is a shared `src/routes/pkg_json_keys.ts` const
+passed to both callsites.
 
 ### 2. Root layout — site identity only
 
@@ -153,7 +163,7 @@ pulls the heavy analyzed `modules` into the root chunk and instantiates
 <script lang="ts">
 	import ThemeRoot from '@fuzdev/fuz_ui/ThemeRoot.svelte';
 	import {SiteState, site_context} from '@fuzdev/fuz_ui/site.svelte.ts';
-	import {logo_my_project} from '$lib/logos.js';
+	import {logo_my_project} from '$lib/logos.ts';
 	import pkg_json from 'virtual:pkg.json';
 	import type {Snippet} from 'svelte';
 
@@ -190,8 +200,8 @@ which covers all `/docs/*` pages:
 	import type {Snippet} from 'svelte';
 	import Docs from '@fuzdev/fuz_ui/Docs.svelte';
 	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
-	import {tomes} from '$routes/docs/tomes.js';
-	import {library_json} from '$routes/library.js';
+	import {tomes} from '$routes/docs/tomes.ts';
+	import {library_json} from '$routes/library.ts';
 
 	const {children}: {children: Snippet} = $props();
 
@@ -219,7 +229,7 @@ a `/skills` subtree:
 ```svelte
 <script lang="ts">
 	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
-	import {library_json} from '$routes/library.js';
+	import {library_json} from '$routes/library.ts';
 
 	const library = new Library(library_json);
 	library_context.set(() => library);
@@ -330,52 +340,23 @@ hierarchy:
 
 ## Component Reference
 
-### Documentation layout
+You wire up only a handful of these when adopting the docs system — the ones the
+setup steps import:
 
-| Component          | Purpose                                                            |
-| ------------------ | ------------------------------------------------------------------ |
-| `Docs`             | Three-column layout, sets `tomes_context` and `docs_links_context` |
-| `DocsPrimaryNav`   | Top bar with breadcrumb navigation and menu toggle                 |
-| `DocsSecondaryNav` | Left sidebar — tome list grouped by category                       |
-| `DocsTertiaryNav`  | Right sidebar — section headers within current page                |
-| `DocsContent`      | Content wrapper for docs pages                                     |
-| `DocsFooter`       | Footer with library info and breadcrumb                            |
-| `DocsSearch`       | Search input for filtering modules and declarations                |
-| `DocsMenu`         | Navigation menu for tomes                                          |
-| `DocsLink`         | Navigation link within docs                                        |
-| `DocsList`         | List component for docs navigation                                 |
-| `DocsPageLinks`    | Links section within a docs page                                   |
-| `DocsMenuHeader`   | Header within the docs navigation menu                             |
+| Component                          | Role in setup                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| `Docs`                             | Three-column layout wrapper; sets `tomes_context` + `docs_links_context` |
+| `TomeContent`                      | Individual tome page wrapper; sets `tome_context`                        |
+| `TomeSection`                      | Section container with depth tracking and intersection                   |
+| `TomeSectionHeader`                | Section heading with hashlink (auto h2/h3/h4)                            |
+| `ApiIndex`                         | API overview page (search + all modules/declarations)                    |
+| `ApiModule`                        | Per-module API page (`[...module_path]`)                                 |
+| `LibrarySummary` / `LibraryDetail` | Compact metadata card / expanded package info                            |
 
-### Tome components
-
-| Component           | Purpose                                                |
-| ------------------- | ------------------------------------------------------ |
-| `TomeContent`       | Individual tome page wrapper, sets `tome_context`      |
-| `TomeHeader`        | Default header rendered by `TomeContent`               |
-| `TomeSection`       | Section container with depth tracking and intersection |
-| `TomeSectionHeader` | Section heading with hashlink (auto h2/h3/h4)          |
-| `TomeLink`          | Cross-reference link to another tome                   |
-
-### API documentation
-
-| Component            | Purpose                                                      |
-| -------------------- | ------------------------------------------------------------ |
-| `ApiIndex`           | API overview with search, lists all modules and declarations |
-| `ApiModule`          | Single module's declarations with full detail                |
-| `ApiModulesList`     | Module listing within the API index                          |
-| `ApiDeclarationList` | Declaration listing within a module                          |
-| `DeclarationDetail`  | Full detail view of a single declaration                     |
-| `DeclarationLink`    | Link to a declaration in API docs                            |
-| `ModuleLink`         | Link to a module in API docs                                 |
-| `TypeLink`           | Link to a type reference                                     |
-
-### Library metadata
-
-| Component        | Purpose                                        |
-| ---------------- | ---------------------------------------------- |
-| `LibrarySummary` | Compact package metadata card                  |
-| `LibraryDetail`  | Expanded package info with file type breakdown |
+The full set (~27 components — the `Docs*` nav internals, `Api*`/`Declaration*`
+list pieces, `Tome*`/`Module*`/`Type*` links) is fuz_ui inventory; see fuz_ui's
+`CLAUDE.md` for the exhaustive catalog. All are defined in fuz_ui and imported by
+consumers unchanged (see [Cross-Project Pattern](#cross-project-pattern)).
 
 ## Cross-Project Pattern
 
@@ -385,7 +366,7 @@ Other projects **import** them:
 ```typescript
 // In fuz_ui (defines the components)
 import Docs from '$lib/Docs.svelte';
-import {library_context} from '$lib/library.svelte.js';
+import {library_context} from '$lib/library.svelte.ts';
 
 // In fuz_css or any consumer project
 import Docs from '@fuzdev/fuz_ui/Docs.svelte';
@@ -398,9 +379,9 @@ are the shared analysis engine across projects.
 
 ## See Also
 
-- **`svelte_preprocess_mdz`** — build-time compilation of static `<Mdz>` content
-  to pre-rendered Svelte markup, eliminating runtime parsing for known-static
-  doc strings
+- ./mdz.md — the mdz dialect, the `DocsLink`/`Code` rendering seam,
+  backticked-identifier autolinking, and `svelte_preprocess_mdz` (build-time
+  compilation of static `<Mdz>` content)
 - **`svelte-docinfo`** — the shared module-analysis engine (see [Analysis](#analysis))
 - ./tsdoc-comments.md — TSDoc/JSDoc authoring conventions, tag reference,
   mdz auto-linking, and documentation auditing
