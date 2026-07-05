@@ -8,7 +8,7 @@
 		"typescript": "5.9.3",
 		"gro": "0.205.1",
 		"prettier": "3.7.4",
-		"vitest": "4.0.15"
+		"vitest": "4.1.9"
 	},
 	"libraries": [
 		{
@@ -83,7 +83,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.206.0",
+			"version": "0.206.3",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -309,7 +309,7 @@
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.5.3",
+			"version": "0.5.4",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",

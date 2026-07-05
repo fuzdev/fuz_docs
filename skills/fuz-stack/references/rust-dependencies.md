@@ -22,9 +22,10 @@ dependencies in this sense and never appear here — including cross-repo path
 deps onto the fuz spine crates.
 
 A few approved crates are pinned at the **member-crate** level rather than in
-a root `[workspace.dependencies]`: `js-sys` (optional, feature-gated) and
-`wasm-bindgen` in `tsv_wasm`, `similar` and `tempfile` in `tsv_debug`,
-`libc` in `zzz_server`. They're real external deps and belong here.
+a root `[workspace.dependencies]`: `js-sys` (optional, feature-gated),
+`wasm-bindgen`, and `talc` (wasm32-only target dep) in `tsv_wasm`, `similar`
+and `tempfile` in `tsv_debug`, `libc` in `zzz_server`. They're real external
+deps and belong here.
 
 ## Serialization & encoding
 
@@ -123,6 +124,7 @@ a root `[workspace.dependencies]`: `js-sys` (optional, feature-gated) and
 | ----- | ------- |
 | `wasm-bindgen` | JS interop (wasm-pack) |
 | `js-sys` | engine-native `JSON.parse` for the wasm-bindgen parse exports (tsv) |
+| `talc` | WASM global allocator (`tsv_wasm`, wasm32-only target dep) — pure-Rust `no_std` replacement for std's dlmalloc; use the `WasmGrowAndExtend` source (the default claim source fragments a long-lived instance's linear memory). Pulls `lock_api` + `allocator-api2` into the wasm32 graph only |
 | `napi` / `napi-derive` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep |
 | `wit-bindgen` | Component-model bindings |
 | `wasmtime` / `wasmtime-wasi` | WASM host (tests, benches) |
