@@ -1,0 +1,1 @@
+const o="@fuzdev/fuz_docs",s="0.0.1",t="experimental AI-generated docs and skills for Fuz, a zippy stack for human agency";const e="logo.svg",n="a friendly pixelated spider facing you",c="https://docs.fuz.dev/",p="https://github.com/fuzdev/fuz_docs",a={name:o,version:s,description:t,glyph:"📜",logo:e,logo_alt:n,homepage:c,repository:p};export{a as p};
