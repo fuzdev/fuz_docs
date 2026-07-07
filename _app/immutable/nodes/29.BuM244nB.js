@@ -1,1 +1,0 @@
-import"../chunks/DsnmJJEf.js";import{p as t,b as o}from"../chunks/BeBk7Bgj.js";import{M as s}from"../chunks/DBsURV21.js";import{a as n}from"../chunks/BN8zAv-h.js";function f(e,r){t(r,!0),s(e,{get content(){return n[11].content},base:"/skills/fuz-stack/references/"}),o()}export{f as component};

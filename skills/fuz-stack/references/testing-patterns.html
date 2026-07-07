@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.u8IB4kL3.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/9ySvsSUt.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.CW46k3MO.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DwRhxcmN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/C0OEICHq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BeBk7Bgj.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DpPpYc17.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.CXqPJTlq.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/rRz8TOQ5.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.DDQJvyPR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DPfLvPVs.js" rel="modulepreload">
@@ -35,22 +35,22 @@
 		<link href="/_app/immutable/chunks/BsDaTdtw.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BTFCirZG.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.nmMlD1ee.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.mI5lQE4A.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/B692gRLg.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BwTDy7Xb.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/C7ZsDu6C.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BbS_xnrU.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/F9AnfEjy.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DOAZeadh.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Bm81H528.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DQubCbfA.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/zysb2By1.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B37ARtZH.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DurGic-x.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CPaalu7t.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D-4OVkzp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BEYhdnoC.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/34.CuPPWYsw.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DBsURV21.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/34.BEHMx1_Q.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/C4kPWbPp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/c-46wSkR.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BN8zAv-h.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DaShqpHK.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -202,16 +202,16 @@ export default defineConfig({
 <!--]--><!--[3--><!--[-1--><code>vi.clearAllMocks()</code><!--]--><!--]--><!--[2-->) in <!--]--><!--[3--><!--[-1--><code>afterEach</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="describe_db-pattern"><!--[--><!--[2-->describe_db Pattern<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->fuz_app's <!--]--><!--[3--><!--[-1--><code>testing/db.ts</code><!--]--><!--]--><!--[2--> provides
 <!--]--><!--[3--><!--[-1--><code>create_describe_db(factories, truncate_tables)</code><!--]--><!--]--><!--[2-->. Consumer projects create a
 <!--]--><!--[3--><!--[-1--><code>db_fixture.ts</code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// src/test/db_fixture.ts
-import type {Db} from '$lib/db/db.js';
-import {run_migrations} from '$lib/db/migrate.js';
-import {auth_migration_ns} from '$lib/auth/migrations.js';
+import type {Db} from '#lib/db/db.ts';
+import {run_migrations} from '#lib/db/migrate.ts';
+import {auth_migration_ns} from '#lib/auth/migrations.ts';
 import {
 	create_pglite_factory,
 	create_pg_factory,
 	create_describe_db,
 	auth_integration_truncate_tables,
 	log_db_factory_status,
-} from '$lib/testing/db.js';
+} from '#lib/testing/db.ts';
 
 const init_schema = async (db: Db): Promise&lt;void> => {
 	await run_migrations(db, [auth_migration_ns]);
@@ -225,8 +225,8 @@ log_db_factory_status(db_factories);
 
 export const describe_db = create_describe_db(db_factories, auth_integration_truncate_tables);</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Test files import and use as a wrapper:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// src/test/auth/account_queries.db.test.ts
 import {describe, assert, test} from 'vitest';
-import {query_create_account} from '$lib/auth/account_queries.js';
-import {describe_db} from '../db_fixture.js';
+import {query_create_account} from '#lib/auth/account_queries.ts';
+import {describe_db} from '../db_fixture.ts';
 
 describe_db('account queries', (get_db) => {
 	test('create returns an account with generated uuid', async () => {
@@ -240,7 +240,7 @@ describe_db('account queries', (get_db) => {
 		assert.strictEqual(account.username, 'alice');
 	});
 });</code></pre><!--]--><!--]--><!--[14--><!----><h3 id="integration-tests"><!--[--><!--[2-->Integration Tests<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Named <!--]--><!--[3--><!--[-1--><code>.integration.db.test.ts</code><!--]--><!--]--><!--[2-->. Use <!--]--><!--[3--><!--[-1--><code>create_test_app()</code><!--]--><!--]--><!--[2--> from
-<!--]--><!--[3--><!--[-1--><code>$lib/testing/app_server.js</code><!--]--><!--]--><!--[2--> for a full Hono app with middleware, routes, and
+<!--]--><!--[3--><!--[-1--><code>#lib/testing/app_server.ts</code><!--]--><!--]--><!--[2--> for a full Hono app with middleware, routes, and
 database:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>const {app, create_session_headers, create_bearer_headers, create_account, cleanup} =
 	await create_test_app({
 		session_options: create_session_config('test_session'),
@@ -309,8 +309,8 @@ export const create_shared_core_tests = (
 };</code></pre><!--]--><!--]--><!--[15--><!--[-1--><pre><code>// src/test/ContextmenuRoot.core.test.ts — thin wrapper
 // @vitest-environment jsdom
 import {vi} from 'vitest';
-import {create_shared_core_tests} from './contextmenu_test_core.js';
-import ContextmenuRoot from '$lib/ContextmenuRoot.svelte';
+import {create_shared_core_tests} from './contextmenu_test_core.ts';
+import ContextmenuRoot from '#lib/ContextmenuRoot.svelte';
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
 create_shared_core_tests(ContextmenuRoot, 'ContextmenuRoot');</code></pre><!--]--><!--]--><!--[15--><!--[-1--><pre><code>// src/test/ContextmenuRootForSafariCompatibility.core.test.ts — same tests, different component
@@ -318,8 +318,8 @@ create_shared_core_tests(
 	ContextmenuRootForSafariCompatibility,
 	'ContextmenuRootForSafariCompatibility',
 	{requires_longpress: true},
-);</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->fuz*ui uses this for contextmenu components with 8 factory modules
-(<!--]--><!--[3--><!--[-1--><code>contextmenu_test*{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts</code><!--]--><!--]--><!--[2-->).<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="fixture-based-testing"><!--[--><!--[2-->Fixture-Based Testing<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->For parsers, analyzers, and transformers. Used in fuz_ui (tsdoc, ts, svelte),
+);</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>fuz_ui</code><!--]--><!--]--><!--[2--> uses this for contextmenu components with 8 factory modules
+(<!--]--><!--[3--><!--[-1--><code>contextmenu_test_{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts</code><!--]--><!--]--><!--[2-->).<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="fixture-based-testing"><!--[--><!--[2-->Fixture-Based Testing<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->For parsers, analyzers, and transformers. Used in fuz_ui (tsdoc, ts, svelte),
 <!--]--><!--[3--><!--[-1--><code>@fuzdev/mdz</code><!--]--><!--]--><!--[2--> (mdz, svelte_preprocess_mdz), and other static-analysis tooling.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="directory-structure"><!--[--><!--[2-->Directory Structure<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Each fixture is a subdirectory with an input and a generated <!--]--><!--[3--><!--[-1--><code>expected.json</code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>src/test/fixtures/
 ├── update.task.ts              # parent: invokes all child update tasks
 ├── mdz/
@@ -369,8 +369,8 @@ export const task: Task = {
 Run one: <!--]--><!--[3--><!--[-1--><code>gro src/test/fixtures/mdz/update</code><!--]--><!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="child-update-task"><!--[--><!--[2-->Child Update Task<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Each feature's <!--]--><!--[3--><!--[-1--><code>update.task.ts</code><!--]--><!--]--><!--[2--> uses <!--]--><!--[3--><!--[-1--><code>run_update_task</code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// src/test/fixtures/mdz/update.task.ts — from fuz_ui
 import type {Task} from '@fuzdev/gro';
 import {join} from 'node:path';
-import {mdz_parse} from '$lib/mdz.js';
-import {run_update_task} from '../../test_helpers.js';
+import {mdz_parse} from '#lib/mdz.ts';
+import {run_update_task} from '../../test_helpers.ts';
 
 export const task: Task = {
 	summary: 'generate expected.json files for mdz fixtures',
@@ -391,7 +391,7 @@ import {
 	run_preprocess,
 	DEFAULT_TEST_OPTIONS,
 	type PreprocessMdzFixture,
-} from './fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.js';
+} from './fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts';
 
 let fixtures: Array&lt;PreprocessMdzFixture> = [];
 
@@ -414,9 +414,10 @@ describe('svelte_preprocess_mdz fixtures', () => {
 files and run the update task.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="fixture-testing-in-fuz_gitops"><!--[--><!--[2-->Fixture Testing in fuz_gitops<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Different fixture pattern: git repositories generated from fixture data files
 defining repos with dependencies, changesets, and expected outcomes.<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>src/test/fixtures/repo_fixtures/*.ts</code><!--]--><!--]--><!--[2--> — source of truth for test repo definitions<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>src/test/fixtures/generate_repos.ts</code><!--]--><!--]--><!--[2--> — idempotent repo generation logic<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>src/test/fixtures/configs/*.config.ts</code><!--]--><!--]--><!--[2--> — isolated gitops config per fixture<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>src/test/fixtures/check.test.ts</code><!--]--><!--]--><!--[2--> — validates command output against expectations<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>src/test/fixtures/mock_operations.ts</code><!--]--><!--]--><!--[2--> — configurable DI mocks (not vi.fn())<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->10 scenarios cover publishing, cascades, cycles, private packages, major
 bumps, peer deps, and isolation. Repos are auto-generated on first test run;
-regenerate with <!--]--><!--[3--><!--[-1--><code>gro src/test/fixtures/generate_repos</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="mock-patterns"><!--[--><!--[2-->Mock Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[14--><!----><h3 id="dependency-injection-preferred"><!--[--><!--[2-->Dependency Injection (Preferred)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->DI via small <!--]--><!--[3--><!--[-1--><code>*Deps</code><!--]--><!--]--><!--[2--> or <!--]--><!--[3--><!--[-1--><code>*Operations</code><!--]--><!--]--><!--[2--> interfaces. Functions accept an
-operations parameter with a default; tests inject controlled implementations.
-See <!--]--><!--[7--><!--[1--><!--[0--><a href="/skills/fuz-stack/references/dependency-injection"><!--[--><!--[2-->./dependency-injection<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> for the full pattern.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->fuz_gitops operations pattern:<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// src/lib/operations.ts — interfaces for all side effects
+regenerate with <!--]--><!--[3--><!--[-1--><code>gro src/test/fixtures/generate_repos</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="mock-patterns"><!--[--><!--[2-->Mock Patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[14--><!----><h3 id="dependency-injection-preferred"><!--[--><!--[2-->Dependency Injection (Preferred)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->DI via small <!--]--><!--[3--><!--[-1--><code>*Deps</code><!--]--><!--]--><!--[2--> interfaces (fuz_gitops still spells them
+<!--]--><!--[3--><!--[-1--><code>*Operations</code><!--]--><!--]--><!--[2--> — legacy naming, migrating). Functions accept a deps parameter
+with a default; tests inject controlled implementations.
+See <!--]--><!--[7--><!--[1--><!--[0--><a href="/skills/fuz-stack/references/dependency-injection"><!--[--><!--[2-->./dependency-injection<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> for the full pattern.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->fuz_gitops operations pattern (legacy <!--]--><!--[3--><!--[-1--><code>*Operations</code><!--]--><!--]--><!--[2--> naming):<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// src/lib/operations.ts — interfaces for all side effects
 // each method uses options objects and returns Result
 export interface GitOperations {
 	current_branch_name: (options?: {
@@ -447,12 +448,17 @@ export const create_mock_gitops_ops = (overrides?): GitopsOperations => ({...});
 export const create_mock_git_ops = (): GitOperations => ({
 	current_branch_name: async () => ({ok: true, value: 'main'}),
 	// ... plain objects implementing interfaces, no vi.fn()
-});</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->fuz_gitops uses <!--]--><!--[4--><strong><!--[--><!--[2-->zero vi.mock()<!--]--><!--]--><!----></strong><!--]--><!--[2--> — all tests inject mock operations via DI.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->fuz_app deps pattern:<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>import {stub_app_deps} from '$lib/testing/stubs.js';
-import {create_mock_runtime} from '$lib/runtime/mock.js';
+});</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->fuz_gitops uses <!--]--><!--[4--><strong><!--[--><!--[2-->zero vi.mock()<!--]--><!--]--><!----></strong><!--]--><!--[2--> — all tests inject mock operations via DI.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->fuz_app deps pattern:<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>import {stub_app_deps} from '#lib/testing/stubs.ts';
+import {create_mock_runtime} from '#lib/runtime/mock.ts';
 
 const deps = stub_app_deps; // throwing stubs for auth deps
-const runtime = create_mock_runtime(); // MockRuntime for CLI tests</code></pre><!--]--><!--]--><!--[14--><!----><h3 id="vimock-usage"><!--[--><!--[2-->vi.mock() Usage<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Used in gro and some fuz_app unit tests. Avoid in <!--]--><!--[3--><!--[-1--><code>.db.test.ts</code><!--]--><!--]--><!--[2--> where
-<!--]--><!--[3--><!--[-1--><code>isolate: false</code><!--]--><!--]--><!--[2--> shares module state. Prefer DI when possible. When needed:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[2-->gro: <!--]--><!--[3--><!--[-1--><code>vi.clearAllMocks()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>beforeEach</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>vi.resetAllMocks()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>afterEach</code><!--]--><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>.db.test.ts</code><!--]--><!--]--><!--[2-->: if unavoidable, use <!--]--><!--[3--><!--[-1--><code>vi.restoreAllMocks()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>afterEach</code><!--]--><!--]--><!--[2--> —
+const runtime = create_mock_runtime(); // MockRuntime for CLI tests</code></pre><!--]--><!--]--><!--[14--><!----><h3 id="vimock-usage"><!--[--><!--[2-->vi.mock() Usage<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Legacy escape hatch, not a pattern — it exists where code predates the DI
+convention (gro's build/deploy/cache tests are the big cluster) or where a
+call site has no injectable seam (fuz_app's bearer-auth middleware calls
+<!--]--><!--[3--><!--[-1--><code>query_*</code><!--]--><!--]--><!--[2--> functions by name; its tests module-mock them as a documented
+carve-out). Treat any *new* <!--]--><!--[3--><!--[-1--><code>vi.mock</code><!--]--><!--]--><!--[2--> as a signal to add a deps seam
+instead. Avoid entirely in <!--]--><!--[3--><!--[-1--><code>.db.test.ts</code><!--]--><!--]--><!--[2--> where <!--]--><!--[3--><!--[-1--><code>isolate: false</code><!--]--><!--]--><!--[2--> shares
+module state. When unavoidable:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[2-->gro: <!--]--><!--[3--><!--[-1--><code>vi.clearAllMocks()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>beforeEach</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>vi.resetAllMocks()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>afterEach</code><!--]--><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>.db.test.ts</code><!--]--><!--]--><!--[2-->: use <!--]--><!--[3--><!--[-1--><code>vi.restoreAllMocks()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>afterEach</code><!--]--><!--]--><!--[2--> —
 module-level mocks leak with <!--]--><!--[3--><!--[-1--><code>isolate: false</code><!--]--><!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h3 id="mock-factory-naming"><!--[--><!--[2-->Mock Factory Naming<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>create_mock_*()</code><!--]--><!--]--><!--[2--> pattern:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// From gro/src/test/build_cache_test_helpers.ts
 export const create_mock_build_cache_metadata = (
 	overrides: Partial&lt;BuildCacheMetadata> = {},
@@ -477,7 +483,7 @@ describe.skipIf(SKIP)('vite plugin examples', () => {
 		// ... runs vite build on example projects
 	});
 });</code></pre><!--]--><!--]--><!--[15--><!--[-1--><pre><code>SKIP_EXAMPLE_TESTS=1 gro test</code></pre><!--]--><!--]--><!--[12--><table><!--[0--><thead><!--[--><tr><!--[--><!----><th><!--[0--><!--[--><!--[2-->Flag<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Repo<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Purpose<!--]--><!--]--><!--]--><!----></th><!----><!--]--><!----></tr><!--]--></thead><!--]--><!--[0--><tbody><!--[--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>SKIP_EXAMPLE_TESTS</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_css<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Skip slow Vite plugin integration tests<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>TEST_DATABASE_URL</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Enable PostgreSQL tests (PGlite always runs)<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--></tbody><!--]--></table><!--]--><!--[14--><!----><h2 id="test-structure"><!--[--><!--[2-->Test Structure<!--]--><!--]--><!----></h2><!----><!--]--><!--[14--><!----><h3 id="basic-test-pattern"><!--[--><!--[2-->Basic Test Pattern<!--]--><!--]--><!----></h3><!----><!--]--><!--[15--><!--[-1--><pre><code>import {describe, test, assert} from 'vitest';
-import {query_create_account} from '$lib/auth/account_queries.js';
+import {query_create_account} from '#lib/auth/account_queries.ts';
 
 describe('account queries', () => {
 	test('create returns an account with generated uuid', async () => {
@@ -554,7 +560,7 @@ the surface + live app.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 i
 harness drives the real <!--]--><!--[3--><!--[-1--><code>register_action_ws</code><!--]--><!--]--><!--[2--> dispatcher and
 <!--]--><!--[3--><!--[-1--><code>BackendWebsocketTransport</code><!--]--><!--]--><!--[2--> against <!--]--><!--[3--><!--[-1--><code>MockWsClient</code><!--]--><!--]--><!--[2--> connections, so per-action
 auth, input validation, <!--]--><!--[3--><!--[-1--><code>ctx.notify</code><!--]--><!--]--><!--[2-->, and broadcast fan-out all run through
-real code paths.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Convention (used in zap, zzz):<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[0--><ol><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->All round-trip helpers live in fuz_app<!--]--><!--]--><!----></strong><!--]--><!--[2-->
+real code paths.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Convention (used in zzz):<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[0--><ol><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->All round-trip helpers live in fuz_app<!--]--><!--]--><!----></strong><!--]--><!--[2-->
 (<!--]--><!--[3--><!--[-1--><code>@fuzdev/fuz_app/testing/ws_round_trip.ts</code><!--]--><!--]--><!--[2-->):<!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>create_ws_test_harness({specs, handlers, ...})</code><!--]--><!--]--><!--[2--> → `{transport,
 connect}<!--]--><!--[3--><!--[-1--><code>. </code><!--]--><!--]--><!--[2-->connect(identity?)` is async, resolving after
 <!--]--><!--[3--><!--[-1--><code>on_socket_open</code><!--]--><!--]--><!--[2--> completes. Passes through <!--]--><!--[3--><!--[-1--><code>register_action_ws</code><!--]--><!--]--><!--[2-->
@@ -572,14 +578,14 @@ explicit <!--]--><!--[3--><!--[-1--><code>&lt;T></code><!--]--><!--]--><!--[2-->
 <!--]--><!--[3--><!--[-1--><code>JsonrpcSuccessResponseFrame&lt;R></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>JsonrpcErrorResponseFrame&lt;D></code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>build_broadcast_api&lt;TApi>({harness, specs})</code><!--]--><!--]--><!--[2--> — wires peer +
 transport + typed broadcast API, mirroring real backend assembly.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>keeper_identity()</code><!--]--><!--]--><!--[2--> — default identity for keeper-authed connections.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Repo-local <!--]--><!--[3--><!--[-1--><code>ws_test_harness.ts</code><!--]--><!--]--><!--[2--> is only for project-specific
 setup<!--]--><!--]--><!----></strong><!--]--><!--[2--> — not a re-implementation of the above. Repos with memoized
-per-worker state (pglite + schema + seed) can add one; zap and zzz
-have none, importing directly from
+per-worker state (pglite + schema + seed) can add one; zzz has
+none, importing directly from
 <!--]--><!--[3--><!--[-1--><code>@fuzdev/fuz_app/testing/ws_round_trip.ts</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Split test files by aspect<!--]--><!--]--><!----></strong><!--]--><!--[2--> (see <!--]--><!--[5--><em><!--[--><!--[2-->Test File Naming<!--]--><!--]--><!----></em><!--]--><!--[2--> above):<!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>ws.integration.dispatch.test.ts</code><!--]--><!--]--><!--[2--> — request/response, <!--]--><!--[3--><!--[-1--><code>ctx.notify</code><!--]--><!--]--><!--[2-->,
 per-action auth, input validation, <!--]--><!--[3--><!--[-1--><code>ctx.signal</code><!--]--><!--]--><!--[2-->, concurrent requests<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>ws.integration.broadcast.test.ts</code><!--]--><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>create_broadcast_api</code><!--]--><!--]--><!--[2-->
 fan-out, close-removes-from-transport<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->DB-backed WS tests<!--]--><!--]--><!----></strong><!--]--><!--[2--> use the <!--]--><!--[3--><!--[-1--><code>.db.test.ts</code><!--]--><!--]--><!--[2--> suffix and memoize the
 harness per worker, since <!--]--><!--[3--><!--[-1--><code>isolate: false</code><!--]--><!--]--><!--[2--> + <!--]--><!--[3--><!--[-1--><code>fileParallelism: false</code><!--]--><!--]--><!--[2-->
-would otherwise double-init module-level state. Non-DB WS tests (zap,
-zzz) build a fresh harness per test — setup is cheap and each test can
+would otherwise double-init module-level state. Non-DB WS tests (zzz)
+build a fresh harness per test — setup is cheap and each test can
 supply its own ad-hoc specs + handlers.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ol><!--]--><!--]--><!--[14--><!----><h2 id="serde-boundary-conformance"><!--[--><!--[2-->Serde Boundary Conformance<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[5--><em><!--[--><!--[2-->Rust ↔ hand-written TS — round-trip + coverage guard, no codegen dependency.<!--]--><!--]--><!----></em><!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->When a Rust crate owns a serde JSON boundary (<!--]--><!--[3--><!--[-1--><code>#[serde(deny_unknown_fields)]</code><!--]--><!--]--><!--[2-->)
 that a hand-written TypeScript layer authors against — e.g. a typed config
 builder whose calls serialize to JSON that the Rust engine parses — keep the TS
@@ -609,15 +615,15 @@ Deno-gating posture.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="
 			
 			<script>
 				{
-					__sveltekit_1rj2unm = {
+					__sveltekit_1axp5gi = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.u8IB4kL3.js"),
-						import("/_app/immutable/entry/app.CXqPJTlq.js")
+						import("/_app/immutable/entry/start.CW46k3MO.js"),
+						import("/_app/immutable/entry/app.DDQJvyPR.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 34],
