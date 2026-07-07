@@ -1085,7 +1085,7 @@ export class WorldUiState {
 ```svelte
 <!-- +layout.svelte or similar root component -->
 <script>
-	import {WorldUiState, world_ui_context} from '$lib/world_ui_state.svelte.ts';
+	import {WorldUiState, world_ui_context} from '#lib/world_ui_state.svelte.ts';
 	world_ui_context.set(new WorldUiState());
 </script>
 ```
@@ -1093,7 +1093,7 @@ export class WorldUiState {
 ```svelte
 <!-- any descendant component -->
 <script>
-	import {world_ui_context} from '$lib/world_ui_state.svelte.ts';
+	import {world_ui_context} from '#lib/world_ui_state.svelte.ts';
 	const world_ui = world_ui_context.get();
 </script>
 ```

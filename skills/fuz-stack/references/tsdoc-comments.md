@@ -606,7 +606,7 @@ path to another repo (or an absolute workspace path) becomes a dead link. Keep T
 references repo-local. Attribute external inspiration in prose without a
 navigable path, or link a full URL; a backticked literal stays an escape hatch
 (see [Path references](./path-references.md) §2). Cross-repo *code* references
-use the import-specifier form (`@scope/pkg/foo.js`), not a relative path.
+use the import-specifier form (`@scope/pkg/foo.ts`), not a relative path.
 
 
 The canonical format is documented on `Module.path` in `module.svelte.ts`

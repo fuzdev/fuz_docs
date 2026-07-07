@@ -41,9 +41,6 @@ export type PathId = Flavored<string, 'PathId'>;
 export type GitOrigin = Flavored<string, 'GitOrigin'>;
 export type GitBranch = Flavored<string, 'GitBranch'>;
 
-// fuz_util/path.ts
-export type PathId = Flavored<string, 'PathId'>;
-
 // fuz_util/colors.ts
 export type Hue = Flavored<number, 'Hue'>;           // [0, 1]
 export type Saturation = Flavored<number, 'Saturation'>; // [0, 1]

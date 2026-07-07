@@ -412,22 +412,37 @@ pub struct SignupOptions {
 Capabilities + parameters collapse into one struct. **No `*Deps` suffix in
 Rust** — `*Options` for per-call bags, `*RouteState` for shared route state.
 
-**Capability traits** — `PasswordHasher`, `Keyring`, `BootstrapTokenStore`,
+**Capability traits** — `PasswordHasher`, `Storage`, `BootstrapTokenStore`,
 `FactStore`. Pure noun, no suffix. Climb here when polymorphism is real:
 testability swap (Argon2id ↔ fast test hasher), multi-impl plug-in, or
 inversion of definition (the lower crate declares the need; a higher crate
-implements).
+implements). (A hot-path service that never needs a swap stays a concrete
+struct — `Keyring` deliberately has no trait.)
 
-### Deferred rungs
+**Boxed closure factories** — between "just a closure" and "capability
+trait": a one-shot injection point that must be generic over the consumer's
+type gets a boxed-`FnOnce` type alias, not a trait —
+`ExtraActionSpecsFactory<App>` / `PreMigrationHook<E>`
+(`fuz_actions::consumer_lifecycle`; see rust-spine.md §Server lifecycle).
+The caller supplies it once at startup; test binaries hook through it; no
+trait ceremony accrues. A trait earns the slot only when the seam has
+multiple methods or long-lived polymorphic state.
 
-Unbuilt until concrete evidence forces them — speculative trait scaffolding
-accumulates inertia:
+### Anticipated rungs, resolved differently
 
-- **Composite traits per handler tier** — when an action-spec dispatcher must
-  be generic over multiple App types. Descriptive name (`*Actions`,
-  `*Runtime`), never `*Deps`.
-- **Granular `*Provider` accessor traits** — only when a function needs a
-  narrow bound a composite can't express.
+Two further rungs were anticipated and never built — the needs they named
+were met by lighter shapes:
+
+- **Composite traits per handler tier** (an action-spec dispatcher generic
+  over multiple App types) — landed instead as the boxed-`FnOnce` factory
+  aliases above plus per-tier borrowed capability-bundle structs
+  (`fuz_auth`'s `AuthenticatedActionContext`, `AccountActionContext`).
+- **Granular `*Provider` accessor traits** — no function ever needed a
+  narrow bound a composite couldn't express.
+
+Both stay unbuilt; revisit only if a genuinely trait-shaped need appears
+that a closure or borrowed struct can't express. If one lands: descriptive
+name (`*Actions`, `*Runtime`), never `*Deps`.
 
 ### Enum dispatch before trait objects
 
@@ -664,6 +679,18 @@ enforces **determinism by construction**: `Date.now` / `Math.random` /
 `performance.now` / `crypto.randomUUID` / no-arg `new Date()` are stubbed to
 throw, and `console.log/info/debug` reroute to stderr so stdout stays pure
 JSON — the evaluated plan must be a content-addressed fact.
+
+The wrapper *ingredients* are shared exports of `fuz_eval` — the
+determinism stubs (`DETERMINISM_STUBS_JS`), the console redirect
+(`CONSOLE_TO_STDERR_JS`), and `build_extract_export_wrapper(name, stubs)`
+for the common "eval a module, extract one named export as JSON" shape
+(injection-safe: the export name is JSON-encoded into bracket notation).
+A simple consumer composes these instead of re-deriving them; a rich
+wrapper (zap's builder) composes the constants directly. The boundary
+principle behind the stubs: anything the evaluated code needs from the
+world should be a **declared, inert input** the trusted parent resolves
+and records — an injected live capability is an undeclared input no cache
+key can capture.
 
 ### Sidecar controller
 

@@ -288,16 +288,16 @@ fuz_app's `testing/db.ts` provides
 
 ```typescript
 // src/test/db_fixture.ts
-import type {Db} from '$lib/db/db.js';
-import {run_migrations} from '$lib/db/migrate.js';
-import {auth_migration_ns} from '$lib/auth/migrations.js';
+import type {Db} from '#lib/db/db.ts';
+import {run_migrations} from '#lib/db/migrate.ts';
+import {auth_migration_ns} from '#lib/auth/migrations.ts';
 import {
 	create_pglite_factory,
 	create_pg_factory,
 	create_describe_db,
 	auth_integration_truncate_tables,
 	log_db_factory_status,
-} from '$lib/testing/db.js';
+} from '#lib/testing/db.ts';
 
 const init_schema = async (db: Db): Promise<void> => {
 	await run_migrations(db, [auth_migration_ns]);
@@ -317,8 +317,8 @@ Test files import and use as a wrapper:
 ```typescript
 // src/test/auth/account_queries.db.test.ts
 import {describe, assert, test} from 'vitest';
-import {query_create_account} from '$lib/auth/account_queries.js';
-import {describe_db} from '../db_fixture.js';
+import {query_create_account} from '#lib/auth/account_queries.ts';
+import {describe_db} from '../db_fixture.ts';
 
 describe_db('account queries', (get_db) => {
 	test('create returns an account with generated uuid', async () => {
@@ -337,7 +337,7 @@ describe_db('account queries', (get_db) => {
 ### Integration Tests
 
 Named `.integration.db.test.ts`. Use `create_test_app()` from
-`$lib/testing/app_server.js` for a full Hono app with middleware, routes, and
+`#lib/testing/app_server.ts` for a full Hono app with middleware, routes, and
 database:
 
 ```typescript
@@ -482,8 +482,8 @@ export const create_shared_core_tests = (
 // src/test/ContextmenuRoot.core.test.ts — thin wrapper
 // @vitest-environment jsdom
 import {vi} from 'vitest';
-import {create_shared_core_tests} from './contextmenu_test_core.js';
-import ContextmenuRoot from '$lib/ContextmenuRoot.svelte';
+import {create_shared_core_tests} from './contextmenu_test_core.ts';
+import ContextmenuRoot from '#lib/ContextmenuRoot.svelte';
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
 create_shared_core_tests(ContextmenuRoot, 'ContextmenuRoot');
@@ -498,8 +498,8 @@ create_shared_core_tests(
 );
 ```
 
-fuz*ui uses this for contextmenu components with 8 factory modules
-(`contextmenu_test*{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts`).
+`fuz_ui` uses this for contextmenu components with 8 factory modules
+(`contextmenu_test_{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts`).
 
 ## Fixture-Based Testing
 
@@ -576,8 +576,8 @@ Each feature's `update.task.ts` uses `run_update_task`:
 // src/test/fixtures/mdz/update.task.ts — from fuz_ui
 import type {Task} from '@fuzdev/gro';
 import {join} from 'node:path';
-import {mdz_parse} from '$lib/mdz.js';
-import {run_update_task} from '../../test_helpers.js';
+import {mdz_parse} from '#lib/mdz.ts';
+import {run_update_task} from '../../test_helpers.ts';
 
 export const task: Task = {
 	summary: 'generate expected.json files for mdz fixtures',
@@ -604,7 +604,7 @@ import {
 	run_preprocess,
 	DEFAULT_TEST_OPTIONS,
 	type PreprocessMdzFixture,
-} from './fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.js';
+} from './fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts';
 
 let fixtures: Array<PreprocessMdzFixture> = [];
 
@@ -648,11 +648,12 @@ regenerate with `gro src/test/fixtures/generate_repos`.
 
 ### Dependency Injection (Preferred)
 
-DI via small `*Deps` or `*Operations` interfaces. Functions accept an
-operations parameter with a default; tests inject controlled implementations.
+DI via small `*Deps` interfaces (fuz_gitops still spells them
+`*Operations` — legacy naming, migrating). Functions accept a deps parameter
+with a default; tests inject controlled implementations.
 See ./dependency-injection.md for the full pattern.
 
-**fuz_gitops operations pattern:**
+**fuz_gitops operations pattern (legacy `*Operations` naming):**
 
 ```typescript
 // src/lib/operations.ts — interfaces for all side effects
@@ -698,8 +699,8 @@ fuz_gitops uses **zero vi.mock()** — all tests inject mock operations via DI.
 **fuz_app deps pattern:**
 
 ```typescript
-import {stub_app_deps} from '$lib/testing/stubs.js';
-import {create_mock_runtime} from '$lib/runtime/mock.js';
+import {stub_app_deps} from '#lib/testing/stubs.ts';
+import {create_mock_runtime} from '#lib/runtime/mock.ts';
 
 const deps = stub_app_deps; // throwing stubs for auth deps
 const runtime = create_mock_runtime(); // MockRuntime for CLI tests
@@ -707,11 +708,16 @@ const runtime = create_mock_runtime(); // MockRuntime for CLI tests
 
 ### vi.mock() Usage
 
-Used in gro and some fuz_app unit tests. Avoid in `.db.test.ts` where
-`isolate: false` shares module state. Prefer DI when possible. When needed:
+Legacy escape hatch, not a pattern — it exists where code predates the DI
+convention (gro's build/deploy/cache tests are the big cluster) or where a
+call site has no injectable seam (fuz_app's bearer-auth middleware calls
+`query_*` functions by name; its tests module-mock them as a documented
+carve-out). Treat any *new* `vi.mock` as a signal to add a deps seam
+instead. Avoid entirely in `.db.test.ts` where `isolate: false` shares
+module state. When unavoidable:
 
 - gro: `vi.clearAllMocks()` in `beforeEach`, `vi.resetAllMocks()` in `afterEach`
-- `.db.test.ts`: if unavoidable, use `vi.restoreAllMocks()` in `afterEach` —
+- `.db.test.ts`: use `vi.restoreAllMocks()` in `afterEach` —
   module-level mocks leak with `isolate: false`
 
 ### Mock Factory Naming
@@ -774,7 +780,7 @@ SKIP_EXAMPLE_TESTS=1 gro test
 
 ```typescript
 import {describe, test, assert} from 'vitest';
-import {query_create_account} from '$lib/auth/account_queries.js';
+import {query_create_account} from '#lib/auth/account_queries.ts';
 
 describe('account queries', () => {
 	test('create returns an account with generated uuid', async () => {
@@ -909,7 +915,7 @@ harness drives the real `register_action_ws` dispatcher and
 auth, input validation, `ctx.notify`, and broadcast fan-out all run through
 real code paths.
 
-Convention (used in zap, zzz):
+Convention (used in zzz):
 
 1. **All round-trip helpers live in fuz_app**
    (`@fuzdev/fuz_app/testing/ws_round_trip.ts`):
@@ -938,8 +944,8 @@ Convention (used in zap, zzz):
 
 2. **Repo-local `ws_test_harness.ts` is only for project-specific
    setup** — not a re-implementation of the above. Repos with memoized
-   per-worker state (pglite + schema + seed) can add one; zap and zzz
-   have none, importing directly from
+   per-worker state (pglite + schema + seed) can add one; zzz has
+   none, importing directly from
    `@fuzdev/fuz_app/testing/ws_round_trip.ts`.
 
 3. **Split test files by aspect** (see _Test File Naming_ above):
@@ -950,8 +956,8 @@ Convention (used in zap, zzz):
 
 4. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize the
    harness per worker, since `isolate: false` + `fileParallelism: false`
-   would otherwise double-init module-level state. Non-DB WS tests (zap,
-   zzz) build a fresh harness per test — setup is cheap and each test can
+   would otherwise double-init module-level state. Non-DB WS tests (zzz)
+   build a fresh harness per test — setup is cheap and each test can
    supply its own ad-hoc specs + handlers.
 
 ## Serde Boundary Conformance

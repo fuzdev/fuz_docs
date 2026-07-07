@@ -213,27 +213,11 @@ console.log(elapsed()); // ms since reset
 
 ## DAG Execution
 
-`@fuzdev/fuz_util/dag.ts` — `run_dag()` executes dependency graphs
-concurrently. Nodes declare dependencies via `depends_on`; independent nodes
-run in parallel up to `max_concurrency`. Uses `AsyncSemaphore` for concurrency
-and `Deferred` for dependency signaling.
-
-```typescript
-import {run_dag} from '@fuzdev/fuz_util/dag.ts';
-
-const result = await run_dag({
-	nodes,
-	execute: async (node) => { /* ... */ },
-	max_concurrency: 4,
-	stop_on_failure: true,
-});
-```
-
-Used by zap for pipeline execution and resource detection.
-
-See ./async-patterns.md for the full DAG API (`DagOptions`, `DagResult`,
-`DagNode`) and concurrency primitives. See ./type-utilities.md for nominal
-typing and strict utility types.
+`@fuzdev/fuz_util/dag.ts` — `run_dag()` executes dependency graphs concurrently
+(nodes declare `depends_on`; independent nodes run in parallel up to
+`max_concurrency`). See ./async-patterns.md for the full DAG API (`DagOptions`,
+`DagResult`, `DagNode`) and concurrency primitives, and ./type-utilities.md for
+nominal typing and strict utility types.
 
 ## DOM Helpers
 

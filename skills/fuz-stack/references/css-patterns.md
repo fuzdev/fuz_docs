@@ -144,10 +144,10 @@ as needed:
 ```typescript
 import 'virtual:fuz.css'; // generated bundled CSS (all projects)
 import '@fuzdev/fuz_code/theme.css'; // package-specific themes (if any)
-import '$routes/style.css'; // project-specific global styles (app projects)
+import '#routes/style.css'; // project-specific global styles (app projects)
 ```
 
-`$routes` resolves to `src/routes` in SvelteKit. Library/tool repos (fuz_css,
+`#routes` resolves to `src/routes` in SvelteKit. Library/tool repos (fuz_css,
 fuz_ui, `gro`) often import only `virtual:fuz.css`; application repos
 (fuz_template, fuz_blog, zzz) typically use all three.
 

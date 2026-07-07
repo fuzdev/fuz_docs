@@ -71,8 +71,8 @@ Every project with docs has `src/routes/docs/tomes.ts`:
 
 ```typescript
 import type {Tome} from '@fuzdev/fuz_ui/tome.ts';
-import introduction from '$routes/docs/introduction/+page.svelte';
-import api from '$routes/docs/api/+page.svelte';
+import introduction from '#routes/docs/introduction/+page.svelte';
+import api from '#routes/docs/api/+page.svelte';
 
 export const tomes: Array<Tome> = [
 	{
@@ -163,7 +163,7 @@ pulls the heavy analyzed `modules` into the root chunk and instantiates
 <script lang="ts">
 	import ThemeRoot from '@fuzdev/fuz_ui/ThemeRoot.svelte';
 	import {SiteState, site_context} from '@fuzdev/fuz_ui/site.svelte.ts';
-	import {logo_my_project} from '$lib/logos.ts';
+	import {logo_my_project} from '#lib/logos.ts';
 	import pkg_json from 'virtual:pkg.json';
 	import type {Snippet} from 'svelte';
 
@@ -200,8 +200,8 @@ which covers all `/docs/*` pages:
 	import type {Snippet} from 'svelte';
 	import Docs from '@fuzdev/fuz_ui/Docs.svelte';
 	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
-	import {tomes} from '$routes/docs/tomes.ts';
-	import {library_json} from '$routes/library.ts';
+	import {tomes} from '#routes/docs/tomes.ts';
+	import {library_json} from '#routes/library.ts';
 
 	const {children}: {children: Snippet} = $props();
 
@@ -229,7 +229,7 @@ a `/skills` subtree:
 ```svelte
 <script lang="ts">
 	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
-	import {library_json} from '$routes/library.ts';
+	import {library_json} from '#routes/library.ts';
 
 	const library = new Library(library_json);
 	library_context.set(() => library);
@@ -365,8 +365,8 @@ Other projects **import** them:
 
 ```typescript
 // In fuz_ui (defines the components)
-import Docs from '$lib/Docs.svelte';
-import {library_context} from '$lib/library.svelte.ts';
+import Docs from './Docs.svelte';
+import {library_context} from './library.svelte.ts';
 
 // In fuz_css or any consumer project
 import Docs from '@fuzdev/fuz_ui/Docs.svelte';

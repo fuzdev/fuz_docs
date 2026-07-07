@@ -14,7 +14,7 @@ approval *process* below applies only inside the ecosystem workspaces.
 **Source of truth**: each repo's root `[workspace.dependencies]`. This doc
 mirrors the **union** of those for human and agent audit; it is not
 generated. Any single workspace carries a small subset (zap's direct
-external set is ~14 crates; the forge's ~24 — everything else arrives
+external set is ~11 crates; the forge's ~24 — everything else arrives
 transitively via the spine). Verify against the workspaces periodically.
 
 Crates internal to a workspace (declared with `path = ...`) are not
@@ -125,7 +125,7 @@ deps and belong here.
 | `wasm-bindgen` | JS interop (wasm-pack) |
 | `js-sys` | engine-native `JSON.parse` for the wasm-bindgen parse exports (tsv) |
 | `talc` | WASM global allocator (`tsv_wasm`, wasm32-only target dep) — pure-Rust `no_std` replacement for std's dlmalloc; use the `WasmGrowAndExtend` source (the default claim source fragments a long-lived instance's linear memory). Pulls `lock_api` + `allocator-api2` into the wasm32 graph only |
-| `napi` / `napi-derive` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep |
+| `napi` / `napi-derive` / `napi-build` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep |
 | `wit-bindgen` | Component-model bindings |
 | `wasmtime` / `wasmtime-wasi` | WASM host (tests, benches) |
 
@@ -161,7 +161,10 @@ dependency graph or it is not, and that is auditable.
 The pattern is proven: the sandboxed config-eval harness was extracted from
 zap into the spine's `fuz_eval` — a spine-free leaf (no tokio-server/HTTP/DB
 surface) consumable even by spine-free repos — and is now shared across
-consumers. Remaining candidates, still independently reimplemented:
+consumers, including the JS wrapper ingredients themselves
+(`DETERMINISM_STUBS_JS`, `CONSOLE_TO_STDERR_JS`,
+`build_extract_export_wrapper`). Remaining candidates, still independently
+reimplemented:
 
 - a minimal dotenv (`KEY=VALUE`) parser — three copies today (`zap_core`,
   plus two inside zzz: the CLI's daemon-env loader and its xtask),

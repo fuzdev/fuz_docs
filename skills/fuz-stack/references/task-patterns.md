@@ -189,8 +189,9 @@ throw new SilentError();
 
 ## Task Discovery
 
-Task files use the `.task.ts` (or `.task.js`) suffix. Gro searches
-`task_root_dirs` in order (default: `src/lib/`, `./`, `gro/dist/`):
+Source task files use the `.task.ts` suffix; the `.task.js` form is only gro's
+compiled builtins under `gro/dist/`, which the task loader also discovers. Gro
+searches `task_root_dirs` in order (default: `src/lib/`, `./`, `gro/dist/`):
 
 ```
 src/lib/greet.task.ts      -> gro greet
@@ -234,7 +235,7 @@ await invoke_task('build', {sync: false, gen: false});
 **Direct import:** Bypasses override resolution, tighter coupling:
 
 ```typescript
-import {task as test_task} from './test.task.js';
+import {task as test_task} from './test.task.ts';
 await test_task.run(ctx);
 ```
 

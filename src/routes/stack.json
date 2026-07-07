@@ -66,9 +66,9 @@
 			"glyph": "🪴",
 			"homepage_url": "https://css.fuz.dev/",
 			"published": true,
-			"module_count": 36,
-			"exported_module_count": 33,
-			"export_count": 677,
+			"module_count": 38,
+			"exported_module_count": 35,
+			"export_count": 693,
 			"peer_dependencies": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util", "@fuzdev/gro"],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -83,7 +83,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.206.3",
+			"version": "0.206.5",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -91,7 +91,7 @@
 			"published": true,
 			"module_count": 94,
 			"exported_module_count": 94,
-			"export_count": 300,
+			"export_count": 301,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
@@ -161,7 +161,7 @@
 			"name": "@fuzdev/fuz_template",
 			"version": "0.0.1",
 			"path": "fuz_template",
-			"description": "a static web app and Node library template with TypeScript, Svelte, SvelteKit, Vite, esbuild, Gro, and Fuz",
+			"description": "a static web app template built with the fuz stack: TypeScript, Svelte, SvelteKit, and Gro",
 			"glyph": "❄",
 			"homepage_url": "https://template.fuz.dev/",
 			"published": false,
@@ -183,7 +183,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.28.0",
+			"version": "0.28.1",
 			"path": "fuz_blog",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",

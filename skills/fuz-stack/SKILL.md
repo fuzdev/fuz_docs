@@ -31,10 +31,11 @@ types, defaults, and validation. The Cell pattern gives every piece of state
 the same structure. When conventions are this consistent, AI can reliably
 bridge the gap between a person's intent and the stack's implementation.
 
-The stack composes: `fuz_util → fuz_css → fuz_ui → apps`, with `fuz_app`
-as the shared backend spine (auth, sessions, DB, SSE). zzz (the garage)
-and zap (machine-state convergence) build on the same primitives. Understanding
-one part transfers to understanding the others.
+The stack composes: `fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → apps`,
+with `fuz_app` the shared backend spine (auth, sessions, DB, SSE) — a chain hop
+for apps as well as the spine. zzz (the garage) and zap (machine-state
+convergence) build on the same primitives. Understanding one part transfers to
+understanding the others.
 
 ## Package Ecosystem
 
@@ -46,10 +47,11 @@ is authoritative for what it actually uses.
 | `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                  |
 | `gro`          | task runner and toolkit extending SvelteKit (web-dev surface; internals adopting Rust)|
 | `fuz_css`      | CSS framework and design system — apps look good by default                        |
+| `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                   |
 | `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                         |
 | `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                     |
 | `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                  |
-| `fuz_template` | a static web app and Node library template                                         |
+| `fuz_template` | a static web app template built with the fuz stack                                 |
 | `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more |
 | `fuz_blog`     | blog software from scratch with SvelteKit                                          |
 | `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                     |
@@ -60,7 +62,9 @@ is authoritative for what it actually uses.
 
 `gro` is a durable web-focused dev tool; its internals progressively adopt Rust (tsv, then `fuz` crates), and it stays complementary to `fuz` and `zap`.
 
-**Dependency flow**: `fuz_util -> gro + fuz_css -> fuz_ui -> fuz_app -> zzz, zap, apps`
+**Dependency flow**: `fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps`
+(zap sits beside this chain: its site/authoring surface builds on fuz_ui, and
+its Rust engine is spine-free — it consumes neither fuz_app nor the spine crates)
 
 **Adding deps**: prefer the approved allowlists (./references/npm-dependencies.md,
 ./references/rust-dependencies.md). Adding or upgrading needs approval; removing
@@ -306,18 +310,9 @@ fuz_ui renders TSDoc prose through it, injecting `DocsLink` (inline code) and
 fuz_code's `Code` (code blocks) via its rendering seam; backticked identifiers
 that resolve to API symbols become links.
 
-| Feature                | Syntax                                                                              |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| Code                   | `` `code` ``                                                                        |
-| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` — double delimiters only (single `*`/`_`/`~` literal; intraword `_` stays literal so `snake_case` renders verbatim) |
-| Links                  | auto-detected URLs, `/internal/path`, `./relative` / `../relative`, `[text](url)`   |
-| Headings               | `# Heading` … `######` (column 0; slugified lowercase `id` for fragment links)      |
-| Lists                  | `- item` / `1. item` (column 0; indent nests; items hold block children)            |
-| Blockquotes            | `> ` per line (no lazy continuation); `>>` nests; bare `>` = in-quote paragraph break; blank line ends |
-| Code blocks            | fenced with optional language hint                                                  |
-| Tables                 | `\| a \| b \|` rows + `\| --- \| :-: \|` delimiter (colons align); outer pipes required |
-| Horizontal rule        | `---` alone on a line                                                               |
-| Components / elements  | `<Alert>…</Alert>` (component) / `<aside>…</aside>` (HTML element) — both must be registered; **no attributes yet** |
+Supports code, bold/italic/strike (double delimiters only; intraword `_` stays
+literal so `snake_case` renders verbatim), links, headings, lists, blockquotes,
+code blocks, tables, horizontal rules, and registered components/elements.
 
 ```svelte
 <Mdz content="Some **bold** and `code` text." />
@@ -325,9 +320,9 @@ that resolve to API symbols become links.
 
 Registration and rendering happen through getter contexts in
 `@fuzdev/mdz/mdz_contexts.ts` (`mdz_components_context`, `mdz_elements_context`,
-`mdz_code_context`, `mdz_codeblock_context`). Full dialect surface, the injection
-seam, backtick autolinking, and the `svelte_preprocess_mdz` build-time
-preprocessor: ./references/mdz.md.
+`mdz_code_context`, `mdz_codeblock_context`). The full per-feature syntax table,
+dialect surface, injection seam, backtick autolinking, and the
+`svelte_preprocess_mdz` build-time preprocessor: ./references/mdz.md.
 
 ### Path references
 
@@ -400,9 +395,8 @@ low-specificity `:where()` selectors, and block elements space themselves via
 the **flow-margin** system — so most content needs zero classes. The most common
 mistake is hand-adding `mb_*`/`gap_*`/`p_*` where flow margin already spaces, or
 re-declaring color/font the element already carries. Before any class or
-`<style>`, ask what specific gap in the defaults it closes. Real code bears this
-out: most app files have no `<style>` block at all (fuz_ui, a component library,
-is ~45% style-free; apps run 70–100%).
+`<style>`, ask what specific gap in the defaults it closes — most app files have
+no `<style>` block at all.
 
 ```svelte
 <!-- BAD: these classes fight defaults the elements already have -->
@@ -437,28 +431,20 @@ comfortable ceiling). See css-patterns.md §Default styling is the baseline.
 component-local classes use `kebab-case` (`site-header`) — the target convention,
 adopted in zzz and fuz_ui.
 
-### 3-Layer Architecture
+### Architecture and classes
 
-- **Semantic styles** (`style.css`) — reset + element defaults (buttons, inputs, forms, tables)
-- **Style variables** (`theme.css`) — 600+ design tokens as CSS custom properties
-- **Utility classes** (`virtual:fuz.css`) — generated per-project with only used classes
-
-### CSS Classes
-
-- **Token classes** (`.p_md`, `.color_a_50`, `.gap_lg`) — map to style variables
-- **Composite classes** (`.box`, `.row`, `.ellipsis`) — multi-property shortcuts; size composites `xs`/`sm`/`md`/`lg`/`xl` rescale a whole subtree
-- **Literal classes** (`.display:flex`, `.hover:opacity:80%`) — arbitrary CSS `property:value`
-
-**Comment hints** for static extraction (rarely needed): `// @fuz-classes box row p_md`,
-`// @fuz-elements button input`, `// @fuz-variables shade_40 text_50`.
-
-### When to Use Classes vs Styles
-
-- **Own elements** — utility classes preferred; `<style>` for complex cases; inline OK
-- **Child components** — utility classes; not `<style>`; inline limited
-- **Hover / focus / responsive** — `<style>` (or an occasional literal modifier); never inline
-- **Runtime dynamic values** — inline `style:` only (not classes or `<style>`)
-- **IDE autocomplete** — best in `<style>`; none on utility classes
+- **Three layers** — semantic element defaults (`style.css`), design tokens as
+  CSS custom properties (`theme.css`), and per-project utility classes
+  (`virtual:fuz.css`, only used classes emitted). See css-patterns.md §Style
+  Variables (Design Tokens) and §Utility Classes.
+- **Class families** — token classes (`.p_md`, `.color_a_50`) map to variables,
+  composite classes (`.box`, `.row`; size composites `xs`–`xl` rescale a subtree)
+  are multi-property shortcuts, literal classes (`.display:flex`) are arbitrary
+  `property:value`. Static-extraction comment hints (`// @fuz-classes …`) are
+  rarely needed — see css-patterns.md §Comment hints for the dynamic cases.
+- **Classes vs `<style>`** — utility classes for your own and child elements;
+  `<style>` for hover/focus/responsive; inline `style:` only for runtime dynamic
+  values. Full matrix: css-patterns.md §When to Use Classes vs Styles.
 
 ## Dependency Injection
 
@@ -467,16 +453,21 @@ import small interfaces directly (not `Pick<Composite>`).
 
 - **Three suffixes** — `*Deps` (capabilities/functions, fresh mock factories per
   test), `*Options` (data/config values, literal objects), `*Context` (scoped
-  world for a callback/handler). No `*Config` suffix — use `*Options`.
-- **Grouped deps** — composite interface by domain. fuz_css uses `deps.ts` +
-  `deps_defaults.ts`; fuz_gitops uses `operations.ts` + `operations_defaults.ts`.
-- **AppDeps** — stateless capabilities bundle for server code (fuz_app
-  `auth/deps.ts`).
+  world for a callback/handler). No `*Config` suffix — use `*Options`. `*Deps`
+  names the injected bundle; single-capability service interfaces keep pure-noun
+  names (`Keyring`, `FactStore`).
+- **File shape** — `deps.ts` + `deps_defaults.ts` + test-side `mock_deps.ts`
+  (fuz_css is the cleanest exemplar). fuz_gitops's `*Operations` spelling is
+  legacy, migrating to `*Deps` — never author new `*Operations`.
+- **AppDeps** — stateless capabilities bundle for server code (fuz_app),
+  assembled once at a two-step composition root.
 - **RuntimeDeps** — composable small `*Deps` interfaces for runtime operations
   (env, fs, commands), with platform-specific factories (Deno, Node, mock).
-- **Design principles** — single `options` object params, `Result` returns
-  (never throw), `null` for not-found, plain object mocks (no mocking libs),
-  stateless capabilities, runtime agnosticism.
+  Browser/UI DI is Svelte context, not `*Deps` params.
+- **Design principles** — single `options` object params in L1 domain deps,
+  `Result` returns with typed error kinds (L0 platform shims mirror the
+  platform and throw), plain object mocks (no mocking libs), throwing stubs
+  over silent no-ops, stateless capabilities, runtime agnosticism.
 
 See ./references/dependency-injection.md for the full pattern guide, naming
 conventions, consumption patterns, RuntimeDeps, and mock factories.
@@ -541,7 +532,7 @@ vars). Five references, loaded on demand:
   the crate-override re-declare trap), release profile, `thiserror` error
   taxonomy + `.hint()`/`.exit_code()` helpers and classifiers, graceful
   shutdown, the DI escalation ladder
-  (`*Options`/capability-traits/enum-dispatch-before-`dyn`/RPITIT), the
+  (`*Options`/boxed-closure-factories/capability-traits/enum-dispatch-before-`dyn`/RPITIT), the
   make-impossible-states-unrepresentable idiom (zap_types is the reference),
   CLI/exit-code patterns, and shared patterns (sandboxed eval, transactional
   state files, CAS, bounded reads, type state, secret masking).

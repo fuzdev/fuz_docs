@@ -266,23 +266,21 @@ interface DagNodeResult {
 Failed dependency nodes cascade — dependents are skipped with reason
 `'dependency failed'`.
 
-Used by zap for pipeline execution and resource detection.
-
 ## Quick Reference
 
 | Export                   | Module     | Type      | Purpose                                        |
 | ------------------------ | ---------- | --------- | ---------------------------------------------- |
-| `AsyncStatus`            | `async.js` | Type      | Lifecycle status for async operations          |
-| `wait`                   | `async.js` | Function  | Promise-based delay                            |
-| `is_promise`             | `async.js` | Function  | Type guard for Promise/thenable                |
-| `Deferred<T>`            | `async.js` | Interface | Promise with external resolve/reject           |
-| `create_deferred`        | `async.js` | Function  | Creates a Deferred                             |
-| `each_concurrent`        | `async.js` | Function  | Concurrent side effects, fail-fast             |
-| `map_concurrent`         | `async.js` | Function  | Concurrent map with ordered results, fail-fast |
-| `map_concurrent_settled` | `async.js` | Function  | Concurrent map, allSettled pattern             |
-| `AsyncSemaphore`         | `async.js` | Class     | Concurrency limiter with acquire/release       |
-| `run_dag`                | `dag.js`   | Function  | Concurrent DAG executor                        |
-| `DagNode`                | `dag.js`   | Interface | Minimum shape for a DAG node                   |
-| `DagOptions`             | `dag.js`   | Interface | Options for `run_dag`                          |
-| `DagResult`              | `dag.js`   | Interface | Aggregated DAG execution result                |
-| `DagNodeResult`          | `dag.js`   | Interface | Per-node execution result                      |
+| `AsyncStatus`            | `async.ts` | Type      | Lifecycle status for async operations          |
+| `wait`                   | `async.ts` | Function  | Promise-based delay                            |
+| `is_promise`             | `async.ts` | Function  | Type guard for Promise/thenable                |
+| `Deferred<T>`            | `async.ts` | Interface | Promise with external resolve/reject           |
+| `create_deferred`        | `async.ts` | Function  | Creates a Deferred                             |
+| `each_concurrent`        | `async.ts` | Function  | Concurrent side effects, fail-fast             |
+| `map_concurrent`         | `async.ts` | Function  | Concurrent map with ordered results, fail-fast |
+| `map_concurrent_settled` | `async.ts` | Function  | Concurrent map, allSettled pattern             |
+| `AsyncSemaphore`         | `async.ts` | Class     | Concurrency limiter with acquire/release       |
+| `run_dag`                | `dag.ts`   | Function  | Concurrent DAG executor                        |
+| `DagNode`                | `dag.ts`   | Interface | Minimum shape for a DAG node                   |
+| `DagOptions`             | `dag.ts`   | Interface | Options for `run_dag`                          |
+| `DagResult`              | `dag.ts`   | Interface | Aggregated DAG execution result                |
+| `DagNodeResult`          | `dag.ts`   | Interface | Per-node execution result                      |

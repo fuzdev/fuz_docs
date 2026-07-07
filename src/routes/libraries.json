@@ -16845,7 +16845,6 @@
 					"dependencies": [
 						"args.ts",
 						"cli.ts",
-						"cli.ts",
 						"constants.ts",
 						"package_json.ts",
 						"paths.ts",
@@ -17558,7 +17557,7 @@
 								{
 									"name": "content_hash",
 									"kind": "variable",
-									"docComment": "SHA-256 hash of the source file contents",
+									"docComment": "Content hash of the source file (BLAKE3 via `hash_blake3`)",
 									"typeSignature": "string"
 								},
 								{
@@ -17689,7 +17688,7 @@
 								{
 									"name": "content_hash",
 									"type": "string",
-									"description": "SHA-256 hash of the source file contents"
+									"description": "content hash of the source file contents"
 								},
 								{
 									"name": "extraction",
@@ -20945,6 +20944,210 @@
 					"dependents": ["css_class_generation.ts", "css_literal.ts"]
 				},
 				{
+					"path": "oklch.ts",
+					"declarations": [
+						{
+							"name": "Oklch",
+							"kind": "type",
+							"docComment": "A color in OKLCH: lightness in [0, 1], chroma ≥ 0 (unbounded), hue in degrees.",
+							"typeSignature": "Oklch",
+							"sourceLine": 17
+						},
+						{
+							"name": "Oklab",
+							"kind": "type",
+							"docComment": "A color in OKLab: lightness in [0, 1], `a`/`b` roughly in [-0.4, 0.4].",
+							"typeSignature": "Oklab",
+							"sourceLine": 20
+						},
+						{
+							"name": "RgbUnit",
+							"kind": "type",
+							"docComment": "An RGB color with components in the unit interval [0, 1].\nValues are gamma-encoded sRGB unless a function documents linear-light.\nOut-of-gamut results are not clamped, so components may fall outside [0, 1].",
+							"typeSignature": "RgbUnit",
+							"sourceLine": 27
+						},
+						{
+							"name": "srgb_component_to_linear",
+							"kind": "function",
+							"docComment": "Converts a gamma-encoded sRGB component in [0, 1] to linear-light.",
+							"typeSignature": "(c: number): number",
+							"sourceLine": 35,
+							"parameters": [
+								{
+									"name": "c",
+									"type": "number"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "linear_component_to_srgb",
+							"kind": "function",
+							"docComment": "Converts a linear-light sRGB component to gamma-encoded in [0, 1].",
+							"typeSignature": "(c: number): number",
+							"sourceLine": 41,
+							"parameters": [
+								{
+									"name": "c",
+									"type": "number"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "srgb_to_oklab",
+							"kind": "function",
+							"docComment": "Converts gamma-encoded sRGB to OKLab.",
+							"typeSignature": "([r, g, b]: RgbUnit): Oklab",
+							"sourceLine": 47,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "RgbUnit"
+								}
+							],
+							"returnType": "Oklab"
+						},
+						{
+							"name": "oklab_to_srgb",
+							"kind": "function",
+							"docComment": "Converts OKLab to gamma-encoded sRGB.",
+							"typeSignature": "([lightness, a, b]: Oklab): RgbUnit",
+							"sourceLine": 72,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "Oklab"
+								}
+							],
+							"returnType": "RgbUnit",
+							"returnDescription": "components that may fall outside [0, 1] when the color is out of gamut"
+						},
+						{
+							"name": "oklab_to_oklch",
+							"kind": "function",
+							"docComment": "Converts OKLab to OKLCH. Hue is normalized to [0, 360); an achromatic color gets hue 0.",
+							"typeSignature": "([lightness, a, b]: Oklab): Oklch",
+							"sourceLine": 91,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "Oklab"
+								}
+							],
+							"returnType": "Oklch"
+						},
+						{
+							"name": "oklch_to_oklab",
+							"kind": "function",
+							"docComment": "Converts OKLCH to OKLab.",
+							"typeSignature": "([lightness, chroma, hue]: Oklch): Oklab",
+							"sourceLine": 100,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "Oklch"
+								}
+							],
+							"returnType": "Oklab"
+						},
+						{
+							"name": "srgb_to_oklch",
+							"kind": "function",
+							"docComment": "Converts gamma-encoded sRGB to OKLCH.",
+							"typeSignature": "(rgb: RgbUnit): Oklch",
+							"sourceLine": 109,
+							"parameters": [
+								{
+									"name": "rgb",
+									"type": "RgbUnit"
+								}
+							],
+							"returnType": "Oklch"
+						},
+						{
+							"name": "oklch_to_srgb",
+							"kind": "function",
+							"docComment": "Converts OKLCH to gamma-encoded sRGB.",
+							"typeSignature": "(lch: Oklch): RgbUnit",
+							"sourceLine": 116,
+							"parameters": [
+								{
+									"name": "lch",
+									"type": "Oklch"
+								}
+							],
+							"returnType": "RgbUnit",
+							"returnDescription": "components that may fall outside [0, 1] when the color is out of gamut"
+						},
+						{
+							"name": "oklch_in_srgb_gamut",
+							"kind": "function",
+							"docComment": "Checks whether an OKLCH color converts to sRGB with all components inside [0, 1].",
+							"typeSignature": "(lch: Oklch, epsilon?: number): boolean",
+							"sourceLine": 123,
+							"parameters": [
+								{
+									"name": "lch",
+									"type": "Oklch"
+								},
+								{
+									"name": "epsilon",
+									"type": "number",
+									"description": "tolerance for float noise at the gamut boundary",
+									"defaultValue": "1e-6"
+								}
+							],
+							"returnType": "boolean"
+						},
+						{
+							"name": "oklch_max_srgb_chroma",
+							"kind": "function",
+							"docComment": "Finds the largest chroma at a given OKLCH lightness and hue such that every\nchroma below it is also inside the sRGB gamut. Returns 0 when the lightness\nitself is out of range.\n\nThis is deliberately the *safe* maximum for ramps, not the outermost gamut\nintersection: the sRGB gamut is non-convex in OKLab (most visibly near the\nblue primary), so the constant-(L, H) chroma ray can exit and re-enter the\ngamut. A ramp needs the whole `[0, C]` segment representable, so the scan\nstops at the first exit.",
+							"typeSignature": "(lightness: number, hue: number, precision?: number): number",
+							"sourceLine": 143,
+							"parameters": [
+								{
+									"name": "lightness",
+									"type": "number"
+								},
+								{
+									"name": "hue",
+									"type": "number"
+								},
+								{
+									"name": "precision",
+									"type": "number",
+									"description": "terminate when the refinement interval is smaller than this",
+									"defaultValue": "1e-5"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "oklch_delta_e",
+							"kind": "function",
+							"docComment": "Computes ΔEOK between two OKLCH colors — the Euclidean distance in OKLab.\nJust-noticeable differences sit around 0.02; css-color-4's gamut mapping\nuses 0.02 as its \"local MINDE\" threshold.",
+							"typeSignature": "(a: Oklch, b: Oklch): number",
+							"sourceLine": 174,
+							"parameters": [
+								{
+									"name": "a",
+									"type": "Oklch"
+								},
+								{
+									"name": "b",
+									"type": "Oklch"
+								}
+							],
+							"returnType": "number"
+						}
+					],
+					"moduleComment": "OKLCH/OKLab ↔ sRGB conversions and gamut math.\n\nDesign-time and test use only — nothing here ships to browsers. The CSS\noutput of fuz_css stays pure `oklch()`/`calc()`; this module exists so\nderivation scripts can fit curve knobs against real colors and so tests can\nassert that every default stop is inside the sRGB gamut and meets the\ncontrast gates (see `wcag.ts`).\n\nMatrices and constants follow css-color-4 and Björn Ottosson's reference\nimplementation.",
+					"dependents": ["wcag.ts"]
+				},
+				{
 					"path": "style.css"
 				},
 				{
@@ -21633,7 +21836,7 @@
 						{
 							"name": "ColorVariant",
 							"kind": "type",
-							"typeSignature": "\"a\" | \"b\" | \"c\" | \"d\" | \"e\" | \"f\" | \"g\" | \"h\" | \"i\" | \"j\"",
+							"typeSignature": "\"g\" | \"b\" | \"a\" | \"c\" | \"d\" | \"e\" | \"f\" | \"h\" | \"i\" | \"j\"",
 							"sourceLine": 138
 						},
 						{
@@ -21657,7 +21860,7 @@
 						{
 							"name": "BorderWidthVariant",
 							"kind": "type",
-							"typeSignature": "6 | 4 | 1 | 3 | 5 | 7 | 2 | 8 | 9",
+							"typeSignature": "6 | 4 | 3 | 1 | 2 | 5 | 7 | 8 | 9",
 							"sourceLine": 144
 						},
 						{
@@ -24553,6 +24756,45 @@
 						"style_rule_parser.ts",
 						"variable_graph.ts"
 					]
+				},
+				{
+					"path": "wcag.ts",
+					"declarations": [
+						{
+							"name": "srgb_relative_luminance",
+							"kind": "function",
+							"docComment": "Computes WCAG 2.x relative luminance of a gamma-encoded sRGB color.",
+							"typeSignature": "([r, g, b]: RgbUnit): number",
+							"sourceLine": 16,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "RgbUnit"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "wcag_contrast_ratio",
+							"kind": "function",
+							"docComment": "Computes the WCAG 2.x contrast ratio between two gamma-encoded sRGB colors,\nin [1, 21] regardless of argument order.",
+							"typeSignature": "(a: RgbUnit, b: RgbUnit): number",
+							"sourceLine": 25,
+							"parameters": [
+								{
+									"name": "a",
+									"type": "RgbUnit"
+								},
+								{
+									"name": "b",
+									"type": "RgbUnit"
+								}
+							],
+							"returnType": "number"
+						}
+					],
+					"moduleComment": "WCAG 2.x relative luminance and contrast ratio.\n\nDesign-time and test use only, like `oklch.ts` — these power the contrast\ngates that assert readable default pairings (body text on surfaces, links,\nfocus outlines) across the derived palette.",
+					"dependencies": ["oklch.ts"]
 				}
 			]
 		}
@@ -24560,7 +24802,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.206.3",
+			"version": "0.206.5",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -29788,16 +30030,22 @@
 							"sourceLine": 135
 						},
 						{
+							"name": "logo_tsv",
+							"kind": "variable",
+							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
+							"sourceLine": 161
+						},
+						{
 							"name": "logo_github",
 							"kind": "variable",
 							"typeSignature": "{ label: string; paths: { d: string; 'fill-rule': \"evenodd\"; 'clip-rule': string; transform: string; }[]; viewBox: string; }",
-							"sourceLine": 161
+							"sourceLine": 171
 						},
 						{
 							"name": "logo_mdn",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 174
+							"sourceLine": 184
 						}
 					],
 					"dependencies": ["svg.ts"],
@@ -33486,7 +33734,8 @@
 							"typeSignature": "Mreow[]",
 							"sourceLine": 6
 						}
-					]
+					],
+					"dependencies": ["Positioned.svelte"]
 				},
 				{
 					"path": "Positioned.svelte",
@@ -33515,7 +33764,8 @@
 							],
 							"acceptsChildren": true
 						}
-					]
+					],
+					"dependents": ["Mreows.svelte"]
 				}
 			]
 		}
@@ -33523,7 +33773,7 @@
 	"fuz_blog": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.28.0",
+			"version": "0.28.1",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",
 			"logo": "logo.svg",
@@ -33910,7 +34160,7 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["blog.ts"]
+					"dependencies": ["blog.ts", "BlogPostHeader.svelte"]
 				},
 				{
 					"path": "BlogPostHeader.svelte",
@@ -33927,7 +34177,8 @@
 							]
 						}
 					],
-					"dependencies": ["blog.ts"]
+					"dependencies": ["blog.ts", "FeedItemDate.svelte"],
+					"dependents": ["BlogPost.svelte"]
 				},
 				{
 					"path": "feed.ts",
@@ -34061,7 +34312,8 @@
 							]
 						}
 					],
-					"dependencies": ["feed.ts", "util.ts"]
+					"dependencies": ["feed.ts", "util.ts"],
+					"dependents": ["BlogPostHeader.svelte"]
 				},
 				{
 					"path": "HashLink.svelte",
@@ -34916,7 +35168,8 @@
 							]
 						}
 					],
-					"dependencies": ["mastodon.ts"]
+					"dependencies": ["mastodon.ts"],
+					"dependents": ["MastodonStatusTree.svelte", "Toot.svelte"]
 				},
 				{
 					"path": "MastodonStatusTree.svelte",
@@ -34937,7 +35190,8 @@
 							]
 						}
 					],
-					"dependencies": ["mastodon.ts"]
+					"dependencies": ["mastodon.ts", "MastodonStatusItem.svelte", "MastodonStatusTree.svelte"],
+					"dependents": ["MastodonStatusTree.svelte", "Toot.svelte"]
 				},
 				{
 					"path": "storage.ts",
@@ -35103,7 +35357,14 @@
 							]
 						}
 					],
-					"dependencies": ["mastodon.ts", "storage.ts"]
+					"dependencies": [
+						"mastodon.ts",
+						"MastodonStatusItem.svelte",
+						"MastodonStatusTree.svelte",
+						"storage.ts",
+						"TootInput.svelte",
+						"TootLoader.svelte"
+					]
 				},
 				{
 					"path": "TootInput.svelte",
@@ -35126,7 +35387,8 @@
 							]
 						}
 					],
-					"dependencies": ["mastodon.ts"]
+					"dependencies": ["mastodon.ts"],
+					"dependents": ["Toot.svelte"]
 				},
 				{
 					"path": "TootLoader.svelte",
@@ -35222,7 +35484,8 @@
 							"acceptsChildren": true
 						}
 					],
-					"dependencies": ["mastodon.ts"]
+					"dependencies": ["mastodon.ts"],
+					"dependents": ["Toot.svelte"]
 				}
 			]
 		}

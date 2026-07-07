@@ -109,7 +109,7 @@ Export `z.input<>` when callers construct partial instances via `.parse()`; skip
 it when the schema is only consumed internally (env loading, action spec
 `satisfies`).
 
-This is a **systematic pattern** in zzz and zap:
+This is a **systematic pattern** in zzz:
 
 ```typescript
 // zzz — every Cell schema exports both types
@@ -273,8 +273,7 @@ z.custom<T>(check?)    // escape hatch for complex types without full Zod valida
   `input: z.null()` for no request body in route specs); `z.void()` /
   `z.void().optional()` for action specs with no input or output value
 - `z.custom<T>(check?)` — embeds complex types without full Zod validation;
-  use sparingly (e.g., `z.custom<Plan>()` in zap, `z.custom<z.ZodType>(...)` in
-  fuz_app action specs)
+  use sparingly (e.g., `z.custom<z.ZodType>(...)` in fuz_app action specs)
 - `z.instanceof(MyClass)` — runtime class instance check; used in zzz so
   action specs can reference Cell instances as typed values
 
