@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.CW46k3MO.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DwRhxcmN.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.Bmm0M3P_.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DQJCpiVP.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/C0OEICHq.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BeBk7Bgj.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/rRz8TOQ5.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.DDQJvyPR.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/8aCmSDdJ.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.C6FEkZXA.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DPfLvPVs.js" rel="modulepreload">
@@ -35,22 +35,22 @@
 		<link href="/_app/immutable/chunks/BsDaTdtw.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BTFCirZG.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.mI5lQE4A.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.DRx__YR5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/B692gRLg.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/C7ZsDu6C.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/2ITJ1VIJ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BbS_xnrU.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/F9AnfEjy.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/zysb2By1.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B37ARtZH.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DurGic-x.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BFeL5wki.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CZHF1poo.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/_G31zt5q.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CPaalu7t.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D-4OVkzp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BEYhdnoC.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/35.DhHWjMsk.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/C4kPWbPp.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/35.D4JyO7qR.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Qpv2wPoP.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/c-46wSkR.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DaShqpHK.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/C_cSKGBP.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -238,25 +238,31 @@ deleted.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/**
 /** @see {@link https://tools.ietf.org/html/rfc5322|RFC 5322} */
 /** @see https://github.com/colinhacks/zod#brand */</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Sibling modules<!--]--><!--]--><!----></strong><!--]--><!--[2--> — module path relative to <!--]--><!--[3--><!--[-1--><code>src/lib/</code><!--]--><!--]--><!--[2--> for cross-references
 within a package. See <!--]--><!--[7--><!--[1--><!--[1--><a href="#module-path-format"><!--[--><!--[2-->Module path format<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> for the exact
-shape.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/**
- * Gro-specific library metadata generation.
+shape.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// src/lib/actions/action_spec.ts — from fuz_app
+/**
+ * Action spec types — the canonical source of truth for action contracts.
  *
- * @see library_generate.ts for the generic generation entry point
- * @see library_pipeline.ts for pipeline helpers
- * @see library_output.ts for output file generation
+ * Action specs define method, kind, auth, side effects, and input/output
+ * schemas. Bridge functions in `actions/action_bridge.ts` derive `RouteSpec`
+ * and `EventSpec` from them.
+ *
+ * @see `actions/action_rpc.ts` for the JSON-RPC dispatcher
+ * @see `actions/register_action_ws.ts` for the WebSocket dispatcher
  *
  * @module
- */</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->For nested modules, use the full lib-relative path:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/** @see `actions/composables.ts` for the action set to spread here */</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Identifiers<!--]--><!--]--><!----></strong><!--]--><!--[2--> — wrap in backticks (not <!--]--><!--[3--><!--[-1--><code>{@link}</code><!--]--><!--]--><!--[2-->):<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/** @see `tsdoc_parse` for the extraction step */
+ */</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Note the nested modules use the full lib-relative path
+(<!--]--><!--[3--><!--[-1--><code>actions/action_rpc.ts</code><!--]--><!--]--><!--[2-->, not <!--]--><!--[3--><!--[-1--><code>action_rpc.ts</code><!--]--><!--]--><!--[2-->).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Identifiers<!--]--><!--]--><!----></strong><!--]--><!--[2--> — wrap in backticks (not <!--]--><!--[3--><!--[-1--><code>{@link}</code><!--]--><!--]--><!--[2-->):<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/** @see `each_concurrent` for the side-effect variant that skips result collection */
 /** @see `format_number` in `maths.ts` for the underlying implementation. */</code></pre><!--]--><!--]--><!--[14--><!----><h3 id="since"><!--[--><!--[3--><!--[-1--><code>@since</code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Supported by the parser but not currently used (<!--]--><!--[3--><!--[-1--><code>@since 1.5.0</code><!--]--><!--]--><!--[2-->). Use when
 versioning matters.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="default"><!--[--><!--[3--><!--[-1--><code>@default</code><!--]--><!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Documents default values for interface fields and component props — place it
 on the field's doc comment:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/**
  * Index 0 is under 1 is under 2 — the topmost dialog is last in the array.
  * @default 0
  */
-index?: number;</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->See <!--]--><!--[7--><!--[1--><!--[1--><a href="#svelte-components"><!--[--><!--[2-->Svelte components<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> for a full <!--]--><!--[3--><!--[-1--><code>$props()</code><!--]--><!--]--><!--[2--> block.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="nodocs-non-standard"><!--[--><!--[3--><!--[-1--><code>@nodocs</code><!--]--><!--]--><!--[2--> (non-standard)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Excludes from docs generation and flat namespace validation. Supported by
-fuz_ui's <!--]--><!--[3--><!--[-1--><code>tsdoc_helpers.ts</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>svelte-docinfo</code><!--]--><!--]--><!--[2-->. Use for build-system
-internals (Gro <!--]--><!--[3--><!--[-1--><code>Args</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>task</code><!--]--><!--]--><!--[2-->, generated <!--]--><!--[3--><!--[-1--><code>gen</code><!--]--><!--]--><!--[2--> exports) or to resolve
-flat-namespace collisions.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/** @nodocs */
+index?: number;</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->See <!--]--><!--[7--><!--[1--><!--[1--><a href="#svelte-components"><!--[--><!--[2-->Svelte components<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> for a full <!--]--><!--[3--><!--[-1--><code>$props()</code><!--]--><!--]--><!--[2--> block.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="nodocs-non-standard"><!--[--><!--[3--><!--[-1--><code>@nodocs</code><!--]--><!--]--><!--[2--> (non-standard)<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Excludes from docs generation and flat namespace validation. Implemented by
+<!--]--><!--[3--><!--[-1--><code>svelte-docinfo</code><!--]--><!--]--><!--[2--> — a tagged declaration is dropped from the analysis output
+and skipped by duplicate checking. Use for build-system internals (Gro
+<!--]--><!--[3--><!--[-1--><code>Args</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>task</code><!--]--><!--]--><!--[2-->, generated <!--]--><!--[3--><!--[-1--><code>gen</code><!--]--><!--]--><!--[2--> exports) or to resolve flat-namespace
+collisions.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>/** @nodocs */
 export const Args = z.object({...});
 
 /** @nodocs */
@@ -321,22 +327,22 @@ in backticks.<!--]--><!--]--><!----></strong><!--]--><!--]--><!----></p><!--]-->
 "<!--]--><!--[3--><!--[-1--><code>DocsLink.svelte</code><!--]--><!--]--><!--[2-->" — see <!--]--><!--[7--><!--[1--><!--[1--><a href="#module-path-format"><!--[--><!--[2-->Module path format<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->tag names in prose: "<!--]--><!--[3--><!--[-1--><code>@param</code><!--]--><!--]--><!--[2-->", "<!--]--><!--[3--><!--[-1--><code>@returns</code><!--]--><!--]--><!--[2-->"<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->enum and constant names<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h3 id="module-path-format"><!--[--><!--[2-->Module path format<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->Module references must use the <!--]--><!--[4--><strong><!--[--><!--[2-->canonical path<!--]--><!--]--><!----></strong><!--]--><!--[2--> that <!--]--><!--[3--><!--[-1--><code>Library.module_by_path</code><!--]--><!--]--><!--[2-->
 indexes — the <!--]--><!--[3--><!--[-1--><code>src/lib/</code><!--]--><!--]--><!--[2-->-relative path with the source extension. Anything
 else falls through to plain <!--]--><!--[3--><!--[-1--><code>&lt;code></code><!--]--><!--]--><!--[2--> and the auto-link silently breaks.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[-1--><pre><code>// GOOD — lib-relative path with source extension
-/** @see `actions/composables.ts` for the action set to spread here */
+/** @see `actions/action_rpc.ts` for the JSON-RPC dispatcher */
 /** Wraps `LibraryJson`. @see `module.svelte.ts` for the `Module` class */
 
 // BAD — relative `./` prefix doesn't match canonical paths
-/** Spread `composable_actions` from `./composables.js` here */
+/** Dispatch through `action_rpc` from `./action_rpc.js` here */
 
 // BAD — `.js` runtime extension doesn't match the indexed `.ts` source path
-/** @see `composables.js` for the bundled action set */
+/** @see `action_rpc.js` for the JSON-RPC dispatcher */
 
 // BAD — bare filename of a nested module ambiguous and won't resolve
-/** @see `composables.ts` */ // breaks if the file is at actions/composables.ts
+/** @see `action_rpc.ts` */ // breaks if the file is at actions/action_rpc.ts
 
 // BAD — redundant `src/lib/` prefix; collapse to the bare lib-relative form
-/** @see `src/lib/actions/composables.ts` */ // should be `actions/composables.ts`</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Top-level files (e.g., <!--]--><!--[3--><!--[-1--><code>src/lib/Alert.ts</code><!--]--><!--]--><!--[2-->) match by bare filename
-("<!--]--><!--[3--><!--[-1--><code>Alert.ts</code><!--]--><!--]--><!--[2-->"). Nested files (e.g., <!--]--><!--[3--><!--[-1--><code>src/lib/actions/composables.ts</code><!--]--><!--]--><!--[2-->)
-require the full sub-path ("<!--]--><!--[3--><!--[-1--><code>actions/composables.ts</code><!--]--><!--]--><!--[2-->"). When in doubt,
+/** @see `src/lib/actions/action_rpc.ts` */ // should be `actions/action_rpc.ts`</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Top-level files (e.g., <!--]--><!--[3--><!--[-1--><code>src/lib/tome.ts</code><!--]--><!--]--><!--[2-->) match by bare filename
+("<!--]--><!--[3--><!--[-1--><code>tome.ts</code><!--]--><!--]--><!--[2-->"). Nested files (e.g., <!--]--><!--[3--><!--[-1--><code>src/lib/actions/action_rpc.ts</code><!--]--><!--]--><!--[2-->)
+require the full sub-path ("<!--]--><!--[3--><!--[-1--><code>actions/action_rpc.ts</code><!--]--><!--]--><!--[2-->"). When in doubt,
 include the directory — the longer form always works.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Never reference outside the repo from TSDoc.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Source comments render into
 the published API docs, where the shipped package stands alone — a bare <!--]--><!--[3--><!--[-1--><code>../</code><!--]--><!--]--><!--[2-->
 path to another repo (or an absolute workspace path) becomes a dead link. Keep TSDoc
@@ -389,27 +395,30 @@ cross-references.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--
  * @module
  */</code></pre><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Pipeline stages<!--]--><!--]--><!----></strong><!--]--><!--[2--> — combine the numbered-steps form
 (<!--]--><!--[7--><!--[1--><!--[1--><a href="#document-workflows-with-numbered-steps"><!--[--><!--[2-->Document workflows<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2-->) with a <!--]--><!--[3--><!--[-1--><code>@see</code><!--]--><!--]--><!--[2-->
-cluster in a single <!--]--><!--[3--><!--[-1--><code>@module</code><!--]--><!--]--><!--[2--> comment.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="functions"><!--[--><!--[2-->Functions<!--]--><!--]--><!----></h3><!----><!--]--><!--[15--><!--[-1--><pre><code>/**
- * Find duplicate declaration names across modules.
+cluster in a single <!--]--><!--[3--><!--[-1--><code>@module</code><!--]--><!--]--><!--[2--> comment.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="functions"><!--[--><!--[2-->Functions<!--]--><!--]--><!----></h3><!----><!--]--><!--[15--><!--[-1--><pre><code>// src/lib/async.ts — from fuz_util
+/**
+ * Maps over items with controlled concurrency, preserving input order.
  *
- * Returns a `Map` of declaration names to their full metadata
- * (only includes duplicates). Callers decide how to handle duplicates
- * (throw, warn, ignore).
+ * @param concurrency - maximum number of concurrent operations
+ * @param signal - optional `AbortSignal` to cancel processing
+ * @returns array of results in same order as input
+ * @throws Error if `concurrency &lt; 1`
  *
  * @example
- * const duplicates = library_find_duplicates(source_json);
- * if (duplicates.size > 0) {
- *   for (const [name, occurrences] of duplicates) {
- *     console.error(`"${name}" found in:`);
- *     for (const {declaration, module} of occurrences) {
- *       console.error(`  - ${module}:${declaration.source_line}`);
- *     }
- *   }
- * }
+ * ```ts
+ * const results = await map_concurrent(
+ *   file_paths,
+ *   5, // max 5 concurrent reads
+ *   async (path) => readFile(path, 'utf8'),
+ * );
+ * ```
  */
-export const library_find_duplicates = (
-	source_json: SourceJson,
-): Map&lt;string, Array&lt;DuplicateInfo>> => {
+export const map_concurrent = async &lt;T, R>(
+	items: Iterable&lt;T>,
+	concurrency: number,
+	fn: (item: T, index: number) => Promise&lt;R> | R,
+	signal?: AbortSignal,
+): Promise&lt;Array&lt;R>> => {
 	// ...
 };</code></pre><!--]--><!--]--><!--[14--><!----><h3 id="classes"><!--[--><!--[2-->Classes<!--]--><!--]--><!----></h3><!----><!--]--><!--[15--><!--[-1--><pre><code>/**
  * Rich runtime representation of a library.
@@ -518,15 +527,15 @@ moved, merged, or deleted<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul
 			
 			<script>
 				{
-					__sveltekit_1axp5gi = {
+					__sveltekit_t2lv1v = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.CW46k3MO.js"),
-						import("/_app/immutable/entry/app.DDQJvyPR.js")
+						import("/_app/immutable/entry/start.Bmm0M3P_.js"),
+						import("/_app/immutable/entry/app.C6FEkZXA.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 35],
