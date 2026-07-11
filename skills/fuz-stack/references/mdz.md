@@ -32,7 +32,7 @@ guessing markup. Do not assume a markdown feature works because GFM supports it
 | Code blocks            | fenced with optional language hint; an unclosed fence consumes to EOF (or to the end of its blockquote)   |
 | Horizontal rule        | `---` alone on a line                                                                                     |
 | Tables                 | `\| a \| b \|` rows + a `\| --- \| :-: \|` delimiter row (colons set per-column alignment); leading **and** trailing `\|` required; inline-only cells (`` `code` `` protects pipes; `\|` is the one escape, a literal pipe); a header/delimiter column mismatch stays a paragraph |
-| Components / elements  | `<Alert>…</Alert>` (component) / `<aside>…</aside>` (HTML element) — **both must be registered**; `<br />` (registered) for a hard break |
+| Components / elements  | `<Alert status="error">…</Alert>` (component) / `<aside class="box">…</aside>` (HTML element) — **both must be registered**; `<br />` (registered) for a hard break. Attributes are quoted strings (`"`/`'`) or bare booleans (`<input disabled />`); **elements** filter to a closed inert allowlist, **components** pass all attributes through as props |
 | Paragraphs / breaks    | blank line separates paragraphs; a single newline is a soft break (collapses to a space by default)      |
 
 **Whitespace**: text nodes preserve literal `\n`, but the default rendering
@@ -49,11 +49,18 @@ them:
 - **No single-delimiter emphasis** — `*x*`, `_x_` intraword, `~x~` all stay
   literal. Intraword `_` is literal by design so `snake_case` identifiers render
   verbatim (a core reason the dialect exists).
-- **No component/element attributes yet** — a registered `<Alert>…</Alert>`
-  renders, but `<Alert status="warning">` does **not** parse: the tag reader
-  allows only whitespace then `>`/`/>` after the name, so an attribute bails the
-  whole tag back to literal text. `MdzComponents` is `Map<string, Component>`
-  with a `// TODO support params`. Author component content, not component props.
+- **Attribute values: strings + bare booleans only** — `<Alert status="warning">`
+  and `<input disabled />` parse (attributes **are** supported), but brace-literal
+  values (`count={5}`) are **reserved** and stay literal for now, and malformed
+  forms bail the whole tag back to literal text: unquoted (`a=b`), spaces around
+  `=` (`a = "b"`), a duplicate name, or a newline inside the open tag. Directives /
+  namespaced / spread / `{shorthand}` can never parse (`:` and `{` aren't
+  attribute-name/value chars). Enforcement is at render time: **elements** filter
+  attributes to a closed inert allowlist (`class`, `title`, `lang`, `dir`, `role`,
+  `aria-{label,hidden,describedby,labelledby}` — anything else is dropped);
+  **components** pass all attributes through as props (registering a component is
+  the trust decision). `MdzComponents` stays `Map<string, Component>` — props pass
+  through untyped.
 - **No CommonMark/GFM compatibility** — no setext headings, no reference links,
   no `*`-bullets or `+`-bullets (only `-`), no task lists.
 - **No syntax highlighting, no themed components, no HTML sanitization** — only

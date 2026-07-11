@@ -98,8 +98,7 @@ export const stack_nodes: Array<StackNode> = [
 		name: 'fuz_template',
 		category: 'app',
 		language: 'ts',
-		description:
-			'a static web app and Node library template with TypeScript, Svelte, SvelteKit, Vite, esbuild, Gro, and Fuz',
+		description: 'a static web app template with optional Rust for the fuz-stack',
 		layer: 6,
 		fan_in: 0,
 		x: 300,
