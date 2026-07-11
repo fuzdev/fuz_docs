@@ -25,7 +25,8 @@ The `svelte-docinfo` package owns module analysis end to end: it walks source
 files, dispatches per file type (`.ts`/`.js` vs `.svelte`), parses TSDoc/JSDoc
 (`@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`, `@since`,
 `@module`, `@default`, `@nodocs`, `@mutates`), merges re-exports into
-`also_exported_from`, sorts
+`alsoExportedFrom` (svelte-docinfo's API is camelCase — it targets the broad
+Svelte ecosystem, not fuz conventions), sorts
 modules, and checks for duplicate names in the flat namespace. It ships a CLI,
 a Vite plugin (`svelte-docinfo/vite.js`), and a build-tool-agnostic API. fuz_ui
 depends on it as a dev dependency — importing its types and a few runtime

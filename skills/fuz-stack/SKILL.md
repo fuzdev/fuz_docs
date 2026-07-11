@@ -226,7 +226,9 @@ gro release      # combined publish + deploy workflow
 
 **Utilities:** `gro sync` (gen + update exports), `gro run file.ts` (execute
 TS), `gro changeset` (create changeset). `SKIP_EXAMPLE_TESTS=1 gro test`
-to skip slow tests.
+skips slow example tests in repos that support the flag (fuz_css; not
+svelte-docinfo, whose example tests gate on `npm run build` +
+`npm run setup-examples` instead — see ./references/testing-patterns.md).
 
 **Key behaviors:** `gro check` is the CI command. `gro gen --check` verifies
 no drift. Tasks are overridable: local `src/lib/foo.task.ts` overrides

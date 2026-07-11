@@ -374,27 +374,28 @@ within a package. See [Module path format](#module-path-format) for the exact
 shape.
 
 ```typescript
+// src/lib/actions/action_spec.ts — from fuz_app
 /**
- * Gro-specific library metadata generation.
+ * Action spec types — the canonical source of truth for action contracts.
  *
- * @see library_generate.ts for the generic generation entry point
- * @see library_pipeline.ts for pipeline helpers
- * @see library_output.ts for output file generation
+ * Action specs define method, kind, auth, side effects, and input/output
+ * schemas. Bridge functions in `actions/action_bridge.ts` derive `RouteSpec`
+ * and `EventSpec` from them.
+ *
+ * @see `actions/action_rpc.ts` for the JSON-RPC dispatcher
+ * @see `actions/register_action_ws.ts` for the WebSocket dispatcher
  *
  * @module
  */
 ```
 
-For nested modules, use the full lib-relative path:
-
-```typescript
-/** @see `actions/composables.ts` for the action set to spread here */
-```
+Note the nested modules use the full lib-relative path
+(`actions/action_rpc.ts`, not `action_rpc.ts`).
 
 **Identifiers** — wrap in backticks (not `{@link}`):
 
 ```typescript
-/** @see `tsdoc_parse` for the extraction step */
+/** @see `each_concurrent` for the side-effect variant that skips result collection */
 /** @see `format_number` in `maths.ts` for the underlying implementation. */
 ```
 
@@ -420,10 +421,11 @@ See [Svelte components](#svelte-components) for a full `$props()` block.
 
 ### `@nodocs` (non-standard)
 
-Excludes from docs generation and flat namespace validation. Supported by
-fuz_ui's `tsdoc_helpers.ts` and `svelte-docinfo`. Use for build-system
-internals (Gro `Args`/`task`, generated `gen` exports) or to resolve
-flat-namespace collisions.
+Excludes from docs generation and flat namespace validation. Implemented by
+`svelte-docinfo` — a tagged declaration is dropped from the analysis output
+and skipped by duplicate checking. Use for build-system internals (Gro
+`Args`/`task`, generated `gen` exports) or to resolve flat-namespace
+collisions.
 
 ```typescript
 /** @nodocs */
@@ -579,25 +581,25 @@ else falls through to plain `<code>` and the auto-link silently breaks.
 
 ```typescript
 // GOOD — lib-relative path with source extension
-/** @see `actions/composables.ts` for the action set to spread here */
+/** @see `actions/action_rpc.ts` for the JSON-RPC dispatcher */
 /** Wraps `LibraryJson`. @see `module.svelte.ts` for the `Module` class */
 
 // BAD — relative `./` prefix doesn't match canonical paths
-/** Spread `composable_actions` from `./composables.js` here */
+/** Dispatch through `action_rpc` from `./action_rpc.js` here */
 
 // BAD — `.js` runtime extension doesn't match the indexed `.ts` source path
-/** @see `composables.js` for the bundled action set */
+/** @see `action_rpc.js` for the JSON-RPC dispatcher */
 
 // BAD — bare filename of a nested module ambiguous and won't resolve
-/** @see `composables.ts` */ // breaks if the file is at actions/composables.ts
+/** @see `action_rpc.ts` */ // breaks if the file is at actions/action_rpc.ts
 
 // BAD — redundant `src/lib/` prefix; collapse to the bare lib-relative form
-/** @see `src/lib/actions/composables.ts` */ // should be `actions/composables.ts`
+/** @see `src/lib/actions/action_rpc.ts` */ // should be `actions/action_rpc.ts`
 ```
 
-Top-level files (e.g., `src/lib/Alert.ts`) match by bare filename
-("`Alert.ts`"). Nested files (e.g., `src/lib/actions/composables.ts`)
-require the full sub-path ("`actions/composables.ts`"). When in doubt,
+Top-level files (e.g., `src/lib/tome.ts`) match by bare filename
+("`tome.ts`"). Nested files (e.g., `src/lib/actions/action_rpc.ts`)
+require the full sub-path ("`actions/action_rpc.ts`"). When in doubt,
 include the directory — the longer form always works.
 
 **Never reference outside the repo from TSDoc.** Source comments render into
@@ -693,31 +695,34 @@ cluster in a single `@module` comment.
 
 ### Functions
 
-```typescript
+````typescript
+// src/lib/async.ts — from fuz_util
 /**
- * Find duplicate declaration names across modules.
+ * Maps over items with controlled concurrency, preserving input order.
  *
- * Returns a `Map` of declaration names to their full metadata
- * (only includes duplicates). Callers decide how to handle duplicates
- * (throw, warn, ignore).
+ * @param concurrency - maximum number of concurrent operations
+ * @param signal - optional `AbortSignal` to cancel processing
+ * @returns array of results in same order as input
+ * @throws Error if `concurrency < 1`
  *
  * @example
- * const duplicates = library_find_duplicates(source_json);
- * if (duplicates.size > 0) {
- *   for (const [name, occurrences] of duplicates) {
- *     console.error(`"${name}" found in:`);
- *     for (const {declaration, module} of occurrences) {
- *       console.error(`  - ${module}:${declaration.source_line}`);
- *     }
- *   }
- * }
+ * ```ts
+ * const results = await map_concurrent(
+ *   file_paths,
+ *   5, // max 5 concurrent reads
+ *   async (path) => readFile(path, 'utf8'),
+ * );
+ * ```
  */
-export const library_find_duplicates = (
-	source_json: SourceJson,
-): Map<string, Array<DuplicateInfo>> => {
+export const map_concurrent = async <T, R>(
+	items: Iterable<T>,
+	concurrency: number,
+	fn: (item: T, index: number) => Promise<R> | R,
+	signal?: AbortSignal,
+): Promise<Array<R>> => {
 	// ...
 };
-```
+````
 
 ### Classes
 
