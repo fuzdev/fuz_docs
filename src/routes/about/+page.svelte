@@ -14,6 +14,10 @@
 	const site = site_context.get();
 </script>
 
+<svelte:head>
+	<title>about - fuz_docs</title>
+</svelte:head>
+
 <main class="width_atmost_md pb_xl9">
 	<section>
 		<header class="box">

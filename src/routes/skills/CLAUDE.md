@@ -35,9 +35,12 @@ A single `skill_docs.gen.ts` auto-discovers skills and generates all routes:
 1. Scans `skills/` for subdirectories containing `SKILL.md`
 2. For each skill: reads `SKILL.md`, strips YAML frontmatter, extracts title
 3. Reads `references/*.md` if the directory exists (skills without references
-   get an empty array)
+   get an empty array). Each reference **must** have a one-line `description`
+   in YAML frontmatter — the gen throws otherwise, so descriptions can't
+   silently drift when references are added or renamed
 4. Generates `skills_manifest.ts` — lightweight metadata (name, title,
-   description, reference slugs/titles) for the layout and index page
+   description, reference slugs/titles/descriptions) for the layout, index
+   pages, and the fuz-stack tome's reference table
 5. Generates per-skill `skill_data.ts` with content strings (via
    `JSON.stringify` for safe escaping)
 6. Generates `+page.svelte` files that render content with
@@ -60,6 +63,7 @@ reference for the full surface.
 ## Adding a new skill
 
 1. Create `skills/{name}/SKILL.md` with YAML frontmatter (name, description)
-2. Optionally add `skills/{name}/references/*.md` for detailed topic docs
+2. Optionally add `skills/{name}/references/*.md` for detailed topic docs —
+   each with a one-line `description` in YAML frontmatter (required)
 3. Run `gro gen` to generate route files
 4. The layout sidebar and index page update automatically

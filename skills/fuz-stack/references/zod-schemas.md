@@ -1,3 +1,7 @@
+---
+description: Zod conventions — strictObject, branded types, introspection
+---
+
 # Zod Schemas
 
 Zod schema conventions for `@fuzdev` TypeScript/Svelte projects.

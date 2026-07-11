@@ -33704,13 +33704,13 @@
 						{
 							"name": "sample_langs",
 							"kind": "variable",
-							"typeSignature": "readonly [\"json\", \"css\", \"ts\", \"html\", \"svelte\", \"md\", \"sh\"]",
+							"typeSignature": "readonly [\"json\", \"css\", \"ts\", \"rs\", \"html\", \"svelte\", \"md\", \"sh\"]",
 							"sourceLine": 8
 						},
 						{
 							"name": "SampleLang",
 							"kind": "type",
-							"typeSignature": "\"html\" | \"json\" | \"css\" | \"ts\" | \"svelte\" | \"md\" | \"sh\"",
+							"typeSignature": "\"html\" | \"json\" | \"css\" | \"ts\" | \"rs\" | \"svelte\" | \"md\" | \"sh\"",
 							"sourceLine": 10
 						}
 					]
@@ -34606,6 +34606,7 @@
 						"lexer_json.ts",
 						"lexer_markup.ts",
 						"lexer_md.ts",
+						"lexer_rust.ts",
 						"lexer_svelte.ts",
 						"lexer_ts.ts",
 						"syntax_styler.ts"
@@ -34839,11 +34840,26 @@
 							"kind": "variable",
 							"docComment": "The Markdown language registration for the lexer engine.",
 							"typeSignature": "SyntaxLang",
-							"sourceLine": 455
+							"sourceLine": 457
 						}
 					],
 					"moduleComment": "Hand-written Markdown lexer — the structural rethink: a line-oriented block\nscan (fences, headings, blockquotes, lists, horizontal rules) with an\ninline scan per block (bold/italic/strikethrough, inline code, links,\nentities, and raw markup constructs dispatched through `lexer_markup`).\n\nFenced code is one `fenced_code` container (`code_fence` delimiter lines\nwith the `punctuation` alias + a `lang_*` container embedding the fence\nlanguage). The rest: `heading`/`blockquote`/`list` containers with aliased\n`punctuation`, `link` > `link_text_wrapper`/`url_wrapper`, `inline_code`\n(alias `code`) with `content`, `bold`/`italic`/`strikethrough`, and markup's\ntag/comment/entity vocabulary for raw HTML.\n\nNotable behavior: fence info words match exactly (` ```json ` embeds json,\nnot javascript) and closing fences accept any length ≥ the opener; interior\nlines starting with backticks are fence *content*, not stray `code_fence`\ntokens; heading/blockquote/list interiors get the inline scan; list\ncontainers span their line rather than swallowing preceding newlines;\nhorizontal rules (`---`/`***`/`___`) get an `hr` token (alias\n`punctuation`). Emphasis delimiters require non-space-adjacent interiors\nfree of the delimiter (and word boundaries for `_` forms) and are\nline-bounded — they do not span paragraphs.\n\nResilience: an unterminated fence extends to the end of the window.",
 					"dependencies": ["lexer.ts", "lexer_markup.ts"],
+					"dependents": ["syntax_styler_global.ts"]
+				},
+				{
+					"path": "lexer_rust.ts",
+					"declarations": [
+						{
+							"name": "lexer_rust",
+							"kind": "variable",
+							"docComment": "The Rust language registration for the lexer engine.",
+							"typeSignature": "SyntaxLang",
+							"sourceLine": 646
+						}
+					],
+					"moduleComment": "Hand-written Rust lexer.\n\nA single flat scan loop — Rust has no re-entrant interiors at the token\nlevel (no template interpolations), so the constructs that nest are handled\nwith counters in one forward pass: block comments nest by depth, raw strings\nclose on a `\"` followed by their opening hash count, and attributes balance\n`[`/`]` while skipping strings.\n\nDisambiguation notes: `'` is a lifetime when ident-shaped text follows\nwithout a closing quote (`'a`, `'static`, loop labels) and a char literal\notherwise; `name!` is a macro invocation unless the `!` starts `!=`; the\nstring prefixes (`r`/`b`/`c`/`br`/`cr`) are recognized before generic\nidentifier scanning and fall through to it when no quote follows.\n\nResilience: unterminated block comments, strings (which span lines in\nRust), raw strings, and attributes extend to the end of the window.",
+					"dependencies": ["lexer.ts"],
 					"dependents": ["syntax_styler_global.ts"]
 				},
 				{
@@ -35165,7 +35181,7 @@
 							"kind": "variable",
 							"docComment": "Pre-configured `SyntaxStyler` instance with all built-in languages registered.",
 							"typeSignature": "SyntaxStyler",
-							"sourceLine": 20,
+							"sourceLine": 21,
 							"examples": [
 								"```ts\nimport {syntax_styler_global} from '@fuzdev/fuz_code/syntax_styler_global.ts';\n\nconst html = syntax_styler_global.stylize('const x = 1;', 'ts');\n```"
 							]
@@ -35177,6 +35193,7 @@
 						"lexer_json.ts",
 						"lexer_markup.ts",
 						"lexer_md.ts",
+						"lexer_rust.ts",
 						"lexer_svelte.ts",
 						"lexer_ts.ts",
 						"syntax_styler.ts"

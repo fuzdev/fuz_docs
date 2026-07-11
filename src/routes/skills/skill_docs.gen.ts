@@ -85,7 +85,7 @@ export const gen: Gen = ({origin_path}) => {
 		name: string;
 		title: string;
 		description: string;
-		references: Array<{slug: string; title: string}>;
+		references: Array<{slug: string; title: string; description: string}>;
 	}> = [];
 
 	const output_files: Array<{content: string; filename: string}> = [];
@@ -103,18 +103,26 @@ export const gen: Gen = ({origin_path}) => {
 		// read references if directory exists
 		const refs_dir = join(skill_dir, 'references');
 		const has_refs = existsSync(refs_dir);
-		const references: Array<{slug: string; title: string; content: string}> = [];
+		const references: Array<{slug: string; title: string; description: string; content: string}> =
+			[];
 
 		if (has_refs) {
 			const ref_files = readdirSync(refs_dir)
 				.filter((f) => f.endsWith('.md'))
 				.sort();
 			for (const filename of ref_files) {
-				const raw_content = readFileSync(join(refs_dir, filename), 'utf-8');
-				const title = extract_title(raw_content);
+				const raw = readFileSync(join(refs_dir, filename), 'utf-8');
+				const {content: ref_content, frontmatter: ref_frontmatter} = parse_frontmatter(raw);
+				const description = ref_frontmatter.description;
+				if (!description) {
+					throw new Error(
+						`missing \`description\` frontmatter in ${join(refs_dir, filename)} - every skill reference needs a one-line description`,
+					);
+				}
+				const title = extract_title(ref_content);
 				const slug = to_slug(filename);
-				const content = rewrite_md_links(raw_content);
-				references.push({slug, title, content});
+				const content = rewrite_md_links(ref_content);
+				references.push({slug, title, description, content});
 			}
 		}
 
@@ -123,7 +131,11 @@ export const gen: Gen = ({origin_path}) => {
 			name: skill_name,
 			title: skill_title,
 			description: skill_description,
-			references: references.map((r) => ({slug: r.slug, title: r.title})),
+			references: references.map((r) => ({
+				slug: r.slug,
+				title: r.title,
+				description: r.description,
+			})),
 		});
 
 		// generate per-skill skill_data.ts
@@ -138,7 +150,7 @@ export interface SkillDoc {
 
 export const skill_main: SkillDoc = ${JSON.stringify({slug: 'overview', title: skill_title, content: rewrite_md_links(skill_content)})};
 
-export const skill_references: Array<SkillDoc> = ${JSON.stringify(references)};
+export const skill_references: Array<SkillDoc> = ${JSON.stringify(references.map((r) => ({slug: r.slug, title: r.title, content: r.content})))};
 
 ${banner}
 `,
@@ -170,13 +182,18 @@ ${svelte_banner}
 <script lang="ts">
 	import {resolve} from '$app/paths';
 
-	import {skill_references} from '../skill_data.ts';
+	import {skills} from '$routes/skills/skills_manifest.ts';
+
+	const skill = skills.find((s) => s.name === '${skill_name}')!;
 </script>
 
 <h1>References</h1>
 <ul>
-	{#each skill_references as ref (ref.slug)}
-		<li><a href={resolve(('/skills/${skill_name}/references/' + ref.slug) as any)}>{ref.title}</a></li>
+	{#each skill.references as ref (ref.slug)}
+		<li>
+			<a href={resolve(('/skills/${skill_name}/references/' + ref.slug) as any)}>{ref.title}</a>
+			— {ref.description}
+		</li>
 	{/each}
 </ul>
 
@@ -214,7 +231,7 @@ export interface SkillMeta {
 	name: string;
 	title: string;
 	description: string;
-	references: Array<{slug: string; title: string}>;
+	references: Array<{slug: string; title: string; description: string}>;
 }
 
 export const skills: Array<SkillMeta> = ${JSON.stringify(skills_meta)};

@@ -1,3 +1,7 @@
+---
+description: TS ↔ Rust twin implementations — convergence, naming parity, wire crates
+---
+
 # Twin Implementations (TS ↔ Rust)
 
 **Twin-impl spine** names the architecture: the same backend spine — auth,

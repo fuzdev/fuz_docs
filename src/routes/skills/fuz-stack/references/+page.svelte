@@ -3,13 +3,18 @@
 <script lang="ts">
 	import {resolve} from '$app/paths';
 
-	import {skill_references} from '../skill_data.ts';
+	import {skills} from '$routes/skills/skills_manifest.ts';
+
+	const skill = skills.find((s) => s.name === 'fuz-stack')!;
 </script>
 
 <h1>References</h1>
 <ul>
-	{#each skill_references as ref (ref.slug)}
-		<li><a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a></li>
+	{#each skill.references as ref (ref.slug)}
+		<li>
+			<a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a>
+			— {ref.description}
+		</li>
 	{/each}
 </ul>
 

@@ -1,3 +1,7 @@
+---
+description: Rust perf — profiling, arenas, locks, hot-path idioms, SIMD
+---
+
 # Rust Performance Patterns
 
 **Applies to**: Rust workspaces across the ecosystem. Companion to

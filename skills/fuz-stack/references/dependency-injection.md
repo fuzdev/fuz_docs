@@ -1,3 +1,7 @@
+---
+description: Injectable *Deps interfaces, mock factories, composition patterns
+---
+
 # Dependency Injection
 
 Typed interfaces for side effects, real implementations as defaults, accepted as

@@ -1,3 +1,7 @@
+---
+description: Path typography — navigational vs src/lib module vs code-shaped
+---
+
 # Path References in Documentation
 
 Three forms, each with its own typography. The distinction is whether the target

@@ -1,3 +1,7 @@
+---
+description: Gro gen system — .gen.* files, dependencies, output formats
+---
+
 # Code Generation
 
 Gro's code generation system (`.gen.*` files) in `@fuzdev/gro`.

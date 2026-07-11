@@ -1,3 +1,7 @@
+---
+description: src/ tree, domain subdirectories, full-path imports, test mirroring
+---
+
 # File Organization
 
 Source layout, domain subdirectories, full-path imports, and test mirroring for

@@ -1,3 +1,7 @@
+---
+description: Rust lints, errors, DI ladder, idioms, CLI patterns
+---
+
 # Rust Patterns for the Fuz Ecosystem
 
 **Applies to**: any Rust workspace adopting fuz-stack conventions — the

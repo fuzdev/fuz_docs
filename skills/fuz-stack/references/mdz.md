@@ -1,3 +1,7 @@
+---
+description: mdz dialect — grammar surface, component registration, rendering seam, autolink, preprocessor
+---
+
 # mdz — Strict Markdown Dialect
 
 `mdz` (`@fuzdev/mdz`) is the ecosystem's markdown dialect: a deliberately

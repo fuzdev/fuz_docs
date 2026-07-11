@@ -12,31 +12,6 @@
 	const tome = tome_get_by_slug('fuz-stack');
 
 	const fuz_stack = skills.find((s) => s.name === 'fuz-stack')!;
-
-	const reference_descriptions: Record<string, string> = {
-		'async-patterns': 'Concurrency primitives — semaphore, deferred, concurrent map/each',
-		'code-generation': 'Gro gen system — .gen.* files, dependencies, output formats',
-		'common-utilities': 'Result type, Logger, Timings, DAG execution',
-		'css-patterns': 'fuz_css styling — default-reliance, the styling ladder, variables, extraction',
-		'dependency-injection': 'Injectable *Deps interfaces, mock factories, composition patterns',
-		'documentation-system': 'Docs pipeline — Tome system, layout architecture, project setup',
-		'file-organization': 'src/ tree, domain subdirectories, full-path imports, test mirroring',
-		mdz: 'mdz dialect — grammar surface, component registration, rendering seam, autolink, preprocessor',
-		'path-references': 'Path typography — navigational vs src/lib module vs code-shaped',
-		'svelte-patterns': 'Svelte 5 runes, contexts, snippets, attachments, Cell pattern',
-		'task-patterns': 'Gro task system — .task.ts files, TaskContext, error handling',
-		'testing-patterns': 'Vitest patterns, fixtures, mocks, assertion helpers',
-		'tsdoc-comments': 'TSDoc style guide — tags, conventions, auditing',
-		'type-utilities': 'Nominal typing (Flavored/Branded), strict utility types',
-		'zod-schemas': 'Zod conventions — strictObject, branded types, introspection',
-		'npm-dependencies': 'Approved external npm package allowlist for TS/Svelte repos',
-		'rust-patterns': 'Rust lints, errors, DI ladder, idioms, CLI patterns',
-		'rust-perf': 'Rust perf — profiling, arenas, locks, hot-path idioms, SIMD',
-		'rust-spine': 'Spine crate map, consumer servers, env, daemon lifecycle',
-		'rust-dependencies': 'Approved external crate allowlist for Rust workspaces',
-		'twin-impl': 'TS ↔ Rust twin implementations — convergence, naming parity, wire crates',
-		'wasm-patterns': 'WASM/N-API build targets — wasm-bindgen, component model, JS interop',
-	};
 </script>
 
 <TomeContent {tome}>
@@ -82,14 +57,15 @@
 						from source (no barrels/re-exports)</td
 					></tr
 				>
-				<tr><td>Formatting</td><td>Prettier with tabs, 100 char width</td></tr>
+				<tr><td>Formatting</td><td><code>tsv</code> with tabs, 100 char width</td></tr>
 				<tr
 					><td>Breaking changes</td><td>Acceptable — delete unused code, don't shim or alias</td
 					></tr
 				>
 				<tr
 					><td>Flat namespace</td><td
-						>All exported identifiers unique across all modules; <code>gro gen</code> enforces</td
+						>All exported identifiers unique across all modules; the <code>svelte-docinfo</code> analysis
+						enforces</td
 					></tr
 				>
 				<tr
@@ -177,7 +153,7 @@ export interface FsDeps {
 						><td
 							><a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a
 							></td
-						><td>{reference_descriptions[ref.slug] ?? ''}</td></tr
+						><td>{ref.description}</td></tr
 					>
 				{/each}
 			</tbody>

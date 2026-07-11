@@ -1,3 +1,7 @@
+---
+description: Nominal typing (Flavored/Branded), strict utility types
+---
+
 # Type Utilities
 
 TypeScript type helpers in `@fuzdev/fuz_util/types.ts` — nominal typing,

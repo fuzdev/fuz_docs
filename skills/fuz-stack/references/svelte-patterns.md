@@ -1,3 +1,7 @@
+---
+description: Svelte 5 runes, contexts, snippets, attachments
+---
+
 # Svelte 5 Patterns
 
 Svelte 5 runes and patterns used across the Fuz ecosystem.

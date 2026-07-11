@@ -1,3 +1,7 @@
+---
+description: Result type, Logger, Timings, DAG execution
+---
+
 # Common Utilities
 
 Shared utilities from `@fuzdev/fuz_util`.

@@ -1,3 +1,7 @@
+---
+description: WASM/N-API build targets — wasm-bindgen, component model, JS interop
+---
+
 # WASM Patterns for the Fuz Ecosystem
 
 **Applies to**: `blake3` (WASM hashing) and `tsv` (parser/formatter bindings —

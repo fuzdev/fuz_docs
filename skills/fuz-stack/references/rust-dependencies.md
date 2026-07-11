@@ -1,3 +1,7 @@
+---
+description: Approved external crate allowlist for Rust workspaces
+---
+
 # Approved Rust Dependencies
 
 The canonical allowlist of external crates approved for Rust workspaces

@@ -1,3 +1,7 @@
+---
+description: Vitest patterns, fixtures, mocks, assertion helpers
+---
+
 # Testing Patterns
 
 Testing conventions for the Fuz stack: vitest usage, fixtures, mocks, helpers.

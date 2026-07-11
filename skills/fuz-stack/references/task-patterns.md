@@ -1,3 +1,7 @@
+---
+description: Gro task system — .task.ts files, TaskContext, error handling
+---
+
 # Task Patterns
 
 Gro's task system for project automation in `@fuzdev/gro`. Tasks are TypeScript

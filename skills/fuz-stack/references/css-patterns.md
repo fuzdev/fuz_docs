@@ -1,3 +1,7 @@
+---
+description: fuz_css styling — default-reliance, the styling ladder, variables, extraction
+---
+
 # CSS Patterns
 
 fuz_css is three parts: **semantic styles** (classless element defaults),

@@ -1,3 +1,7 @@
+---
+description: Docs pipeline — Tome system, layout architecture, project setup
+---
+
 # Documentation System
 
 Pipeline, Tome system, layout architecture, and project setup for `@fuzdev`

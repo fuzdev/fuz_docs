@@ -1,3 +1,7 @@
+---
+description: Approved external npm package allowlist for TS/Svelte repos
+---
+
 # Approved npm Dependencies
 
 The canonical allowlist of external npm packages approved for the

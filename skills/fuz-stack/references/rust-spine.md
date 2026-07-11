@@ -1,3 +1,7 @@
+---
+description: Spine crate map, consumer servers, env, daemon lifecycle
+---
+
 # Rust Spine & Consumer Servers
 
 **Applies to**: the fuz workspace's spine crates and the servers that consume

@@ -1,3 +1,7 @@
+---
+description: TSDoc style guide — tags, conventions, drift detection
+---
+
 # TSDoc Comment Style Guide
 
 JSDoc/TSDoc conventions for `@fuzdev` packages.

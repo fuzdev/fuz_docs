@@ -1,3 +1,7 @@
+---
+description: Concurrency primitives — semaphore, deferred, concurrent map/each
+---
+
 # Async Patterns
 
 Async concurrency utilities in `@fuzdev/fuz_util/async.ts` and

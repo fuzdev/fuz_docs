@@ -83,8 +83,9 @@
 		<TomeSectionHeader text="Stack" />
 		<pre>fuz_util → gro + fuz_css → fuz_ui → fuz_* apps</pre>
 		<p>
-			<code>gro</code> is a temporary build tool, to be replaced by <code>fuz</code> (Rust daemon +
-			CLI). See <TomeLink slug="stack" /> for details.
+			<code>gro</code> is the durable web-dev workflow surface — its internals progressively adopt
+			Rust (<code>tsv</code>, then <code>fuz</code> crates) while it stays complementary to
+			<code>fuz</code> and <code>zap</code>. See <TomeLink slug="stack" /> for details.
 		</p>
 	</TomeSection>
 </TomeContent>
