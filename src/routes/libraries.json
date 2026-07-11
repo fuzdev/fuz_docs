@@ -20854,7 +20854,8 @@
 						}
 					],
 					"moduleComment": "The theme knob catalog: typed metadata for the style variables that themes\nare expected to turn, keyed by variable name.\n\nThis is a side catalog over `variables.ts` — `StyleVariable` stays the\nauthored and rendered value form, and the catalog adds the metadata that\nvalue form can't carry: what kind of value a knob takes (which widget edits\nit), which axis of the theme space it moves, how much leverage it has (its\ncontrol size in the editor), and which tier of the two-tier theme policy it\nbelongs to. Defaults and light/dark slots are not duplicated here — join\nagainst `default_variables` by name.\n\nThe catalog deliberately covers only the knob tier, not all ~490 variables:\nderived ramp stops, color stops, and most site hooks are the escape-hatch\ntier and stay out. A few catalog entries are hooks (`hook: true`) consumed\nby `style.css` with fallbacks rather than declared variables — they exist\nhere so themes can set them without tripping the no-invented-variables\ncheck.",
-					"dependencies": ["variable.ts"]
+					"dependencies": ["variable.ts"],
+					"dependents": ["theme_check.ts"]
 				},
 				{
 					"path": "modifiers.ts",
@@ -21256,7 +21257,7 @@
 						}
 					],
 					"moduleComment": "OKLCH/OKLab ↔ sRGB conversions and gamut math.\n\nDesign-time and test use only — nothing here ships to browsers. The CSS\noutput of fuz_css stays pure `oklch()`/`calc()`; this module exists so\nderivation scripts can fit curve knobs against real colors and so tests can\nassert that every default stop is inside the sRGB gamut and meets the\ncontrast gates (see `wcag.ts`).\n\nMatrices and constants follow css-color-4 and Björn Ottosson's reference\nimplementation.",
-					"dependents": ["ramps.ts", "wcag.ts"]
+					"dependents": ["ramps.ts", "theme_check.ts", "wcag.ts"]
 				},
 				{
 					"path": "ramps.ts",
@@ -21432,8 +21433,8 @@
 							"name": "ramp_chroma",
 							"kind": "function",
 							"docComment": "Evaluates the palette chroma at a stop: the knob curve clamped by that\nstop's worst-hue cap. `chroma_scale` multiplies above the clamp.",
-							"typeSignature": "(scheme: \"light\" | \"dark\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", chroma_scale?: number): number",
-							"sourceLine": 203,
+							"typeSignature": "(scheme: \"light\" | \"dark\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", chroma_scale?: number, knobs?: ChromaRampKnobs, cap?: number): number",
+							"sourceLine": 206,
 							"parameters": [
 								{
 									"name": "scheme",
@@ -21447,6 +21448,40 @@
 									"name": "chroma_scale",
 									"type": "number",
 									"defaultValue": "1"
+								},
+								{
+									"name": "knobs",
+									"type": "ChromaRampKnobs",
+									"description": "chroma-curve knobs; defaults to the fitted `PALETTE_CHROMA_KNOBS`",
+									"defaultValue": "PALETTE_CHROMA_KNOBS[scheme]"
+								},
+								{
+									"name": "cap",
+									"type": "number",
+									"description": "the per-stop gamut clamp; defaults to the baked `PALETTE_CHROMA_CAPS`",
+									"defaultValue": "PALETTE_CHROMA_CAPS[scheme][stop]"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "ramp_hue_shift_offset",
+							"kind": "function",
+							"docComment": "Evaluates a stop's hue-shift offset in degrees — the numeric twin of\n`render_hue_shift_offset_css`. `hue_shift` is the total rotation across a\nramp, anchored at stop 50; the scheme flip is baked in so positive values\nalways rotate hue upward toward the dark end.",
+							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\", hue_shift: number): number",
+							"sourceLine": 224,
+							"parameters": [
+								{
+									"name": "stop",
+									"type": "\"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\""
+								},
+								{
+									"name": "scheme",
+									"type": "\"light\" | \"dark\""
+								},
+								{
+									"name": "hue_shift",
+									"type": "number"
 								}
 							],
 							"returnType": "number"
@@ -21456,7 +21491,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of a palette stop (`--palette_X_NN`).",
 							"typeSignature": "(letter: \"g\" | \"b\" | \"a\" | \"c\" | \"d\" | \"e\" | \"f\" | \"h\" | \"i\" | \"j\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\"): Oklch",
-							"sourceLine": 217,
+							"sourceLine": 236,
 							"parameters": [
 								{
 									"name": "letter",
@@ -21478,7 +21513,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of a shade stop (`--shade_NN`).",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\"): Oklch",
-							"sourceLine": 230,
+							"sourceLine": 249,
 							"parameters": [
 								{
 									"name": "stop",
@@ -21496,7 +21531,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of a text stop (`--text_NN`).",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\"): Oklch",
-							"sourceLine": 239,
+							"sourceLine": 258,
 							"parameters": [
 								{
 									"name": "stop",
@@ -21510,18 +21545,48 @@
 							"returnType": "Oklch"
 						},
 						{
+							"name": "compute_palette_chroma_caps",
+							"kind": "function",
+							"docComment": "Recomputes the worst-hue safe chroma caps per stop for an arbitrary hue set\nand lightness ramp — the generalization of the baked `PALETTE_CHROMA_CAPS`.\nFor each stop the lightness comes from `ramp_lightness`, each hue is offset\nby that stop's `ramp_hue_shift_offset`, and the cap is the minimum\n`oklch_max_srgb_chroma` across the hues, floored to 4 decimals to stay\nconservative (the browser clips anything past it). A theme's compile step\nfeeds its own hues, lightness knobs, and hue shift to detect where the baked\nworst-hue envelope no longer fits.",
+							"typeSignature": "(hues: readonly number[], lightness_knobs: LightnessRampKnobs, scheme: \"light\" | \"dark\", hue_shift?: number): Record<\"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", number>",
+							"sourceLine": 278,
+							"parameters": [
+								{
+									"name": "hues",
+									"type": "readonly number[]",
+									"description": "OKLCH hue angles the ramp must stay in gamut for"
+								},
+								{
+									"name": "lightness_knobs",
+									"type": "LightnessRampKnobs",
+									"description": "the palette lightness ramp knobs for this scheme"
+								},
+								{
+									"name": "scheme",
+									"type": "\"light\" | \"dark\""
+								},
+								{
+									"name": "hue_shift",
+									"type": "number",
+									"description": "total ramp hue rotation in degrees; defaults to 0",
+									"defaultValue": "0"
+								}
+							],
+							"returnType": "Record<\"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", number>"
+						},
+						{
 							"name": "RampFamily",
 							"kind": "type",
 							"docComment": "The lightness ramp families and their CSS variable name prefixes.",
 							"typeSignature": "RampFamily",
-							"sourceLine": 255
+							"sourceLine": 307
 						},
 						{
 							"name": "render_lightness_stop_css",
 							"kind": "function",
 							"docComment": "Renders the derived default of an intermediate lightness ramp stop, e.g.\n`--palette_lightness_30: calc(var(--palette_lightness_00) + (var(--palette_lightness_100) - var(--palette_lightness_00)) * pow(0.3, var(--palette_lightness_curve)))`.\nStops 00/100 are the endpoint knobs themselves and have no derived form.",
 							"typeSignature": "(family: RampFamily, stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 264,
+							"sourceLine": 316,
 							"parameters": [
 								{
 									"name": "family",
@@ -21539,7 +21604,7 @@
 							"kind": "function",
 							"docComment": "Renders the normalized chroma shape of a stop, shared by the palette chroma\nramp and the neutral scales: `pow(4t(1-t), --palette_chroma_curve)`.\nExactly 0 at the endpoints and 1 at the midpoint.",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 278,
+							"sourceLine": 330,
 							"parameters": [
 								{
 									"name": "stop",
@@ -21552,8 +21617,8 @@
 							"name": "render_chroma_stop_css",
 							"kind": "function",
 							"docComment": "Renders the capped default of a palette chroma ramp stop: the knob curve\nclamped by that stop's worst-hue gamut cap. Per-scheme because the caps\ndiffer; `--chroma_scale` multiplies outside this clamp, at the color stops.",
-							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\"): string",
-							"sourceLine": 291,
+							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\", cap?: number): string",
+							"sourceLine": 346,
 							"parameters": [
 								{
 									"name": "stop",
@@ -21562,6 +21627,12 @@
 								{
 									"name": "scheme",
 									"type": "\"light\" | \"dark\""
+								},
+								{
+									"name": "cap",
+									"type": "number",
+									"description": "the clamp value; defaults to the baked `PALETTE_CHROMA_CAPS`,\noverridden by the theme compile step with a recomputed worst-hue cap",
+									"defaultValue": "PALETTE_CHROMA_CAPS[scheme][stop]"
 								}
 							],
 							"returnType": "string"
@@ -21571,7 +21642,7 @@
 							"kind": "function",
 							"docComment": "Renders a stop's hue-shift offset. `--hue_shift` is the total rotation in\ndegrees across a ramp, anchored at stop 50; the scheme sign flip is baked\ninto these per-scheme slots so positive values always rotate hue upward\ntoward the dark end.",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"light\" | \"dark\"): string",
-							"sourceLine": 307,
+							"sourceLine": 363,
 							"parameters": [
 								{
 									"name": "stop",
@@ -21589,7 +21660,7 @@
 							"kind": "function",
 							"docComment": "Renders the derived default of a palette color stop, e.g. `--palette_a_50`.\nOne definition serves both schemes — the scheme flip lives in the knobs.",
 							"typeSignature": "(letter: \"g\" | \"b\" | \"a\" | \"c\" | \"d\" | \"e\" | \"f\" | \"h\" | \"i\" | \"j\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 321,
+							"sourceLine": 377,
 							"parameters": [
 								{
 									"name": "letter",
@@ -21607,7 +21678,7 @@
 							"kind": "function",
 							"docComment": "Renders a color derived from the palette ramps at a stop for an arbitrary\nhue reference — the shared template behind palette stops and intent stops\n(`--accent_50` renders with `var(--hue_accent)`).",
 							"typeSignature": "(hue_reference: string, stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", alpha?: string | undefined): string",
-							"sourceLine": 334,
+							"sourceLine": 390,
 							"parameters": [
 								{
 									"name": "hue_reference",
@@ -21632,7 +21703,7 @@
 							"kind": "function",
 							"docComment": "Renders the derived default of a neutral (shade/text) stop. The neutral\nrides the palette's chroma shape scaled by the `--neutral_chroma` peak.",
 							"typeSignature": "(family: \"text\" | \"shade\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 349,
+							"sourceLine": 405,
 							"parameters": [
 								{
 									"name": "family",
@@ -21648,7 +21719,7 @@
 					],
 					"moduleComment": "The derived color system's ramp model and fitted default knob values.\n\nThis is the numeric single source of truth for the OKLCH palette: the same\nconstants and formulas that `variables.ts` renders as pure-CSS\n`calc()`/`pow()`/`oklch()` defaults, evaluated here in TypeScript so\ndesign-time tests can gate the defaults (gamut, ramp monotonicity, contrast\n— see `src/test/ramps.test.ts`) and derivation scripts can reason about the\npalette without a browser.\n\nThe knob values were fitted against the pre-OKLCH HSL palette to minimize\nthe perceptual delta of the port. Model shapes:\n\n- lightness: `L(t) = L00 + (L100 - L00) * pow(t, curve)` with `t = stop/100`\n  — the endpoint knobs literally are stops 00/100, so the dark scheme flips\n  direction purely through knob values, and pinning an endpoint stop and\n  turning a knob are the same act\n- chroma: `C(t) = min + (max - min) * pow(4t(1-t), curve)`, a symmetric\n  mid-peaked curve, clamped per stop by the worst-hue gamut caps below\n- the neutral scale rides the same chroma shape scaled by a single knob",
 					"dependencies": ["oklch.ts", "variable_data.ts"],
-					"dependents": ["variables.ts"]
+					"dependents": ["theme_check.ts", "variables.ts"]
 				},
 				{
 					"path": "style.css"
@@ -22085,7 +22156,278 @@
 						}
 					],
 					"dependencies": ["themes.ts", "variable.ts", "variables.ts"],
-					"dependents": ["css_bundled_resolution.ts", "theme.gen.css.ts", "themes.ts"]
+					"dependents": [
+						"css_bundled_resolution.ts",
+						"theme.gen.css.ts",
+						"theme_check.ts",
+						"themes.ts"
+					]
+				},
+				{
+					"path": "theme_check.ts",
+					"declarations": [
+						{
+							"name": "GATE_BODY_TEXT",
+							"kind": "variable",
+							"docComment": "AAA body text: `text_80` on `shade_00`/`05`/`10`.",
+							"typeSignature": "7",
+							"sourceLine": 79
+						},
+						{
+							"name": "GATE_SUBTLE_TEXT",
+							"kind": "variable",
+							"docComment": "Disabled/secondary floor: `text_50` on `shade_00`.",
+							"typeSignature": "3",
+							"sourceLine": 81
+						},
+						{
+							"name": "GATE_LINK",
+							"kind": "variable",
+							"docComment": "AA link default: the accent hue at stop 60 on `shade_00`.",
+							"typeSignature": "4.5",
+							"sourceLine": 83
+						},
+						{
+							"name": "GATE_UI",
+							"kind": "variable",
+							"docComment": "WCAG 1.4.11 non-text: every hue at stop 50 vs `shade_00`.",
+							"typeSignature": "3",
+							"sourceLine": 85
+						},
+						{
+							"name": "GATE_FILL_TEXT",
+							"kind": "variable",
+							"docComment": "Large-text floor: `text_max` on every stop-50 fill.",
+							"typeSignature": "3",
+							"sourceLine": 87
+						},
+						{
+							"name": "known_theme_variable_names",
+							"kind": "variable",
+							"docComment": "The variable names a theme may set: the declared defaults plus the hook\nknobs `style.css` consumes through `var()` fallbacks.",
+							"typeSignature": "Set<string>",
+							"sourceLine": 93
+						},
+						{
+							"name": "ThemeIssue",
+							"kind": "interface",
+							"docComment": "A structural lint finding. `error` marks a broken theme (bad shape, unknown\nvariable); `warning` is advisory (value doesn't match the knob's kind or\nsits outside its safe range).",
+							"typeSignature": "ThemeIssue",
+							"sourceLine": 107,
+							"members": [
+								{
+									"name": "level",
+									"kind": "variable",
+									"typeSignature": "'error' | 'warning'"
+								},
+								{
+									"name": "message",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "variable",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "ThemeGateId",
+							"kind": "type",
+							"docComment": "Which accessibility gate an entry belongs to.",
+							"typeSignature": "ThemeGateId",
+							"sourceLine": 114
+						},
+						{
+							"name": "ThemeGateEntry",
+							"kind": "interface",
+							"docComment": "A single gate measurement against a theme.",
+							"typeSignature": "ThemeGateEntry",
+							"sourceLine": 117,
+							"members": [
+								{
+									"name": "gate",
+									"kind": "variable",
+									"typeSignature": "ThemeGateId"
+								},
+								{
+									"name": "scheme",
+									"kind": "variable",
+									"typeSignature": "ColorSchemeVariant"
+								},
+								{
+									"name": "subject",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "value",
+									"kind": "variable",
+									"typeSignature": "number"
+								},
+								{
+									"name": "threshold",
+									"kind": "variable",
+									"typeSignature": "number"
+								},
+								{
+									"name": "pass",
+									"kind": "variable",
+									"typeSignature": "boolean"
+								}
+							]
+						},
+						{
+							"name": "ThemeUncheckedEntry",
+							"kind": "interface",
+							"docComment": "A gate input that couldn't be resolved to a number, so its gate was skipped.",
+							"typeSignature": "ThemeUncheckedEntry",
+							"sourceLine": 127,
+							"members": [
+								{
+									"name": "variable",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "value",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "reason",
+									"kind": "variable",
+									"typeSignature": "string"
+								}
+							]
+						},
+						{
+							"name": "ThemeCheckReport",
+							"kind": "interface",
+							"docComment": "The result of `check_theme`. `ok` is true only when every entry passes and\nnothing was left unchecked.",
+							"typeSignature": "ThemeCheckReport",
+							"sourceLine": 137,
+							"members": [
+								{
+									"name": "ok",
+									"kind": "variable",
+									"typeSignature": "boolean"
+								},
+								{
+									"name": "entries",
+									"kind": "variable",
+									"typeSignature": "Array<ThemeGateEntry>"
+								},
+								{
+									"name": "unchecked",
+									"kind": "variable",
+									"typeSignature": "Array<ThemeUncheckedEntry>"
+								}
+							]
+						},
+						{
+							"name": "CompiledTheme",
+							"kind": "interface",
+							"docComment": "The output of `compile_theme`: the emitted theme plus its lint and gate report.",
+							"typeSignature": "CompiledTheme",
+							"sourceLine": 144,
+							"members": [
+								{
+									"name": "theme",
+									"kind": "variable",
+									"typeSignature": "Theme"
+								},
+								{
+									"name": "report",
+									"kind": "variable",
+									"typeSignature": "ThemeCheckReport"
+								},
+								{
+									"name": "issues",
+									"kind": "variable",
+									"typeSignature": "Array<ThemeIssue>"
+								}
+							]
+						},
+						{
+							"name": "resolve_theme_knob",
+							"kind": "function",
+							"docComment": "Resolves a single knob-tier or derived-stop variable of `theme` to a number,\nor `null` when it can't be resolved. Exposed for direct tests of the\nresolution rules (binding chains, cycles, unresolvable expressions).",
+							"typeSignature": "(theme: Theme, name: string, scheme: \"light\" | \"dark\"): number | null",
+							"sourceLine": 359,
+							"parameters": [
+								{
+									"name": "theme",
+									"type": "Theme"
+								},
+								{
+									"name": "name",
+									"type": "string",
+									"description": "the variable name (without the leading `--`)"
+								},
+								{
+									"name": "scheme",
+									"type": "\"light\" | \"dark\""
+								}
+							],
+							"returnType": "number | null"
+						},
+						{
+							"name": "validate_theme",
+							"kind": "function",
+							"docComment": "Lints a theme's structure: a non-empty name, valid `StyleVariable` shape and\nknown name per variable (errors), and advisory type/range warnings for the\nknob-tier variables. Value validation is advisory and never an error. An\nempty array means the theme is structurally valid.",
+							"typeSignature": "(theme: Theme): ThemeIssue[]",
+							"sourceLine": 451,
+							"parameters": [
+								{
+									"name": "theme",
+									"type": "Theme"
+								}
+							],
+							"returnType": "ThemeIssue[]"
+						},
+						{
+							"name": "check_theme",
+							"kind": "function",
+							"docComment": "Runs the gamut, monotonicity, and contrast gates against a theme, resolving\nits authored CSS back to numbers through the resolution core. Report-only:\nfailures land in `entries` (with `pass: false`), inputs that can't be\nresolved land in `unchecked`, and `ok` is true only when every entry passes\nand nothing is unchecked. Never throws.",
+							"typeSignature": "(theme: Theme): ThemeCheckReport",
+							"sourceLine": 506,
+							"parameters": [
+								{
+									"name": "theme",
+									"type": "Theme"
+								}
+							],
+							"returnType": "ThemeCheckReport"
+						},
+						{
+							"name": "compile_theme",
+							"kind": "function",
+							"docComment": "Recomputes a theme's per-stop worst-hue chroma caps from its own hues,\npalette lightness ramp, and hue shift, then emits `palette_chroma_NN`\noverrides wherever the baked caps no longer fit — the fix for a theme\n(rotated hues, a monochrome collapse, a dark-only mirror) whose gamut\nheadroom the baked worst-hue table misjudges.\n\nA stop is emitted only when either scheme's recomputed cap drifts from the\nbaked value by more than the emit epsilon and the theme doesn't already pin\nthat stop. Both slots are always emitted together so a one-scheme override\ncan't silently kill the base default's other slot by cascade-layer order.\nThe input theme is never mutated. The report re-checks the emitted theme,\nwhose compiled-cap overrides the resolution core recognizes.",
+							"typeSignature": "(theme: Theme): CompiledTheme",
+							"sourceLine": 790,
+							"parameters": [
+								{
+									"name": "theme",
+									"type": "Theme"
+								}
+							],
+							"returnType": "CompiledTheme"
+						}
+					],
+					"moduleComment": "Theme lint, numeric-twin accessibility gates, and the compile step for the\nderived OKLCH color system.\n\nThree functions sit over a shared numeric resolution core:\n\n- `validate_theme` is the structural lint — non-empty name, `StyleVariable`\n  shape, known variable names, and advisory type/range warnings for the\n  knob-tier variables.\n- `check_theme` evaluates the gamut, ramp-monotonicity, and contrast gates\n  (the same ones `src/test/ramps.test.ts` asserts for the defaults) against\n  an arbitrary theme, reusing the `ramps.ts` numeric twin, `oklch.ts`\n  conversions, and `wcag.ts` ratios. It is report-only and never throws.\n- `compile_theme` recomputes the per-stop worst-hue chroma caps for a\n  theme's own hues and lightness ramp and emits `palette_chroma_NN`\n  overrides where the baked caps no longer fit, then re-checks.\n\nThe resolution core turns the CSS strings themes author back into numbers so\nthe gates can run. Its contract:\n\n- Knob-tier defaults come from the numeric-twin constants in `ramps.ts`, not\n  from parsing `default_variables`; intent and neutral hues default to their\n  palette-letter binding (`hue_accent` → `hue_a`, `hue_neutral` → `hue_f`,\n  and so on) so they follow an overridden letter.\n- Theme-authored values parse as a numeric literal, an exact `var(--x)`\n  reference (recursed through the same effective-value merge, with a\n  visited-set cycle guard), or the machine-emitted compiled-cap\n  `min(calc(...), <number>)` form. Anything else is unresolvable and is\n  recorded with its variable, value, and reason.\n- Derived ramp stops use a pinned numeric value when the theme pins one,\n  fall back to the `ramps.ts` formulas with the resolved knobs otherwise,\n  and mark the touching gates `unchecked` when a pin is unresolvable.\n\nThe effective-value merge mirrors the renderer's cascade-layer semantics\n(`theme.ts` `render_theme_style`, `theme_editor_state.svelte.ts`\n`display_value`): light = `theme.light`; dark = `theme.dark ?? theme.light`,\nfalling back to the numeric-twin default for the scheme.",
+					"dependencies": [
+						"knobs.ts",
+						"oklch.ts",
+						"ramps.ts",
+						"theme.ts",
+						"variable.ts",
+						"variable_data.ts",
+						"variables.ts",
+						"wcag.ts"
+					]
 				},
 				{
 					"path": "themes.ts",
@@ -22134,6 +22476,7 @@
 						"css_plugin_options.ts",
 						"knobs.ts",
 						"theme.ts",
+						"theme_check.ts",
 						"variable_graph.ts",
 						"variables.ts"
 					]
@@ -22396,7 +22739,7 @@
 						{
 							"name": "BorderWidthVariant",
 							"kind": "type",
-							"typeSignature": "6 | 4 | 3 | 1 | 2 | 5 | 7 | 8 | 9",
+							"typeSignature": "6 | 4 | 3 | 1 | 2 | 7 | 5 | 8 | 9",
 							"sourceLine": 176
 						},
 						{
@@ -22473,7 +22816,7 @@
 							"sourceLine": 197
 						}
 					],
-					"dependents": ["css_class_definitions.ts", "ramps.ts", "variables.ts"]
+					"dependents": ["css_class_definitions.ts", "ramps.ts", "theme_check.ts", "variables.ts"]
 				},
 				{
 					"path": "variable_graph.ts",
@@ -26046,7 +26389,7 @@
 						}
 					],
 					"dependencies": ["ramps.ts", "variable.ts", "variable_data.ts"],
-					"dependents": ["theme.ts", "variable_graph.ts"]
+					"dependents": ["theme.ts", "theme_check.ts", "variable_graph.ts"]
 				},
 				{
 					"path": "vite_plugin_fuz_css.ts",
@@ -26056,22 +26399,32 @@
 							"kind": "variable",
 							"docComment": "Banner comment at the top and bottom of generated CSS output.",
 							"typeSignature": "\"/* generated by vite_plugin_fuz_css */\"",
-							"sourceLine": 58
+							"sourceLine": 63
 						},
 						{
 							"name": "VitePluginFuzCssOptions",
 							"kind": "interface",
-							"docComment": "Options for the fuz_css Vite plugin.\nExtends the shared base options (no additional Vite-specific options currently needed).",
+							"docComment": "Options for the fuz_css Vite plugin.\nExtends the shared base options with Vite-specific options.",
 							"typeSignature": "VitePluginFuzCssOptions",
-							"sourceLine": 120,
-							"extends": ["CssGeneratorBaseOptions"]
+							"sourceLine": 134,
+							"extends": ["CssGeneratorBaseOptions"],
+							"members": [
+								{
+									"name": "prescan",
+									"kind": "variable",
+									"docComment": "Dev-only eager pre-scan of source files at server startup.\n\nExtraction state accumulates from Vite's transform hook, so without a\npre-scan the first CSS served on a cold start includes only the files\nthe module graph happened to visit first — classes from modules the SSR\nwalk never reaches (client-only branches, dynamic imports) are missing\nuntil a corrective HMR update, which is dropped when the browser hasn't\nconnected yet. The pre-scan extracts every file passing `filter_file`\nunder the given directories before the virtual module is first served,\nso the initial CSS is complete. Warm starts are cheap via the extraction\ncache.\n\n`true` scans `src` under the Vite root; `false` disables; an array gives\ncustom directories (resolved against the Vite root unless absolute).\nnode_modules deps are never pre-scanned — they stream in via transform\nand are covered by the connect-time resync.",
+									"typeSignature": "boolean | Array<string>",
+									"optional": true,
+									"defaultValue": "true"
+								}
+							]
 						},
 						{
 							"name": "vite_plugin_fuz_css",
 							"kind": "function",
 							"docComment": "Creates the fuz_css Vite plugin.\n\nExtracts CSS classes from source files during Vite's transform phase\nand generates optimized CSS via the `virtual:fuz.css` virtual module.",
 							"typeSignature": "(options?: VitePluginFuzCssOptions): Plugin<any>",
-							"sourceLine": 128,
+							"sourceLine": 164,
 							"parameters": [
 								{
 									"name": "options",
@@ -26082,7 +26435,7 @@
 							"returnType": "Plugin<any>"
 						}
 					],
-					"moduleComment": "Vite plugin for fuz_css CSS generation.\n\nUses Vite's transform hook to extract CSS classes from source files\nas they're processed, including node_modules dependencies. In bundled\nmode (the default) it also resolves the base reset and theme variables,\nemitting only the rules, elements, and variables the source actually uses.\nGenerates CSS on-demand via virtual module with HMR support.\n\n@example\n```ts\n// vite.config.ts\nimport {defineConfig} from 'vite';\nimport jsx from 'acorn-jsx';\nimport {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';\n\nexport default defineConfig({\n  plugins: [\n    vite_plugin_fuz_css({\n      acorn_plugins: [jsx()],\n    }),\n  ],\n});\n```",
+					"moduleComment": "Vite plugin for fuz_css CSS generation.\n\nUses Vite's transform hook to extract CSS classes from source files\nas they're processed, including node_modules dependencies. In bundled\nmode (the default) it also resolves the base reset and theme variables,\nemitting only the rules, elements, and variables the source actually uses.\nGenerates CSS on-demand via virtual module with HMR support. In dev it\neagerly pre-scans project sources at server startup so the first served\nCSS is complete (see `prescan`), and resyncs clients whose HMR socket\nconnects after a missed update.\n\n@example\n```ts\n// vite.config.ts\nimport {defineConfig} from 'vite';\nimport jsx from 'acorn-jsx';\nimport {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';\n\nexport default defineConfig({\n  plugins: [\n    vite_plugin_fuz_css({\n      acorn_plugins: [jsx()],\n    }),\n  ],\n});\n```",
 					"dependencies": [
 						"bundled_resources.ts",
 						"class_variable_index.ts",
@@ -26139,7 +26492,8 @@
 						}
 					],
 					"moduleComment": "WCAG 2.x relative luminance and contrast ratio.\n\nDesign-time and test use only, like `oklch.ts` — these power the contrast\ngates that assert readable default pairings (body text on surfaces, links,\nfocus outlines) across the derived palette.",
-					"dependencies": ["oklch.ts"]
+					"dependencies": ["oklch.ts"],
+					"dependents": ["theme_check.ts"]
 				}
 			]
 		}
@@ -33704,13 +34058,13 @@
 						{
 							"name": "sample_langs",
 							"kind": "variable",
-							"typeSignature": "readonly [\"json\", \"css\", \"ts\", \"rs\", \"html\", \"svelte\", \"md\", \"sh\"]",
+							"typeSignature": "readonly [\"json\", \"css\", \"ts\", \"html\", \"svelte\", \"md\", \"sh\"]",
 							"sourceLine": 8
 						},
 						{
 							"name": "SampleLang",
 							"kind": "type",
-							"typeSignature": "\"html\" | \"json\" | \"css\" | \"ts\" | \"rs\" | \"svelte\" | \"md\" | \"sh\"",
+							"typeSignature": "\"html\" | \"json\" | \"css\" | \"ts\" | \"svelte\" | \"md\" | \"sh\"",
 							"sourceLine": 10
 						}
 					]
@@ -34606,7 +34960,6 @@
 						"lexer_json.ts",
 						"lexer_markup.ts",
 						"lexer_md.ts",
-						"lexer_rust.ts",
 						"lexer_svelte.ts",
 						"lexer_ts.ts",
 						"syntax_styler.ts"
@@ -34840,26 +35193,11 @@
 							"kind": "variable",
 							"docComment": "The Markdown language registration for the lexer engine.",
 							"typeSignature": "SyntaxLang",
-							"sourceLine": 457
+							"sourceLine": 455
 						}
 					],
 					"moduleComment": "Hand-written Markdown lexer — the structural rethink: a line-oriented block\nscan (fences, headings, blockquotes, lists, horizontal rules) with an\ninline scan per block (bold/italic/strikethrough, inline code, links,\nentities, and raw markup constructs dispatched through `lexer_markup`).\n\nFenced code is one `fenced_code` container (`code_fence` delimiter lines\nwith the `punctuation` alias + a `lang_*` container embedding the fence\nlanguage). The rest: `heading`/`blockquote`/`list` containers with aliased\n`punctuation`, `link` > `link_text_wrapper`/`url_wrapper`, `inline_code`\n(alias `code`) with `content`, `bold`/`italic`/`strikethrough`, and markup's\ntag/comment/entity vocabulary for raw HTML.\n\nNotable behavior: fence info words match exactly (` ```json ` embeds json,\nnot javascript) and closing fences accept any length ≥ the opener; interior\nlines starting with backticks are fence *content*, not stray `code_fence`\ntokens; heading/blockquote/list interiors get the inline scan; list\ncontainers span their line rather than swallowing preceding newlines;\nhorizontal rules (`---`/`***`/`___`) get an `hr` token (alias\n`punctuation`). Emphasis delimiters require non-space-adjacent interiors\nfree of the delimiter (and word boundaries for `_` forms) and are\nline-bounded — they do not span paragraphs.\n\nResilience: an unterminated fence extends to the end of the window.",
 					"dependencies": ["lexer.ts", "lexer_markup.ts"],
-					"dependents": ["syntax_styler_global.ts"]
-				},
-				{
-					"path": "lexer_rust.ts",
-					"declarations": [
-						{
-							"name": "lexer_rust",
-							"kind": "variable",
-							"docComment": "The Rust language registration for the lexer engine.",
-							"typeSignature": "SyntaxLang",
-							"sourceLine": 646
-						}
-					],
-					"moduleComment": "Hand-written Rust lexer.\n\nA single flat scan loop — Rust has no re-entrant interiors at the token\nlevel (no template interpolations), so the constructs that nest are handled\nwith counters in one forward pass: block comments nest by depth, raw strings\nclose on a `\"` followed by their opening hash count, and attributes balance\n`[`/`]` while skipping strings.\n\nDisambiguation notes: `'` is a lifetime when ident-shaped text follows\nwithout a closing quote (`'a`, `'static`, loop labels) and a char literal\notherwise; `name!` is a macro invocation unless the `!` starts `!=`; the\nstring prefixes (`r`/`b`/`c`/`br`/`cr`) are recognized before generic\nidentifier scanning and fall through to it when no quote follows.\n\nResilience: unterminated block comments, strings (which span lines in\nRust), raw strings, and attributes extend to the end of the window.",
-					"dependencies": ["lexer.ts"],
 					"dependents": ["syntax_styler_global.ts"]
 				},
 				{
@@ -35181,7 +35519,7 @@
 							"kind": "variable",
 							"docComment": "Pre-configured `SyntaxStyler` instance with all built-in languages registered.",
 							"typeSignature": "SyntaxStyler",
-							"sourceLine": 21,
+							"sourceLine": 20,
 							"examples": [
 								"```ts\nimport {syntax_styler_global} from '@fuzdev/fuz_code/syntax_styler_global.ts';\n\nconst html = syntax_styler_global.stylize('const x = 1;', 'ts');\n```"
 							]
@@ -35193,7 +35531,6 @@
 						"lexer_json.ts",
 						"lexer_markup.ts",
 						"lexer_md.ts",
-						"lexer_rust.ts",
 						"lexer_svelte.ts",
 						"lexer_ts.ts",
 						"syntax_styler.ts"

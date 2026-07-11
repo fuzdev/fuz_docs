@@ -163,11 +163,15 @@ ${banner}
 
 <script lang="ts">
 	import Mdz from '@fuzdev/mdz/Mdz.svelte';
+	import MdzRoot from '@fuzdev/mdz/MdzRoot.svelte';
+	import Code from '@fuzdev/fuz_code/Code.svelte';
 
 	import {skill_main} from './skill_data.ts';
 </script>
 
-<Mdz content={skill_main.content} base="/skills/${skill_name}/" />
+<MdzRoot codeblock={Code}>
+	<Mdz content={skill_main.content} base="/skills/${skill_name}/" />
+</MdzRoot>
 
 ${svelte_banner}
 `,
@@ -211,11 +215,15 @@ ${svelte_banner}
 
 <script lang="ts">
 	import Mdz from '@fuzdev/mdz/Mdz.svelte';
+	import MdzRoot from '@fuzdev/mdz/MdzRoot.svelte';
+	import Code from '@fuzdev/fuz_code/Code.svelte';
 
 	import {skill_references} from '../../skill_data.ts';
 </script>
 
-<Mdz content={skill_references[${i}]!.content} base="/skills/${skill_name}/references/" />
+<MdzRoot codeblock={Code}>
+	<Mdz content={skill_references[${i}]!.content} base="/skills/${skill_name}/references/" />
+</MdzRoot>
 
 ${svelte_banner}
 `,
