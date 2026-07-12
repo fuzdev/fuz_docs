@@ -201,19 +201,19 @@ and/or `dark` values.
 
 ### Colors
 
-10 palette hues, glossed by color name plus default role binding:
+10 palette hues, glossed by color name plus default intent binding:
 
 - `a` (blue · accent), `b` (green · positive), `c` (red · negative), `d`
   (purple), `e` (yellow)
 - `f` (brown · neutral), `g` (pink), `h` (orange · caution), `i`
   (cyan · info), `j` (teal)
 
-Semantic role knobs alias meaning over the letters — `--hue_accent`,
+Semantic intent knobs alias meaning over the letters — `--hue_accent`,
 `--hue_positive`, `--hue_negative`, `--hue_caution`, `--hue_info`, plus
 `--hue_neutral`/`--neutral_chroma` for every surface/text/border tint. Each
-role derives a full 13-stop scale (`--accent_00`–`--accent_100`) with
-text/background token classes (`positive_50`, `bg_caution_10`) — prefer role
-tokens over palette letters when the color carries meaning.
+intent derives a full 13-stop scale (`--accent_00`–`--accent_100`) with
+text/background token classes (`positive_50`, `bg_caution_10`) — prefer
+intent tokens over palette letters when the color carries meaning.
 
 **Intensity scale**: 13 stops from `palette_a_00` (nearest the background) →
 `palette_a_50` (base) → `palette_a_100` (highest contrast), scheme-adaptive:
@@ -256,12 +256,13 @@ spacing). Other families use subsets:
 - **`duration_*`**: numbered 1–6 (0.08s to 3s)
 - **`hue_*`**: base hue values for each color (`hue_a` through `hue_j`)
 
-### Theme Specificity
+### Cascade Layers
 
-Bundled mode: `:root` and `:root.dark`. Runtime theme switching (via
-`render_theme_style()`) repeats the selector for higher specificity (default
-`:root:root` / `:root:root.dark`) to survive unpredictable CSS insertion order.
-Colors are HSL-based (OKLCH migration planned).
+All shipped CSS is layered: `fuz.base` (default variables + element styles) <
+`fuz.theme` (theme overrides, where `render_theme_style()` renders) <
+`fuz.utilities` (generated classes). Consumers' unlayered styles beat
+everything. Colors are derived OKLCH (curve knobs → ramp stops → color stops,
+computed in pure CSS).
 
 ### Cascading Variable Pattern
 
@@ -271,7 +272,7 @@ so children inherit the value:
 - `font_size_lg` → `font-size` + `--font_size`
 - `palette_a_50` → `color` + `--text_color`
 - `border_color_30` → `border-color` + `--border_color`
-- `outline_palette_a_50` → `outline-color` + `--outline_color` (focus rings key off it)
+- `outline_a_50` → `outline-color` + `--outline_color` (focus rings key off it)
 - `shadow_color_umbra` → `--shadow_color`
 
 A child of `font_size_lg` can reference `var(--font_size)` for the inherited
