@@ -30,7 +30,7 @@ bears it out: most fuz app source files have **no `<style>` block at all**
 overwhelming majority are a class or two, not long strings.
 
 Reach past the defaults only for genuine layout (flex rows/columns, grids),
-intent color (`color_c` for a destructive button), or component-specific
+intent color (`palette_c` for a destructive button), or component-specific
 behavior. The flex containers are the main reason to add classes at all —
 inside a `.row`, child flow margins reset to 0 (`.row > *` → `margin: 0`), so
 use `gap_*` for spacing there.
@@ -41,12 +41,12 @@ When you *do* style, work down this ladder and stop at the first rung that
 suffices:
 
 1. **Semantic HTML** — the right element, no class. Often the whole job.
-2. **Built-in class conventions** — `.selected`, `.disabled`, `.color_a`–
-   `.color_j`, `.inline`, `.unstyled` — state/variant classes the semantic
+2. **Built-in class conventions** — `.selected`, `.disabled`, `.palette_a`–
+   `.palette_j`, `.inline`, `.unstyled` — state/variant classes the semantic
    styles already recognize.
 3. **Composite classes** — `box`, `row`, `column`, `panel`, `chip`, `ellipsis`
    — one class for a whole layout pattern.
-4. **Token classes** — `p_md`, `gap_lg`, `color_a_50` — map to design tokens;
+4. **Token classes** — `p_md`, `gap_lg`, `palette_a_50` — map to design tokens;
    never hardcode spacing or color.
 5. **Literal classes** — `display:flex`, `width:100%`, `hover:opacity:80%` —
    arbitrary `property:value`, including responsive/state modifiers.
@@ -97,7 +97,7 @@ because the styling exceeded "simple."
 | `<h1>`–`<h6>`                     | Serif font, tiered sizes/weights, balanced text wrap, flow margins                       |
 | `<a>`                             | Link color, focus outline, `.selected` state                                             |
 | `<button>`                        | Fill, border, hover/active/focus/disabled/selected states                                |
-| `<button class="color_a">`        | Hue variants `color_a` through `color_j` (intent/status colors)                          |
+| `<button class="palette_a">`        | Hue variants `palette_a` through `palette_j` (intent/status colors)                          |
 | `<input>`/`<textarea>`/`<select>` | Padding, border, focus outline, hover/disabled states; range, checkbox, radio all styled |
 | `<aside>`                         | Left border, tinted background, padding — callout/info box                               |
 | `<blockquote>`                    | Thick left border, padding                                                               |
@@ -129,11 +129,11 @@ for these before any utility class or custom CSS:
 | `.selected`           | `button`, `a`, `label`, `.menuitem`             | Filled selected appearance; `button`/`label` also switch to `cursor: default` (links stay interactive) |
 | `.deselectable`       | selected `button`, and the `selectable`/`menuitem` composites | Keeps interactivity on a selected element                  |
 | `.disabled`           | `label`                                          | Muted color, default cursor                                |
-| `.color_a`–`.color_j` | `button`                                        | Hue variants (a=blue, b=green, c=red, etc.)                |
+| `.palette_a`–`.palette_j` | `button`                                        | Palette variants (a=blue·accent, c=red·negative, etc.)     |
 | `.inline`             | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for use inside paragraph text         |
 | `.unstyled`           | Most elements                                   | Opts out of opinionated styling, keeps normalizations      |
 
-A `<button class="color_c selected">` is already a "selected destructive
+A `<button class="palette_c selected">` is already a "selected destructive
 action" — no hand-rolled state styling. (Size classes `sm`/`md`/`lg`/etc. read
 like conventions but are composites that require extraction — see
 [Composite Classes](#composite-classes).)
@@ -201,16 +201,23 @@ and/or `dark` values.
 
 ### Colors
 
-10 hues with semantic roles:
+10 palette hues, glossed by color name plus default role binding:
 
-- `a` (primary/blue), `b` (success/green), `c` (error/red), `d`
-  (secondary/purple), `e` (tertiary/yellow)
-- `f` (muted/brown), `g` (decorative/pink), `h` (caution/orange), `i`
-  (info/cyan), `j` (flourish/teal)
+- `a` (blue · accent), `b` (green · positive), `c` (red · negative), `d`
+  (purple), `e` (yellow)
+- `f` (brown · neutral), `g` (pink), `h` (orange · caution), `i`
+  (cyan · info), `j` (teal)
 
-**Intensity scale**: 13 stops from `color_a_00` (lightest) → `color_a_50` (base)
-→ `color_a_100` (darkest): `00`, `05`, `10`, `20`, `30`, `40`, `50`, `60`, `70`,
-`80`, `90`, `95`, `100`.
+Semantic role knobs alias meaning over the letters — `--hue_accent`,
+`--hue_positive`, `--hue_negative`, `--hue_caution`, `--hue_info`, plus
+`--hue_neutral`/`--neutral_chroma` for every surface/text/border tint. Each
+role derives a full 13-stop scale (`--accent_00`–`--accent_100`) with
+text/background token classes (`positive_50`, `bg_caution_10`) — prefer role
+tokens over palette letters when the color carries meaning.
+
+**Intensity scale**: 13 stops from `palette_a_00` (nearest the background) →
+`palette_a_50` (base) → `palette_a_100` (highest contrast), scheme-adaptive:
+`00`, `05`, `10`, `20`, `30`, `40`, `50`, `60`, `70`, `80`, `90`, `95`, `100`.
 
 ### Color-Scheme Variants
 
@@ -226,8 +233,9 @@ and/or `dark` values.
 `text_*` and `shade_*` are the everyday opaque, scheme-aware color tokens —
 reach for them first. `fg_*`/`bg_*` overlays use alpha and accumulate when
 nested. Both `shade_*` and `text_*` have `_min`/`_max` for untinted extremes
-(pure black/white). Fixed-appearance `_light`/`_dark` variants exist
-(`shade_40_light`, `color_a_50_dark`) but are rarely needed.
+(pure black/white). For a color that
+doesn't adapt to the scheme, write the literal value or define one custom
+property (the old `_light`/`_dark` absolute variants were removed).
 
 ### Sizes
 
@@ -261,9 +269,9 @@ Many token classes set both a CSS property **and** a cascading custom property,
 so children inherit the value:
 
 - `font_size_lg` → `font-size` + `--font_size`
-- `color_a_50` → `color` + `--text_color`
+- `palette_a_50` → `color` + `--text_color`
 - `border_color_30` → `border-color` + `--border_color`
-- `outline_color_a_50` → `outline-color` + `--outline_color` (focus rings key off it)
+- `outline_palette_a_50` → `outline-color` + `--outline_color` (focus rings key off it)
 - `shadow_color_umbra` → `--shadow_color`
 
 A child of `font_size_lg` can reference `var(--font_size)` for the inherited
@@ -275,7 +283,7 @@ Three types, generated on-demand:
 
 | Type                  | Example                               | Purpose                      |
 | --------------------- | ------------------------------------- | ---------------------------- |
-| **Token classes**     | `.p_md`, `.color_a_50`, `.gap_lg`     | Map to style variables       |
+| **Token classes**     | `.p_md`, `.palette_a_50`, `.gap_lg`     | Map to style variables       |
 | **Composite classes** | `.box`, `.row`, `.ellipsis`           | Multi-property shortcuts     |
 | **Literal classes**   | `.display:flex`, `.hover:opacity:80%` | Arbitrary CSS property:value |
 
@@ -283,7 +291,7 @@ Three types, generated on-demand:
 
 - **Spacing**: `p_md`, `px_lg`, `mt_xl`, `gap_sm`, `mx_auto`, `m_0` — by far the
   most-used family
-- **Text colors**: `text_70`, `text_min`, `color_a_50`
+- **Text colors**: `text_70`, `text_min`, `palette_a_50`
 - **Background colors**: `shade_00`, `bg_10`, `fg_20`, `darken_30`, `bg_a_50`
 - **Typography**: `font_size_lg`, `font_family_mono`, `line_height_md`, `icon_size_sm`
 - **Layout**: `width_md` (space scale), `top_sm`, `inset_md`, and the
@@ -356,7 +364,7 @@ a literal class. Each maps 1:1 to a CSS pseudo-class or at-rule (`hover:` →
 fuz_css's `modifiers.ts`. The stack-specific parts worth knowing:
 
 ```svelte
-<button class="hover:opacity:80% focus:outline:2px~solid~var(--color_a_50)">
+<button class="hover:opacity:80% focus:outline:2px~solid~var(--palette_a_50)">
 <div class="display:none md:display:flex">          <!-- responsive -->
 <div class="box-shadow:var(--shadow_lg) dark:box-shadow:var(--shadow_sm)">
 <div class='before:content:"" before:display:block'> <!-- pseudo needs explicit content -->
@@ -461,8 +469,8 @@ more classless (70–100% style-free). Where a `<style>` block exists it's usual
 	<h2>{title}</h2>
 	<small class="text_50">{subtitle}</small>
 	<p>{description}</p>
-	<button class="color_a">Confirm</button>
-	<button class={['color_c', {selected: destructive}]}>Delete</button>
+	<button class="palette_a">Confirm</button>
+	<button class={['palette_c', {selected: destructive}]}>Delete</button>
 </aside>
 ```
 
@@ -485,7 +493,7 @@ Each of these signals a component doing work fuz_css already does:
 
 <!-- BAD: hand-rolled destructive button -->
 <button class={['delete-btn', {active}]}>Delete</button>
-<!-- GOOD: <button class={['color_c', {selected: pending}]}>Delete</button> -->
+<!-- GOOD: <button class={['palette_c', {selected: pending}]}>Delete</button> -->
 
 <!-- BAD: hardcoded pixels -->
 <style>.sidebar { width: 220px; padding-top: 40px; }</style>
@@ -524,7 +532,7 @@ component `<style>` blocks focused and avoids premature generalization.
 
 Two naming systems coexist:
 
-- **fuz_css design tokens**: `snake_case` — `p_md`, `color_a_50`, `gap_lg`. The
+- **fuz_css design tokens**: `snake_case` — `p_md`, `palette_a_50`, `gap_lg`. The
   global vocabulary.
 - **Component-local classes**: `kebab-case` — `site-header`, `nav-links`,
   `character-entry`. Distinguishes component-scoped styles from design-system

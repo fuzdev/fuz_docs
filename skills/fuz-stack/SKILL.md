@@ -51,7 +51,7 @@ is authoritative for what it actually uses.
 | `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                         |
 | `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                     |
 | `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                  |
-| `fuz_template` | a static web app template built with the fuz stack                                 |
+| `fuz_template` | a static web app template built with the fuz stack (plus a Rust workspace)         |
 | `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more |
 | `fuz_blog`     | blog software from scratch with SvelteKit                                          |
 | `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                     |
@@ -417,9 +417,9 @@ no `<style>` block at all.
 **Styling ladder** — stop at the first rung that suffices:
 
 1. Semantic HTML (right element, no class)
-2. Built-in conventions (`.selected`, `.color_a`–`.color_j`, `.inline`, `.unstyled`)
+2. Built-in conventions (`.selected`, `.palette_a`–`.palette_j`, `.inline`, `.unstyled`)
 3. Composite classes (`row`, `column`, `box`, `panel`, `chip`, `ellipsis`)
-4. Token classes (`p_md`, `gap_lg`, `color_a_50`) — spacing tokens are the most-used family
+4. Token classes (`p_md`, `gap_lg`, `palette_a_50`) — spacing tokens are the most-used family
 5. Literal classes (`display:flex`, `width:100%`, `hover:opacity:80%`)
 6. `<style>` block with design tokens
 
@@ -439,7 +439,7 @@ adopted in zzz and fuz_ui.
   CSS custom properties (`theme.css`), and per-project utility classes
   (`virtual:fuz.css`, only used classes emitted). See css-patterns.md §Style
   Variables (Design Tokens) and §Utility Classes.
-- **Class families** — token classes (`.p_md`, `.color_a_50`) map to variables,
+- **Class families** — token classes (`.p_md`, `.palette_a_50`) map to variables,
   composite classes (`.box`, `.row`; size composites `xs`–`xl` rescale a subtree)
   are multi-property shortcuts, literal classes (`.display:flex`) are arbitrary
   `property:value`. Static-extraction comment hints (`// @fuz-classes …`) are
