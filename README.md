@@ -12,7 +12,7 @@ may be out of date or incorrect, and some is plain slop.
 
 ## Skills
 
-This repo includes two skills in [./skills](./skills);
+This repo includes two AI agent skills in [./skills](./skills);
 learn more at [agentskills.io](https://agentskills.io/).
 
 ### fuz-stack
