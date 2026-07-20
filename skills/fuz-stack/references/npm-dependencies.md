@@ -49,8 +49,8 @@ third-party deps, and never appear here.
 | `eslint` | Linter |
 | `eslint-plugin-svelte` | Svelte lint rules |
 | `typescript-eslint` | TypeScript lint integration |
-| `@eslint/js` | ESLint's built-in JS rule presets |
-| `globals` | Global-identifier sets for ESLint configs |
+| `@eslint/js` | ESLint's built-in JS rule presets (used only inside the shared eslint-config package) |
+| `globals` | Global-identifier sets for ESLint configs (used only inside the shared eslint-config package) |
 
 ## Release tooling
 
@@ -66,7 +66,6 @@ third-party deps, and never appear here.
 | `@types/node` | Node.js types |
 | `@types/estree` | ESTree AST types |
 | `@types/pg` | `pg` (node-postgres) types |
-| `@types/deno` | Deno global types (consumers run under Deno) |
 | `@types/ws` | `ws` types |
 | `@types/picomatch` | `picomatch` types |
 

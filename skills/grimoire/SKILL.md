@@ -23,15 +23,17 @@ infrastructure: the structured context that lets AI agents orient across an
 entire ecosystem of projects without needing prior session memory.
 
 **Designed for experimentation**: A grimoire is a place to play with patterns —
-try new ways of organizing work, see what improves quality and enjoyment, drop
-what doesn't stick. The conventions described here emerged this way and will
-keep evolving. Don't treat the current structure as fixed; treat it as the
-current best guess, subject to revision when something better is discovered.
+try new ways of organizing work, drop what doesn't stick. The conventions here
+emerged this way; treat them as the current best guess, subject to revision.
 
 **Layer position**: The grimoire sits between implementation (repos) and published
 (docs, tomes), as the layer where understanding about projects lives. Lore is
-the grimoire's view of repos — projection, not duplication. Content graduates
-upward; understanding flows back down as lore.
+the grimoire's view of repos — projection, not duplication. Content moves
+through a lifecycle: raw agent memory distills into lore, lore feeds quests and
+implementation, implementation graduates into published docs, and understanding
+flows back down into lore as each stage completes. "Graduation" in this doc
+always means that cycle — content advances one stage and is deleted from the
+previous one.
 
 **Structure**: A grimoire directory typically lives alongside the repos it
 coordinates, with three core primitives — skills, lore, quests — and supporting layers.
@@ -67,7 +69,7 @@ checklists, some are extended design explorations, some are vision docs. The
 
 **TODO.md structure** — common sections, all optional:
 
-- `## Active` / `## Planned` / `## Queued` — work items, usually checkboxes
+- `## Active` / `## Planned` — work items, usually checkboxes
 - `## Deferred` — parked ideas, may link to split files
 - `## Shipped` — completed milestones (brief, dated)
 - `## Active Docs` — table of contents linking split `TODO_*.md` files (appears
@@ -85,7 +87,7 @@ lore TODOs own repo-local understanding. The two reference each other but don't
 duplicate content.
 
 - Lore TODO items that relate to a quest include a link:
-  `- [ ] DA-0: blake3 hashing ([quest](../../quests/da/da-0_blake3-foundation.md))`
+  `- [ ] DA-1: FactStore ([quest](../../quests/da/da-1_factstore-memostore.md))`
 - Quests may reference lore docs for design context:
   `Design in [fuz_app security](../lore/fuz_app/security.md)`
 - When a quest completes and is deleted, any remaining repo-local items naturally
@@ -135,7 +137,7 @@ clearly, don't restate it in lore.
 
 > One-line summary.
 
-**Repo**: `path/to/project` | **Status**: active / planning / dormant
+**Repo**: ../project_name | **Status**: freeform (active, design, dormant, …)
 
 Brief planning context — ecosystem role, why it matters, key relationships.
 
@@ -171,7 +173,7 @@ expands into distinct topics.
 **Splitting into TODO_\*.md files**: Split when a topic outgrows its section in
 the main TODO.md — typically when a design exploration, feature direction, or
 work area needs its own narrative. Split files are named by topic:
-`TODO_AUTH.md`, `TODO_PERF.md`, `TODO_RELEASE.md`, `TODO_UNIFIED_CSS_GENERATION.md`.
+`TODO_AUTH.md`, `TODO_PERF.md`, `TODO_RELEASE.md`.
 
 When to split:
 
@@ -197,8 +199,8 @@ a brief purpose description.
 
 **Naming**: `lore/{subject}/` — usually matching a repo directory name, but lore
 can also project non-repo subjects: organizations (`lore/fuzdev/`), skills
-(`lore/fuz-stack/`), long-term visions (`lore/fuz_os/`), or any subject that
-needs planning context tracked across sessions.
+(`lore/fuz-stack/`), long-term visions, or any subject that needs planning
+context tracked across sessions.
 
 ### Quests (`quests/`)
 
@@ -209,7 +211,7 @@ repos or when a significant goal has multiple phases. Single-repo work stays in
 **Quest file format**:
 
 ```md
-- **Status**: open | active | blocked | done
+- **Status**: open | active | blocked | done (freeform annotations welcome)
 - **Repos**: which repos this touches
 - **Depends**: quest IDs that must complete first
 - **Blocks**: quest IDs waiting on this one
@@ -245,6 +247,9 @@ about the domain. Refine patterns and design ethos, not just append a summary.
 Add a brief entry to `quests/HISTORY.md` (repos, what was done, key choices),
 then delete the quest file, update cross-references, and remove it from the
 index. Full details live in git history; HISTORY.md is the lightweight summary.
+
+**Blocked quests**: Don't let them sit indefinitely — blocked for more than a
+month means update its dependencies, break it into smaller pieces, or close it.
 
 ## Supporting Layers
 
@@ -293,31 +298,35 @@ list. Mind the sync's conflict resolution: capture (live store → mirror) and
 restore (mirror → fresh machine) want a rule that won't silently overwrite
 newer memory.
 
-Note the ownership inversion: the harness thinks it owns its memory store, but
-once subsumed, the grimoire is the durable truth and the harness store is a
-volatile cache — repo-side edits and deletions win. The pattern generalizes to
-any agent tool's file-shaped state, but each subsumed source imports its own
-reconciliation semantics (baselines, deletion rules, conflict handling) — git
-and the filesystem give storage for free, not consistency.
+Note the ownership inversion: once subsumed, the grimoire is the durable truth
+and the harness store is a volatile cache — repo-side edits and deletions win.
+The same applies to any agent tool's file-shaped state, but each subsumed
+source imports its own reconciliation semantics — git and the filesystem give
+storage for free, not consistency.
 
-A grimoire can also observe itself. Because lore and indexes make claims about
-the repos a grimoire coordinates, those claims can be checked against reality —
-surfacing drift between what the grimoire says and what the repos actually
-contain. A single declarative registry of repo metadata — read by the checks
-rather than hardcoded into each one — gives this teeth: scope lives in one
-place, and because the registry is itself a claim, it too can be validated
-against the repos. Some observations are strict enough to block (a broken invariant),
-others just inform (a trend worth watching). Crucially, these are ordinary
-deterministic checks — plain code that reads files and compares them against the
-registry, not model calls — so they run fast, offline, and identically every
-time. That predictability is what lets them gate: an invariant wants a mechanical
-guarantee, not a probabilistic judgment. The division of labor is the point —
-agents do the fuzzy, taste-laden authoring (prose, design, code), and the crisp,
-machine-checkable invariants get codified as checks that hold the line without an
-LLM or a network in the loop. How a grimoire structures this —
-`scripts/` for the checks, `scries/` for persisted findings, `surveys/` for
-read-only cross-repo observations — is still taking shape and isn't prescribed
-here; the durable idea is that a self-observing meta-repo can keep itself honest.
+### Self-observation
+
+Lore and indexes make claims about the repos a grimoire coordinates, so those
+claims can be checked against reality — surfacing drift between what the
+grimoire says and what the repos actually contain.
+
+- **A declarative registry** of repo metadata — read by the checks rather than
+  hardcoded into each one — gives this teeth: scope lives in one place, and
+  because the registry is itself a claim, it too can be validated against the
+  repos.
+- **Block vs inform**: some observations are strict enough to gate (a broken
+  invariant); others just inform (a trend worth watching).
+- **Deterministic, not model calls**: plain code that reads files and compares
+  them against the registry — fast, offline, identical every time. That
+  predictability is what lets checks gate: an invariant wants a mechanical
+  guarantee, not a probabilistic judgment. Agents do the fuzzy, taste-laden
+  authoring; the crisp, machine-checkable invariants get codified as checks
+  that hold the line without an LLM or a network in the loop.
+
+How a grimoire structures this — `scripts/` for the checks, `scries/` for
+persisted findings, `surveys/` for read-only cross-repo observations — is still
+taking shape and isn't prescribed here; the durable idea is that a
+self-observing meta-repo can keep itself honest.
 
 ## Work Loop
 
@@ -391,7 +400,8 @@ unwieldy, split topics into `TODO_*.md` files (e.g., `TODO_PERF.md`,
 1. Decide: standalone or part of a group?
 2. Standalone: create `quests/{slug}.md` with the standard fields above
 3. Quest group: create `quests/{prefix}/CLAUDE.md` overview + numbered files
-4. Add the quest to the index in `quests/CLAUDE.md`
+4. Add the quest to the index in `quests/CLAUDE.md` — the index is the only
+   discovery mechanism
 
 ### New skill
 
@@ -399,19 +409,32 @@ unwieldy, split topics into `TODO_*.md` files (e.g., `TODO_PERF.md`,
 2. Add `references/` for detailed docs, `scripts/` for executables if needed
 3. Optionally add a lore entry: `lore/{skill-name}/CLAUDE.md`
 
-## Worktrees
+## Arcs
 
-Git worktrees provide isolation for parallel grimoire work. When a quest modifies
-state in both implementation repos and the grimoire, both can get worktrees — the
-isolation boundary matches the unit of work.
+A **quest** is a goal; an **arc** is sustained execution — a long-running,
+gate-driven implementation effort run across many sessions in a dedicated git
+worktree. An arc may serve any number of quests or lore TODOs, or none.
 
-**When to use**: Parallel quest work (two agents, two quests, no conflicts),
-significant lore restructures that should be reviewed before landing, or
-experimental planning changes.
+- **One arc ↔ one worktree/branch ↔ at most one live session** —
+  single-threaded by convention; no locks or bookkeeping, the operator owns
+  isolation.
+- **The worktree is the arc's body.** Its files stay public-repo clean — no
+  grimoire references, no arc narration in the implementation repo.
+- **Lore is the arc's memory.** An index doc in `lore/{project}/` owns the
+  resume state — status, milestone ladder, open-items ledger, landed log.
+  Sessions update it as they go; a fresh session needs nothing else to
+  continue.
+- **A board doc lists active arcs** — one pointer row each (worktree, branch,
+  index doc), never a second source of truth. Arcs are ephemeral: a closed
+  arc's row is simply deleted, no history kept (git has it).
+- **Session structure**: one orchestrating session that never edits code — it
+  delegates, updates lore between subagents, and owns the user-facing
+  questions. It spawns at most one writing subagent at a time (a top-tier
+  model, e.g. Opus); both the orchestrator and the writer may spawn research
+  subagents (a cheaper model, e.g. Sonnet — always read-only).
 
-**Convention**: Use Claude Code's worktree support or `git worktree add` directly.
-A quest branch in the grimoire parallels the quest branches in implementation
-repos.
+Plain worktrees still serve smaller parallel work (two agents, two quests, no
+conflicts) without the arc apparatus.
 
 ## Key Concepts
 
@@ -424,21 +447,16 @@ mechanically extracted from code. This is what makes shared grimoires hard
 
 **Membrane**: A grimoire that spans private and public work protects itself.
 The boundary is one-way — the grimoire sees every repo; nothing public
-references the grimoire's contents or even its existence — and it can be
-enforced mechanically, with deterministic checks that scan the public surface
-and gate on a hit. The threat model is accident, not attack: in an agent-heavy
-workflow the realistic leak is helpfulness — a cross-reference, an
-autocompleted path, a docs sweep too broad — which is exactly the class
-deterministic checks catch. The membrane's one sanctioned crossing is
-distillation: content generalizes until the personal is gone before it leaves
-(this skill is itself an example — the shape of a grimoire, exported without
-any particular grimoire's contents). The payoff is what the isolation enables:
-only a private, operationally inert substrate can safely hold the *union* of a
-person's work across projects and segments, which is what makes reasoning over
-the full scope possible at all. Keep the grimoire inert — no runtime, no
-service surface, nothing listening; treat any integration with live systems as
-a deliberate, narrow pore (local, deterministic, no network) rather than an
-ambient connection.
+references the grimoire's contents or even its existence — and it's enforced
+mechanically with deterministic checks that scan the public surface and gate
+on a hit. The threat model is accident, not attack: in an agent-heavy workflow
+the realistic leak is helpfulness — a cross-reference, an autocompleted path,
+a docs sweep too broad — exactly the class deterministic checks catch. The one
+sanctioned crossing is distillation: content generalizes until the personal is
+gone before it leaves (this skill is itself an example). That isolation is
+what lets a private, operationally inert substrate safely hold the *union* of
+a person's work — keep the grimoire inert: no runtime, no service surface,
+nothing listening.
 
 **Agent-agnostic substrate**: The interface to a grimoire is "can you read a
 filesystem." Structured markdown plus git means any agent — or human — can
@@ -463,24 +481,12 @@ quests, supporting layers — and, like any claim the grimoire makes about itsel
 can be checked against what's actually on disk.
 
 **Private or shared**: A grimoire can be personal (spanning private and public
-repos in ways too detailed for public consumption) or collaborative (a team
-sharing taste and evolving it together). Either way, the synthesis step —
-`published → lore` — needs coherent taste. Groups can share that taste; it
-doesn't require a single author.
-
-How to segment a life's work — personal, employer, arbitrary profiles — is not
-prescribed: each person decides, ad-hoc or structured. One grimoire with
-internal conventions and several composed grimoires are both valid shapes; the
-same reference and mirror mechanics that compose repos compose grimoires. The
-useful community contribution is *mapping* the patterns as they emerge — known
-tradeoffs, usage patterns — not mandating one. Collaboration follows the same
-logic: federation over merger — each participant keeps their own grimoire and
-negotiates shared vocabulary at the boundary, rather than merging corpora.
-
-## Common Pitfalls
-
-- **Always update the quest index** — when creating a new quest, add it to `quests/CLAUDE.md`. The index is the only discovery mechanism.
-- **Don't create a quest for single-repo work** — use `lore/{project}/TODO.md` instead. Quests span 2+ repos or have significant multi-phase scope.
-- **Don't copy repo CLAUDE.md into lore** — lore CLAUDE.md holds planning context (why, decisions, relationships), not implementation context (how to build, test, deploy). If the repo already says it, don't restate it.
-- **Don't let blocked quests sit indefinitely** — if a quest has been blocked for more than a month, either update its dependencies, break it into smaller pieces, or close it.
-- **Prune decisions aggressively** — delete decision entries when the reasoning is obvious from the code or the decision is old enough to just be "how things are."
+repos) or collaborative (a team sharing taste and evolving it together) —
+either way the synthesis step (published understanding flowing back into lore)
+needs coherent taste, which groups can share. How to segment a life's work —
+personal, employer, arbitrary profiles — is not prescribed; one grimoire with
+internal conventions and several composed grimoires are both valid shapes,
+using the same reference and mirror mechanics that compose repos.
+Collaboration follows the same logic: federation over merger — each
+participant keeps their own grimoire and negotiates shared vocabulary at the
+boundary.

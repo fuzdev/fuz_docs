@@ -24,10 +24,10 @@ a heading — all already have correct rhythm with **zero classes**.
 Before adding any class or `<style>`, ask: *what specific gap in the defaults
 does this close?* Hand-adding `mb_*`/`gap_*`/`p_*` to elements flow margin
 already spaces, or re-declaring the color/font an element already carries, is
-churn that fights the framework. This isn't stylistic — real application code
-bears it out: most fuz app source files have **no `<style>` block at all**
-(zzz's library is ~82% style-free, mdz's ~100%), and where classes appear the
-overwhelming majority are a class or two, not long strings.
+churn that fights the framework. This isn't stylistic — most fuz app source
+files have **no `<style>` block at all**, and where classes appear the
+overwhelming majority are a class or two, not long strings (empirical counts:
+§Component Styling In Practice).
 
 Reach past the defaults only for genuine layout (flex rows/columns, grids),
 intent color (`palette_c` for a destructive button), or component-specific
@@ -314,7 +314,7 @@ Three types, generated on-demand:
 | `panel`       | Embedded container with tinted background and border-radius        |
 | `pane`        | Floating container with opaque background and shadow               |
 | `ellipsis`    | Block with text truncation (nowrap, overflow hidden, ellipsis)     |
-| `chip`        | Inline label styling (font/padding/bg/radius + `color_X` hues); display comes from the host element |
+| `chip`        | Inline label styling (font/padding/bg/radius + `palette_X` hues); display comes from the host element |
 | `menuitem`    | Full-width list item with icon, title, and selected state          |
 | `icon_button` | Square button sized to `--input_height` (flex-shrink: 0)           |
 | `selectable`  | Button-like fill with hover/active/selected states                 |
@@ -440,18 +440,20 @@ light; }`. Persistence and system-preference handling live in fuz_ui's
 
 ### Theme Switching
 
-Three built-in themes (`base`, `low contrast`, `high contrast`); custom themes
-are arrays of `StyleVariable` overrides. Theme CSS is rendered via
-`render_theme_style()` with higher specificity (default `:root:root`) to
-override bundled theme variables regardless of insertion order.
+Three registered themes (`base`, `low contrast`, `high contrast`), plus
+unregistered shipped exemplars; custom themes are arrays of `StyleVariable`
+overrides. Theme CSS is rendered via `render_theme_style()` into the
+`fuz.theme` cascade layer, which beats `fuz.base` by layer order — overriding
+bundled theme variables regardless of insertion order or specificity.
 
 ## Component Styling In Practice
 
 Everything above lands as one principle for component authors: **components
 should have minimal custom CSS, delegating to fuz_css.** Across fuz_ui's 64
-components, ~29 (45%) have no `<style>` block at all — and fuz_ui is a component
+components, ~28 (44%) have no `<style>` block at all — and fuz_ui is a component
 library, the styling-heaviest code in the ecosystem. Application code skews far
-more classless (70–100% style-free). Where a `<style>` block exists it's usually
+more classless (zzz's library ~82% style-free, mdz's 100%). Where a `<style>`
+block exists it's usually
 5–30 lines (median ~16), with a tail up to ~90 for layout-heavy components
 (cards, dialogs, nav bars). Shared traits of well-styled components:
 

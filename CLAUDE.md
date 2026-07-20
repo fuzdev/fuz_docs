@@ -25,19 +25,14 @@ fuz_docs is an **experimental AI-generated docs site and skills repo**:
 - Coding convention references for the Fuz ecosystem
 - Auto-generated API documentation
 
-Content is mostly poorly reviewed — it's an actively evolving dumping
-ground, not polished documentation. Some content is plain slop.
-
-### What fuz_docs does NOT include
-
-- Library code (use fuz_util, fuz_css, fuz_ui)
-- Build tooling (use Gro)
-- Component implementations (use fuz_ui)
+It's an actively evolving dumping ground, not polished documentation — some
+content is plain slop. Library code, build tooling, and component
+implementations live in their own repos.
 
 ## Gro commands
 
 ```bash
-gro check      # typecheck, test, lint, format check (run before committing)
+gro check      # typecheck, test, gen --check, format --check, lint (run before committing)
 gro typecheck  # typecheck only (faster iteration)
 gro test       # run tests with vitest
 gro gen        # regenerate .gen files (skill docs)
@@ -55,14 +50,16 @@ dev server.
 - fuz_css (@fuzdev/fuz_css) - semantic-first CSS framework and design system
 - fuz_ui (@fuzdev/fuz_ui) - UI components, theming, docs system
 - fuz_util (@fuzdev/fuz_util) - utility functions
+- mdz (@fuzdev/mdz) - markdown dialect rendering the skill docs
 - fuz_code (@fuzdev/fuz_code) - syntax highlighting
+- blake3 (@fuzdev/blake3_wasm) - hashing for the /tools/hash route
 - Gro (@fuzdev/gro) - build system and task runner
 
 ## Directory structure
 
 ```
 src/
-├── lib/              # library exports (minimal — UI helpers)
+├── lib/              # stack repo metadata + dependency-graph modules
 ├── routes/           # SvelteKit routes
 │   ├── docs/         # tome-based documentation
 │   │   ├── api/      # auto-generated API docs
@@ -76,12 +73,7 @@ src/
 │   │   └── grimoire/  # generated from skills/grimoire/
 │   ├── tools/        # interactive tools (BLAKE3 hashing)
 │   └── about/        # ecosystem links
-skills/
-├── fuz-stack/        # AI agent skill — coding conventions
-│   ├── SKILL.md      # main skill file
-│   └── references/   # detailed topic docs
-└── grimoire/         # AI agent skill — grimoire pattern
-    └── SKILL.md      # lore, quests, and skills
+skills/               # Claude Code skills (full tree under "Skill structure" below)
 ```
 
 ## SvelteKit app
@@ -104,7 +96,8 @@ auto-generated API docs.
 - `/docs/library` - Library metadata page
 - `/skills` - Skills index (auto-populated from manifest)
 - `/skills/{skill}` - Browsable skill docs (generated, rendered with mdz)
-- `/skills/{skill}/{slug}` - Per-reference skill doc pages (generated)
+- `/skills/{skill}/references` - Generated references index
+- `/skills/{skill}/references/{slug}` - Per-reference skill doc pages (generated)
 - `/tools` - Tools index
 - `/tools/hash` - BLAKE3 hashing tool
 
@@ -112,12 +105,9 @@ Deploy with `gro deploy` (builds and pushes to deploy branch).
 
 ### Skill docs generation
 
-A single `skill_docs.gen.ts` at `src/routes/skills/` auto-discovers all skills
-from `skills/` and generates browsable route pages rendered with mdz. Produces
-`skills_manifest.ts` (lightweight metadata for nav/index), per-skill
-`skill_data.ts` (content strings), and `+page.svelte` route files. Adding a
-skill: create `skills/{name}/SKILL.md`, optionally add `references/`, run
-`gro gen`. See `src/routes/skills/CLAUDE.md` for the full pattern.
+`src/routes/skills/skill_docs.gen.ts` auto-discovers skills from `skills/`
+and generates the browsable route pages rendered with mdz. See
+`src/routes/skills/CLAUDE.md` for the full pattern.
 
 ## Claude Code Skills
 
@@ -140,12 +130,12 @@ skills/
 │   │   ├── code-generation.md         # Gro gen system (.gen.* files, dependencies, common patterns)
 │   │   ├── common-utilities.md        # Result type, Logger, Timings, DAG execution, async overview
 │   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
-│   │   ├── dependency-injection.md    # Operations interfaces, BackendDeps, TxRuntime, mock factories
+│   │   ├── dependency-injection.md    # Injectable *Deps interfaces, mock factories, composition patterns
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
 │   │   ├── file-organization.md       # src/ tree, domain subdirectories, full-path imports, test mirroring
 │   │   ├── mdz.md                     # mdz dialect: grammar surface, component/element registration, rendering seam, autolink, preprocessor
-│   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
 │   │   ├── npm-dependencies.md        # Approved external npm package allowlist for TS/Svelte repos
+│   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
 │   │   ├── rust-dependencies.md       # Approved external crate allowlist for Rust workspaces
 │   │   ├── rust-patterns.md           # Rust lints, errors, DI ladder, idioms, CLI patterns (fuz, zap, tsv, blake3)
 │   │   ├── rust-perf.md               # Rust perf: profiling, arenas, locks, hot-path idioms, SIMD, false sharing
@@ -153,7 +143,7 @@ skills/
 │   │   ├── svelte-patterns.md         # Svelte 5 runes, contexts, snippets, attachments
 │   │   ├── task-patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
 │   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions
-│   │   ├── tsdoc-comments.md          # TSDoc style guide and API docs system
+│   │   ├── tsdoc-comments.md          # TSDoc style guide: tags, conventions, drift detection
 │   │   ├── twin-impl.md               # TS ↔ Rust twin implementations: convergence, naming parity, wire crates
 │   │   ├── type-utilities.md          # Nominal typing (Flavored/Branded), strict utility types
 │   │   ├── wasm-patterns.md           # WASM/N-API build targets, WIT, wasm-bindgen, component model (blake3, tsv)
@@ -167,7 +157,7 @@ skills/
 - TypeScript strict mode
 - Svelte 5 with runes API
 - Prettier with tabs, 100 char width
-- Node >= 22.15
+- Node >= 24.14
 - Private package (not published to npm)
 
 ## Related projects

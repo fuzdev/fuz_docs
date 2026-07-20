@@ -18,7 +18,7 @@
 	<TomeSection>
 		<TomeSectionHeader text="Overview" />
 		<p>
-			Coding conventions and patterns for the <code>@fuzdev</code> TypeScript and Svelte 5 ecosystem.
+			Coding conventions and patterns for the <code>@fuzdev</code> TypeScript, Svelte 5, and Rust ecosystem.
 			These conventions keep agent-assisted development consistent across ~20 repos — from naming and
 			file organization to error handling, testing, and validation patterns.
 		</p>
@@ -65,7 +65,7 @@
 				<tr
 					><td>Flat namespace</td><td
 						>All exported identifiers unique across all modules; the <code>svelte-docinfo</code> analysis
-						enforces</td
+						enforces it</td
 					></tr
 				>
 				<tr
@@ -162,13 +162,12 @@ export interface FsDeps {
 
 	<TomeSection>
 		<TomeSectionHeader text="Stack" />
-		<pre>fuz_util → gro + fuz_css → fuz_ui → fuz_* apps</pre>
+		<pre>fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps</pre>
 		<p>
 			<code>gro</code> is the durable web-dev workflow surface — its internals progressively adopt
 			Rust (<code>tsv</code>, then <code>fuz</code> crates) while it stays complementary to
-			<code>fuz</code> and <code>zap</code>.
-			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			See <TomeLink slug="stack" /> for the full dependency graph and package details.
+			<code>fuz</code> and <code>zap</code>. See <TomeLink slug="stack" /> for the full dependency graph
+			and package details.
 		</p>
 		<p>
 			For cross-repo coordination patterns — planning, TODOs, and multi-repo goals — see

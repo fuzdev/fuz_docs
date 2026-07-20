@@ -31,36 +31,33 @@ types, defaults, and validation. The Cell pattern gives every piece of state
 the same structure. When conventions are this consistent, AI can reliably
 bridge the gap between a person's intent and the stack's implementation.
 
-The stack composes: `fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → apps`,
-with `fuz_app` the shared backend spine (auth, sessions, DB, SSE) — a chain hop
-for apps as well as the spine. zzz (the garage) and zap (machine-state
-convergence) build on the same primitives. Understanding one part transfers to
-understanding the others.
+The stack composes bottom-up (see Dependency flow below), with `fuz_app` the
+shared backend spine (auth, sessions, DB, SSE). zzz (the garage) and zap
+(machine-state convergence) build on the same primitives. Understanding one
+part transfers to understanding the others.
 
 ## Package Ecosystem
 
 `@fuzdev/*` packages draw from these conventions. Each package's `CLAUDE.md`
 is authoritative for what it actually uses.
 
-| Package        | Description                                                                        |
-| -------------- | ---------------------------------------------------------------------------------- |
-| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                  |
-| `gro`          | task runner and toolkit extending SvelteKit (web-dev surface; internals adopting Rust)|
-| `fuz_css`      | semantic-first CSS framework and design system — apps look good by default         |
-| `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                   |
-| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                         |
-| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                     |
-| `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                  |
-| `fuz_template` | a web app template with TypeScript + SvelteKit + optional Rust for the fuz-stack  |
-| `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more |
-| `fuz_blog`     | blog software from scratch with SvelteKit                                          |
-| `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                     |
-| `fuz_gitops`   | a tool for managing many repos                                                     |
-| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`)      |
-| `zzz`          | software garage — produce software with AI assistance                              |
-| `zap`          | convergence — deploy and operate infrastructure                                    |
-
-`gro` is a durable web-focused dev tool; its internals progressively adopt Rust (tsv, then `fuz` crates), and it stays complementary to `fuz` and `zap`.
+| Package        | Description                                                                           |
+| -------------- | ------------------------------------------------------------------------------------- |
+| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                     |
+| `gro`          | task runner and toolkit extending SvelteKit (web-dev surface; internals adopting Rust) |
+| `fuz_css`      | semantic-first CSS framework and design system — apps look good by default            |
+| `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                      |
+| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                            |
+| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                        |
+| `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                     |
+| `fuz_template` | a web app template with TypeScript + SvelteKit + optional Rust for the fuz-stack      |
+| `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more    |
+| `fuz_blog`     | blog software from scratch with SvelteKit                                             |
+| `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                        |
+| `fuz_gitops`   | a tool for managing many repos                                                        |
+| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`)         |
+| `zzz`          | software garage — produce software with AI assistance                                 |
+| `zap`          | convergence — deploy and operate infrastructure                                       |
 
 **Dependency flow**: `fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps`
 (zap sits beside this chain: its site/authoring surface builds on fuz_ui, and
@@ -129,14 +126,14 @@ should_exclude_path(); // predicate form (fuz_util/path.ts)
 to_file_path(); // conversion (fuz_util/path.ts)
 ```
 
-| Pattern               | Example                | Use Case                        |
-| --------------------- | ---------------------- | ------------------------------- |
-| `domain_action`       | `git_push`             | Disambiguates in flat namespace |
-| `domain_is_adjective` | `module_is_typescript` | Boolean in a domain cluster     |
-| `to_target`           | `to_file_path`         | Conversions                     |
-| `format_target`       | `format_number`        | Formatting                      |
-| `action_domain`       | `escape_js_string`     | Self-descriptive utilities      |
-| `create_domain`       | `create_context`       | Factory functions               |
+| Pattern               | Example                  | Use Case                        |
+| --------------------- | ------------------------ | ------------------------------- |
+| `domain_action`       | `git_push`               | Disambiguates in flat namespace |
+| `domain_is_adjective` | `git_workspace_is_clean` | Boolean in a domain cluster     |
+| `to_target`           | `to_file_path`           | Conversions                     |
+| `format_target`       | `format_number`          | Formatting                      |
+| `action_domain`       | `escape_js_string`       | Self-descriptive utilities      |
+| `create_domain`       | `create_context`         | Factory functions               |
 
 **Rule of thumb**: domain-prefix when the bare name is ambiguous (`git_push`
 not `push`); action-first when self-descriptive (`truncate`, `strip_start`).
@@ -163,8 +160,10 @@ All exported identifiers must have **unique names across all modules**:
     it conflicts with `DocsLink.svelte`. Precedent: `ThemeState`,
     `AuthState`, `SidebarState`.
   - Class is primary (stateful with methods/lifecycle, consumers
-    instantiate it): suffix the component with `View` / `Pane`. Example:
-    `MusicPlayer` class kept, component renamed to `MusicPlayerView.svelte`.
+    instantiate it): suffix the component with `View` / `Pane`. Precedent:
+    zzz's Cell classes keep their names (`Chat`, `Turn`) and their
+    components take `View` (`ChatView.svelte`, `TurnView.svelte`); mdz's
+    `MdzNodeView.svelte` renders the `MdzNode` type.
 
 ### File Organization
 
@@ -185,14 +184,16 @@ import/test-mirroring details.
 - **TypeScript**: Strict mode, explicit types
 - **Svelte**: Svelte 5 with runes API ($state, $derived, $effect)
 - **Formatting**: tsv with tabs, 100 char width
-- **Extensions**: Use the real source extension in imports — `.ts` /
-  `.svelte.ts` (not the old `.js`-for-a-`.ts`-file form): `import {foo} from
-  './bar.ts'`. Cross-package `@fuzdev/pkg/foo.ts` resolves via the package's
-  `exports` `.js`/`.ts` mirror; the build rewrites relative `.ts`→`.js` into
-  `dist`. `.svelte` component imports stay `.svelte`. Library code (`src/lib`)
-  imports relative; everything else (`src/routes`, `src/test`) uses the
-  `#lib`/`#routes` package.json subpath imports with the `.ts` extension
-  (`#lib/db/db.ts`). See ./references/path-references.md §5.
+- **Extensions**: use the real source extension in imports — `.ts` /
+  `.svelte.ts`, not the old `.js`-for-a-`.ts`-file form. See
+  ./references/path-references.md §5 for the full rules:
+  - Relative: `import {foo} from './bar.ts'`; `.svelte` component imports
+    stay `.svelte`.
+  - Cross-package: `@fuzdev/pkg/foo.ts` resolves via the package's `exports`
+    `.js`/`.ts` mirror; the build rewrites relative `.ts`→`.js` into `dist`.
+  - Aliases: library code (`src/lib`) imports relative; everything else
+    (`src/routes`, `src/test`) uses the `#lib`/`#routes` package.json subpath
+    imports with the `.ts` extension (`#lib/db/db.ts`).
 - **Comments**:
   - JSDoc (`/** ... */`) = proper sentences with periods
   - Inline (`//`) = fragments, no capital or period
@@ -226,13 +227,16 @@ gro release      # combined publish + deploy workflow
 
 **Utilities:** `gro sync` (gen + update exports), `gro run file.ts` (execute
 TS), `gro changeset` (create changeset). `SKIP_EXAMPLE_TESTS=1 gro test`
-skips slow example tests in repos that support the flag (fuz_css; not
-svelte-docinfo, whose example tests gate on `npm run build` +
-`npm run setup-examples` instead — see ./references/testing-patterns.md).
+skips slow example tests in repos that support the flag (see
+./references/testing-patterns.md).
 
 **Key behaviors:** `gro check` is the CI command. `gro gen --check` verifies
 no drift. Tasks are overridable: local `src/lib/foo.task.ts` overrides
 `gro/dist/foo.task.js`; call builtin with `gro gro/foo`.
+
+**Custom tasks**: see ./references/task-patterns.md for the Task interface,
+Zod-based Args, TaskContext, error handling, override patterns, and task
+composition.
 
 **Never run `gro dev` or `npm run dev`** — user manages the dev server.
 
@@ -272,26 +276,6 @@ patterns, and drift-detection guidance.
 **Tag order**: description → `@param` → `@returns` → `@mutates` → `@throws` →
 `@example` → `@deprecated` → `@see` → `@since` → `@default` → `@nodocs`
 
-## Svelte 5 Patterns
-
-See ./references/svelte-patterns.md for `$state.raw()`, `$derived.by()`,
-reactive collections (SvelteMap/SvelteSet), schema-driven reactive classes,
-snippets, effects, attachments, props, event handling, component composition,
-and legacy features to avoid.
-
-### Runes API
-
-`$state.raw()` by default for all reactive state. `$state()` only for
-arrays/objects mutated in place (push, splice, index assignment). `$derived`
-for computed values, `$effect` for side effects.
-
-### Context Pattern
-
-Standardized via `create_context<T>()` from
-`@fuzdev/fuz_ui/context_helpers.ts`. Common contexts: `theme_state_context`
-(theme), `library_context` (package API metadata), `tome_context` (current
-doc page).
-
 ## Documentation System
 
 Projects use **tomes** (not "stories") with auto-generated API docs.
@@ -312,8 +296,9 @@ fuz_ui renders TSDoc prose through it, injecting `DocsLink` (inline code) and
 fuz_code's `Code` (code blocks) via its rendering seam; backticked identifiers
 that resolve to API symbols become links.
 
-Supports code, bold/italic/strike (double delimiters only; intraword `_` stays
-literal so `snake_case` renders verbatim), links, headings, lists, blockquotes,
+Supports code, bold/italic/strike (`**`/`~~` doubled, italic single `_` at word
+boundaries; intraword `_` stays literal so `snake_case` renders verbatim),
+links, headings, lists, blockquotes,
 code blocks, tables, horizontal rules, and registered components/elements.
 
 ```svelte
@@ -326,9 +311,10 @@ Registration and rendering happen through getter contexts in
 dialect surface, injection seam, backtick autolinking, and the
 `svelte_preprocess_mdz` build-time preprocessor: ./references/mdz.md.
 
-### Path references
+## Path References in Docs
 
-Forms by typography:
+Forms by typography (mdz auto-linkifies bare `./`/`../` paths in rendered
+docs, so the typography carries meaning):
 
 - **Navigational paths** — bare, no backticks (`./foo`, `../foo`, `~/dev/foo`)
   for files referenced by location; mdz auto-linkifies `./`/`../` after whitespace.
@@ -346,44 +332,25 @@ Forms by typography:
 See ./references/path-references.md for all forms in full, the web-rendered
 caveat, anti-patterns, and formatter cautions.
 
-## Testing
+## Svelte 5 Patterns
 
-Tests live in `src/test/` (NOT co-located). Use `assert` from vitest —
-choose methods for TypeScript type narrowing, not semantic precision.
-`assert(x instanceof Error)` narrows the type;
-`expect(x).toBeInstanceOf(Error)` does not. Name custom assertion helpers
-`assert_*` (not `expect_*`).
+See ./references/svelte-patterns.md for `$state.raw()`, `$derived.by()`,
+reactive collections (SvelteMap/SvelteSet), schema-driven reactive classes,
+snippets, effects, attachments, props, event handling, component composition,
+and legacy features to avoid.
 
-Use `describe` blocks to organize tests — one or two levels deep is typical.
-Use `test()` (not `it()`).
+### Runes API
 
-Split large suites with dot-separated aspects: `{module}.{aspect}.test.ts`
-(e.g., `csp.core.test.ts`, `csp.security.test.ts`). Database tests use
-`.db.test.ts` suffix to opt into shared PGlite WASM via vitest `projects`
-(see ./references/testing-patterns.md).
+`$state.raw()` by default for all reactive state. `$state()` only for
+arrays/objects mutated in place (push, splice, index assignment). `$derived`
+for computed values, `$effect` for side effects.
 
-For parsers and transformers, use fixture-based testing: input files in
-`src/test/fixtures/<feature>/<case>/`, regenerate `expected.json` via
-`gro src/test/fixtures/<feature>/update`. **Never manually edit
-`expected.json`** — always regenerate via task.
+### Context Pattern
 
-See ./references/testing-patterns.md for file organization, test helpers,
-shared test factories, mock factories, fixture workflow, database testing,
-environment flags, and test structure.
-
-## TODOs
-
-Leave **copious** `// TODO:` comments in code — they're expected and encouraged
-for visibility into known future work, not debt to hide.
-
-For multi-session work, create `TODO_*.md` files in the project root with
-status, next steps, and decisions. Delete when complete. **Update before ending
-a session.**
-
-## Custom Tasks
-
-See ./references/task-patterns.md for the Task interface, Zod-based Args,
-TaskContext, error handling, override patterns, and task composition.
+Standardized via `create_context<T>()` from
+`@fuzdev/fuz_ui/context_helpers.ts`. Common contexts: `theme_state_context`
+(theme), `library_context` (package API metadata), `tome_context` (current
+doc page).
 
 ## fuz_css
 
@@ -433,20 +400,10 @@ comfortable ceiling). See css-patterns.md §Default styling is the baseline.
 component-local classes use `kebab-case` (`site-header`) — the target convention,
 adopted in zzz and fuz_ui.
 
-### Architecture and classes
-
-- **Three layers** — semantic element defaults (`style.css`), design tokens as
-  CSS custom properties (`theme.css`), and per-project utility classes
-  (`virtual:fuz.css`, only used classes emitted). See css-patterns.md §Style
-  Variables (Design Tokens) and §Utility Classes.
-- **Class families** — token classes (`.p_md`, `.palette_a_50`) map to variables,
-  composite classes (`.box`, `.row`; size composites `xs`–`xl` rescale a subtree)
-  are multi-property shortcuts, literal classes (`.display:flex`) are arbitrary
-  `property:value`. Static-extraction comment hints (`// @fuz-classes …`) are
-  rarely needed — see css-patterns.md §Comment hints for the dynamic cases.
-- **Classes vs `<style>`** — utility classes for your own and child elements;
-  `<style>` for hover/focus/responsive; inline `style:` only for runtime dynamic
-  values. Full matrix: css-patterns.md §When to Use Classes vs Styles.
+Architecture — the three layers (semantic defaults, design tokens, utility
+classes), the class families, and the classes-vs-`<style>` matrix: see
+css-patterns.md §Style Variables (Design Tokens), §Utility Classes, and
+§When to Use Classes vs Styles.
 
 ## Dependency Injection
 
@@ -516,6 +473,40 @@ stack; treat them as critical review points.
 See ./references/zod-schemas.md for branded types, transform pipelines,
 discriminated unions, route specs, schemas as runtime data, instance schemas
 (zzz Cell), and introspection.
+
+## Testing
+
+Tests live in `src/test/` (NOT co-located). Use `assert` from vitest —
+choose methods for TypeScript type narrowing, not semantic precision.
+`assert(x instanceof Error)` narrows the type;
+`expect(x).toBeInstanceOf(Error)` does not. Name custom assertion helpers
+`assert_*` (not `expect_*`).
+
+Use `describe` blocks to organize tests — one or two levels deep is typical.
+Use `test()` (not `it()`).
+
+Split large suites with dot-separated aspects: `{module}.{aspect}.test.ts`
+(e.g., `csp.core.test.ts`, `csp.security.test.ts`). Database tests use
+`.db.test.ts` suffix to opt into shared PGlite WASM via vitest `projects`
+(see ./references/testing-patterns.md).
+
+For parsers and transformers, use fixture-based testing: input files in
+`src/test/fixtures/<feature>/<case>/`, regenerate `expected.json` via
+`gro src/test/fixtures/<feature>/update`. **Never manually edit
+`expected.json`** — always regenerate via task.
+
+See ./references/testing-patterns.md for file organization, test helpers,
+shared test factories, mock factories, fixture workflow, database testing,
+environment flags, and test structure.
+
+## TODOs
+
+Leave **copious** `// TODO:` comments in code — they're expected and encouraged
+for visibility into known future work, not debt to hide.
+
+For multi-session work, create `TODO_*.md` files in the project root with
+status, next steps, and decisions. Delete when complete. **Update before ending
+a session.**
 
 ## Rust Crates
 

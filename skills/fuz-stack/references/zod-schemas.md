@@ -121,6 +121,7 @@ export const ChatJson = CellJson.extend({
 	name: z.string().default(''),
 	thread_ids: z.array(Uuid).default(() => []),
 	selected_thread_id: Uuid.nullable().default(null),
+	// … more fields elided
 }).meta({cell_class_name: 'Chat'});
 export type ChatJson = z.infer<typeof ChatJson>;       // all fields present
 export type ChatJsonInput = z.input<typeof ChatJson>;   // defaults omittable
@@ -333,9 +334,9 @@ Use `z.union()` when there's no single discriminant field, or when mixing shapes
 with literals:
 
 ```typescript
-// zzz/jsonrpc.ts — multiple message shapes
+// fuz_app http/jsonrpc.ts — multiple message shapes
 export const JsonrpcMessage = z.union([
-	JsonrpcRequest, JsonrpcNotification, JsonrpcResponse, JsonrpcErrorMessage,
+	JsonrpcRequest, JsonrpcNotification, JsonrpcResponse, JsonrpcErrorResponse,
 ]);
 
 // mixed literals + an object shape
@@ -358,16 +359,21 @@ export const ActionKind = z.enum(['request_response', 'remote_notification', 'lo
 export type ActionKind = z.infer<typeof ActionKind>;
 ```
 
-For extensible enums, use a factory:
+For extensible enums, use a factory that merges builtins with app-defined
+entries and validates at construction time:
 
 ```typescript
-// fuz_app/auth/role_schema.ts — dynamic enum from builtin + app-defined roles
-export const create_role_schema = (app_roles: Array<string>) => {
-	const all_roles = [...BUILTIN_ROLES, ...app_roles];
-	const Role = z.enum(all_roles as [string, ...Array<string>]);
-	return {Role, role_options: new Map(/* ... */)};
-};
+// fuz_app auth/role_schema.ts — builtin + app-defined roles
+const {Role, role_specs} = create_role_schema(
+	[{name: 'teacher', description: '…', grant_paths: ['admin']}], // ReadonlyArray<RoleSpec>
+	{credential_types, scope_kinds, grant_paths}, // optional registries for cross-axis validation
+);
+// Role: z.ZodType<string> for I/O boundaries; role_specs: ReadonlyMap<string, RoleSpec>
 ```
+
+Construction throws on misconfiguration (invalid/duplicate names, builtin
+collisions, unregistered cross-axis entries) — fail at server init, not at
+request time.
 
 ## Schema Extension
 
@@ -385,7 +391,7 @@ export const ActionSpec = z.strictObject({
 
 export const RequestResponseActionSpec = ActionSpec.extend({
 	kind: z.literal('request_response').default('request_response'),
-	auth: RouteAuth.nullable(), // four-axis {account, actor, roles?, credential_types?}
+	auth: RouteAuth, // four-axis {account, actor, roles?, credential_types?}
 	async: z.literal(true).default(true),
 });
 ```
@@ -447,7 +453,8 @@ response:
 // fuz_app/http/route_spec.ts — input validation middleware
 const result = input_schema.safeParse(body);
 if (!result.success) {
-	return c.json({error: ERROR_INVALID_REQUEST_BODY, issues: result.error.issues}, 400);
+	// dev_only strips issue details from production responses (info leak)
+	return c.json({error: ERROR_INVALID_REQUEST_BODY, issues: dev_only(result.error.issues)}, 400);
 }
 c.set('validated_input', result.data);
 

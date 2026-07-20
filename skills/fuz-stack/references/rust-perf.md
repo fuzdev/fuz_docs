@@ -82,7 +82,9 @@ which suspends cleanly. Pick per critical section:
 **DashMap** for hot shared maps: `Arc<RwLock<HashMap>>` serializes all readers
 under any contended write and bounces the lock's cache line across cores;
 DashMap shards internally. Reach for it when profiling shows contention on one
-map — not the default.
+map — not the default. Note it's in no workspace today and not on the
+./rust-dependencies.md allowlist, so adopting it goes through the
+dependency-approval gate first.
 
 ## Stack-specific perf notes
 

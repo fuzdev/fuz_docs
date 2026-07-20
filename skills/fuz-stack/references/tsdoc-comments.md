@@ -415,10 +415,11 @@ on the field's doc comment:
 
 ```svelte
 /**
- * Index 0 is under 1 is under 2 — the topmost dialog is last in the array.
- * @default 0
+ * How the content is aligned in the viewport. `center` vertically centers it;
+ * `top` aligns it to the top and grows downward.
+ * @default 'center'
  */
-index?: number;
+align?: DialogAlign;
 ```
 
 See [Svelte components](#svelte-components) for a full `$props()` block.
@@ -443,12 +444,12 @@ export const task: Task<typeof Args> = {...};
 If it's part of the public API, rename one side of the collision instead —
 hiding the primary surface from the flat namespace also hides it from
 generated docs and tomes, silently breaking downstream documentation.
-See [SKILL.md §Flat Namespace](../#flat-namespace-fail-fast) for which side to rename.
+See SKILL.md §Flat Namespace - Fail Fast for which side to rename.
 
 ### `@mutates` (non-standard)
 
-Documents mutations to parameters or external state. Supported by fuz_ui's
-`tsdoc_helpers.ts`.
+Documents mutations to parameters or external state. Parsed by
+svelte-docinfo's TSDoc parser and surfaced in fuz_ui's API docs.
 
 **Preferred form**: `@mutates target - description`. The description is
 the value-add — it tells the reader *what* changes and, when non-obvious,
@@ -679,7 +680,7 @@ cross-references.
  *
  * Supports a subset of standard TSDoc tags:
  * `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`,
- * `@since`, `@nodocs`.
+ * `@since`, `@default`, `@nodocs`.
  *
  * ## Behavioral notes
  *
@@ -798,38 +799,51 @@ and non-obvious defaults.
 
 ```svelte
 <script lang="ts">
+	// from fuz_ui Dialog.svelte (abridged)
 	const {
-		container,
-		layout = 'centered',
-		index = 0,
-		active = true,
+		show = true,
+		align = 'center',
+		dismissable = true,
 		content_selector = '.pane',
-		onclose,
+		onbeforeclose,
 		children,
-	}: {
-		container?: HTMLElement;
+		...rest
+	}: Omit<SvelteHTMLElements['dialog'], 'children' | 'onclose'> & {
 		/**
-		 * @default 'centered'
-		 */
-		layout?: DialogLayout;
-		/**
-		 * Index 0 is under 1 is under 2 — the topmost dialog
-		 * is last in the array.
-		 * @default 0
-		 */
-		index?: number;
-		/**
+		 * Whether the dialog is shown. When the `<dialog>` mounts it opens via
+		 * `showModal()`; when it unmounts it closes.
 		 * @default true
 		 */
-		active?: boolean;
+		show?: boolean;
 		/**
-		 * If provided, prevents clicks that would close the dialog
-		 * from bubbling past any elements matching this selector.
+		 * How the content is aligned in the viewport. `center` vertically centers
+		 * it; `top` aligns it to the top and grows downward, which avoids jank
+		 * when the content's height changes.
+		 * @default 'center'
+		 */
+		align?: DialogAlign;
+		/**
+		 * Whether clicking outside the content (see `content_selector`) closes
+		 * the dialog. `Escape` closes it regardless of this.
+		 * @default true
+		 */
+		dismissable?: boolean;
+		/**
+		 * Fallback selector for a content surface you render in `children`
+		 * yourself (rather than via `DialogContent`, which self-registers).
 		 * @default '.pane'
 		 */
-		content_selector?: string | null;
-		onclose?: () => void;
-		children: Snippet<[close: (e?: Event) => void]>;
+		content_selector?: string;
+		/**
+		 * Called before a user-initiated close (`Escape`, click-outside, or
+		 * `close`). Return `false` to veto and keep the dialog open.
+		 */
+		onbeforeclose?: () => boolean | void;
+		/**
+		 * Rendered inside the dialog overlay. Receives the `DialogContext` (e.g.
+		 * `{close}`); pair with `DialogContent` or render your own surface.
+		 */
+		children: Snippet<[dialog: DialogContext]>;
 	} = $props();
 </script>
 ```
@@ -842,8 +856,10 @@ and non-obvious defaults.
  *
  * - `'typescript'` - TypeScript/JS files analyzed via TypeScript Compiler API
  * - `'svelte'` - Svelte components analyzed via svelte2tsx + TypeScript Compiler API
+ * - `'css'` - CSS files
+ * - `'json'` - JSON files
  */
-export type AnalyzerType = 'typescript' | 'svelte';
+export type AnalyzerType = 'typescript' | 'svelte' | 'css' | 'json';
 ```
 
 ## Drift — Correctness Over Coverage

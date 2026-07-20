@@ -126,8 +126,7 @@
 		/>
 		<p>
 			The cycle turns at different speeds — ideas accumulate slowly in lore, quests can move fast
-			through implementation — but content should exist in one place at a time, wherever it's most
-			useful right now.
+			through implementation.
 		</p>
 	</TomeSection>
 

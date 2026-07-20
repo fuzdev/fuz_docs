@@ -18,7 +18,9 @@ src/routes/skills/
 └── {skill-name}/
     ├── skill_data.ts          # [generated] markdown content as exported strings
     ├── +page.svelte           # [generated] index — rendered SKILL.md
-    └── {slug}/+page.svelte    # [generated] one per reference doc
+    └── references/
+        ├── +page.svelte       # [generated] references index
+        └── {slug}/+page.svelte # [generated] one per reference doc
 ```
 
 The shared `+layout.svelte` provides:
@@ -42,7 +44,8 @@ A single `skill_docs.gen.ts` auto-discovers skills and generates all routes:
    description, reference slugs/titles/descriptions) for the layout, index
    pages, and the fuz-stack tome's reference table
 5. Generates per-skill `skill_data.ts` with content strings (via
-   `JSON.stringify` for safe escaping)
+   `JSON.stringify` for safe escaping), rewriting relative `.md` links to the
+   generated route shape (`./SKILL.md` → the skill index, `foo.md` → `foo`)
 6. Generates `+page.svelte` files that render content with
    `<Mdz content={...} />`
 

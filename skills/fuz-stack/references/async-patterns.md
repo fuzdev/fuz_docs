@@ -93,16 +93,6 @@ const each_concurrent: <T>(
 ) => Promise<void>;
 ```
 
-```typescript
-await each_concurrent(
-	file_paths,
-	5, // max 5 concurrent deletions
-	async (path) => {
-		await unlink(path);
-	},
-);
-```
-
 **Fail-fast**: On first rejection, stops spawning new workers and rejects;
 with `signal`, aborts immediately.
 

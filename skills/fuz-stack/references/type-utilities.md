@@ -22,7 +22,7 @@ Primary nominal typing approach:
 // Implementation:
 declare const FlavoredSymbol: unique symbol;
 interface Flavor<T> {
-  readonly [FlavoredSymbol]?: T;  // optional — base types still assignable
+	readonly [FlavoredSymbol]?: T;  // optional — base types still assignable
 }
 type Flavored<TValue, TName> = TValue & Flavor<TName>;
 ```
@@ -53,12 +53,12 @@ export type Red = Flavored<number, 'Red'>;             // [0, 255]
 export type Green = Flavored<number, 'Green'>;         // [0, 255]
 export type Blue = Flavored<number, 'Blue'>;           // [0, 255]
 
-// fuz_util/url.ts
-export type Url = Flavored<string, 'Url'>;
+// fuz_util/url.ts — paired with a Zod schema of the same name
+export const Url = z.url();
+export type Url = Flavored<z.infer<typeof Url>, 'Url'>;
 ```
 
-Also: `BlogPostId` (fuz_blog), `InputPath` (gro), `VocabName`/`ReorderableId`
-(zzz).
+Also: `BlogPostId` (fuz_blog), `InputPath` (gro), `ReorderableId` (zzz).
 
 ### Branded (strict)
 
@@ -69,7 +69,7 @@ assignable — must cast:
 // Implementation:
 declare const BrandedSymbol: unique symbol;
 interface Brand<T> {
-  readonly [BrandedSymbol]: T;  // required — base types NOT assignable
+	readonly [BrandedSymbol]: T;  // required — base types NOT assignable
 }
 type Branded<TValue, TName> = TValue & Brand<TName>;
 ```
@@ -107,9 +107,9 @@ export type Datetime = z.infer<typeof Datetime>;
 
 // zzz/diskfile_types.ts
 export const DiskfilePath = z
-  .string()
-  .refine((p) => is_path_absolute(p), {message: 'path must be absolute'})
-  .brand('DiskfilePath');
+	.string()
+	.refine((p) => is_path_absolute(p), {message: 'path must be absolute'})
+	.brand('DiskfilePath');
 export type DiskfilePath = z.infer<typeof DiskfilePath>;
 ```
 
@@ -140,8 +140,8 @@ Standard `Pick` and `keyof` don't distribute over unions. These do:
 ```typescript
 type KeyofUnion<T> = T extends unknown ? keyof T : never;
 type PickUnion<T, K extends KeyofUnion<T>> = T extends unknown
-  ? K & keyof T extends never ? never : Pick<T, K & keyof T>
-  : never;
+	? K & keyof T extends never ? never : Pick<T, K & keyof T>
+	: never;
 ```
 
 ```typescript
@@ -160,7 +160,7 @@ Everything optional EXCEPT specified keys:
 
 ```typescript
 type PartialExcept<T, K extends keyof T> = {[P in K]: T[P]} & {
-  [P in Exclude<keyof T, K>]?: T[P];
+	[P in Exclude<keyof T, K>]?: T[P];
 };
 ```
 
@@ -176,7 +176,7 @@ Only specified keys optional:
 
 ```typescript
 type PartialOnly<T, K extends keyof T> = {[P in K]?: T[P]} & {
-  [P in Exclude<keyof T, K>]: T[P];
+	[P in Exclude<keyof T, K>]: T[P];
 };
 ```
 
@@ -211,7 +211,7 @@ Used in zzz for self-referential initialization:
 
 ```typescript
 type ClassConstructor<TInstance, TArgs extends Array<any> = Array<any>> =
-  new (...args: TArgs) => TInstance;
+	new (...args: TArgs) => TInstance;
 ```
 
 Used in zzz Cell registry:

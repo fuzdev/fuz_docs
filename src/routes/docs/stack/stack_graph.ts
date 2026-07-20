@@ -18,16 +18,16 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'wasm',
 		description: 'BLAKE3 hashing compiled to WASM',
 		layer: 0,
-		fan_in: 10,
+		fan_in: 11,
 		x: -75,
-		y: 840,
+		y: 960,
 	},
 	{
 		name: 'fuz_app',
 		category: 'fullstack',
 		language: 'ts',
 		description: 'fullstack app library',
-		layer: 6,
+		layer: 7,
 		fan_in: 1,
 		x: -375,
 		y: 120,
@@ -37,7 +37,7 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'app',
 		language: 'ts',
 		description: 'blog software from scratch with SvelteKit',
-		layer: 7,
+		layer: 8,
 		fan_in: 0,
 		x: -75,
 		y: 0,
@@ -48,7 +48,7 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description:
 			'syntax styling utilities and components for TypeScript, Svelte, Markdown, and more',
-		layer: 4,
+		layer: 5,
 		fan_in: 9,
 		x: 0,
 		y: 360,
@@ -58,7 +58,7 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'styling',
 		language: 'ts',
 		description: 'semantic-first CSS framework and design system',
-		layer: 3,
+		layer: 4,
 		fan_in: 10,
 		x: 0,
 		y: 480,
@@ -69,7 +69,7 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description:
 			'experimental AI-generated docs and skills for Fuz, a zippy stack for human agency',
-		layer: 6,
+		layer: 7,
 		fan_in: 0,
 		x: -225,
 		y: 120,
@@ -79,7 +79,7 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'tooling',
 		language: 'ts',
 		description: 'a tool for managing many repos',
-		layer: 6,
+		layer: 7,
 		fan_in: 0,
 		x: -75,
 		y: 120,
@@ -89,7 +89,7 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'app',
 		language: 'ts',
 		description: 'Mastodon components and helpers for Svelte, SvelteKit, and Fuz',
-		layer: 6,
+		layer: 7,
 		fan_in: 1,
 		x: 75,
 		y: 120,
@@ -99,7 +99,7 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'app',
 		language: 'ts',
 		description: 'a web app template with TypeScript + SvelteKit + optional Rust for the fuz-stack',
-		layer: 6,
+		layer: 7,
 		fan_in: 0,
 		x: 225,
 		y: 120,
@@ -109,7 +109,7 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'ui',
 		language: 'ts',
 		description: 'Svelte UI library',
-		layer: 5,
+		layer: 6,
 		fan_in: 8,
 		x: 0,
 		y: 240,
@@ -120,16 +120,16 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description: 'utility belt for JS',
 		layer: 1,
-		fan_in: 12,
+		fan_in: 13,
 		x: 0,
-		y: 720,
+		y: 840,
 	},
 	{
 		name: 'fuz.dev',
 		category: 'site',
 		language: 'ts',
 		description: 'homepage for Fuz, free software for human agency',
-		layer: 6,
+		layer: 7,
 		fan_in: 0,
 		x: 375,
 		y: 120,
@@ -139,10 +139,21 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'build',
 		language: 'ts',
 		description: 'task runner and toolkit extending SvelteKit',
-		layer: 2,
+		layer: 3,
 		fan_in: 11,
 		x: 0,
 		y: 600,
+	},
+	{
+		name: 'mdz',
+		category: 'ui',
+		language: 'ts',
+		description:
+			'a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content',
+		layer: 2,
+		fan_in: 10,
+		x: 0,
+		y: 720,
 	},
 	{
 		name: 'svelte-docinfo',
@@ -150,16 +161,16 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description: 'static analysis for TypeScript and Svelte',
 		layer: 0,
-		fan_in: 12,
+		fan_in: 13,
 		x: 75,
-		y: 840,
+		y: 960,
 	},
 	{
 		name: 'zzz',
 		category: 'app',
 		language: 'ts',
 		description: 'software garage for power users and devs',
-		layer: 7,
+		layer: 8,
 		fan_in: 0,
 		x: 75,
 		y: 0,
@@ -205,6 +216,11 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_app',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_app',
 		to: 'svelte-docinfo',
 		kind: 'dev',
 	},
@@ -245,6 +261,11 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_blog',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_blog',
 		to: 'svelte-docinfo',
 		kind: 'dev',
 	},
@@ -271,6 +292,11 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_code',
 		to: 'gro',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_code',
+		to: 'mdz',
 		kind: 'dev',
 	},
 	{
@@ -305,6 +331,11 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_css',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_css',
 		to: 'svelte-docinfo',
 		kind: 'dev',
 	},
@@ -340,6 +371,11 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_docs',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_docs',
 		to: 'svelte-docinfo',
 		kind: 'dev',
 	},
@@ -375,6 +411,11 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_gitops',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_gitops',
 		to: 'svelte-docinfo',
 		kind: 'dev',
 	},
@@ -410,6 +451,11 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_mastodon',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_mastodon',
 		to: 'svelte-docinfo',
 		kind: 'dev',
 	},
@@ -441,6 +487,11 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_template',
 		to: 'gro',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_template',
+		to: 'mdz',
 		kind: 'dev',
 	},
 	{
@@ -471,6 +522,11 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_ui',
 		to: 'gro',
+		kind: 'peer',
+	},
+	{
+		from: 'fuz_ui',
+		to: 'mdz',
 		kind: 'peer',
 	},
 	{
@@ -501,6 +557,11 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_util',
 		to: 'gro',
+		kind: 'dev',
+	},
+	{
+		from: 'fuz_util',
+		to: 'mdz',
 		kind: 'dev',
 	},
 	{
@@ -539,6 +600,11 @@ export const stack_edges: Array<StackEdge> = [
 		kind: 'dev',
 	},
 	{
+		from: 'fuz.dev',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
 		from: 'gro',
 		to: 'blake3',
 		kind: 'peer',
@@ -565,8 +631,48 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'gro',
+		to: 'mdz',
+		kind: 'dev',
+	},
+	{
+		from: 'gro',
 		to: 'svelte-docinfo',
 		kind: 'peer',
+	},
+	{
+		from: 'mdz',
+		to: 'blake3',
+		kind: 'dev',
+	},
+	{
+		from: 'mdz',
+		to: 'fuz_code',
+		kind: 'dev',
+	},
+	{
+		from: 'mdz',
+		to: 'fuz_css',
+		kind: 'dev',
+	},
+	{
+		from: 'mdz',
+		to: 'fuz_ui',
+		kind: 'dev',
+	},
+	{
+		from: 'mdz',
+		to: 'fuz_util',
+		kind: 'peer',
+	},
+	{
+		from: 'mdz',
+		to: 'gro',
+		kind: 'dev',
+	},
+	{
+		from: 'mdz',
+		to: 'svelte-docinfo',
+		kind: 'dev',
 	},
 	{
 		from: 'svelte-docinfo',
@@ -596,6 +702,11 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'svelte-docinfo',
 		to: 'gro',
+		kind: 'dev',
+	},
+	{
+		from: 'svelte-docinfo',
+		to: 'mdz',
 		kind: 'dev',
 	},
 	{
@@ -632,6 +743,11 @@ export const stack_edges: Array<StackEdge> = [
 		from: 'zzz',
 		to: 'gro',
 		kind: 'prod',
+	},
+	{
+		from: 'zzz',
+		to: 'mdz',
+		kind: 'dev',
 	},
 	{
 		from: 'zzz',

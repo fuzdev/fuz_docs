@@ -72,7 +72,9 @@ Categories group tomes in sidebar navigation; project-specific:
 
 ### Registry
 
-Every project with docs has `src/routes/docs/tomes.ts`:
+Every project with docs has `src/routes/docs/tomes.ts` (examples here use the
+`#routes`/`#lib` subpath aliases — a new repo must declare them in
+`package.json` `imports`, or adapt to its existing aliases):
 
 ```typescript
 import type {Tome} from '@fuzdev/fuz_ui/tome.ts';
@@ -153,8 +155,8 @@ runtime; the only committed artifact is the tiny hand-written
 **Footgun**: if a project widens the published `package.json` fields it exposes,
 the **same `keys` set must reach both** `vite_plugin_pkg_json` and
 `library_json_from_modules()` — a mismatch silently drops fields end-to-end with
-no error. The canonical wiring is a shared `src/routes/pkg_json_keys.ts` const
-passed to both callsites.
+no error. When widening, wire a shared const (e.g. a `src/routes/pkg_json_keys.ts`)
+passed to both callsites; no repo widens today, so the default keys need no wiring.
 
 ### 2. Root layout — site identity only
 

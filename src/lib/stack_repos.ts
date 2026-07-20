@@ -8,7 +8,9 @@
  * Explicit allowlist, never globbed: a stray `private_*` clone in the workspace
  * must never leak into generated output. Personal sites (`ryanatkn.com`,
  * `webdevladder.net`) are intentionally excluded — this is the `@fuzdev`
- * ecosystem stack, not every repo in the workspace.
+ * ecosystem stack, not every repo in the workspace. Cargo-only repos with no
+ * `package.json` (tsv) are excluded until the generators support
+ * manifest-less repos.
  *
  * @module
  */
@@ -36,6 +38,7 @@ export const stack_repos: ReadonlyArray<StackRepo> = [
 	{path: 'fuz_util', name: '@fuzdev/fuz_util', category: 'foundation', language: 'ts'},
 	{path: 'gro', name: '@fuzdev/gro', category: 'build', language: 'ts'},
 	{path: 'fuz_css', name: '@fuzdev/fuz_css', category: 'styling', language: 'ts'},
+	{path: 'mdz', name: '@fuzdev/mdz', category: 'ui', language: 'ts'},
 	{path: 'fuz_ui', name: '@fuzdev/fuz_ui', category: 'ui', language: 'ts'},
 	{path: 'fuz_app', name: '@fuzdev/fuz_app', category: 'fullstack', language: 'ts'},
 	{path: 'fuz_code', name: '@fuzdev/fuz_code', category: 'ui', language: 'ts'},

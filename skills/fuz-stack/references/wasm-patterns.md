@@ -26,26 +26,23 @@ runtimes → both; plugin systems (speculative) → component model.
 
 ## WIT Interface Design
 
+Abridged from blake3's `wit/` (the full interface adds derive-key and more
+resource methods):
+
 ```wit
 package fuzdev:blake3@0.0.1;
 
 interface hashing {
-    enum hash-error {
-        invalid-key-length,
-    }
+    enum hash-error { invalid-key-length }
 
     hash: func(data: list<u8>) -> list<u8>;
     keyed-hash: func(key: list<u8>, data: list<u8>) -> result<list<u8>, hash-error>;
-    derive-key: func(context: string, key-material: list<u8>) -> list<u8>;
 
     resource hasher {
         constructor();
         new-keyed: static func(key: list<u8>) -> result<hasher, hash-error>;
-        new-derive-key: static func(context: string) -> hasher;
         update: func(data: list<u8>);
         finalize: func() -> list<u8>;
-        finalize-and-reset: func() -> list<u8>;
-        reset: func();
     }
 }
 
@@ -65,27 +62,19 @@ world blake3 {
 
 ## Component Implementation (wit-bindgen)
 
-From `blake3_component`:
+Abridged from `blake3_component` (see the crate for the full impl):
 
 ```rust
 use std::cell::RefCell;
 use exports::fuzdev::blake3::hashing;
 
-wit_bindgen::generate!({
-    path: "../../wit",
-    world: "blake3",
-});
+wit_bindgen::generate!({ path: "../../wit", world: "blake3" });
 
 struct Component;
-
 export!(Component);
 
 impl hashing::Guest for Component {
     type Hasher = HasherResource;
-
-    fn hash(data: Vec<u8>) -> Vec<u8> {
-        blake3::hash(&data).as_bytes().to_vec()
-    }
 
     fn keyed_hash(key: Vec<u8>, data: Vec<u8>) -> Result<Vec<u8>, hashing::HashError> {
         let key: [u8; 32] = key
@@ -93,7 +82,7 @@ impl hashing::Guest for Component {
             .map_err(|_: Vec<u8>| hashing::HashError::InvalidKeyLength)?;
         Ok(blake3::keyed_hash(&key, &data).as_bytes().to_vec())
     }
-    // derive_key: same shape
+    // hash / derive_key: same shape
 }
 
 struct HasherResource {
@@ -101,27 +90,11 @@ struct HasherResource {
 }
 
 impl hashing::GuestHasher for HasherResource {
-    fn new() -> Self {
-        Self { inner: RefCell::new(blake3::Hasher::new()) }
-    }
-
-    fn new_keyed(key: Vec<u8>) -> Result<hashing::Hasher, hashing::HashError> {
-        let key: [u8; 32] = key
-            .try_into()
-            .map_err(|_: Vec<u8>| hashing::HashError::InvalidKeyLength)?;
-        Ok(hashing::Hasher::new(HasherResource {
-            inner: RefCell::new(blake3::Hasher::new_keyed(&key)),
-        }))
-    }
-
     fn update(&self, data: Vec<u8>) {
         self.inner.borrow_mut().update(&data);
     }
-
-    fn finalize(&self) -> Vec<u8> {
-        self.inner.borrow().finalize().as_bytes().to_vec()
-    }
-    // new_derive_key / finalize_and_reset / reset: same RefCell shape
+    // constructor / static factories / finalize: same RefCell shape;
+    // factories return hashing::Hasher::new(HasherResource { … })
 }
 ```
 
@@ -170,52 +143,18 @@ RUSTFLAGS='-C opt-level=3 -C target-feature=+simd128' \
 
 ## Host-Side Embedding (wasmtime)
 
-Pin `wasmtime`/`wasmtime-wasi` at the same major (currently 45) and enable
-the `component-model` feature on `wasmtime` — the `bindgen!`/component APIs
-don't compile without it.
+Only blake3's bench/compare binaries embed a component host; read
+`blake3_bench_wasmtime` for the working setup. The gotchas:
 
-```rust
-use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxBuilder, WasiCtxView, WasiView};
-
-wasmtime::component::bindgen!({
-    path: "../../wit",
-    world: "blake3",
-});
-
-struct HostState {
-    ctx: WasiCtx,
-    table: ResourceTable,
-}
-
-impl WasiView for HostState {
-    fn ctx(&mut self) -> WasiCtxView<'_> {
-        WasiCtxView { ctx: &mut self.ctx, table: &mut self.table }
-    }
-}
-
-// Setup
-let engine = wasmtime::Engine::new(
-    wasmtime::Config::new().wasm_component_model(true)
-)?;
-
-let mut linker = wasmtime::component::Linker::new(&engine);
-wasmtime_wasi::p2::add_to_linker_sync(&mut linker)?;
-
-let component = wasmtime::component::Component::from_file(&engine, wasm_path)?;
-let mut store = wasmtime::Store::new(&engine, HostState { ctx, table });
-
-// Instantiate and call
-let instance = Blake3::instantiate(&mut store, &component, &linker)?;
-let hashing = instance.fuzdev_blake3_hashing();
-let digest = hashing.call_hash(&mut store, data)?;
-
-// Resource lifecycle: host owns the handle, guest owns memory —
-// drop explicitly to free guest memory
-let hasher = hashing.hasher().call_constructor(&mut store)?;
-hashing.hasher().call_update(&mut store, hasher, chunk)?;
-let result = hashing.hasher().call_finalize(&mut store, hasher)?;
-hasher.resource_drop(&mut store)?;
-```
+- Pin `wasmtime`/`wasmtime-wasi` at the same major (currently 45) and enable
+  the `component-model` feature on `wasmtime` — the `bindgen!`/component APIs
+  don't compile without it.
+- `wasmtime::component::bindgen!` mirrors the guest-side macro; the host state
+  struct holds `WasiCtx` + `ResourceTable` and implements `WasiView`.
+- Enable `wasm_component_model` on the engine `Config` and add WASI to the
+  linker via `wasmtime_wasi::p2::add_to_linker_sync`.
+- **Resource lifecycle**: the host owns the handle, the guest owns the memory —
+  call `resource_drop` explicitly or the guest instance leaks.
 
 ## wasm-bindgen Patterns
 
@@ -304,12 +243,21 @@ serialization via `std::hint::black_box`. Goal-aware exports
 (`parse_typescript_json_with_goal`, `format_typescript_with_goal`) sit
 outside the macro.
 
-tsv_wasm runs wasm-opt with explicit feature flags — without them wasm-opt
-fails on Rust 2024's bulk-memory ops:
+tsv_wasm runs wasm-opt with explicit feature flags — bulk-memory +
+nontrapping-float are required for Rust 2024 output, and simd + multivalue
+mirror the `-Ctarget-feature=+simd128,+multivalue` rustflags in tsv's
+`.cargo/config.toml` (wasm-opt rejects those instructions unless enabled by
+name):
 
 ```toml
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ['-O3', '--enable-bulk-memory', '--enable-nontrapping-float-to-int']
+wasm-opt = [
+    '-O3',
+    '--enable-bulk-memory',
+    '--enable-nontrapping-float-to-int',
+    '--enable-simd',
+    '--enable-multivalue',
+]
 ```
 
 ### TypeScript entry points

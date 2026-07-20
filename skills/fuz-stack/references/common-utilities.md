@@ -105,25 +105,13 @@ Override via `PUBLIC_LOG_LEVEL` env var. Default detection order:
 3. `'debug'` in development (`DEV` from `esm-env`)
 4. `'info'` in production
 
-| Level   | Value | Purpose                           |
-| ------- | ----- | --------------------------------- |
-| `off`   | 0     | No output                         |
-| `error` | 1     | Errors only                       |
-| `warn`  | 2     | Errors and warnings               |
-| `info`  | 3     | Normal operational messages        |
-| `debug` | 4     | Detailed diagnostic information   |
+Levels ascending: `off` (0), `error` (1), `warn` (2), `info` (3), `debug` (4).
 
 ### Logger Methods
 
-| Method        | Level   | Console method | Use case                          |
-| ------------- | ------- | -------------- | --------------------------------- |
-| `log.error()` | `error` | `console.error`| Failures requiring attention      |
-| `log.warn()`  | `warn`  | `console.warn` | Potential issues                  |
-| `log.info()`  | `info`  | `console.log`  | Normal operations                 |
-| `log.debug()` | `debug` | `console.log`  | Diagnostic details                |
-| `log.raw()`   | (none)  | `console.log`  | Unfiltered, no prefix or level check |
-
-Each method except `raw` checks `this.level` before outputting. Prefixes
+`log.error()`/`log.warn()` map to `console.error`/`console.warn`; `log.info()`
+and `log.debug()` to `console.log`; `log.raw()` is `console.log` with no level
+check or prefix. Each method except `raw` checks `this.level` before outputting. Prefixes
 include the bracketed label plus a level indicator for error, warn, and debug;
 info has no level prefix — just the label.
 
@@ -187,7 +175,7 @@ stop_outer();
 | --------------- | ------------------------------------------ | --------------------------------------- |
 | `constructor`   | `new Timings(decimals?: number)`           | Optional decimal precision for rounding |
 | `start()`       | `(key: TimingsKey, decimals?) => () => number` | Start a timing, returns stop function |
-| `get()`         | `(key: TimingsKey) => number`              | Get recorded duration for a key         |
+| `get()`         | `(key: TimingsKey) => number`              | Recorded duration (0 if missing/unfinished) |
 | `entries()`     | `() => IterableIterator<[TimingsKey, number \| undefined]>` | Iterate all timings |
 | `merge()`       | `(timings: Timings) => void`               | Merge other timings, summing shared keys |
 

@@ -21,7 +21,6 @@ Svelte 5 runes and patterns used across the Fuz ecosystem.
 - [Component Composition](#component-composition)
 - [Runes in .svelte.ts Files](#runes-in-sveltets-files)
 - [Debugging](#debugging)
-- [Each Blocks](#each-blocks)
 - [CSS in Components](#css-in-components)
 - [Legacy Features to Avoid](#legacy-features-to-avoid)
 - [Quick Reference](#quick-reference)
@@ -403,8 +402,8 @@ snapshot and loses reactivity, defeating the pattern's purpose. Besides the
 script-level `$derived` above, two other lazy forms appear in real consumers:
 
 ```svelte
-<!-- template-inline (MdzNodeView.svelte) -->
-{@const mdz_base = get_mdz_base?.()}
+<!-- template-inline (MdzNodeView.svelte) — the getter is called inside {@const} -->
+{@const link = mdz_classify_link(node.reference, node.link_type, get_mdz_base?.())}
 ```
 
 ```typescript
@@ -425,31 +424,6 @@ For an inventory of contexts in fuz_ui and zzz, grep for `create_context<`.
 ## Snippet Patterns
 
 Svelte 5 replaces slots with snippets (`{#snippet}`, `{@render}`).
-
-### The `children` Snippet
-
-The implicit `children` replaces the default slot. Typed `Snippet` (or
-`Snippet<[params]>` with parameters):
-
-```svelte
-<script lang="ts">
-	import type {Snippet} from 'svelte';
-
-	const {children}: {children: Snippet} = $props();
-</script>
-
-<div class="wrapper">
-	{@render children()}
-</div>
-```
-
-Content between component tags becomes `children`:
-
-```svelte
-<Wrapper>
-	<p>This becomes the children snippet.</p>
-</Wrapper>
-```
 
 ### Children with Parameters
 
@@ -474,33 +448,6 @@ Consumers reach `close` via `dialog.close`; `register_surface` marks
 click-outside-safe regions. `ThemeRoot` uses the same parameterized-children
 pattern with multiple values:
 `Snippet<[theme_state: ThemeState, style: string | null, theme_style_html: string | null]>`.
-
-### Named Snippets
-
-```svelte
-<script lang="ts">
-	import type {Snippet} from 'svelte';
-
-	const {
-		summary,
-		children,
-	}: {
-		summary: string | Snippet;
-		children: Snippet;
-	} = $props();
-</script>
-
-<details>
-	<summary>
-		{#if typeof summary === 'string'}
-			{summary}
-		{:else}
-			{@render summary()}
-		{/if}
-	</summary>
-	{@render children()}
-</details>
-```
 
 ### Snippets with Parameters
 
@@ -554,18 +501,6 @@ Don't wrap effect contents in `if (browser) {...}` — effects don't run on the
 server. Avoid updating `$state` inside effects.
 
 ### Effect Cleanup
-
-Return a cleanup function for subscriptions or timers (runs before the next
-effect and on destroy):
-
-```typescript
-$effect(() => {
-	const interval = setInterval(() => {
-		tick_count++;
-	}, 1000);
-	return () => clearInterval(interval);
-});
-```
 
 For window/document listeners, prefer `<svelte:window onkeydown={...}>` and
 `<svelte:document>` over `$effect` + `addEventListener`. For element-scoped
@@ -782,22 +717,6 @@ export class Scrollable {
 
 ## Props Patterns
 
-### Basic Props
-
-```svelte
-<script lang="ts">
-	const {
-		name,
-		count = 0,
-		items = [],
-	}: {
-		name: string;
-		count?: number;
-		items?: string[];
-	} = $props();
-</script>
-```
-
 ### Bindable Props
 
 Use `let` (not `const`) for `$bindable()` props:
@@ -861,15 +780,8 @@ Use `SvelteHTMLElements['div']` (not `HTMLAttributes<HTMLDivElement>`).
 
 ## Event Handling
 
-Svelte 5 uses standard DOM event syntax:
-
-```svelte
-<button onclick={handle_click}>Click</button>
-<input oninput={(e) => (value = e.currentTarget.value)} />
-
-<!-- Conditional event handlers (pass undefined to remove) -->
-<svelte:window onkeydown={active ? on_window_keydown : undefined} />
-```
+Standard DOM event syntax; conditional handlers pass `undefined` to remove
+(`<svelte:window onkeydown={active ? on_window_keydown : undefined} />`).
 
 ### Programmatic Event Listeners
 
@@ -971,69 +883,6 @@ Use `<script lang="ts" module>` for component-level exports (contexts, types):
 <script lang="ts">
 	// instance script
 </script>
-```
-
-### Forwarding Snippets
-
-```svelte
-<!-- Wrapper.svelte -->
-<script lang="ts">
-	import type {Snippet} from 'svelte';
-	import Inner from './Inner.svelte';
-
-	const {
-		header,
-		children,
-	}: {
-		header?: Snippet;
-		children?: Snippet;
-	} = $props();
-</script>
-
-<div class="wrapper">
-	<Inner {header}>
-		{#if children}
-			{@render children()}
-		{/if}
-	</Inner>
-</div>
-```
-
-### Generic Components
-
-```svelte
-<script lang="ts" generics="T">
-	import type {Snippet} from 'svelte';
-
-	const {
-		items,
-		render,
-	}: {
-		items: T[];
-		render: Snippet<[T, number]>;
-	} = $props();
-</script>
-
-{#each items as item, index}
-	{@render render(item, index)}
-{/each}
-```
-
-### Dynamic Elements
-
-`svelte:element` for components rendering different HTML tags:
-
-```svelte
-<script lang="ts">
-	const {tag, href, children, ...rest} = $props();
-
-	const link = $derived(!!href);
-	const final_tag = $derived(tag ?? (link ? 'a' : 'div'));
-</script>
-
-<svelte:element this={final_tag} {...rest} {href}>
-	{@render children()}
-</svelte:element>
 ```
 
 ## Runes in .svelte.ts Files
@@ -1192,21 +1041,6 @@ $effect(() => {
 	// ... effect body
 });
 ```
-
-## Each Blocks
-
-Prefer keyed each blocks — Svelte surgically inserts or removes items
-rather than updating existing DOM:
-
-```svelte
-{#each items as item (item.id)}
-	<li>{item.name}</li>
-{/each}
-```
-
-The key must uniquely identify the object — do not use the array index.
-Avoid destructuring if you need to mutate the item (e.g.,
-`bind:value={item.count}`).
 
 ## CSS in Components
 

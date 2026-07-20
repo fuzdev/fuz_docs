@@ -41,7 +41,7 @@
 			<tbody>
 				<tr
 					><td><TomeLink slug="fuz-stack" /></td><td
-						>Coding conventions and patterns for TypeScript and Svelte 5 projects</td
+						>Coding conventions and patterns for TypeScript, Svelte 5, and Rust projects</td
 					></tr
 				>
 				<tr
@@ -81,7 +81,7 @@
 
 	<TomeSection>
 		<TomeSectionHeader text="Stack" />
-		<pre>fuz_util → gro + fuz_css → fuz_ui → fuz_* apps</pre>
+		<pre>fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps</pre>
 		<p>
 			<code>gro</code> is the durable web-dev workflow surface — its internals progressively adopt
 			Rust (<code>tsv</code>, then <code>fuz</code> crates) while it stays complementary to

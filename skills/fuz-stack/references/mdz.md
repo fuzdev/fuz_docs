@@ -24,7 +24,7 @@ guessing markup. Do not assume a markdown feature works because GFM supports it
 | Feature                | Syntax                                                                                                    |
 | ---------------------- | -------------------------------------------------------------------------------------------------------- |
 | Inline code            | `` `code` ``                                                                                              |
-| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` — double delimiters only (single `*`, `_`, `~` are literal)          |
+| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` — `**`/`~~` doubled; italic is single `_` at word boundaries (single `*`/`~` and intraword `_` are literal) |
 | Links                  | auto-detected URLs, `/internal/path`, `./relative` and `../relative` (autolinked after whitespace), `[text](url)` |
 | Headings               | `# Heading` … `######` at **column 0**; gets a lowercase slugified `id` for fragment links                |
 | Lists                  | `- item` / `1. item` at column 0; indent nests; blank lines contained; items hold block children (paragraphs, nested lists, code blocks, blockquotes, tables) on indented lines — the marker-line remainder is inline-only |

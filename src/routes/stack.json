@@ -82,6 +82,29 @@
 		},
 		{
 			"kind": "package",
+			"name": "@fuzdev/mdz",
+			"version": "0.3.0",
+			"path": "mdz",
+			"description": "a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content",
+			"glyph": "📝",
+			"homepage_url": "https://mdz.fuz.dev/",
+			"published": true,
+			"module_count": 28,
+			"exported_module_count": 19,
+			"export_count": 116,
+			"peer_dependencies": ["@fuzdev/fuz_util"],
+			"runtime_dependencies": [],
+			"dev_dependencies": [
+				"@fuzdev/blake3_wasm",
+				"@fuzdev/fuz_code",
+				"@fuzdev/fuz_css",
+				"@fuzdev/fuz_ui",
+				"@fuzdev/fuz_util",
+				"@fuzdev/gro"
+			]
+		},
+		{
+			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
 			"version": "0.206.7",
 			"path": "fuz_ui",
@@ -425,6 +448,7 @@
 		"@fuzdev/fuz_util": ["@fuzdev/blake3_wasm"],
 		"@fuzdev/gro": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util", "@fuzdev/tsv_wasm"],
 		"@fuzdev/fuz_css": ["@fuzdev/blake3_wasm", "@fuzdev/fuz_util", "@fuzdev/gro"],
+		"@fuzdev/mdz": ["@fuzdev/fuz_util"],
 		"@fuzdev/fuz_ui": [
 			"@fuzdev/fuz_code",
 			"@fuzdev/fuz_css",

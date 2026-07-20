@@ -17,7 +17,6 @@ Testing conventions for the Fuz stack: vitest usage, fixtures, mocks, helpers.
 - [Environment Flags](#environment-flags)
 - [Test Structure](#test-structure) (basic, organization, parameterized)
 - [Serde Boundary Conformance](#serde-boundary-conformance) (Rust ↔ hand-written TS: round-trip + coverage guard)
-- [Quick Reference](#quick-reference)
 
 ## File Organization
 
@@ -242,7 +241,8 @@ cold start saved per file). Non-DB tests stay fully parallel.
 
 ### Vitest Projects Configuration
 
-From fuz_app's `vite.config.ts`:
+The core pattern, adapted from fuz_app's `vite.config.ts` (simplified — the
+real file adds more plugins and the cross-backend projects below):
 
 ```typescript
 import {availableParallelism} from 'node:os';
@@ -260,7 +260,7 @@ export default defineConfig({
 				test: {
 					name: 'unit',
 					include: ['src/test/**/*.test.ts'],
-					exclude: ['src/test/**/*.db.test.ts'],
+					exclude: ['src/test/**/*.db.test.ts', 'src/test/**/*.cross.test.ts'],
 					maxWorkers: max_threads,
 					sequence: {groupOrder: 1},
 				},
@@ -280,6 +280,11 @@ export default defineConfig({
 });
 ```
 
+fuz_app additionally gates a `cross_backend_*` project family behind
+`FUZ_TEST_CROSS_BACKEND=1` — per-runtime projects (`rust_spine_stub`,
+`ts_node`, `ts_deno`, `ts_bun`) running `src/test/cross_backend/*.cross.test.ts`,
+plus dedicated `parity` and `security` projects with their own global setups.
+
 Because `isolate: false` shares module state, avoid `vi.mock()` in
 `.db.test.ts` files. If needed, pair with `vi.restoreAllMocks()` (not
 `vi.clearAllMocks()`) in `afterEach`.
@@ -291,7 +296,8 @@ fuz_app's `testing/db.ts` provides
 `db_fixture.ts`:
 
 ```typescript
-// src/test/db_fixture.ts
+// src/test/db_fixture.ts (adapted from fuz_app's, which also wires
+// pglet + pglet-wasm factories from local test modules)
 import type {Db} from '#lib/db/db.ts';
 import {run_migrations} from '#lib/db/migrate.ts';
 import {auth_migration_ns} from '#lib/auth/migrations.ts';
@@ -395,8 +401,9 @@ export const create_mock_task_context = <TArgs extends object = any>(
 ): TaskContext<TArgs> => ({...});
 ```
 
-fuz_ui's `test_helpers.ts` also provides generic fixture infrastructure
-(`load_fixtures_generic`, `run_update_task`) used by all fixture categories.
+mdz's `test_helpers.ts` also provides generic fixture infrastructure
+(`load_fixtures_generic`, `run_update_task`) used by its fixture categories
+(see Fixture-Based Testing below).
 
 ### Domain-Specific Helpers
 
@@ -406,7 +413,6 @@ fuz_ui's `test_helpers.ts` also provides generic fixture infrastructure
 | ------------------------------------- | -------- | --------------------------------------------------- |
 | `csp_test_helpers.ts`                 | fuz_ui   | CSP test constants and source factories             |
 | `contextmenu_test_helpers.ts`         | fuz_ui   | Contextmenu mounting and attachment setup           |
-| `module_test_helpers.ts`              | fuz_ui   | Module analysis test options and program setup      |
 | `deep_equal_test_helpers.ts`          | fuz_util | Bidirectional equality assertions and batch helpers |
 | `log_test_helpers.ts`                 | fuz_util | Logger mock console with captured args              |
 | `random_test_helpers.ts`              | fuz_util | Custom PRNG factories for distribution testing      |
@@ -417,13 +423,14 @@ fuz_ui's `test_helpers.ts` also provides generic fixture infrastructure
 
 Fixture-specific helpers live inside the fixture directory:
 
-| File                                                                   | Repo   | Purpose                      |
-| ---------------------------------------------------------------------- | ------ | ---------------------------- |
-| `fixtures/mdz/mdz_test_helpers.ts`                                     | fuz_ui | mdz fixture loading          |
-| `fixtures/tsdoc/tsdoc_test_helpers.ts`                                 | fuz_ui | tsdoc fixture loading        |
-| `fixtures/ts/ts_test_helpers.ts`                                       | fuz_ui | TypeScript fixture loading   |
-| `fixtures/svelte/svelte_test_helpers.ts`                               | fuz_ui | Svelte fixture loading       |
-| `fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts` | fuz_ui | Preprocessor fixture loading |
+| File                                                                   | Repo | Purpose                      |
+| ---------------------------------------------------------------------- | ---- | ---------------------------- |
+| `fixtures/mdz/mdz_test_helpers.ts`                                     | mdz  | mdz fixture loading          |
+| `fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts` | mdz  | Preprocessor fixture loading |
+
+(svelte-docinfo keeps its `ts`/`tsdoc`/`svelte` fixture helpers in its own
+`src/test/test-helpers.ts` — a pre-existing-style repo with camelCase
+identifiers, not the canonical shape.)
 
 ### Svelte Component Test Helpers
 
@@ -456,11 +463,6 @@ export const create_keyboard_event = (key: string, options?: KeyboardEventInit):
 export const create_mouse_event = (type: string, options?: MouseEventInit): MouseEvent => {...};
 export const create_touch_event = (type: string, touches: Array<{clientX: number; clientY: number}>, options?: TouchEventInit): TouchEvent => {...};
 export const set_event_target = (event: Event, target: EventTarget): void => {...};
-
-// Fixture utilities
-export const normalize_json = (obj: any): any => {...};
-export const load_fixtures_generic = async <T>(config: FixtureLoaderConfig<T>): Promise<Array<GenericFixture<T>>> => {...};
-export const run_update_task = async <TInput, TOutput>(config: UpdateTaskConfig<TInput, TOutput>, log): Promise<{...}> => {...};
 ```
 
 ## Shared Test Factories
@@ -507,16 +509,18 @@ create_shared_core_tests(
 
 ## Fixture-Based Testing
 
-For parsers, analyzers, and transformers. Used in fuz_ui (tsdoc, ts, svelte),
-`@fuzdev/mdz` (mdz, svelte_preprocess_mdz), and other static-analysis tooling.
+For parsers, analyzers, and transformers. Used in mdz (`mdz`,
+`svelte_preprocess_mdz` features) and svelte-docinfo (`ts`, `tsdoc`, `svelte`
+features), and other static-analysis tooling.
 
 ### Directory Structure
 
-Each fixture is a subdirectory with an input and a generated `expected.json`:
+Each fixture is a subdirectory with an input and a generated `expected.json`
+(mdz's layout — svelte-docinfo nests further by sub-kind, e.g.
+`ts/declarations/class/`):
 
 ```
 src/test/fixtures/
-├── update.task.ts              # parent: invokes all child update tasks
 ├── mdz/
 │   ├── bold_simple/
 │   │   ├── input.mdz           # test input
@@ -526,12 +530,6 @@ src/test/fixtures/
 │   │   └── expected.json
 │   ├── mdz_test_helpers.ts     # fixture-specific helpers
 │   └── update.task.ts          # regeneration for this feature
-├── tsdoc/
-│   ├── comment_description_only/
-│   │   ├── input.ts
-│   │   └── expected.json
-│   ├── tsdoc_test_helpers.ts
-│   └── update.task.ts
 └── svelte_preprocess_mdz/
     ├── bold_double_quoted/
     │   ├── input.svelte
@@ -540,47 +538,17 @@ src/test/fixtures/
     └── update.task.ts
 ```
 
-### Parent Update Task
+### Update Tasks
+
+Each feature's `update.task.ts` uses `run_update_task` from the repo's
+`test_helpers.ts` — it diffs against the existing `expected.json` and only
+writes on change:
 
 ```typescript
-// src/test/fixtures/update.task.ts — from fuz_ui
-import type {Task} from '@fuzdev/gro';
-
-export const task: Task = {
-	summary: 'generate all fixture expected.json files',
-	run: async ({invoke_task, log}) => {
-		log.info('updating mdz fixtures...');
-		await invoke_task('src/test/fixtures/mdz/update');
-
-		log.info('updating tsdoc fixtures...');
-		await invoke_task('src/test/fixtures/tsdoc/update');
-
-		log.info('updating ts fixtures...');
-		await invoke_task('src/test/fixtures/ts/update');
-
-		log.info('updating svelte fixtures...');
-		await invoke_task('src/test/fixtures/svelte/update');
-
-		log.info('updating svelte_preprocess_mdz fixtures...');
-		await invoke_task('src/test/fixtures/svelte_preprocess_mdz/update');
-
-		log.info('all fixtures updated!');
-	},
-};
-```
-
-Run all: `gro src/test/fixtures/update`
-Run one: `gro src/test/fixtures/mdz/update`
-
-### Child Update Task
-
-Each feature's `update.task.ts` uses `run_update_task`:
-
-```typescript
-// src/test/fixtures/mdz/update.task.ts — from fuz_ui
+// src/test/fixtures/mdz/update.task.ts — from mdz
 import type {Task} from '@fuzdev/gro';
 import {join} from 'node:path';
-import {mdz_parse} from '#lib/mdz.ts';
+import {mdz_parse} from '$lib/mdz.ts';
 import {run_update_task} from '../../test_helpers.ts';
 
 export const task: Task = {
@@ -598,10 +566,17 @@ export const task: Task = {
 };
 ```
 
+Run one feature: `gro src/test/fixtures/mdz/update`. A repo with several
+features can add a parent task that fans out — svelte-docinfo's
+`src/test/fixtures/update.task.ts` calls `invoke_task` on its `tsdoc`, `ts`,
+and `svelte` children (its `svelte` child is bespoke: it builds one shared TS
+program across all fixtures before analyzing each, since Svelte type analysis
+needs a shared checker).
+
 ### Fixture Test Pattern
 
 ```typescript
-// src/test/svelte_preprocess_mdz.fixtures.test.ts — from fuz_ui
+// src/test/svelte_preprocess_mdz.fixtures.test.ts — from mdz
 import {test, assert, describe, beforeAll} from 'vitest';
 import {
 	load_fixtures,
@@ -698,7 +673,9 @@ export const create_mock_git_ops = (): GitOperations => ({
 });
 ```
 
-fuz_gitops uses **zero vi.mock()** — all tests inject mock operations via DI.
+fuz_gitops injects mock operations via DI nearly everywhere — its one
+`vi.mock()` exception is `npm_registry.test.ts`, which module-mocks fuz_util's
+`spawn_out`/`wait` because that module shells out to npm with no DI seam.
 
 **fuz_app deps pattern:**
 
@@ -715,8 +692,10 @@ const runtime = create_mock_runtime(); // MockRuntime for CLI tests
 Legacy escape hatch, not a pattern — it exists where code predates the DI
 convention (gro's build/deploy/cache tests are the big cluster) or where a
 call site has no injectable seam (fuz_app's bearer-auth middleware calls
-`query_*` functions by name; its tests module-mock them as a documented
-carve-out). Treat any *new* `vi.mock` as a signal to add a deps seam
+`query_*` functions by name; the module mocks live in
+`testing/middleware.ts`, which wraps them in table-driven
+`describe_bearer_auth_cases` / `create_bearer_auth_test_app` helpers as a
+documented carve-out). Treat any *new* `vi.mock` as a signal to add a deps seam
 instead. Avoid entirely in `.db.test.ts` where `isolate: false` shares
 module state. When unavoidable:
 
@@ -773,10 +752,12 @@ describe.skipIf(SKIP)('vite plugin examples', () => {
 SKIP_EXAMPLE_TESTS=1 gro test
 ```
 
-| Flag                 | Repo    | Purpose                                      |
-| -------------------- | ------- | -------------------------------------------- |
-| `SKIP_EXAMPLE_TESTS` | fuz_css | Skip slow Vite plugin integration tests      |
-| `TEST_DATABASE_URL`  | fuz_app | Enable PostgreSQL tests (PGlite always runs) |
+| Flag                              | Repo    | Purpose                                          |
+| --------------------------------- | ------- | ------------------------------------------------ |
+| `SKIP_EXAMPLE_TESTS`              | fuz_css | Skip slow Vite plugin integration tests          |
+| `TEST_DATABASE_URL`               | fuz_app | Enable PostgreSQL tests (PGlite always runs)     |
+| `FUZ_TEST_CROSS_BACKEND`          | fuz_app | Enable the `cross_backend_*` vitest projects     |
+| `FUZ_TESTING_RUST_SPINE_STUB_BIN` | fuz_app | Path to the Rust spine stub binary for cross runs |
 
 ## Test Structure
 
@@ -915,21 +896,30 @@ the surface + live app.
 WebSocket JSON-RPC endpoints are tested in-process via
 `@fuzdev/fuz_app/testing/ws_round_trip.ts` — no HTTP server, no Deno. The
 harness drives the real `register_action_ws` dispatcher and
-`BackendWebsocketTransport` against `MockWsClient` connections, so per-action
+`BackendWebsocketTransport` against `WsClient` connections, so per-action
 auth, input validation, `ctx.notify`, and broadcast fan-out all run through
-real code paths.
+real code paths. The consumers are fuz_app's own `src/test/actions/*` suites
+(`register_action_ws`, `broadcast_api`, `cancel`, `heartbeat`,
+`transports_ws_backend.peer`, …) following the usual
+`{module}.{aspect}.test.ts` naming.
 
-Convention (used in zzz):
+The pieces (split across two fuz_app testing modules — don't conflate with
+`testing/cross_backend/ws_round_trip.ts`, a separate cross-process helper):
 
-1. **All round-trip helpers live in fuz_app**
-   (`@fuzdev/fuz_app/testing/ws_round_trip.ts`):
-   - `create_ws_test_harness({specs, handlers, ...})` → `{transport,
-     connect}`. `connect(identity?)` is async, resolving after
-     `on_socket_open` completes. Passes through `register_action_ws`
-     options (`on_socket_open`, `on_socket_close`, `extend_context`,
-     `transport`, `log`); share a `BackendWebsocketTransport` via the
-     `transport` option to test cross-harness broadcast fan-out.
-   - `MockWsClient.request<R>(id, method, params, timeout?)` — the
+1. **`testing/ws_round_trip.ts`** — the harness:
+   - `create_ws_test_harness({actions, ...})` → `{transport, connect}`.
+     `connect(identity?)` is async, resolving after `on_socket_open`
+     completes, and returns a `WsClient`. Options pass through
+     `register_action_ws` (`on_socket_open`, `on_socket_close`,
+     `on_request`, `heartbeat`, `transport`, `log`); share a
+     `BackendWebsocketTransport` via the `transport` option to test
+     cross-harness broadcast fan-out.
+   - `build_broadcast_api<TApi>({harness, specs})` — wires peer +
+     transport + typed broadcast API, mirroring real backend assembly.
+   - `keeper_identity()` — default identity for keeper-authed connections.
+2. **`testing/transports/ws_client.ts`** — the client and its narrowing
+   helpers (imported from there, not re-exported by `ws_round_trip.ts`):
+   - `WsClient.request<R>(id, method, params, timeout_ms?)` — the
      default for request/response. Returns `result` on success; throws
      `rpc #id failed: [code] message data=...` on error frames.
    - `client.send(message)` + `client.wait_for(predicate)` — raw
@@ -942,27 +932,11 @@ Convention (used in zzz):
      explicit `<T>` at the call site.
    - Wire-frame types for narrowing: `JsonrpcNotificationFrame<P>`,
      `JsonrpcSuccessResponseFrame<R>`, `JsonrpcErrorResponseFrame<D>`.
-   - `build_broadcast_api<TApi>({harness, specs})` — wires peer +
-     transport + typed broadcast API, mirroring real backend assembly.
-   - `keeper_identity()` — default identity for keeper-authed connections.
-
-2. **Repo-local `ws_test_harness.ts` is only for project-specific
-   setup** — not a re-implementation of the above. Repos with memoized
-   per-worker state (pglite + schema + seed) can add one; zzz has
-   none, importing directly from
-   `@fuzdev/fuz_app/testing/ws_round_trip.ts`.
-
-3. **Split test files by aspect** (see _Test File Naming_ above):
-   - `ws.integration.dispatch.test.ts` — request/response, `ctx.notify`,
-     per-action auth, input validation, `ctx.signal`, concurrent requests
-   - `ws.integration.broadcast.test.ts` — `create_broadcast_api`
-     fan-out, close-removes-from-transport
-
-4. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize the
+3. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize the
    harness per worker, since `isolate: false` + `fileParallelism: false`
-   would otherwise double-init module-level state. Non-DB WS tests (zzz)
-   build a fresh harness per test — setup is cheap and each test can
-   supply its own ad-hoc specs + handlers.
+   would otherwise double-init module-level state. Non-DB WS tests build
+   a fresh harness per test — setup is cheap and each test can supply
+   its own ad-hoc action specs.
 
 ## Serde Boundary Conformance
 
@@ -1009,46 +983,3 @@ Gotchas: if the evaluator stubs nondeterministic globals (clock/RNG) to throw,
 the fixture must use pure literals only. Gate the round-trip test on the
 evaluator runtime being present (skip-with-notice), matching the repo's
 Deno-gating posture.
-
-## Quick Reference
-
-| Pattern                           | Purpose                                                            |
-| --------------------------------- | ------------------------------------------------------------------ |
-| `src/test/`                       | All tests live here, not co-located                                |
-| `src/test/domain/`                | Mirrors `src/lib/domain/` subdirectories                           |
-| `module.aspect.test.ts`           | Split test suites by aspect                                        |
-| `module.db.test.ts`               | DB test — shared WASM worker via vitest projects                   |
-| `module.fixtures.test.ts`         | Fixture-based test file                                            |
-| `test_helpers.ts`                 | General shared test utilities (most repos)                         |
-| `{domain}_test_helpers.ts`        | Domain-specific test utilities                                     |
-| `{domain}_test_{aspect}.ts`       | Shared test factory modules (not test files)                       |
-| `create_shared_*_tests()`         | Factory function for reusable test suites                          |
-| `fixtures/feature/case/`          | Subdirectory per fixture case                                      |
-| `fixtures/update.task.ts`         | Parent: runs all child update tasks                                |
-| `fixtures/feature/update.task.ts` | Child: regenerates one feature                                     |
-| `assert` from vitest              | Ecosystem-wide standard                                            |
-| `assert.isDefined(x); x.prop`     | Narrows to NonNullable — no `x!` needed                            |
-| `assert(x instanceof T); x.prop`  | Narrows union types — the key advantage over `expect`              |
-| `assert.throws(fn, /regex/)`      | Returns void; second arg: constructor/string/RegExp (not function) |
-| `assert_rejects(fn, /regex?/)`    | Shared — async rejection, optional pattern, returns Error          |
-| `create_mock_logger()`            | Shared — `vi.fn()` methods + tracking arrays                       |
-| try/catch + `assert.include`      | For inspecting thrown errors when helper isn't enough              |
-| `assert_*` (not `expect_*`)       | Custom assertion helper naming convention                          |
-| `describe` + `test` (not `it`)    | Default structure; 1-2 levels of `describe` typical                |
-| `// @vitest-environment jsdom`    | Pragma for UI tests needing DOM                                    |
-| `vi.stubGlobal('ResizeObserver')` | Required in jsdom for components using ResizeObserver              |
-| `describe_db(name, fn)`           | DB test wrapper (fuz_app)                                          |
-| `create_test_app()`               | Full Hono app for integration tests (fuz_app)                      |
-| `create_ws_test_harness()`        | In-process WS JSON-RPC harness (fuz_app); async `connect()`        |
-| `client.request(id, method, ...)` | Send + await response; throws on error frame                       |
-| `build_broadcast_api({harness})`  | Typed broadcast API wired to the harness transport (fuz_app)       |
-| `ws_test_harness.ts` (repo-local) | Only for project-specific setup (memoized DB, client tracking)     |
-| `stub_app_deps`                   | Throwing stub deps for unit tests (fuz_app)                        |
-| DI via `*Operations`/`*Deps`      | Preferred over vi.mock() for side effects                          |
-| `create_mock_*()`                 | Factory functions for test data                                    |
-| `SKIP_EXAMPLE_TESTS=1`            | Skip slow fuz_css integration tests                                |
-| `TEST_DATABASE_URL`               | Enable PostgreSQL tests alongside PGlite                           |
-| Never edit `expected.json`        | Always regenerate via task                                         |
-| Hand-written TS + round-trip      | Honest against a Rust serde boundary without codegen (no schemars/ts-rs) |
-| Typed kitchen-sink fixture        | `import type`'d → typecheck-gated AND real-parser-gated from one source |
-| Coverage guard over `*::ALL`      | Assert the fixture exercises every Rust variant                    |

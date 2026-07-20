@@ -122,9 +122,10 @@ module ships**:
   keep `.js`.)
 
 `$app`/`$env` stay (virtual modules, not file paths). `@ryanatkn/eslint-config`
-bans `$lib`/`$routes` everywhere and `#lib`/`#routes` inside `src/lib`; the rule
-covers type-position imports too (`import('#lib/db/db.ts').Db`). The
-`survey_import_extensions` survey enforces the extension across the ecosystem.
+warns on all four aliases (`$lib`/`$routes`/`#lib`/`#routes`) inside `src/lib`
+— library code imports relative; the rule covers type-position imports too
+(`import('#lib/db/db.ts').Db`). Outside `src/lib`, `$lib` remains widespread in
+existing code while the `#lib` migration is in progress.
 
 ## Web-rendered caveat
 

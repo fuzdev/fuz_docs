@@ -11,13 +11,13 @@ modules with a `.task.ts` suffix exporting a `task` object with a `run` function
 
 ```typescript
 interface Task<
-  TArgs = Args,
-  TArgsSchema extends z.ZodType<Args, Args> = z.ZodType<Args, Args>,
-  TReturn = unknown,
+	TArgs = Args,
+	TArgsSchema extends z.ZodType<Args, Args> = z.ZodType<Args, Args>,
+	TReturn = unknown,
 > {
-  run: (ctx: TaskContext<TArgs>) => TReturn | Promise<TReturn>;
-  summary?: string;
-  Args?: TArgsSchema;
+	run: (ctx: TaskContext<TArgs>) => TReturn | Promise<TReturn>;
+	summary?: string;
+	Args?: TArgsSchema;
 }
 ```
 
@@ -35,10 +35,10 @@ interface Task<
 import type {Task} from '@fuzdev/gro';
 
 export const task: Task = {
-  summary: 'greet the user',
-  run: async ({log}) => {
-    log.info('hello!');
-  },
+	summary: 'greet the user',
+	run: async ({log}) => {
+		log.info('hello!');
+	},
 };
 ```
 
@@ -54,16 +54,16 @@ import type {Task} from '@fuzdev/gro';
 import {z} from 'zod';
 
 export const Args = z.strictObject({
-  name: z.string().meta({description: 'who to greet'}).default('world'),
+	name: z.string().meta({description: 'who to greet'}).default('world'),
 });
 export type Args = z.infer<typeof Args>;
 
 export const task: Task<Args> = {
-  summary: 'greet someone by name',
-  Args,
-  run: async ({args, log}) => {
-    log.info(`hello, ${args.name}!`);
-  },
+	summary: 'greet someone by name',
+	Args,
+	run: async ({args, log}) => {
+		log.info(`hello, ${args.name}!`);
+	},
 };
 ```
 
@@ -74,13 +74,13 @@ from the Zod schema.
 
 ```typescript
 interface TaskContext<TArgs = object> {
-  args: TArgs;
-  config: GroConfig;
-  svelte_config: ParsedSvelteConfig;
-  filer: Filer;
-  log: Logger;
-  timings: Timings;
-  invoke_task: InvokeTask;
+	args: TArgs;
+	config: GroConfig;
+	svelte_config: ParsedSvelteConfig;
+	filer: Filer;
+	log: Logger;
+	timings: Timings;
+	invoke_task: InvokeTask;
 }
 ```
 
@@ -105,13 +105,13 @@ Omitting `config` passes the current config. Respects the override system:
 
 ```typescript
 export const task: Task = {
-  run: async ({invoke_task}) => {
-    await invoke_task('typecheck');
-    await invoke_task('test');
-    await invoke_task('gen', {check: true});
-    await invoke_task('format', {check: true});
-    await invoke_task('lint');
-  },
+	run: async ({invoke_task}) => {
+		await invoke_task('typecheck');
+		await invoke_task('test');
+		await invoke_task('gen', {check: true});
+		await invoke_task('format', {check: true});
+		await invoke_task('lint');
+	},
 };
 ```
 
@@ -134,8 +134,8 @@ execution via `--no-*` flags).
 
 ```typescript
 export const Args = z.strictObject({
-  _: z.array(z.string()).meta({description: 'file patterns to filter'}).default(['.test.']),
-  dir: z.string().meta({description: 'working directory'}).default('src/'),
+	_: z.array(z.string()).meta({description: 'file patterns to filter'}).default(['.test.']),
+	dir: z.string().meta({description: 'working directory'}).default('src/'),
 });
 export type Args = z.infer<typeof Args>;
 ```
@@ -148,10 +148,10 @@ Run with: `gro test foo bar --dir src/lib/` (positional `foo`, `bar` go to `_`).
 
 ```typescript
 export const Args = z.strictObject({
-  typecheck: z.boolean().meta({description: 'dual of no-typecheck'}).default(true),
-  'no-typecheck': z.boolean().meta({description: 'opt out of typechecking'}).default(false),
-  test: z.boolean().meta({description: 'dual of no-test'}).default(true),
-  'no-test': z.boolean().meta({description: 'opt out of running tests'}).default(false),
+	typecheck: z.boolean().meta({description: 'dual of no-typecheck'}).default(true),
+	'no-typecheck': z.boolean().meta({description: 'opt out of typechecking'}).default(false),
+	test: z.boolean().meta({description: 'dual of no-test'}).default(true),
+	'no-test': z.boolean().meta({description: 'opt out of running tests'}).default(false),
 });
 ```
 
@@ -218,12 +218,12 @@ The common pattern wraps the builtin:
 import type {Task} from '@fuzdev/gro';
 
 export const task: Task = {
-  summary: 'run tests with custom setup',
-  run: async ({invoke_task, args}) => {
-    // custom setup
-    await invoke_task('gro/test', args); // call the builtin
-    // custom teardown
-  },
+	summary: 'run tests with custom setup',
+	run: async ({invoke_task, args}) => {
+		// custom setup
+		await invoke_task('gro/test', args); // call the builtin
+		// custom teardown
+	},
 };
 ```
 

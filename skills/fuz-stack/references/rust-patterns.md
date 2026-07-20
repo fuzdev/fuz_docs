@@ -105,8 +105,10 @@ unwrap_used = "warn"
 **Workspaces may diverge deliberately** — a domain can earn extra allows
 (tsv carries a parser-shaped superset: u32-position cast allows, relaxed
 `missing_debug_implementations` for interner-holding types, plus restriction
-`unreachable = "warn"`). Superset-by-design is not drift; the repo's
-`CLAUDE.md` documents it.
+`unreachable = "warn"`; blake3's workspace also omits
+`missing_debug_implementations`). Superset-by-design is not drift; the repo's
+`CLAUDE.md` documents it — diff the override against that repo's workspace
+block, not the generic one above.
 
 ### Crate-level overrides — re-declare the whole block
 
@@ -706,10 +708,13 @@ map keyed by request id, and the script embedded via `include_str!` + written
 to a `NamedTempFile` at spawn. Skip it for one-shot invocations (plain
 `tokio::process::Command`) or pure in-process work.
 
-**Currently dormant** — `fuz_sidecar` is feature-gated off with no live
-consumer (tsv replaced the Deno sidecar's parsing role). The controller and
-its crash-recovery respawn loop (exponential backoff, capped) remain the
-reference if a runtime-hosting workload returns.
+**Currently dormant** — the sidecar *runtimes* (`fuz_deno`/`fuz_python`
+factories, behind `fuzd`'s off-by-default `sidecar` feature) are gated off, so
+the shipped daemon wires no runtime into the pool; `fuz_sidecar` itself always
+links into `fuzd`/`fuzd_server` for the empty pool and dispatch (tsv replaced
+the Deno sidecar's parsing role). The controller and its crash-recovery
+respawn loop (exponential backoff, capped) remain the reference if a
+runtime-hosting workload returns.
 
 ### Security
 
