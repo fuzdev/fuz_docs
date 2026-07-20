@@ -125,3 +125,29 @@ Rust CLI and `fuz_app` TS, the `lru`-backed `RateLimiter` twinning
 `fuz_app`'s `LruMap`. When porting a utility across the language boundary,
 find its twin first; diverging semantics under a shared name is the same
 defect class as a name mismatch.
+
+## Tool twins: molt
+
+fuz_template's ejector ships as symmetric twins — `src/lib/molt.ts`
+(`npm run molt`) and the `molt` crate (`cargo molt`) — at full behavior
+parity: same flags, same wizard, same plan, byte-identical output trees.
+Unlike the spine there is no reference/production asymmetry: both are
+shipping paths, chosen by which toolchain the user has (the TS twin exists
+so ejecting never requires installing Rust; the Rust twin dogfoods the
+ecosystem's CLI conventions). Its parity mechanics differ instructively
+from the wire twins:
+
+- **Parity is enforced against the tree, not across the twins.** The parity
+  surface is filesystem effects, not a wire. Each side embeds its own copy
+  of the exact-content anchors and self-verifies against the working tree
+  (`cargo test` / `gro test`, both in CI) — an anchored template edit breaks
+  both checks at the same commit, so cross-twin drift surfaces without a
+  cross-backend harness. What can be single-sourced is: the output templates
+  live once in `crates/molt/templates/` (compiled into the Rust binary via
+  `include_str!`, read at runtime by the TS twin).
+- **Mutual deletion bounds the burden.** Each twin's plan deletes both
+  implementations (crate, TS module, tests, npm script entry) — self-deleting
+  tooling leaves zero post-eject parity surface.
+- **Identifier parity end to end** (`build_plan`/`verify`/`apply`/
+  `apply_gate`/`FEATURES`…), with the TS module's sections mirroring the
+  crate's module seams, so each concept's twin is greppable by name.

@@ -46,12 +46,12 @@ is authoritative for what it actually uses.
 | -------------- | ---------------------------------------------------------------------------------- |
 | `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                  |
 | `gro`          | task runner and toolkit extending SvelteKit (web-dev surface; internals adopting Rust)|
-| `fuz_css`      | CSS framework and design system — apps look good by default                        |
+| `fuz_css`      | semantic-first CSS framework and design system — apps look good by default         |
 | `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                   |
 | `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                         |
 | `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                     |
 | `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                  |
-| `fuz_template` | a static web app template built with the fuz stack (plus a Rust workspace)         |
+| `fuz_template` | a web app template with TypeScript + SvelteKit + optional Rust for the fuz-stack  |
 | `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more |
 | `fuz_blog`     | blog software from scratch with SvelteKit                                          |
 | `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                     |
@@ -549,7 +549,8 @@ vars). Five references, loaded on demand:
   and the crate-vs-cargo-feature supply-chain isolation technique.
 - **./references/twin-impl.md** — the TS ↔ Rust twin-implementation
   architecture: convergence discipline, identifier-level naming parity, the
-  cross-backend harness, wire crates, and serialization parity rules.
+  cross-backend harness, wire crates, serialization parity rules, and tool
+  twins (fuz_template's molt).
 
 WASM, C-FFI, and N-API binding crates additionally follow
 ./references/wasm-patterns.md. Each Rust repo's `CLAUDE.md` is authoritative

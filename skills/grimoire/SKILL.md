@@ -293,6 +293,13 @@ list. Mind the sync's conflict resolution: capture (live store → mirror) and
 restore (mirror → fresh machine) want a rule that won't silently overwrite
 newer memory.
 
+Note the ownership inversion: the harness thinks it owns its memory store, but
+once subsumed, the grimoire is the durable truth and the harness store is a
+volatile cache — repo-side edits and deletions win. The pattern generalizes to
+any agent tool's file-shaped state, but each subsumed source imports its own
+reconciliation semantics (baselines, deletion rules, conflict handling) — git
+and the filesystem give storage for free, not consistency.
+
 A grimoire can also observe itself. Because lore and indexes make claims about
 the repos a grimoire coordinates, those claims can be checked against reality —
 surfacing drift between what the grimoire says and what the repos actually
@@ -415,6 +422,33 @@ mechanically extracted from code. This is what makes shared grimoires hard
 (taste must be negotiated, not just merged) and what makes grimoires powerful
 (agents can apply taste fluidly rather than following rigid rules).
 
+**Membrane**: A grimoire that spans private and public work protects itself.
+The boundary is one-way — the grimoire sees every repo; nothing public
+references the grimoire's contents or even its existence — and it can be
+enforced mechanically, with deterministic checks that scan the public surface
+and gate on a hit. The threat model is accident, not attack: in an agent-heavy
+workflow the realistic leak is helpfulness — a cross-reference, an
+autocompleted path, a docs sweep too broad — which is exactly the class
+deterministic checks catch. The membrane's one sanctioned crossing is
+distillation: content generalizes until the personal is gone before it leaves
+(this skill is itself an example — the shape of a grimoire, exported without
+any particular grimoire's contents). The payoff is what the isolation enables:
+only a private, operationally inert substrate can safely hold the *union* of a
+person's work across projects and segments, which is what makes reasoning over
+the full scope possible at all. Keep the grimoire inert — no runtime, no
+service surface, nothing listening; treat any integration with live systems as
+a deliberate, narrow pore (local, deterministic, no network) rather than an
+ambient connection.
+
+**Agent-agnostic substrate**: The interface to a grimoire is "can you read a
+filesystem." Structured markdown plus git means any agent — or human — can
+navigate it with zero protocol: read files, follow links. Naming conventions
+may be tool-flavored (e.g. CLAUDE.md); the substrate is not. Prefer keeping it
+that way over adding serving layers — composition happens with filesystem and
+git semantics (links and reference paths, sync/mirror scripts, sibling
+checkouts), where every edge is a claim the self-observation checks can
+validate. Open-ended composition without self-observation is how wikis die.
+
 **Growth trajectory**: A grimoire starts small — one CLAUDE.md, a couple
 `lore/{project}/TODO.md` files. Quests appear when work first spans multiple
 repos. Writing appears when ideas emerge that don't project any single repo.
@@ -433,6 +467,15 @@ repos in ways too detailed for public consumption) or collaborative (a team
 sharing taste and evolving it together). Either way, the synthesis step —
 `published → lore` — needs coherent taste. Groups can share that taste; it
 doesn't require a single author.
+
+How to segment a life's work — personal, employer, arbitrary profiles — is not
+prescribed: each person decides, ad-hoc or structured. One grimoire with
+internal conventions and several composed grimoires are both valid shapes; the
+same reference and mirror mechanics that compose repos compose grimoires. The
+useful community contribution is *mapping* the patterns as they emerge — known
+tradeoffs, usage patterns — not mandating one. Collaboration follows the same
+logic: federation over merger — each participant keeps their own grimoire and
+negotiates shared vocabulary at the boundary, rather than merging corpora.
 
 ## Common Pitfalls
 

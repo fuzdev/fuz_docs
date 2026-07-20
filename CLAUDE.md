@@ -52,7 +52,7 @@ dev server.
 
 - Svelte 5 - component framework with runes
 - SvelteKit - application framework with static adapter
-- fuz_css (@fuzdev/fuz_css) - CSS framework and design system
+- fuz_css (@fuzdev/fuz_css) - semantic-first CSS framework and design system
 - fuz_ui (@fuzdev/fuz_ui) - UI components, theming, docs system
 - fuz_util (@fuzdev/fuz_util) - utility functions
 - fuz_code (@fuzdev/fuz_code) - syntax highlighting
@@ -172,7 +172,7 @@ skills/
 
 ## Related projects
 
-- [`fuz_css`](../fuz_css/CLAUDE.md) - CSS framework
+- [`fuz_css`](../fuz_css/CLAUDE.md) - semantic-first CSS framework
 - [`fuz_ui`](../fuz_ui/CLAUDE.md) - UI components and docs system
 - [`fuz_util`](../fuz_util/CLAUDE.md) - utility functions
 - [`gro`](../gro/CLAUDE.md) - build system and task runner
