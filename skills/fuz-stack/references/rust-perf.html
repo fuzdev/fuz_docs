@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.BWqEgaKA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CNjtoZhk.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.CMZnTHCQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CCng7eoK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/WAXb8FV-.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CFU859kH.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BU24TT5E.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.DO6HFpSp.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BK0ziQUr.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CabCOfl-.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BXl3LOEh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/_8GA1mJl.js" rel="modulepreload">
@@ -36,24 +36,24 @@
 		<link href="/_app/immutable/chunks/C0j2Cue3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BTFCirZG.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.8__6G5Mm.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.DNum1W3E.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/coHbaYFo.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/ByQUhZei.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DXZtCJ5j.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BbfUcO96.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/kk8XQxQd.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/LG7wZDRY.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BMUA-6XU.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Dq0zMqyo.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CvbH-MXD.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Bva8g2b5.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BBj6MHDU.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6fvXPMb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/mCZ5_ahZ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BEYhdnoC.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/30.DLmHhmpr.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/ChoyyWjB.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BHVf7tXb.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/30.BM24NCbz.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CEt5c2Tt.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/B3Cj5yFn.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BS_kiH2-.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CYyxa28S.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DbWf4b3C.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BhKbG8-h.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CsywN1Kd.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -95,7 +95,9 @@ deadlock or starve. Drop the guard before the await, or use <!--]--><!--[3--><!-
 which suspends cleanly. Pick per critical section:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>parking_lot</code><!--]--><!--]--><!--[2--> — default for sync-only sections (no poisoning, smaller, faster).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>tokio::sync::{Mutex, RwLock}</code><!--]--><!--]--><!--[2--> — sections that themselves <!--]--><!--[3--><!--[-1--><code>.await</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>std::sync::*</code><!--]--><!--]--><!--[2--> — only when you need poisoning semantics.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->DashMap<!--]--><!--]--><!----></strong><!--]--><!--[2--> for hot shared maps: <!--]--><!--[3--><!--[-1--><code>Arc&lt;RwLock&lt;HashMap>></code><!--]--><!--]--><!--[2--> serializes all readers
 under any contended write and bounces the lock's cache line across cores;
 DashMap shards internally. Reach for it when profiling shows contention on one
-map — not the default.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="stack-specific-perf-notes"><!--[--><!--[2-->Stack-specific perf notes<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Beyond generic hygiene:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>get_unchecked</code><!--]--><!--]--><!--[2--> is off-limits in workspace-default crates.<!--]--><!--]--><!----></strong><!--]--><!--[2--> If a bench
+map — not the default. Note it's in no workspace today and not on the
+<!--]--><!--[7--><!--[1--><!--[0--><a href="/skills/fuz-stack/references/rust-dependencies"><!--[--><!--[2-->./rust-dependencies<!--]--><!--]--><!----></a><!--]--><!--]--><!--]--><!--[2--> allowlist, so adopting it goes through the
+dependency-approval gate first.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="stack-specific-perf-notes"><!--[--><!--[2-->Stack-specific perf notes<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Beyond generic hygiene:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>get_unchecked</code><!--]--><!--]--><!--[2--> is off-limits in workspace-default crates.<!--]--><!--]--><!----></strong><!--]--><!--[2--> If a bench
 proves a bounds check is the bottleneck *and* iterator/<!--]--><!--[3--><!--[-1--><code>assert!</code><!--]--><!--]--><!--[2-->-hoist
 rewrites can't elide it, isolate the hot kernel in a crate that overrides
 <!--]--><!--[3--><!--[-1--><code>unsafe_code = "allow"</code><!--]--><!--]--><!--[2--> (§Unsafe escape hatch).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Cross-crate inlining is free here<!--]--><!--]--><!----></strong><!--]--><!--[2-->: the release profile's <!--]--><!--[3--><!--[-1--><code>lto = true</code><!--]--><!--]--><!--[2--> +
@@ -139,15 +141,15 @@ slow readers — niche to read:write ratios of orders of magnitude, after
 			
 			<script>
 				{
-					__sveltekit_wi3iqv = {
+					__sveltekit_4wmmlw = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.BWqEgaKA.js"),
-						import("/_app/immutable/entry/app.DO6HFpSp.js")
+						import("/_app/immutable/entry/start.CMZnTHCQ.js"),
+						import("/_app/immutable/entry/app.CabCOfl-.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 30],

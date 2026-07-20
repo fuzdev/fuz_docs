@@ -1,0 +1,484 @@
+import"../chunks/DsnmJJEf.js";import{p as s,b as o}from"../chunks/CFU859kH.js";import{M as i}from"../chunks/CEt5c2Tt.js";import{M as a}from"../chunks/CYyxa28S.js";import{C as r}from"../chunks/DbWf4b3C.js";const l={content:`# Grimoire
+
+A grimoire is a self-observing meta-repo that spans all of a developer's
+projects. It holds working understanding — developed through building, maintained
+in concert between the person and their docs. These are living documents,
+constantly being evolved as projects change, goals shift, and understanding
+deepens. No deployable code, just structured markdown: CLAUDE.md files encode
+context that agents load, and skills are knowledge modules.
+
+**Why it exists**: Units of work often cut across repos. The grimoire gives those
+units a home — in quests (goals) and lore (context) — without polluting
+implementation repos with planning artifacts. It's also agent-knowledge
+infrastructure: the structured context that lets AI agents orient across an
+entire ecosystem of projects without needing prior session memory.
+
+**Designed for experimentation**: A grimoire is a place to play with patterns —
+try new ways of organizing work, drop what doesn't stick. The conventions here
+emerged this way; treat them as the current best guess, subject to revision.
+
+**Layer position**: The grimoire sits between implementation (repos) and published
+(docs, tomes), as the layer where understanding about projects lives. Lore is
+the grimoire's view of repos — projection, not duplication. Content moves
+through a lifecycle: raw agent memory distills into lore, lore feeds quests and
+implementation, implementation graduates into published docs, and understanding
+flows back down into lore as each stage completes. "Graduation" in this doc
+always means that cycle — content advances one stage and is deleted from the
+previous one.
+
+**Structure**: A grimoire directory typically lives alongside the repos it
+coordinates, with three core primitives — skills, lore, quests — and supporting layers.
+
+## Three Primitives
+
+### Skills (\`skills/\`)
+
+[Agent skills](https://agentskills.io/) that teach agents how to work in this
+ecosystem. Each skill has a \`SKILL.md\` with YAML frontmatter plus optional
+\`references/\`, \`scripts/\`, and \`assets/\` subdirs following the
+[Agent Skills spec](https://github.com/anthropics/skills).
+
+Skills may live in the grimoire itself or in a dedicated docs/skills repo. Skills
+can have lore entries when they need planning context.
+
+### Lore (\`lore/\`)
+
+Per-repo planning projections. Each lore entry is the grimoire's view of a sibling
+repo: design decisions, tracked TODOs, cross-cutting concerns. Not a copy of the
+repo — a **projection** with planning context that doesn't belong in the
+implementation itself.
+
+**Standard pair**: Most lore directories have both \`CLAUDE.md\` and \`TODO.md\`.
+Separating them keeps CLAUDE.md focused on understanding while TODO.md stays
+action-oriented. TODO.md should reference any related quests.
+
+**TODO.md content**: TODO docs are forward-looking — a mix of task tracking and
+design exploration in any state of progress or speculativeness. Some are tight
+checklists, some are extended design explorations, some are vision docs. The
+\`TODO_\` prefix signals "active thinking about the future" rather than strictly
+"things to do."
+
+**TODO.md structure** — common sections, all optional:
+
+- \`## Active\` / \`## Planned\` — work items, usually checkboxes
+- \`## Deferred\` — parked ideas, may link to split files
+- \`## Shipped\` — completed milestones (brief, dated)
+- \`## Active Docs\` — table of contents linking split \`TODO_*.md\` files (appears
+  when splits exist)
+
+Item formatting:
+
+- \`- [ ] **Bold title** — description\` for scannable task items
+- \`- [x] **Title** — (2026-03-11) what was done\` for completed items with dates
+- Quest links inline: \`- [ ] Item ([quest](../../quests/quest-name.md))\`
+- Sub-bullets for decision branches or design considerations under an item
+
+**TODO.md and quests** — ownership boundary: Quests own cross-repo coordination;
+lore TODOs own repo-local understanding. The two reference each other but don't
+duplicate content.
+
+- Lore TODO items that relate to a quest include a link:
+  \`- [ ] DA-1: FactStore ([quest](../../quests/da/da-1_factstore-memostore.md))\`
+- Quests may reference lore docs for design context:
+  \`Design in [fuz_app security](../lore/fuz_app/security.md)\`
+- When a quest completes and is deleted, any remaining repo-local items naturally
+  stay in the lore TODO — they were never duplicated into the quest.
+- If work starts as a TODO item and later needs cross-repo coordination, it
+  graduates to a quest. The TODO item then becomes a link to the quest rather
+  than a standalone task.
+
+**DECISIONS.md**: A dedicated file for decisions with reasoning — the _why_,
+not a changelog. Created lazily — for simple cases, an inline \`## Decisions\`
+section in CLAUDE.md is sufficient. When decisions accumulate beyond a few
+entries, graduate them to a standalone \`DECISIONS.md\`.
+
+\`\`\`md
+### Chose X over Y (2026-02-20)
+
+Brief reasoning. What made X better, what was wrong with Y.
+\`\`\`
+
+Include what was rejected only when non-obvious. Prune aggressively — delete
+when the reasoning is obvious from the code, or when the decision is so old
+it's just "how things are." Decisions are temporary scaffolding, not permanent
+records.
+
+**Lore CLAUDE.md is not repo CLAUDE.md.** A repo's CLAUDE.md has implementation
+context — how to build, test, deploy, file structure, API docs. A lore CLAUDE.md
+has planning context — why the project exists in the ecosystem, what was decided,
+how it relates to other projects, what's next. If the repo already says it
+clearly, don't restate it in lore.
+
+**Lore CLAUDE.md content** — what belongs:
+
+- Ecosystem role and cross-repo relationships
+- Decisions and their reasoning (why, not what)
+- Links to related lore entries and quests
+- Planning context that doesn't fit in the repo itself
+
+**Lore CLAUDE.md content** — what does NOT belong:
+
+- Build commands, file structure, API surface (that's the repo's CLAUDE.md)
+- Metrics or status that will go stale (put in TODO.md)
+
+**Lore CLAUDE.md structure** — a predictable shape agents can follow:
+
+\`\`\`md
+# project_name
+
+> One-line summary.
+
+**Repo**: ../project_name | **Status**: freeform (active, design, dormant, …)
+
+Brief planning context — ecosystem role, why it matters, key relationships.
+
+## Decisions
+
+Short entries with reasoning. Delete when obvious from code.
+
+## Lore Docs
+
+Table linking TODO.md and any other lore files.
+
+## See Also
+
+Links to related lore, quests, upstream/downstream projects.
+\`\`\`
+
+Not every section is needed — a light entry might just have the header, summary,
+a sentence of context, and a lore docs table. Use bare paths (no backticks) for
+navigational file references — \`./path\`, \`../path\`, or a path from the
+grimoire root (preferred over a deep \`../../\` chain from nested files). See the
+fuz-stack skill's path-reference conventions for the full guidance.
+
+**Weight ranges**:
+
+- Light: \`TODO.md\` alone, or \`CLAUDE.md\` + \`TODO.md\`
+- Medium: The standard pair + \`DECISIONS.md\`, planning docs, or design files
+- Heavy: Full specs, design directories, roadmaps
+
+A lore entry can start as a single \`TODO.md\` and grow — adding \`CLAUDE.md\` when
+context or decisions accumulate, then \`TODO_*.md\` files when the scratchpad
+expands into distinct topics.
+
+**Splitting into TODO_\\*.md files**: Split when a topic outgrows its section in
+the main TODO.md — typically when a design exploration, feature direction, or
+work area needs its own narrative. Split files are named by topic:
+\`TODO_AUTH.md\`, \`TODO_PERF.md\`, \`TODO_RELEASE.md\`.
+
+When to split:
+
+- **Domain complexity** — separate concerns deserve separate docs (auth vs API
+  vs consumer ergonomics)
+- **Design depth** — a feature direction grows into an extended exploration with
+  rationale, decision tables, code examples
+- **Work type** — investigations, performance baselines, and release checklists
+  serve different readers
+
+What happens to the main TODO.md:
+
+- For small projects: no splits needed, TODO.md is the whole picture
+- As splits appear: TODO.md keeps general/active items and adds an \`## Active
+  Docs\` section linking split files with one-line descriptions
+- For heavily-split projects: TODO.md may become primarily a routing index —
+  shipped milestones, a few active items, and the Active Docs table of contents
+
+Split files are self-contained. Each has its own narrative structure appropriate
+to its content — a release checklist looks different from a design exploration.
+All split files should be listed in the lore CLAUDE.md's Lore Docs table with
+a brief purpose description.
+
+**Naming**: \`lore/{subject}/\` — usually matching a repo directory name, but lore
+can also project non-repo subjects: organizations (\`lore/fuzdev/\`), skills
+(\`lore/fuz-stack/\`), long-term visions, or any subject that needs planning
+context tracked across sessions.
+
+### Quests (\`quests/\`)
+
+Cross-repo goals with lifecycle tracking. A quest is needed when work spans 2+
+repos or when a significant goal has multiple phases. Single-repo work stays in
+\`lore/{project}/TODO.md\`.
+
+**Quest file format**:
+
+\`\`\`md
+- **Status**: open | active | blocked | done (freeform annotations welcome)
+- **Repos**: which repos this touches
+- **Depends**: quest IDs that must complete first
+- **Blocks**: quest IDs waiting on this one
+- **Urgency**: low | mid | high
+- **Effort**: S | M | L
+- **Uncertainty**: low | mid | high
+- **Impact**: low | mid | high
+
+## Goal
+
+What success looks like.
+
+## Tasks
+
+- [ ] Concrete work items as checkboxes
+
+## Notes
+
+Decision log, observations, blockers.
+\`\`\`
+
+**Naming**:
+
+- Quest groups: short lowercase prefix dir (\`da/\`, \`ss/\`) + \`CLAUDE.md\` overview
+- Numbered quests within a group: \`<prefix>-<n>_<slug>.md\`
+- Standalone quests: descriptive slug at top level
+
+**\`quests/CLAUDE.md\`** holds the quest index and conventions.
+
+**Done quests**: When a quest reaches \`done\`, synthesize what was learned into the
+relevant lore — not just recording decisions, but updating how the lore thinks
+about the domain. Refine patterns and design ethos, not just append a summary.
+Add a brief entry to \`quests/HISTORY.md\` (repos, what was done, key choices),
+then delete the quest file, update cross-references, and remove it from the
+index. Full details live in git history; HISTORY.md is the lightweight summary.
+
+**Blocked quests**: Don't let them sit indefinitely — blocked for more than a
+month means update its dependencies, break it into smaller pieces, or close it.
+
+## Supporting Layers
+
+Beyond the three primitives, a grimoire may include additional content layers:
+
+### Writing (\`writing/\`)
+
+Philosophy, vision, and frameworks that inform all projects — not scoped to any
+single repo. Where lore projects a specific repo and quests track specific goals,
+writing captures the broader _why_: conceptual foundations, design philosophies,
+ecosystem synthesis.
+
+**When to use writing/ vs lore/**: If the content projects a single repo's
+planning context, it's lore. If it articulates ideas that span the whole
+ecosystem or connect to broader frameworks, it's writing. Example: "how the auth
+system works" is lore; "why autonomy matters for software design" is writing.
+
+Writing docs may reference each other and link to lore entries, but lore entries
+should not depend on writing docs for implementation context.
+
+### Glossary (\`GLOSSARY.md\`)
+
+Shared definitions for the terms a grimoire leans on — its metaphors, named
+patterns, and domain vocabulary recurring across lore, quests, and writing. It
+matters most in a shared grimoire, where terminology must be negotiated rather
+than assumed: it pins taste to words so people and agents read the same meaning.
+Start one only when a term keeps needing re-explanation — it earns its place by
+use, not speculation.
+
+### Memory (\`memory/\`)
+
+Agents accumulate working memory as they build — in Claude Code, per-project
+auto-memory (facts plus an index, the same shape as lore), written to a
+machine-local, unversioned store. A grimoire can adopt that as a durable layer:
+mirror each repo's agent memory into \`memory/{repo}/\` so it survives, travels,
+and is shared between person and agents.
+
+Memory is **raw accumulation** — fast, per-repo, noisy — sitting one step before
+lore in the lifecycle: lore is what gets *distilled from* it. Treat a memory
+file as a lead, not authority. Keep the mirror out of the self-observation
+checks (it isn't authored grimoire prose to lint or index), and reconcile it
+with a sync step on a cadence rather than hand-editing. The durable set can be
+derived from the same repo registry that scopes the checks, so it tracks the
+coordinated repos automatically instead of drifting against a hand-maintained
+list. Mind the sync's conflict resolution: capture (live store → mirror) and
+restore (mirror → fresh machine) want a rule that won't silently overwrite
+newer memory.
+
+Note the ownership inversion: once subsumed, the grimoire is the durable truth
+and the harness store is a volatile cache — repo-side edits and deletions win.
+The same applies to any agent tool's file-shaped state, but each subsumed
+source imports its own reconciliation semantics — git and the filesystem give
+storage for free, not consistency.
+
+### Self-observation
+
+Lore and indexes make claims about the repos a grimoire coordinates, so those
+claims can be checked against reality — surfacing drift between what the
+grimoire says and what the repos actually contain.
+
+- **A declarative registry** of repo metadata — read by the checks rather than
+  hardcoded into each one — gives this teeth: scope lives in one place, and
+  because the registry is itself a claim, it too can be validated against the
+  repos.
+- **Block vs inform**: some observations are strict enough to gate (a broken
+  invariant); others just inform (a trend worth watching).
+- **Deterministic, not model calls**: plain code that reads files and compares
+  them against the registry — fast, offline, identical every time. That
+  predictability is what lets checks gate: an invariant wants a mechanical
+  guarantee, not a probabilistic judgment. Agents do the fuzzy, taste-laden
+  authoring; the crisp, machine-checkable invariants get codified as checks
+  that hold the line without an LLM or a network in the loop.
+
+How a grimoire structures this — \`scripts/\` for the checks, \`scries/\` for
+persisted findings, \`surveys/\` for read-only cross-repo observations — is still
+taking shape and isn't prescribed here; the durable idea is that a
+self-observing meta-repo can keep itself honest.
+
+## Work Loop
+
+The grimoire runs an implicit program across agent sessions. Each session
+executes this loop:
+
+**On session start** (load context):
+
+1. **Check lore** — \`lore/{project}/\` — CLAUDE.md for planning context, TODO.md
+   for active work
+2. **Check quests** — \`quests/CLAUDE.md\` for active cross-repo goals touching
+   this project
+3. **Read the repo's CLAUDE.md** — implementation-specific context
+
+**On work complete** (update state):
+
+4. **Update lore** — update \`lore/{project}/TODO.md\` for work items, CLAUDE.md
+   for planning-layer changes (new decisions, changed relationships)
+5. **Update quests** — check tasks off, change status if done or blocked
+6. **Check graduation** — should content advance to the next lifecycle stage?
+
+## Grimoire Health
+
+A healthy grimoire actively minimizes cruft. The goal is dense, quality
+information — not volume. Agents read this on every session; noise wastes
+context and degrades judgment.
+
+**Accumulate through distillation**: [Lore](#lore-lore) is the richest layer —
+it grows over time as crystallized understanding accumulates from the cycle. Let
+creative bursts live as TODO docs in lore; expect noise there. The ongoing work is distilling
+what's learned into lasting knowledge and removing what's resolved or superseded.
+History and resolved decisions belong in commit logs, not in markdown.
+
+**What belongs here**: Cross-repo context, the _why_ behind decisions, future
+intent.
+
+**Living and approximate**: A grimoire is actively evolved — always trying to
+catch up to reality and pave future paths — but never fully accurate. It's
+trying to capture dimensions of a person's entire body of work, and that's too
+large for any document to represent faithfully. Living means maintained, not
+correct. When current state matters, read the actual repo. Past a certain
+threshold of staleness, a doc misleads more than it helps — stale context is
+worse than no context.
+
+**Rewrite, don't just prune**: The lifecycle handles content that graduates
+forward. The harder problem is conceptual staleness —
+content written under an understanding that has since shifted. A decision whose
+tradeoffs no longer apply, a TODO that assumes yesterday's architecture. Old
+files aren't inherently stale; a [lore](#lore-lore) doc untouched for months
+can still be accurate. But content whose framing no longer matches reality is
+actively misleading — and a timestamp check won't catch it. Every time you read
+a lore doc, ask whether its model still holds. Delete what's dead, rewrite
+what's drifted.
+
+## Creating Grimoire Artifacts
+
+### New lore entry
+
+Create \`lore/{project}/TODO.md\` as a starting point. Add \`CLAUDE.md\` when
+context or decisions accumulate beyond TODO tracking — use the lore CLAUDE.md
+structure described earlier. Focus on planning context: ecosystem
+role, relationships, decisions.
+
+Most active projects end up with both files — the pair keeps planning context
+(CLAUDE.md) and action items (TODO.md) separated. When a TODO.md grows
+unwieldy, split topics into \`TODO_*.md\` files (e.g., \`TODO_PERF.md\`,
+\`TODO_RELEASE.md\`). Add design subdirs as the project demands.
+
+### New quest
+
+1. Decide: standalone or part of a group?
+2. Standalone: create \`quests/{slug}.md\` with the standard fields above
+3. Quest group: create \`quests/{prefix}/CLAUDE.md\` overview + numbered files
+4. Add the quest to the index in \`quests/CLAUDE.md\` — the index is the only
+   discovery mechanism
+
+### New skill
+
+1. Create \`skills/{name}/SKILL.md\` with YAML frontmatter
+2. Add \`references/\` for detailed docs, \`scripts/\` for executables if needed
+3. Optionally add a lore entry: \`lore/{skill-name}/CLAUDE.md\`
+
+## Arcs
+
+A **quest** is a goal; an **arc** is sustained execution — a long-running,
+gate-driven implementation effort run across many sessions in a dedicated git
+worktree. An arc may serve any number of quests or lore TODOs, or none.
+
+- **One arc ↔ one worktree/branch ↔ at most one live session** —
+  single-threaded by convention; no locks or bookkeeping, the operator owns
+  isolation.
+- **The worktree is the arc's body.** Its files stay public-repo clean — no
+  grimoire references, no arc narration in the implementation repo.
+- **Lore is the arc's memory.** An index doc in \`lore/{project}/\` owns the
+  resume state — status, milestone ladder, open-items ledger, landed log.
+  Sessions update it as they go; a fresh session needs nothing else to
+  continue.
+- **A board doc lists active arcs** — one pointer row each (worktree, branch,
+  index doc), never a second source of truth. Arcs are ephemeral: a closed
+  arc's row is simply deleted, no history kept (git has it).
+- **Session structure**: one orchestrating session that never edits code — it
+  delegates, updates lore between subagents, and owns the user-facing
+  questions. It spawns at most one writing subagent at a time (a top-tier
+  model, e.g. Opus); both the orchestrator and the writer may spawn research
+  subagents (a cheaper model, e.g. Sonnet — always read-only).
+
+Plain worktrees still serve smaller parallel work (two agents, two quests, no
+conflicts) without the arc apparatus.
+
+## Key Concepts
+
+**Taste**: The grimoire encodes a developer's (or team's) taste — which patterns
+are valued, which tradeoffs are preferred, what "good" looks like. Taste is what
+makes a grimoire _yours_ rather than generic documentation. It can't be
+mechanically extracted from code. This is what makes shared grimoires hard
+(taste must be negotiated, not just merged) and what makes grimoires powerful
+(agents can apply taste fluidly rather than following rigid rules).
+
+**Membrane**: A grimoire that spans private and public work protects itself.
+The boundary is one-way — the grimoire sees every repo; nothing public
+references the grimoire's contents or even its existence — and it's enforced
+mechanically with deterministic checks that scan the public surface and gate
+on a hit. The threat model is accident, not attack: in an agent-heavy workflow
+the realistic leak is helpfulness — a cross-reference, an autocompleted path,
+a docs sweep too broad — exactly the class deterministic checks catch. The one
+sanctioned crossing is distillation: content generalizes until the personal is
+gone before it leaves (this skill is itself an example). That isolation is
+what lets a private, operationally inert substrate safely hold the *union* of
+a person's work — keep the grimoire inert: no runtime, no service surface,
+nothing listening.
+
+**Agent-agnostic substrate**: The interface to a grimoire is "can you read a
+filesystem." Structured markdown plus git means any agent — or human — can
+navigate it with zero protocol: read files, follow links. Naming conventions
+may be tool-flavored (e.g. CLAUDE.md); the substrate is not. Prefer keeping it
+that way over adding serving layers — composition happens with filesystem and
+git semantics (links and reference paths, sync/mirror scripts, sibling
+checkouts), where every edge is a claim the self-observation checks can
+validate. Open-ended composition without self-observation is how wikis die.
+
+**Growth trajectory**: A grimoire starts small — one CLAUDE.md, a couple
+\`lore/{project}/TODO.md\` files. Quests appear when work first spans multiple
+repos. Writing appears when ideas emerge that don't project any single repo.
+Don't build structure speculatively — let it emerge from genuine need.
+
+**Transparency as constraint**: Making the full scope visible — via indexes,
+structure diagrams — creates accountability. File sprawl becomes obvious when every
+file must be listed. The index isn't documentation; it's a mirror that pressures
+the grimoire to stay lean. In practice this is a top-level index doc (e.g.
+\`INDEX.md\`) that enumerates the grimoire's contents — primitives, lore entries,
+quests, supporting layers — and, like any claim the grimoire makes about itself,
+can be checked against what's actually on disk.
+
+**Private or shared**: A grimoire can be personal (spanning private and public
+repos) or collaborative (a team sharing taste and evolving it together) —
+either way the synthesis step (published understanding flowing back into lore)
+needs coherent taste, which groups can share. How to segment a life's work —
+personal, employer, arbitrary profiles — is not prescribed; one grimoire with
+internal conventions and several composed grimoires are both valid shapes,
+using the same reference and mirror mechanics that compose repos.
+Collaboration follows the same logic: federation over merger — each
+participant keeps their own grimoire and negotiates shared vocabulary at the
+boundary.
+`};function g(e,n){s(n,!0),a(e,{get codeblock(){return r},children:(t,d)=>{i(t,{get content(){return l.content},base:"/skills/grimoire/"})},$$slots:{default:!0}}),o()}export{g as component};
