@@ -10,14 +10,7 @@
 
 /** Editorial grouping of a stack repo, hardcoded by the generator (not from any manifest). */
 export type StackCategory =
-	| 'foundation'
-	| 'build'
-	| 'styling'
-	| 'ui'
-	| 'fullstack'
-	| 'tooling'
-	| 'app'
-	| 'site';
+	'foundation' | 'build' | 'styling' | 'ui' | 'fullstack' | 'tooling' | 'app' | 'site';
 
 /** Primary implementation language of a stack repo. */
 export type StackLanguage = 'ts' | 'wasm' | 'rust';

@@ -14,26 +14,26 @@ output**. One grammar, two parsers: a synchronous tree parser
 incremental streaming parser (`MdzStreamParser`, emits opcodes) for partial
 input; the sync parser is the normative reference and parity tests bind them.
 
-**It is a dialect, not a CommonMark/GFM superset.** The design axiom is *false
-negatives over false positives*: ambiguous input stays literal text rather than
+**It is a dialect, not a CommonMark/GFM superset.** The design axiom is _false
+negatives over false positives_: ambiguous input stays literal text rather than
 guessing markup. Do not assume a markdown feature works because GFM supports it
 — check the surface below.
 
 ## Dialect surface
 
-| Feature                | Syntax                                                                                                    |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- |
-| Inline code            | `` `code` ``                                                                                              |
-| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` — `**`/`~~` doubled; italic is single `_` at word boundaries (single `*`/`~` and intraword `_` are literal) |
-| Links                  | auto-detected URLs, `/internal/path`, `./relative` and `../relative` (autolinked after whitespace), `[text](url)` |
-| Headings               | `# Heading` … `######` at **column 0**; gets a lowercase slugified `id` for fragment links                |
-| Lists                  | `- item` / `1. item` at column 0; indent nests; blank lines contained; items hold block children (paragraphs, nested lists, code blocks, blockquotes, tables) on indented lines — the marker-line remainder is inline-only |
-| Blockquotes            | `> ` per line (**no lazy continuation**); nest with `>>` or `> > `; bare `>` is the in-quote paragraph break; a blank line ends the quote; content is a mini-document |
-| Code blocks            | fenced with optional language hint; an unclosed fence consumes to EOF (or to the end of its blockquote)   |
-| Horizontal rule        | `---` alone on a line                                                                                     |
-| Tables                 | `\| a \| b \|` rows + a `\| --- \| :-: \|` delimiter row (colons set per-column alignment); leading **and** trailing `\|` required; inline-only cells (`` `code` `` protects pipes; `\|` is the one escape, a literal pipe); a header/delimiter column mismatch stays a paragraph |
+| Feature                | Syntax                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inline code            | `` `code` ``                                                                                                                                                                                                                                                                                                                                               |
+| Bold / italic / strike | `**bold**`, `_italic_`, `~~strike~~` — `**`/`~~` doubled; italic is single `_` at word boundaries (single `*`/`~` and intraword `_` are literal)                                                                                                                                                                                                           |
+| Links                  | auto-detected URLs, `/internal/path`, `./relative` and `../relative` (autolinked after whitespace), `[text](url)`                                                                                                                                                                                                                                          |
+| Headings               | `# Heading` … `######` at **column 0**; gets a lowercase slugified `id` for fragment links                                                                                                                                                                                                                                                                 |
+| Lists                  | `- item` / `1. item` at column 0; indent nests; blank lines contained; items hold block children (paragraphs, nested lists, code blocks, blockquotes, tables) on indented lines — the marker-line remainder is inline-only                                                                                                                                 |
+| Blockquotes            | `> ` per line (**no lazy continuation**); nest with `>>` or `> > `; bare `>` is the in-quote paragraph break; a blank line ends the quote; content is a mini-document                                                                                                                                                                                      |
+| Code blocks            | fenced with optional language hint; an unclosed fence consumes to EOF (or to the end of its blockquote)                                                                                                                                                                                                                                                    |
+| Horizontal rule        | `---` alone on a line                                                                                                                                                                                                                                                                                                                                      |
+| Tables                 | `\| a \| b \|` rows + a `\| --- \| :-: \|` delimiter row (colons set per-column alignment); leading **and** trailing `\|` required; inline-only cells (`` `code` `` protects pipes; `\|` is the one escape, a literal pipe); a header/delimiter column mismatch stays a paragraph                                                                          |
 | Components / elements  | `<Alert status="error">…</Alert>` (component) / `<aside class="box">…</aside>` (HTML element) — **both must be registered**; `<br />` (registered) for a hard break. Attributes are quoted strings (`"`/`'`) or bare booleans (`<input disabled />`); **elements** filter to a closed inert allowlist, **components** pass all attributes through as props |
-| Paragraphs / breaks    | blank line separates paragraphs; a single newline is a soft break (collapses to a space by default)      |
+| Paragraphs / breaks    | blank line separates paragraphs; a single newline is a soft break (collapses to a space by default)                                                                                                                                                                                                                                                        |
 
 **Whitespace**: text nodes preserve literal `\n`, but the default rendering
 applies no `white-space` style, so single newlines collapse to spaces. The

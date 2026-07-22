@@ -4,7 +4,7 @@ export interface SkillMeta {
 	name: string;
 	title: string;
 	description: string;
-	references: Array<{slug: string; title: string; description: string}>;
+	references: Array<{ slug: string; title: string; description: string }>;
 }
 
 export const skills: Array<SkillMeta> = [
@@ -17,124 +17,123 @@ export const skills: Array<SkillMeta> = [
 			{
 				slug: 'async-patterns',
 				title: 'Async Patterns',
-				description: 'Concurrency primitives — semaphore, deferred, concurrent map/each',
+				description: 'Concurrency primitives — semaphore, deferred, concurrent map/each'
 			},
 			{
 				slug: 'code-generation',
 				title: 'Code Generation',
-				description: 'Gro gen system — .gen.* files, dependencies, output formats',
+				description: 'Gro gen system — .gen.* files, dependencies, output formats'
 			},
 			{
 				slug: 'common-utilities',
 				title: 'Common Utilities',
-				description: 'Result type, Logger, Timings, DAG execution',
+				description: 'Result type, Logger, Timings, DAG execution'
 			},
 			{
 				slug: 'css-patterns',
 				title: 'CSS Patterns',
-				description:
-					'fuz_css styling — default-reliance, the styling ladder, variables, extraction',
+				description: 'fuz_css styling — default-reliance, the styling ladder, variables, extraction'
 			},
 			{
 				slug: 'dependency-injection',
 				title: 'Dependency Injection',
-				description: 'Injectable *Deps interfaces, mock factories, composition patterns',
+				description: 'Injectable *Deps interfaces, mock factories, composition patterns'
 			},
 			{
 				slug: 'documentation-system',
 				title: 'Documentation System',
-				description: 'Docs pipeline — Tome system, layout architecture, project setup',
+				description: 'Docs pipeline — Tome system, layout architecture, project setup'
 			},
 			{
 				slug: 'file-organization',
 				title: 'File Organization',
-				description: 'src/ tree, domain subdirectories, full-path imports, test mirroring',
+				description: 'src/ tree, domain subdirectories, full-path imports, test mirroring'
 			},
 			{
 				slug: 'mdz',
 				title: 'mdz — Strict Markdown Dialect',
 				description:
-					'mdz dialect — grammar surface, component registration, rendering seam, autolink, preprocessor',
+					'mdz dialect — grammar surface, component registration, rendering seam, autolink, preprocessor'
 			},
 			{
 				slug: 'npm-dependencies',
 				title: 'Approved npm Dependencies',
-				description: 'Approved external npm package allowlist for TS/Svelte repos',
+				description: 'Approved external npm package allowlist for TS/Svelte repos'
 			},
 			{
 				slug: 'path-references',
 				title: 'Path References in Documentation',
-				description: 'Path typography — navigational vs src/lib module vs code-shaped',
+				description: 'Path typography — navigational vs src/lib module vs code-shaped'
 			},
 			{
 				slug: 'rust-dependencies',
 				title: 'Approved Rust Dependencies',
-				description: 'Approved external crate allowlist for Rust workspaces',
+				description: 'Approved external crate allowlist for Rust workspaces'
 			},
 			{
 				slug: 'rust-patterns',
 				title: 'Rust Patterns for the Fuz Ecosystem',
-				description: 'Rust lints, errors, DI ladder, idioms, CLI patterns',
+				description: 'Rust lints, errors, DI ladder, idioms, CLI patterns'
 			},
 			{
 				slug: 'rust-perf',
 				title: 'Rust Performance Patterns',
-				description: 'Rust perf — profiling, arenas, locks, hot-path idioms, SIMD',
+				description: 'Rust perf — profiling, arenas, locks, hot-path idioms, SIMD'
 			},
 			{
 				slug: 'rust-spine',
 				title: 'Rust Spine & Consumer Servers',
-				description: 'Spine crate map, consumer servers, env, daemon lifecycle',
+				description: 'Spine crate map, consumer servers, env, daemon lifecycle'
 			},
 			{
 				slug: 'svelte-patterns',
 				title: 'Svelte 5 Patterns',
-				description: 'Svelte 5 runes, contexts, snippets, attachments',
+				description: 'Svelte 5 runes, contexts, snippets, attachments'
 			},
 			{
 				slug: 'task-patterns',
 				title: 'Task Patterns',
-				description: 'Gro task system — .task.ts files, TaskContext, error handling',
+				description: 'Gro task system — .task.ts files, TaskContext, error handling'
 			},
 			{
 				slug: 'testing-patterns',
 				title: 'Testing Patterns',
-				description: 'Vitest patterns, fixtures, mocks, assertion helpers',
+				description: 'Vitest patterns, fixtures, mocks, assertion helpers'
 			},
 			{
 				slug: 'tsdoc-comments',
 				title: 'TSDoc Comment Style Guide',
-				description: 'TSDoc style guide — tags, conventions, drift detection',
+				description: 'TSDoc style guide — tags, conventions, drift detection'
 			},
 			{
 				slug: 'twin-impl',
 				title: 'Twin Implementations (TS ↔ Rust)',
-				description: 'TS ↔ Rust twin implementations — convergence, naming parity, wire crates',
+				description: 'TS ↔ Rust twin implementations — convergence, naming parity, wire crates'
 			},
 			{
 				slug: 'type-utilities',
 				title: 'Type Utilities',
-				description: 'Nominal typing (Flavored/Branded), strict utility types',
+				description: 'Nominal typing (Flavored/Branded), strict utility types'
 			},
 			{
 				slug: 'wasm-patterns',
 				title: 'WASM Patterns for the Fuz Ecosystem',
-				description: 'WASM/N-API build targets — wasm-bindgen, component model, JS interop',
+				description: 'WASM/N-API build targets — wasm-bindgen, component model, JS interop'
 			},
 			{
 				slug: 'zod-schemas',
 				title: 'Zod Schemas',
-				description: 'Zod conventions — strictObject, branded types, introspection',
-			},
-		],
+				description: 'Zod conventions — strictObject, branded types, introspection'
+			}
+		]
 	},
 	{
 		name: 'grimoire',
 		title: 'Grimoire',
 		description:
 			'Navigate and maintain a grimoire — a markdown meta-repo that coordinates work across multiple sibling repositories. Covers the three primitives: skills (agent knowledge files), lore (per-repo planning projections), and quests (cross-repo goals). Use when orienting work across repos, reading project planning context, checking TODOs before working on a project, updating planning docs after completing work, creating or updating lore entries, drafting new quests, deciding whether to create a quest vs a lore TODO, pruning stale decisions from lore entries, or understanding grimoire conventions and structure.',
-		references: [],
-	},
+		references: []
+	}
 ];
 
 // generated by src/routes/skills/skill_docs.gen.ts - do not edit

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type {Snippet} from 'svelte';
-	import type {SvelteHTMLElements} from 'svelte/elements';
-	import {from_hex} from '@fuzdev/fuz_util/hex.ts';
-	import {format_bytes} from '@fuzdev/fuz_util/bytes.ts';
+	import type { Snippet } from 'svelte';
+	import type { SvelteHTMLElements } from 'svelte/elements';
+	import { from_hex } from '@fuzdev/fuz_util/hex.ts';
+	import { format_bytes } from '@fuzdev/fuz_util/bytes.ts';
 
 	type InputMode = 'text' | 'file' | 'hex' | 'base64';
 
@@ -160,7 +160,7 @@
 		{#each input_modes as mode (mode)}
 			<button
 				type="button"
-				class={{selected: input_mode === mode}}
+				class={{ selected: input_mode === mode }}
 				onclick={() => (input_mode = mode)}>{mode}</button
 			>
 		{/each}
@@ -178,7 +178,7 @@
 		{:else if input_mode === 'file'}
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class={['drop_zone panel shadow_inset_xs p_lg', {dragging}]}
+				class={['drop_zone panel shadow_inset_xs p_lg', { dragging }]}
 				{ondrop}
 				{ondragover}
 				{ondragleave}
@@ -205,8 +205,7 @@
 					placeholder="enter hex (e.g. 48656c6c6f)..."
 					rows="6"
 					class="width:100%"
-					spellcheck="false"
-				></textarea>
+					spellcheck="false"></textarea>
 				<div class="row gap_xs">
 					<button type="button" class="chip" onclick={paste_into('hex')}>paste</button>
 				</div>
@@ -218,8 +217,7 @@
 					placeholder="enter base64 (e.g. SGVsbG8=)..."
 					rows="6"
 					class="width:100%"
-					spellcheck="false"
-				></textarea>
+					spellcheck="false"></textarea>
 				<div class="row gap_xs">
 					<button type="button" class="chip" onclick={paste_into('base64')}>paste</button>
 				</div>

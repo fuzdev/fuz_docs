@@ -1,8 +1,8 @@
 <script lang="ts">
-	import {onMount} from 'svelte';
+	import { onMount } from 'svelte';
 	import CopyToClipboard from '@fuzdev/fuz_ui/CopyToClipboard.svelte';
-	import {hash_sha1, hash_sha256, hash_sha384, hash_sha512} from '@fuzdev/fuz_util/hash.ts';
-	import {to_hex} from '@fuzdev/fuz_util/hex.ts';
+	import { hash_sha1, hash_sha256, hash_sha384, hash_sha512 } from '@fuzdev/fuz_util/hash.ts';
+	import { to_hex } from '@fuzdev/fuz_util/hex.ts';
 
 	import DataInput from '$lib/DataInput.svelte';
 
@@ -13,12 +13,12 @@
 	let data: Uint8Array | null = $state(null);
 	let blake3_loaded = $state(false);
 
-	let results = $state<Record<Algorithm, {hash: string; duration: number} | null>>({
+	let results = $state<Record<Algorithm, { hash: string; duration: number } | null>>({
 		BLAKE3: null,
 		'SHA-1': null,
 		'SHA-256': null,
 		'SHA-384': null,
-		'SHA-512': null,
+		'SHA-512': null
 	});
 
 	// dynamically imported to avoid SSR — blake3_wasm is a top-level import in hash_blake3.ts
@@ -57,18 +57,18 @@
 		// compute all algorithms in parallel, collect into a single assignment
 		const promises = algorithms.map(async (algo) => {
 			if (algo === 'BLAKE3' && !current_blake3_loaded) {
-				return {algo, result: null};
+				return { algo, result: null };
 			}
 			const start = performance.now();
 			const hash = await compute_hash(current_data, algo);
 			const duration = performance.now() - start;
-			return {algo, result: {hash, duration}};
+			return { algo, result: { hash, duration } };
 		});
 
 		void Promise.all(promises).then((entries) => {
 			if (hash_data !== current_data) return;
-			const next = {} as Record<Algorithm, {hash: string; duration: number} | null>;
-			for (const {algo, result} of entries) {
+			const next = {} as Record<Algorithm, { hash: string; duration: number } | null>;
+			for (const { algo, result } of entries) {
 				next[algo] = result;
 			}
 			results = next;

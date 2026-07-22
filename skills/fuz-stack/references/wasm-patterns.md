@@ -12,9 +12,9 @@ C-FFI `cdylib` additionally serves Deno FFI and Python.
 
 ## Two Build Targets
 
-| Approach       | Tool           | Consumer            | Use case                        |
-| -------------- | -------------- | -------------------- | ------------------------------- |
-| wasm-bindgen   | `wasm-pack`    | JS runtimes          | Ship Rust to Deno/Node/browsers |
+| Approach        | Tool              | Consumer           | Use case                         |
+| --------------- | ----------------- | ------------------ | -------------------------------- |
+| wasm-bindgen    | `wasm-pack`       | JS runtimes        | Ship Rust to Deno/Node/browsers  |
 | Component model | `cargo-component` | Wasmtime / plugins | Sandboxed execution, composition |
 
 **wasm-bindgen**: generates glue code, handles memory management, produces
@@ -99,8 +99,9 @@ impl hashing::GuestHasher for HasherResource {
 ```
 
 Key patterns: `wit_bindgen::generate!` at compile time from WIT; unit struct
-+ `export!`; **`RefCell` for resource state** (resources receive `&self`);
-static factories return `hashing::Hasher` wrapping the resource struct.
+
+- `export!`; **`RefCell` for resource state** (resources receive `&self`);
+  static factories return `hashing::Hasher` wrapping the resource struct.
 
 ### Cargo.toml for component crates
 
@@ -163,11 +164,11 @@ Only blake3's bench/compare binaries embed a component host; read
 Shared core crate with thin wrappers — the SIMD split is genuinely two
 crates (contrast tsv, where the split is a feature axis within one crate):
 
-| Crate              | Type    | Purpose                                |
-| ------------------ | ------- | -------------------------------------- |
-| `blake3_wasm_core` | `rlib`  | Shared wasm-bindgen exports + TS types |
-| `blake3_wasm`      | `cdylib + rlib` | SIMD build (enables `blake3/wasm32_simd`)  |
-| `blake3_wasm_small`| `cdylib + rlib` | Size-optimized build (no SIMD)             |
+| Crate               | Type            | Purpose                                   |
+| ------------------- | --------------- | ----------------------------------------- |
+| `blake3_wasm_core`  | `rlib`          | Shared wasm-bindgen exports + TS types    |
+| `blake3_wasm`       | `cdylib + rlib` | SIMD build (enables `blake3/wasm32_simd`) |
+| `blake3_wasm_small` | `cdylib + rlib` | Size-optimized build (no SIMD)            |
 
 Both wrappers contain only `pub use blake3_wasm_core::*;`.
 
@@ -269,9 +270,8 @@ import { Blake3Hasher, derive_key, hash, keyed_hash } from './pkg/deno/blake3_wa
 export { Blake3Hasher, derive_key, hash, keyed_hash };
 
 import { make_stream_functions } from './stream.ts';
-export const { hash_stream, keyed_hash_stream, derive_key_stream } = make_stream_functions(
-    Blake3Hasher,
-);
+export const { hash_stream, keyed_hash_stream, derive_key_stream } =
+	make_stream_functions(Blake3Hasher);
 ```
 
 Node entry uses synchronous initialization (`readFileSync` + `initSync`).
@@ -313,11 +313,11 @@ A library targeting several runtimes keeps one binding crate per technology,
 all exporting identical macro-generated signatures (`parse` /
 `parse_internal` / `format` per language), so consumers choose by runtime:
 
-| Crate      | Technology   | Target               | Error type           |
-| ---------- | ------------ | -------------------- | -------------------- |
-| `tsv_wasm` | wasm-bindgen | Deno, browsers, Node | `Result<T, JsError>` |
-| `tsv_napi` | N-API        | Node.js, Bun (native npm path) | N-API errors |
-| `tsv_ffi`  | C ABI        | Deno FFI, Python     | JSON error objects   |
+| Crate      | Technology   | Target                         | Error type           |
+| ---------- | ------------ | ------------------------------ | -------------------- |
+| `tsv_wasm` | wasm-bindgen | Deno, browsers, Node           | `Result<T, JsError>` |
+| `tsv_napi` | N-API        | Node.js, Bun (native npm path) | N-API errors         |
+| `tsv_ffi`  | C ABI        | Deno FFI, Python               | JSON error objects   |
 
 All three share the `tsv_arena` per-thread arenas. `tsv_ffi` and `tsv_napi`
 override `unsafe_code = "allow"` and re-declare the full workspace lint block
@@ -334,10 +334,10 @@ native build; native artifacts stay bare. The suffix is part of the published
 identity — npm package, crate name, and the generated `*_wasm_bg.wasm` all
 agree.
 
-| Project | WASM packages | Native |
-| ------- | ------------- | ------ |
-| blake3 | `@fuzdev/blake3_wasm` (SIMD), `@fuzdev/blake3_wasm_small` (no SIMD) | none |
-| tsv | `@fuzdev/tsv_wasm` (parse + format + `tsv` CLI), `@fuzdev/tsv_format_wasm`, `@fuzdev/tsv_parse_wasm` | `tsv` CLI binary, `tsv_ffi` `.so`, `tsv_napi` `.node` |
+| Project | WASM packages                                                                                        | Native                                                |
+| ------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| blake3  | `@fuzdev/blake3_wasm` (SIMD), `@fuzdev/blake3_wasm_small` (no SIMD)                                  | none                                                  |
+| tsv     | `@fuzdev/tsv_wasm` (parse + format + `tsv` CLI), `@fuzdev/tsv_format_wasm`, `@fuzdev/tsv_parse_wasm` | `tsv` CLI binary, `tsv_ffi` `.so`, `tsv_napi` `.node` |
 
 - **The three tsv WASM packages come from one crate.** `tsv_wasm` has
   `format`/`parse` cargo features (default = both); the subset packages are
@@ -357,10 +357,10 @@ agree.
 blake3 ships two npm packages from different crates. Both are size-optimized
 end-to-end (`opt-level=s` + wasm-opt `-Os`); the only differentiator is SIMD:
 
-| Package                     | Crate              | RUSTFLAGS                                   | wasm-opt              | Size   |
-| --------------------------- | ------------------ | ------------------------------------------- | --------------------- | ------ |
-| `@fuzdev/blake3_wasm`       | `blake3_wasm`      | `-C opt-level=s -C target-feature=+simd128` | `-Os --enable-simd …` | ~45 KB |
-| `@fuzdev/blake3_wasm_small` | `blake3_wasm_small`| `-C opt-level=s`                            | `-Os …`               | ~32 KB |
+| Package                     | Crate               | RUSTFLAGS                                   | wasm-opt              | Size   |
+| --------------------------- | ------------------- | ------------------------------------------- | --------------------- | ------ |
+| `@fuzdev/blake3_wasm`       | `blake3_wasm`       | `-C opt-level=s -C target-feature=+simd128` | `-Os --enable-simd …` | ~45 KB |
+| `@fuzdev/blake3_wasm_small` | `blake3_wasm_small` | `-C opt-level=s`                            | `-Os …`               | ~32 KB |
 
 SIMD build: ~2.6x faster at large inputs (Deno/Node), slower on Bun (WASM
 SIMD regression) — use the small build for Bun and bundle-size-sensitive
@@ -409,10 +409,10 @@ round-trip tests — see rust-patterns.md §Testing.
 
 ## Cross-References
 
-| Resource                         | Link                                                                            |
-| -------------------------------- | ------------------------------------------------------------------------------- |
-| Blake3 WASM bindings             | [fuzdev/blake3](https://github.com/fuzdev/blake3)                               |
-| Component model spec — WIT       | [WebAssembly/component-model WIT](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md) |
+| Resource                         | Link                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Blake3 WASM bindings             | [fuzdev/blake3](https://github.com/fuzdev/blake3)                                                                         |
+| Component model spec — WIT       | [WebAssembly/component-model WIT](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md)             |
 | Component model spec — Explainer | [WebAssembly/component-model Explainer](https://github.com/WebAssembly/component-model/blob/main/design/mvp/Explainer.md) |
-| Rust patterns                    | ./rust-patterns.md                                                              |
-| Rust performance (arenas)        | ./rust-perf.md                                                                  |
+| Rust patterns                    | ./rust-patterns.md                                                                                                        |
+| Rust performance (arenas)        | ./rust-perf.md                                                                                                            |

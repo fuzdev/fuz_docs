@@ -1,13 +1,13 @@
-import {describe, test, assert} from 'vitest';
+import { describe, test, assert } from 'vitest';
 
-import {compute_stack_layout, ROW_GAP, type StackNodeInput} from '$lib/stack_layout.ts';
-import type {StackEdge} from '$lib/stack_graph_types.ts';
+import { compute_stack_layout, ROW_GAP, type StackNodeInput } from '$lib/stack_layout.ts';
+import type { StackEdge } from '$lib/stack_graph_types.ts';
 
 const node = (name: string): StackNodeInput => ({
 	name,
 	category: 'foundation',
 	language: 'ts',
-	description: '',
+	description: ''
 });
 
 const find = (nodes: ReturnType<typeof compute_stack_layout>, name: string) => {
@@ -22,8 +22,8 @@ describe('compute_stack_layout', () => {
 		// the dev back-edge util->tool must be cut (tool structurally reaches util), so tool lands above util.
 		const nodes = [node('util'), node('tool')];
 		const edges: Array<StackEdge> = [
-			{from: 'util', to: 'tool', kind: 'dev'},
-			{from: 'tool', to: 'util', kind: 'peer'},
+			{ from: 'util', to: 'tool', kind: 'dev' },
+			{ from: 'tool', to: 'util', kind: 'peer' }
 		];
 		const result = compute_stack_layout(nodes, edges);
 		const util = find(result, 'util');
@@ -31,7 +31,7 @@ describe('compute_stack_layout', () => {
 		// peer edge tool->util kept (tool depends on util), dev back-edge cut -> tool is higher
 		assert.ok(
 			tool.layer > util.layer,
-			`expected tool.layer (${tool.layer}) > util.layer (${util.layer})`,
+			`expected tool.layer (${tool.layer}) > util.layer (${util.layer})`
 		);
 		assert.equal(util.layer, 0);
 	});
@@ -41,9 +41,9 @@ describe('compute_stack_layout', () => {
 		// app -> ui is dev-only, no edge ui->app, so app is a pure consumer and lands above ui.
 		const nodes = [node('util'), node('css'), node('ui'), node('app')];
 		const edges: Array<StackEdge> = [
-			{from: 'css', to: 'util', kind: 'peer'},
-			{from: 'ui', to: 'css', kind: 'peer'},
-			{from: 'app', to: 'ui', kind: 'dev'},
+			{ from: 'css', to: 'util', kind: 'peer' },
+			{ from: 'ui', to: 'css', kind: 'peer' },
+			{ from: 'app', to: 'ui', kind: 'dev' }
 		];
 		const result = compute_stack_layout(nodes, edges);
 		const ui = find(result, 'ui');
@@ -59,16 +59,16 @@ describe('compute_stack_layout', () => {
 		// not sink to the bottom on an arbitrary cycle-break.
 		const nodes = [node('found'), node('lib'), node('tool')];
 		const edges: Array<StackEdge> = [
-			{from: 'lib', to: 'found', kind: 'peer'},
-			{from: 'tool', to: 'lib', kind: 'dev'},
-			{from: 'lib', to: 'tool', kind: 'dev'},
+			{ from: 'lib', to: 'found', kind: 'peer' },
+			{ from: 'tool', to: 'lib', kind: 'dev' },
+			{ from: 'lib', to: 'tool', kind: 'dev' }
 		];
 		const result = compute_stack_layout(nodes, edges);
 		const lib = find(result, 'lib');
 		const tool = find(result, 'tool');
 		assert.ok(
 			tool.layer > lib.layer,
-			`expected tool.layer (${tool.layer}) > lib.layer (${lib.layer})`,
+			`expected tool.layer (${tool.layer}) > lib.layer (${lib.layer})`
 		);
 		// the lib->tool dev edge was dropped, so tool is not counted as a dependency of lib
 		assert.equal(find(result, 'found').layer, 0);
@@ -77,8 +77,8 @@ describe('compute_stack_layout', () => {
 	test('a foundation with no out-edges is layer 0 with the largest y', () => {
 		const nodes = [node('util'), node('css'), node('app')];
 		const edges: Array<StackEdge> = [
-			{from: 'css', to: 'util', kind: 'peer'},
-			{from: 'app', to: 'css', kind: 'peer'},
+			{ from: 'css', to: 'util', kind: 'peer' },
+			{ from: 'app', to: 'css', kind: 'peer' }
 		];
 		const result = compute_stack_layout(nodes, edges);
 		const util = find(result, 'util');
@@ -96,9 +96,9 @@ describe('compute_stack_layout', () => {
 		// util is depended on by css, ui, and app -> fan_in 3
 		const nodes = [node('util'), node('css'), node('ui'), node('app')];
 		const edges: Array<StackEdge> = [
-			{from: 'css', to: 'util', kind: 'peer'},
-			{from: 'ui', to: 'util', kind: 'peer'},
-			{from: 'app', to: 'util', kind: 'dev'},
+			{ from: 'css', to: 'util', kind: 'peer' },
+			{ from: 'ui', to: 'util', kind: 'peer' },
+			{ from: 'app', to: 'util', kind: 'dev' }
 		];
 		const result = compute_stack_layout(nodes, edges);
 		assert.equal(find(result, 'util').fan_in, 3);
@@ -108,12 +108,12 @@ describe('compute_stack_layout', () => {
 	test('is deterministic: identical output on repeated runs', () => {
 		const nodes = [node('util'), node('css'), node('ui'), node('app'), node('tool')];
 		const edges: Array<StackEdge> = [
-			{from: 'css', to: 'util', kind: 'peer'},
-			{from: 'ui', to: 'css', kind: 'peer'},
-			{from: 'ui', to: 'util', kind: 'peer'},
-			{from: 'app', to: 'ui', kind: 'dev'},
-			{from: 'util', to: 'tool', kind: 'dev'},
-			{from: 'tool', to: 'util', kind: 'peer'},
+			{ from: 'css', to: 'util', kind: 'peer' },
+			{ from: 'ui', to: 'css', kind: 'peer' },
+			{ from: 'ui', to: 'util', kind: 'peer' },
+			{ from: 'app', to: 'ui', kind: 'dev' },
+			{ from: 'util', to: 'tool', kind: 'dev' },
+			{ from: 'tool', to: 'util', kind: 'peer' }
 		];
 		const a = compute_stack_layout(nodes, edges);
 		const b = compute_stack_layout(nodes, edges);
@@ -125,9 +125,9 @@ describe('compute_stack_layout', () => {
 		// drop one back-edge and terminate rather than loop forever.
 		const nodes = [node('a'), node('b'), node('c')];
 		const edges: Array<StackEdge> = [
-			{from: 'a', to: 'b', kind: 'peer'},
-			{from: 'b', to: 'c', kind: 'peer'},
-			{from: 'c', to: 'a', kind: 'peer'},
+			{ from: 'a', to: 'b', kind: 'peer' },
+			{ from: 'b', to: 'c', kind: 'peer' },
+			{ from: 'c', to: 'a', kind: 'peer' }
 		];
 		const result = compute_stack_layout(nodes, edges);
 		// all three nodes positioned, finite layers

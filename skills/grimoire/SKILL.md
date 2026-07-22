@@ -170,7 +170,7 @@ A lore entry can start as a single `TODO.md` and grow — adding `CLAUDE.md` whe
 context or decisions accumulate, then `TODO_*.md` files when the scratchpad
 expands into distinct topics.
 
-**Splitting into TODO_\*.md files**: Split when a topic outgrows its section in
+**Splitting into TODO\_\*.md files**: Split when a topic outgrows its section in
 the main TODO.md — typically when a design exploration, feature direction, or
 work area needs its own narrative. Split files are named by topic:
 `TODO_AUTH.md`, `TODO_PERF.md`, `TODO_RELEASE.md`.
@@ -188,7 +188,7 @@ What happens to the main TODO.md:
 
 - For small projects: no splits needed, TODO.md is the whole picture
 - As splits appear: TODO.md keeps general/active items and adds an `## Active
-  Docs` section linking split files with one-line descriptions
+Docs` section linking split files with one-line descriptions
 - For heavily-split projects: TODO.md may become primarily a routing index —
   shipped milestones, a few active items, and the Active Docs table of contents
 
@@ -288,7 +288,7 @@ mirror each repo's agent memory into `memory/{repo}/` so it survives, travels,
 and is shared between person and agents.
 
 Memory is **raw accumulation** — fast, per-repo, noisy — sitting one step before
-lore in the lifecycle: lore is what gets *distilled from* it. Treat a memory
+lore in the lifecycle: lore is what gets _distilled from_ it. Treat a memory
 file as a lead, not authority. Keep the mirror out of the self-observation
 checks (it isn't authored grimoire prose to lint or index), and reconcile it
 with a sync step on a cadence rather than hand-editing. The durable set can be
@@ -454,7 +454,7 @@ the realistic leak is helpfulness — a cross-reference, an autocompleted path,
 a docs sweep too broad — exactly the class deterministic checks catch. The one
 sanctioned crossing is distillation: content generalizes until the personal is
 gone before it leaves (this skill is itself an example). That isolation is
-what lets a private, operationally inert substrate safely hold the *union* of
+what lets a private, operationally inert substrate safely hold the _union_ of
 a person's work — keep the grimoire inert: no runtime, no service surface,
 nothing listening.
 

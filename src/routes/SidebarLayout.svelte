@@ -1,13 +1,13 @@
 <script lang="ts">
-	import {resolve} from '$app/paths';
-	import {page} from '$app/state';
-	import type {Snippet} from 'svelte';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import type { Snippet } from 'svelte';
 	import Breadcrumb from '@fuzdev/fuz_ui/Breadcrumb.svelte';
 
-	import {skills} from './skills/skills_manifest.ts';
-	import {tools} from './tools/tools_manifest.ts';
+	import { skills } from './skills/skills_manifest.ts';
+	import { tools } from './tools/tools_manifest.ts';
 
-	const {children}: {children: Snippet} = $props();
+	const { children }: { children: Snippet } = $props();
 
 	const pathname = $derived(page.url.pathname);
 </script>
@@ -26,7 +26,7 @@
 				</li>
 				<li>
 					<a
-						class={['menuitem', {selected: pathname === resolve('/skills')}]}
+						class={['menuitem', { selected: pathname === resolve('/skills') }]}
 						href={resolve('/skills')}>skills</a
 					>
 				</li>
@@ -34,7 +34,7 @@
 					{@const skill_path = resolve(('/skills/' + skill.name) as any)}
 					{@const skill_active = pathname.startsWith(skill_path)}
 					<li>
-						<a class={['menuitem pl_lg', {selected: pathname === skill_path}]} href={skill_path}
+						<a class={['menuitem pl_lg', { selected: pathname === skill_path }]} href={skill_path}
 							>{skill.name}</a
 						>
 						{#if skill_active && skill.references.length > 0}
@@ -47,8 +47,8 @@
 												{
 													selected:
 														pathname ===
-														resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any),
-												},
+														resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)
+												}
 											]}
 											style:padding-left="calc(2 * var(--space_lg))"
 											href={resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)}
@@ -62,14 +62,14 @@
 				{/each}
 				<li>
 					<a
-						class={['menuitem', {selected: pathname === resolve('/tools')}]}
+						class={['menuitem', { selected: pathname === resolve('/tools') }]}
 						href={resolve('/tools')}>tools</a
 					>
 				</li>
 				{#each tools as tool (tool.name)}
 					{@const tool_path = resolve(('/tools/' + tool.name) as any)}
 					<li>
-						<a class={['menuitem pl_lg', {selected: pathname === tool_path}]} href={tool_path}
+						<a class={['menuitem pl_lg', { selected: pathname === tool_path }]} href={tool_path}
 							>{tool.name}</a
 						>
 					</li>

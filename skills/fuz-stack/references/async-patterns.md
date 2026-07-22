@@ -89,7 +89,7 @@ const each_concurrent: <T>(
 	items: Iterable<T>,
 	concurrency: number,
 	fn: (item: T, index: number) => Promise<void> | void,
-	signal?: AbortSignal,
+	signal?: AbortSignal
 ) => Promise<void>;
 ```
 
@@ -105,7 +105,7 @@ const map_concurrent: <T, R>(
 	items: Iterable<T>,
 	concurrency: number,
 	fn: (item: T, index: number) => Promise<R> | R,
-	signal?: AbortSignal,
+	signal?: AbortSignal
 ) => Promise<Array<R>>;
 ```
 
@@ -113,7 +113,7 @@ const map_concurrent: <T, R>(
 const results = await map_concurrent(
 	file_paths,
 	5, // max 5 concurrent reads
-	async (path) => readFile(path, 'utf8'),
+	async (path) => readFile(path, 'utf8')
 );
 // results[i] corresponds to file_paths[i]
 ```
@@ -130,7 +130,7 @@ const map_concurrent_settled: <T, R>(
 	items: Iterable<T>,
 	concurrency: number,
 	fn: (item: T, index: number) => Promise<R> | R,
-	signal?: AbortSignal,
+	signal?: AbortSignal
 ) => Promise<Array<PromiseSettledResult<R>>>;
 ```
 
@@ -186,7 +186,7 @@ run in parallel up to `max_concurrency`. Uses `AsyncSemaphore` for concurrency
 and `Deferred` for dependency signaling.
 
 ```typescript
-import {run_dag, type DagNode} from '@fuzdev/fuz_util/dag.ts';
+import { run_dag, type DagNode } from '@fuzdev/fuz_util/dag.ts';
 
 interface BuildStep extends DagNode {
 	command: string;
@@ -198,7 +198,7 @@ const result = await run_dag<BuildStep>({
 		await run_command(node.command);
 	},
 	max_concurrency: 4,
-	stop_on_failure: true, // default
+	stop_on_failure: true // default
 });
 
 if (!result.success) {

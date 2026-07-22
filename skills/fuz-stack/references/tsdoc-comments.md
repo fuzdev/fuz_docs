@@ -30,7 +30,9 @@ solves, and its role in the system — what depends on it, what it enables.
 ```typescript
 // Weak — restates the function name and types
 /** Creates a new session. */
-export const create_session = (deps: QueryDeps, account_id: AccountId): Session => {/* ... */};
+export const create_session = (deps: QueryDeps, account_id: AccountId): Session => {
+	/* ... */
+};
 
 // Strong — explains purpose and rationale
 /**
@@ -66,7 +68,7 @@ the contract on the helper — not on every caller.
 
 **2. `@mutates X - <verb that mirrors the function name>`.** A tag that
 adds no scope beyond the name + description is filler. A `@mutates` earns its
-line when it surfaces *what would surprise a reader*: specific tables/columns,
+line when it surfaces _what would surprise a reader_: specific tables/columns,
 cross-table cascades, fire-and-forget effects, context keys consumed by
 downstream middleware, counter or rate-limiter state.
 
@@ -105,7 +107,7 @@ Recurring shapes:
   qualifier ("the X to <verb>", a format hint, an edge-case note) is
   usually worth keeping.
 - **Step-by-step narration of self-evident behavior** — the function name
-  + signature already tell the story.
+  - signature already tell the story.
 - **Hedging filler** — "simply", "just", "essentially", "basically", and
   "should never happen" almost always indicate filler. Cut the sentence
   or rewrite without the hedge.
@@ -134,7 +136,7 @@ Recurring shapes:
 <verb> <scope>`, not full sentences. Backticks on every
 table/column/symbol/constant name are house style.
 
-Multi-paragraph descriptions are *earned* by security or invariant
+Multi-paragraph descriptions are _earned_ by security or invariant
 rationale (TOCTOU, fail-closed, sibling-supersede, ordering, init order);
 long prose without that payoff is the pattern to flag.
 
@@ -268,7 +270,6 @@ The bare form (`@throws description`) and curly-brace form (`@throws {ErrorType}
 
 Code must be in fenced code blocks for syntax highlighting — `mdz` renders
 examples as markdown.
-
 
 ````typescript
 /**
@@ -414,12 +415,8 @@ Documents default values for interface fields and component props — place it
 on the field's doc comment:
 
 ```svelte
-/**
- * How the content is aligned in the viewport. `center` vertically centers it;
- * `top` aligns it to the top and grows downward.
- * @default 'center'
- */
-align?: DialogAlign;
+/** * How the content is aligned in the viewport. `center` vertically centers it; * `top` aligns it
+to the top and grows downward. * @default 'center' */ align?: DialogAlign;
 ```
 
 See [Svelte components](#svelte-components) for a full `$props()` block.
@@ -452,8 +449,8 @@ Documents mutations to parameters or external state. Parsed by
 svelte-docinfo's TSDoc parser and surfaced in fuz_ui's API docs.
 
 **Preferred form**: `@mutates target - description`. The description is
-the value-add — it tells the reader *what* changes and, when non-obvious,
-*why or when*. Without it the tag duplicates the function name and
+the value-add — it tells the reader _what_ changes and, when non-obvious,
+_why or when_. Without it the tag duplicates the function name and
 signature.
 
 A bare backtick form (`` @mutates `target` ``, no description) parses but
@@ -466,7 +463,7 @@ that consumers don't observe are out of scope.
 
 #### When `@mutates this` is warranted on class methods
 
-Stateful classes mutate by design — that's the point. Tagging *every*
+Stateful classes mutate by design — that's the point. Tagging _every_
 state-changing method (`add`, `remove`, `clear`, `set`, `release`,
 `acquire`, …) is noise: the method name already names the mutation.
 
@@ -492,7 +489,7 @@ A method whose name fully communicates the mutation (`set foo`,
 `clear_console_override`, `Counter.increment`, `LruMap.delete`) does NOT
 need the tag.
 
-Ranking when the tag *is* warranted: `@mutates this.specific_field -
+Ranking when the tag _is_ warranted: `@mutates this.specific_field -
 description` (best, names the field) > `@mutates this - description`
 (generic but at least carries reasoning) > `` @mutates `this` `` (bare,
 discouraged) > omit (correct when the name says it all).
@@ -612,9 +609,8 @@ the published API docs, where the shipped package stands alone — a bare `../`
 path to another repo (or an absolute workspace path) becomes a dead link. Keep TSDoc
 references repo-local. Attribute external inspiration in prose without a
 navigable path, or link a full URL; a backticked literal stays an escape hatch
-(see [Path references](./path-references.md) §2). Cross-repo *code* references
+(see [Path references](./path-references.md) §2). Cross-repo _code_ references
 use the import-specifier form (`@scope/pkg/foo.ts`), not a relative path.
-
 
 The canonical format is documented on `Module.path` in `module.svelte.ts`
 (fuz_ui).
@@ -723,7 +719,7 @@ export const map_concurrent = async <T, R>(
 	items: Iterable<T>,
 	concurrency: number,
 	fn: (item: T, index: number) => Promise<R> | R,
-	signal?: AbortSignal,
+	signal?: AbortSignal
 ): Promise<Array<R>> => {
 	// ...
 };
@@ -765,7 +761,7 @@ export class Library {
 
 ### Interfaces
 
-````typescript
+```typescript
 /**
  * File information for source analysis.
  *
@@ -789,7 +785,7 @@ export interface SourceFileInfo {
 	// Reverse edges (`dependents`) are not a caller input — computed
 	// internally by `computeDependents` from forward edges of the owned set.
 }
-````
+```
 
 ### Svelte components
 
@@ -884,4 +880,3 @@ Common drift patterns to watch for:
   distinct `error.data.reason` was added, but `@throws` still names the old one
 - **Cross-refs rotted** — `@see some_helper.ts` points at a file that was
   moved, merged, or deleted
-

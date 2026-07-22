@@ -1,4 +1,4 @@
-import type {Tome} from '@fuzdev/fuz_ui/tome.ts';
+import type { Tome } from '@fuzdev/fuz_ui/tome.ts';
 import ApiPage from './api/+page.svelte';
 import FuzStackPage from './fuz-stack/+page.svelte';
 import GrimoirePage from './grimoire/+page.svelte';
@@ -13,7 +13,7 @@ export const tomes: Array<Tome> = [
 		Component: IntroductionPage,
 		related_tomes: ['fuz-stack', 'grimoire', 'stack'],
 		related_modules: [],
-		related_declarations: [],
+		related_declarations: []
 	},
 	{
 		slug: 'fuz-stack',
@@ -21,7 +21,7 @@ export const tomes: Array<Tome> = [
 		Component: FuzStackPage,
 		related_tomes: ['stack'],
 		related_modules: [],
-		related_declarations: [],
+		related_declarations: []
 	},
 	{
 		slug: 'grimoire',
@@ -29,7 +29,7 @@ export const tomes: Array<Tome> = [
 		Component: GrimoirePage,
 		related_tomes: ['fuz-stack'],
 		related_modules: [],
-		related_declarations: [],
+		related_declarations: []
 	},
 	{
 		slug: 'stack',
@@ -37,7 +37,7 @@ export const tomes: Array<Tome> = [
 		Component: StackPage,
 		related_tomes: ['api', 'library'],
 		related_modules: [],
-		related_declarations: [],
+		related_declarations: []
 	},
 	{
 		slug: 'api',
@@ -45,7 +45,7 @@ export const tomes: Array<Tome> = [
 		Component: ApiPage,
 		related_tomes: ['stack', 'library'],
 		related_modules: [],
-		related_declarations: [],
+		related_declarations: []
 	},
 	{
 		slug: 'library',
@@ -53,6 +53,6 @@ export const tomes: Array<Tome> = [
 		Component: LibraryPage,
 		related_tomes: ['api', 'stack'],
 		related_modules: [],
-		related_declarations: [],
-	},
+		related_declarations: []
+	}
 ];

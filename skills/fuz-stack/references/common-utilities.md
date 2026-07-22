@@ -14,14 +14,14 @@ for error handling without exceptions. Uses intersection:
 on the result object (not nested under `.value`/`.error` wrappers).
 
 ```typescript
-import type {Result} from '@fuzdev/fuz_util/result.ts';
-import {unwrap} from '@fuzdev/fuz_util/result.ts';
+import type { Result } from '@fuzdev/fuz_util/result.ts';
+import { unwrap } from '@fuzdev/fuz_util/result.ts';
 
-function parse_config(text: string): Result<{value: Config}, {message: string}> {
+function parse_config(text: string): Result<{ value: Config }, { message: string }> {
 	try {
-		return {ok: true, value: JSON.parse(text)};
+		return { ok: true, value: JSON.parse(text) };
 	} catch (e) {
-		return {ok: false, message: e.message};
+		return { ok: false, message: e.message };
 	}
 }
 
@@ -39,20 +39,20 @@ const config = unwrap(parse_config(text));
 
 ### Helper exports
 
-| Export         | Purpose                                                                    |
-| -------------- | -------------------------------------------------------------------------- |
-| `OK`           | Frozen `{ok: true}` constant for results with no extra data               |
-| `NOT_OK`       | Frozen `{ok: false}` constant for results with no extra data              |
-| `unwrap()`     | Returns `result.value` if ok, throws `ResultError` if not                 |
-| `unwrap_error()`| Returns the type-narrowed `{ok: false} & TError` result, throws if ok    |
-| `ResultError`  | Custom `Error` subclass thrown by `unwrap`, carries `.result` and supports `ErrorOptions` |
+| Export           | Purpose                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| `OK`             | Frozen `{ok: true}` constant for results with no extra data                               |
+| `NOT_OK`         | Frozen `{ok: false}` constant for results with no extra data                              |
+| `unwrap()`       | Returns `result.value` if ok, throws `ResultError` if not                                 |
+| `unwrap_error()` | Returns the type-narrowed `{ok: false} & TError` result, throws if ok                     |
+| `ResultError`    | Custom `Error` subclass thrown by `unwrap`, carries `.result` and supports `ErrorOptions` |
 
 `unwrap` signature:
 
 ```typescript
-const unwrap: <TValue extends {value?: unknown}, TError extends {message?: string}>(
+const unwrap: <TValue extends { value?: unknown }, TError extends { message?: string }>(
 	result: Result<TValue, TError>,
-	message?: string,
+	message?: string
 ) => TValue['value'];
 ```
 
@@ -73,11 +73,11 @@ opposite of `unwrap` returning just `.value`.
 Hierarchical logging via `@fuzdev/fuz_util/log.ts`:
 
 ```typescript
-import {Logger} from '@fuzdev/fuz_util/log.ts';
+import { Logger } from '@fuzdev/fuz_util/log.ts';
 
 const log = new Logger('my_module');
 log.info('starting');
-log.debug('details', {data});
+log.debug('details', { data });
 
 // Child loggers inherit level, colors, and console from parent
 const child_log = log.child('submodule'); // label: 'my_module:submodule'
@@ -90,11 +90,11 @@ child_log.info('connected'); // [my_module:submodule] connected
 new Logger(label?: string, options?: LoggerOptions)
 ```
 
-| Option    | Type        | Default                     | Purpose                        |
-| --------- | ----------- | --------------------------- | ------------------------------ |
-| `level`   | `LogLevel`  | Inherited or env-detected   | Log level for this instance    |
-| `colors`  | `boolean`   | Inherited or env-detected   | Whether to use ANSI colors     |
-| `console` | `LogConsole` | Inherited or global console | Console interface for output   |
+| Option    | Type         | Default                     | Purpose                      |
+| --------- | ------------ | --------------------------- | ---------------------------- |
+| `level`   | `LogLevel`   | Inherited or env-detected   | Log level for this instance  |
+| `colors`  | `boolean`    | Inherited or env-detected   | Whether to use ANSI colors   |
+| `console` | `LogConsole` | Inherited or global console | Console interface for output |
 
 ### Log Levels
 
@@ -125,10 +125,10 @@ that haven't set their own override.
 const root = new Logger('app');
 const child = root.child('db');
 
-root.level = 'debug';  // child also becomes debug (inherits)
-child.level = 'warn';  // child overrides, root unaffected
+root.level = 'debug'; // child also becomes debug (inherits)
+child.level = 'warn'; // child overrides, root unaffected
 
-child.clear_level_override();  // child inherits from root again
+child.clear_level_override(); // child inherits from root again
 child.clear_colors_override(); // child inherits colors from root again
 child.clear_console_override(); // child inherits console from root again
 ```
@@ -140,10 +140,10 @@ Colors automatically disabled when `NO_COLOR` or `CLAUDECODE` env vars are set.
 
 ### Additional Logger Exports
 
-| Export               | Purpose                                   |
-| -------------------- | ----------------------------------------- |
-| `log_level_to_number`| Converts a `LogLevel` to its numeric value (0-4) |
-| `log_level_parse`    | Validates a log level string, throws on invalid   |
+| Export                | Purpose                                          |
+| --------------------- | ------------------------------------------------ |
+| `log_level_to_number` | Converts a `LogLevel` to its numeric value (0-4) |
+| `log_level_parse`     | Validates a log level string, throws on invalid  |
 
 ## Timings
 
@@ -151,7 +151,7 @@ Performance measurement via `@fuzdev/fuz_util/timings.ts`. Tracks multiple
 named timing operations; used in Gro's `TaskContext` for task performance.
 
 ```typescript
-import {Timings} from '@fuzdev/fuz_util/timings.ts';
+import { Timings } from '@fuzdev/fuz_util/timings.ts';
 
 const timings = new Timings();
 
@@ -171,13 +171,13 @@ stop_outer();
 
 ### API
 
-| Method/Property | Signature                                  | Purpose                                 |
-| --------------- | ------------------------------------------ | --------------------------------------- |
-| `constructor`   | `new Timings(decimals?: number)`           | Optional decimal precision for rounding |
-| `start()`       | `(key: TimingsKey, decimals?) => () => number` | Start a timing, returns stop function |
-| `get()`         | `(key: TimingsKey) => number`              | Recorded duration (0 if missing/unfinished) |
-| `entries()`     | `() => IterableIterator<[TimingsKey, number \| undefined]>` | Iterate all timings |
-| `merge()`       | `(timings: Timings) => void`               | Merge other timings, summing shared keys |
+| Method/Property | Signature                                                   | Purpose                                     |
+| --------------- | ----------------------------------------------------------- | ------------------------------------------- |
+| `constructor`   | `new Timings(decimals?: number)`                            | Optional decimal precision for rounding     |
+| `start()`       | `(key: TimingsKey, decimals?) => () => number`              | Start a timing, returns stop function       |
+| `get()`         | `(key: TimingsKey) => number`                               | Recorded duration (0 if missing/unfinished) |
+| `entries()`     | `() => IterableIterator<[TimingsKey, number \| undefined]>` | Iterate all timings                         |
+| `merge()`       | `(timings: Timings) => void`                                | Merge other timings, summing shared keys    |
 
 `TimingsKey` is `string | number`. Duplicate keys are auto-suffixed
 (`operation`, `operation_2`, `operation_3`, etc.).
@@ -194,7 +194,7 @@ function that tracks elapsed time from creation. Call with `true` to reset;
 default `decimals` is 2.
 
 ```typescript
-import {create_stopwatch, type Stopwatch} from '@fuzdev/fuz_util/timings.ts';
+import { create_stopwatch, type Stopwatch } from '@fuzdev/fuz_util/timings.ts';
 
 const elapsed: Stopwatch = create_stopwatch();
 await work();
@@ -220,11 +220,11 @@ nominal typing and strict utility types.
 Claims an event by preventing its default action and stopping propagation:
 
 ```typescript
-import {swallow} from '@fuzdev/fuz_util/dom.ts';
+import { swallow } from '@fuzdev/fuz_util/dom.ts';
 
-swallow(event);                  // preventDefault + stopImmediatePropagation
-swallow(event, false);           // preventDefault + stopPropagation (non-immediate)
-swallow(event, true, false);     // stopImmediatePropagation only (no preventDefault)
+swallow(event); // preventDefault + stopImmediatePropagation
+swallow(event, false); // preventDefault + stopPropagation (non-immediate)
+swallow(event, true, false); // stopImmediatePropagation only (no preventDefault)
 ```
 
 Design principle: if you `preventDefault`, you're claiming the event — use

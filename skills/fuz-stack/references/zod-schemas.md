@@ -22,14 +22,14 @@ defaults, metadata, CLI help text, and serialization.
 
 ### Schema helpers by layer
 
-| Layer | Module | Capabilities |
-|---|---|---|
-| Foundation | `@fuzdev/fuz_util/zod.ts` | Schema introspection — extract descriptions, defaults, aliases, types, properties; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); object-field helpers (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`); check optional/nullable/default; format values for display |
-| Foundation | `@fuzdev/fuz_util/id.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` branded types and factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`) |
-| Cell helpers | `@fuzdev/zzz/zod_helpers.ts` | Path-transform schemas (`PathWithTrailingSlash`, `PathWithoutTrailingSlash`, `PathWithLeadingSlash`) |
-| CLI | `@fuzdev/fuz_app/cli/args.ts`, `help.ts` | Schema-validated CLI arg parsing; schema-driven help text generation |
-| HTTP | `@fuzdev/fuz_app/http/schema_helpers.ts` | `schema_to_surface()` exports JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces; `instanceof` checks for schema type detection |
-| Testing | `@fuzdev/fuz_app/testing/schema_generators.ts` | Schema-driven test data generation — valid bodies, adversarial inputs |
+| Layer        | Module                                                   | Capabilities                                                                                                                                                                                                                                                                                                          |
+| ------------ | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Foundation   | `@fuzdev/fuz_util/zod.ts`                                | Schema introspection — extract descriptions, defaults, aliases, types, properties; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); object-field helpers (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`); check optional/nullable/default; format values for display |
+| Foundation   | `@fuzdev/fuz_util/id.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` branded types and factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`)                                                                                                                                                                                                  |
+| Cell helpers | `@fuzdev/zzz/zod_helpers.ts`                             | Path-transform schemas (`PathWithTrailingSlash`, `PathWithoutTrailingSlash`, `PathWithLeadingSlash`)                                                                                                                                                                                                                  |
+| CLI          | `@fuzdev/fuz_app/cli/args.ts`, `help.ts`                 | Schema-validated CLI arg parsing; schema-driven help text generation                                                                                                                                                                                                                                                  |
+| HTTP         | `@fuzdev/fuz_app/http/schema_helpers.ts`                 | `schema_to_surface()` exports JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces; `instanceof` checks for schema type detection                                                                                                                                                                    |
+| Testing      | `@fuzdev/fuz_app/testing/schema_generators.ts`           | Schema-driven test data generation — valid bodies, adversarial inputs                                                                                                                                                                                                                                                 |
 
 ## Core Conventions
 
@@ -49,12 +49,12 @@ defaults, metadata, CLI help text, and serialization.
 ### The Canonical Pattern
 
 ```typescript
-import {z} from 'zod';
+import { z } from 'zod';
 
 export const MyThing = z.strictObject({
 	name: z.string().min(1),
 	count: z.number().int().default(0),
-	kind: z.enum(['a', 'b']),
+	kind: z.enum(['a', 'b'])
 });
 export type MyThing = z.infer<typeof MyThing>;
 ```
@@ -120,17 +120,17 @@ This is a **systematic pattern** in zzz:
 export const ChatJson = CellJson.extend({
 	name: z.string().default(''),
 	thread_ids: z.array(Uuid).default(() => []),
-	selected_thread_id: Uuid.nullable().default(null),
+	selected_thread_id: Uuid.nullable().default(null)
 	// … more fields elided
-}).meta({cell_class_name: 'Chat'});
-export type ChatJson = z.infer<typeof ChatJson>;       // all fields present
-export type ChatJsonInput = z.input<typeof ChatJson>;   // defaults omittable
+}).meta({ cell_class_name: 'Chat' });
+export type ChatJson = z.infer<typeof ChatJson>; // all fields present
+export type ChatJsonInput = z.input<typeof ChatJson>; // defaults omittable
 
 // a schema extending a base + literal discriminant, exporting an input type
 export const PackageResource = ResourceBase.extend({
 	type: z.literal('package'),
 	from: PackageMapping,
-	check: z.string().optional(),
+	check: z.string().optional()
 });
 export type PackageResource = z.infer<typeof PackageResource>;
 export type PackageResourceInput = z.input<typeof PackageResource>;
@@ -149,14 +149,12 @@ A systematic factory pattern: accept `z.input<>` without the discriminant
 field, parse to get validated output:
 
 ```typescript
-export const package_resource = (
-	config: Omit<PackageResourceInput, 'type'>,
-): PackageResource => {
-	return PackageResource.parse({type: 'package', ...config});
+export const package_resource = (config: Omit<PackageResourceInput, 'type'>): PackageResource => {
+	return PackageResource.parse({ type: 'package', ...config });
 };
 
 // usage — type-safe, defaults applied, discriminant injected
-const pkg = package_resource({id: 'nginx', name: 'nginx', from: {apt: 'nginx'}});
+const pkg = package_resource({ id: 'nginx', name: 'nginx', from: { apt: 'nginx' } });
 ```
 
 `parse` applies defaults and validates; `Omit<Input, 'type'>` lets callers skip
@@ -179,7 +177,7 @@ export type Datetime = z.infer<typeof Datetime>;
 // zzz/diskfile_types.ts — refine + brand for domain validation
 export const DiskfilePath = z
 	.string()
-	.refine((p) => is_path_absolute(p), {message: 'path must be absolute'})
+	.refine((p) => is_path_absolute(p), { message: 'path must be absolute' })
 	.brand('DiskfilePath');
 export type DiskfilePath = z.infer<typeof DiskfilePath>;
 
@@ -233,10 +231,9 @@ Use `.shape` to validate individual fields without parsing the whole object:
 ```typescript
 // zzz/part.svelte.ts — reuse a base field's validator via `.shape`
 // (here a subtype overrides the inherited default)
-has_xml_tag: PartJsonBase.shape.has_xml_tag.default(true),
-
-// or validate a single value against one field's schema
-PartJsonBase.shape.has_xml_tag.parse(value);
+has_xml_tag: (PartJsonBase.shape.has_xml_tag.default(true),
+	// or validate a single value against one field's schema
+	PartJsonBase.shape.has_xml_tag.parse(value));
 ```
 
 ## Transform Pipelines
@@ -289,16 +286,16 @@ public `.def` property:
 
 ```typescript
 // instanceof — type detection without internal APIs
-schema instanceof z.ZodNull
-schema instanceof z.ZodObject
-schema instanceof z.ZodArray
+schema instanceof z.ZodNull;
+schema instanceof z.ZodObject;
+schema instanceof z.ZodArray;
 
 // .def — public getter for the type definition (same as _zod.def)
 const def = schema.def;
-def.type    // 'string', 'object', 'null', etc.
+def.type; // 'string', 'object', 'null', etc.
 
 // WRONG: ._zod.def — internal API, same value but not public
-schema._zod.def  // works but prefer schema.def
+schema._zod.def; // works but prefer schema.def
 ```
 
 See `@fuzdev/fuz_util/zod.ts` for unwrapping utilities (`zod_unwrap_def`,
@@ -317,13 +314,13 @@ Use `z.discriminatedUnion()` when a type field determines the shape; members use
 ```typescript
 // zzz/provider_types.ts — discriminate on `available`; members use strictObject
 export const ProviderStatus = z.discriminatedUnion('available', [
-	z.strictObject({name: z.string(), available: z.literal(true), checked_at: z.number()}),
+	z.strictObject({ name: z.string(), available: z.literal(true), checked_at: z.number() }),
 	z.strictObject({
 		name: z.string(),
 		available: z.literal(false),
 		error: z.string(),
-		checked_at: z.number(),
-	}),
+		checked_at: z.number()
+	})
 ]);
 export type ProviderStatus = z.infer<typeof ProviderStatus>;
 ```
@@ -336,14 +333,17 @@ with literals:
 ```typescript
 // fuz_app http/jsonrpc.ts — multiple message shapes
 export const JsonrpcMessage = z.union([
-	JsonrpcRequest, JsonrpcNotification, JsonrpcResponse, JsonrpcErrorResponse,
+	JsonrpcRequest,
+	JsonrpcNotification,
+	JsonrpcResponse,
+	JsonrpcErrorResponse
 ]);
 
 // mixed literals + an object shape
 export const Sort = z.union([
 	z.literal('asc'),
 	z.literal('desc'),
-	z.strictObject({by: z.string(), dir: z.enum(['asc', 'desc'])}),
+	z.strictObject({ by: z.string(), dir: z.enum(['asc', 'desc']) })
 ]);
 
 // union with a literal `false` for opt-out
@@ -364,9 +364,9 @@ entries and validates at construction time:
 
 ```typescript
 // fuz_app auth/role_schema.ts — builtin + app-defined roles
-const {Role, role_specs} = create_role_schema(
-	[{name: 'teacher', description: '…', grant_paths: ['admin']}], // ReadonlyArray<RoleSpec>
-	{credential_types, scope_kinds, grant_paths}, // optional registries for cross-axis validation
+const { Role, role_specs } = create_role_schema(
+	[{ name: 'teacher', description: '…', grant_paths: ['admin'] }], // ReadonlyArray<RoleSpec>
+	{ credential_types, scope_kinds, grant_paths } // optional registries for cross-axis validation
 );
 // Role: z.ZodType<string> for I/O boundaries; role_specs: ReadonlyMap<string, RoleSpec>
 ```
@@ -385,14 +385,14 @@ export const ActionSpec = z.strictObject({
 	method: z.string(),
 	kind: ActionKind,
 	input: z.custom<z.ZodType>((v) => v instanceof z.ZodType),
-	output: z.custom<z.ZodType>((v) => v instanceof z.ZodType),
+	output: z.custom<z.ZodType>((v) => v instanceof z.ZodType)
 	// ...
 });
 
 export const RequestResponseActionSpec = ActionSpec.extend({
 	kind: z.literal('request_response').default('request_response'),
 	auth: RouteAuth, // four-axis {account, actor, roles?, credential_types?}
-	async: z.literal(true).default(true),
+	async: z.literal(true).default(true)
 });
 ```
 
@@ -418,11 +418,14 @@ other keys are domain-specific:
 ```typescript
 export const DeployArgs = z.strictObject({
 	_: z.array(z.string()).max(0).default([]),
-	dry: z.boolean().meta({description: 'preview without deploying'}).default(false),
-	branch: z.string().meta({
-		description: 'deploy branch',
-		aliases: ['b'],
-	}).default('deploy'),
+	dry: z.boolean().meta({ description: 'preview without deploying' }).default(false),
+	branch: z
+		.string()
+		.meta({
+			description: 'deploy branch',
+			aliases: ['b']
+		})
+		.default('deploy')
 });
 ```
 
@@ -454,7 +457,7 @@ response:
 const result = input_schema.safeParse(body);
 if (!result.success) {
 	// dev_only strips issue details from production responses (info leak)
-	return c.json({error: ERROR_INVALID_REQUEST_BODY, issues: dev_only(result.error.issues)}, 400);
+	return c.json({ error: ERROR_INVALID_REQUEST_BODY, issues: dev_only(result.error.issues) }, 400);
 }
 c.set('validated_input', result.data);
 
@@ -470,10 +473,10 @@ middleware. Input validated via `safeParse`; output validated in DEV only.
 Use `parse` when invalid data means a bug or fatal misconfiguration:
 
 ```typescript
-RoleName.parse(name);                                    // internal assertion
-const args = RunApplyArgs.parse(raw_args);               // CLI args
-return PackageResource.parse({type: 'package', ...config}); // factory function
-const parsed = this.schema.parse(v);                     // Cell field update
+RoleName.parse(name); // internal assertion
+const args = RunApplyArgs.parse(raw_args); // CLI args
+return PackageResource.parse({ type: 'package', ...config }); // factory function
+const parsed = this.schema.parse(v); // Cell field update
 ```
 
 ### safeParse with Custom Error Handling
@@ -508,22 +511,22 @@ z.flattenError(parsed.error); // {formErrors, fieldErrors} — flat, for forms
 
 ## Quick Reference
 
-| Convention | Correct | Wrong |
-|-----------|---------|-------|
-| Object schemas (internal) | `z.strictObject({...})` | `z.object({...})` |
-| Object schemas (external data) | `z.looseObject({...})` or `z.object({...})` with comment | `z.strictObject({...})` |
-| Response/error schemas | `z.looseObject({...})` — tolerates added fields | `z.strictObject({...})` |
-| Discriminated union members | `z.strictObject({type: z.literal('a'), ...})` | `z.object({type: z.literal('a'), ...})` |
-| Descriptions | `.meta({description: '...'})` | `.describe('...')` |
-| Schema naming | `const MyThing = z.strictObject(...)` | `const my_thing`, `const MyThingSchema` |
-| Type inference (output) | `type MyThing = z.infer<typeof MyThing>` | separate name from schema |
-| Type inference (input) | `type MyThingInput = z.input<typeof MyThing>` | manual partial types |
-| IDs and paths | `z.string().brand('MyId')` | plain `z.string()` |
-| HTTP/API input | `schema.safeParse(data)` | `schema.parse(data)` |
-| CLI args/factories | `schema.parse(data)` | `schema.safeParse(data)` with unnecessary error handling |
-| Env loading | `safeParse` + custom throw (better error context) | bare `parse` (loses raw values) |
-| Optional config files | `safeParse` + return null | `parse` (crashes on missing file) |
-| No input/output | `z.void()` or `z.void().optional()` | `z.undefined()`, omitting the field |
-| Optional reference | `Uuid.nullable().default(null)` | `Uuid.optional()` (ambiguous undefined vs absent) |
-| Complex embedded types | `z.custom<MyType>()` | hand-rolled validation |
-| Key-value maps | `z.record(z.string(), ValueSchema)` | `z.strictObject` with dynamic keys |
+| Convention                     | Correct                                                  | Wrong                                                    |
+| ------------------------------ | -------------------------------------------------------- | -------------------------------------------------------- |
+| Object schemas (internal)      | `z.strictObject({...})`                                  | `z.object({...})`                                        |
+| Object schemas (external data) | `z.looseObject({...})` or `z.object({...})` with comment | `z.strictObject({...})`                                  |
+| Response/error schemas         | `z.looseObject({...})` — tolerates added fields          | `z.strictObject({...})`                                  |
+| Discriminated union members    | `z.strictObject({type: z.literal('a'), ...})`            | `z.object({type: z.literal('a'), ...})`                  |
+| Descriptions                   | `.meta({description: '...'})`                            | `.describe('...')`                                       |
+| Schema naming                  | `const MyThing = z.strictObject(...)`                    | `const my_thing`, `const MyThingSchema`                  |
+| Type inference (output)        | `type MyThing = z.infer<typeof MyThing>`                 | separate name from schema                                |
+| Type inference (input)         | `type MyThingInput = z.input<typeof MyThing>`            | manual partial types                                     |
+| IDs and paths                  | `z.string().brand('MyId')`                               | plain `z.string()`                                       |
+| HTTP/API input                 | `schema.safeParse(data)`                                 | `schema.parse(data)`                                     |
+| CLI args/factories             | `schema.parse(data)`                                     | `schema.safeParse(data)` with unnecessary error handling |
+| Env loading                    | `safeParse` + custom throw (better error context)        | bare `parse` (loses raw values)                          |
+| Optional config files          | `safeParse` + return null                                | `parse` (crashes on missing file)                        |
+| No input/output                | `z.void()` or `z.void().optional()`                      | `z.undefined()`, omitting the field                      |
+| Optional reference             | `Uuid.nullable().default(null)`                          | `Uuid.optional()` (ambiguous undefined vs absent)        |
+| Complex embedded types         | `z.custom<MyType>()`                                     | hand-rolled validation                                   |
+| Key-value maps                 | `z.record(z.string(), ValueSchema)`                      | `z.strictObject` with dynamic keys                       |

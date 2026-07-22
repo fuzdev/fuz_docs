@@ -15,13 +15,13 @@ source files → svelte-docinfo plugin → virtual:svelte-docinfo (modules) ┐
 package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
 ```
 
-| Stage             | What                                              | Key details                                                                                                                                                                                                                                                                                         |
-| ----------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Analysis**      | `svelte-docinfo`                                  | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata                                                                                                                                                                        |
+| Stage             | What                                              | Key details                                                                                                                                                                                                                                                                                                        |
+| ----------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Analysis**      | `svelte-docinfo`                                  | Standalone package analyzes TS/JS/Svelte modules via the TypeScript compiler API, extracting declarations and TSDoc metadata                                                                                                                                                                                       |
 | **Generation**    | `svelte-docinfo/vite.js` + `vite_plugin_pkg_json` | Two Vite plugins run at build/dev time: `svelte-docinfo` exposes the analyzed `modules` as `virtual:svelte-docinfo`; `vite_plugin_pkg_json` (from fuz_ui) curates `package.json` to the publish-safe `PkgJson` and exposes it as `virtual:pkg.json`. No committed generated data (`library.gen.ts`/`library.json`) |
-| **Serialization** | `library_json_from_modules()`                     | From `@fuzdev/fuz_util/library_json.ts`; pairs the curated `pkg_json` (from `virtual:pkg.json`) with the analyzed `modules` (from `virtual:svelte-docinfo`) into the raw `{pkg_json, source_json}` `LibraryJson` (no derived values stored — those are computed by `Library`)                       |
-| **Runtime**       | `Library` class                                   | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps                                                                                                                                                                                   |
-| **Rendering**     | Tome pages + API routes                           | Manual tomes + auto-generated API docs. Backticked identifiers in TSDoc auto-link to API docs via the mdz rendering seam — fuz_ui injects `DocsLink` as mdz's inline-code renderer, which resolves the identifier against the `Library` (see ./mdz.md)                                               |
+| **Serialization** | `library_json_from_modules()`                     | From `@fuzdev/fuz_util/library_json.ts`; pairs the curated `pkg_json` (from `virtual:pkg.json`) with the analyzed `modules` (from `virtual:svelte-docinfo`) into the raw `{pkg_json, source_json}` `LibraryJson` (no derived values stored — those are computed by `Library`)                                      |
+| **Runtime**       | `Library` class                                   | Wraps `LibraryJson` into `Module` and `Declaration` instances with `$derived` properties, search, and lookup maps                                                                                                                                                                                                  |
+| **Rendering**     | Tome pages + API routes                           | Manual tomes + auto-generated API docs. Backticked identifiers in TSDoc auto-link to API docs via the mdz rendering seam — fuz_ui injects `DocsLink` as mdz's inline-code renderer, which resolves the identifier against the `Library` (see ./mdz.md)                                                             |
 
 ### Analysis
 
@@ -34,7 +34,7 @@ Svelte ecosystem, not fuz conventions), sorts
 modules, and checks for duplicate names in the flat namespace. It ships a CLI,
 a Vite plugin (`svelte-docinfo/vite.js`), and a build-tool-agnostic API. fuz_ui
 depends on it as a dev dependency — importing its types and a few runtime
-helpers — while the heavy per-project module analysis runs in each *consumer's*
+helpers — while the heavy per-project module analysis runs in each _consumer's_
 build via the Vite plugin, not at fuz_ui's runtime.
 
 ## Tome System
@@ -49,7 +49,7 @@ const Tome = z.object({
 	Component: z.custom<Component<any, any>>(), // the +page.svelte component
 	related_tomes: z.array(z.string()), // cross-links to other tome pages (by slug)
 	related_modules: z.array(z.string()), // links to source modules in API docs
-	related_declarations: z.array(z.string()), // links to specific exports in API docs
+	related_declarations: z.array(z.string()) // links to specific exports in API docs
 });
 ```
 
@@ -77,7 +77,7 @@ Every project with docs has `src/routes/docs/tomes.ts` (examples here use the
 `package.json` `imports`, or adapt to its existing aliases):
 
 ```typescript
-import type {Tome} from '@fuzdev/fuz_ui/tome.ts';
+import type { Tome } from '@fuzdev/fuz_ui/tome.ts';
 import introduction from '#routes/docs/introduction/+page.svelte';
 import api from '#routes/docs/api/+page.svelte';
 
@@ -88,8 +88,8 @@ export const tomes: Array<Tome> = [
 		Component: introduction,
 		related_tomes: ['api'],
 		related_modules: [],
-		related_declarations: [],
-	},
+		related_declarations: []
+	}
 	// ...
 ];
 ```
@@ -122,13 +122,13 @@ curated, publish-safe `package.json` subset as `virtual:pkg.json`) in
 `vite.config.ts`:
 
 ```typescript
-import {defineConfig} from 'vite';
-import {sveltekit} from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+import { sveltekit } from '@sveltejs/kit/vite';
 import svelte_docinfo from 'svelte-docinfo/vite.js';
-import {vite_plugin_pkg_json} from '@fuzdev/fuz_ui/vite_plugin_pkg_json.ts';
+import { vite_plugin_pkg_json } from '@fuzdev/fuz_ui/vite_plugin_pkg_json.ts';
 
 export default defineConfig({
-	plugins: [sveltekit(), svelte_docinfo(), vite_plugin_pkg_json()],
+	plugins: [sveltekit(), svelte_docinfo(), vite_plugin_pkg_json()]
 });
 ```
 
@@ -138,7 +138,7 @@ Register the ambient types in `src/app.d.ts`:
 /// <reference types="svelte-docinfo/virtual-svelte-docinfo.js" />
 
 declare module 'virtual:pkg.json' {
-	import type {PkgJson} from '@fuzdev/fuz_util/pkg_json.ts';
+	import type { PkgJson } from '@fuzdev/fuz_util/pkg_json.ts';
 	const pkg_json: PkgJson;
 	export default pkg_json;
 }
@@ -169,15 +169,15 @@ pulls the heavy analyzed `modules` into the root chunk and instantiates
 ```svelte
 <script lang="ts">
 	import ThemeRoot from '@fuzdev/fuz_ui/ThemeRoot.svelte';
-	import {SiteState, site_context} from '@fuzdev/fuz_ui/site.svelte.ts';
-	import {logo_my_project} from '#lib/logos.ts';
+	import { SiteState, site_context } from '@fuzdev/fuz_ui/site.svelte.ts';
+	import { logo_my_project } from '#lib/logos.ts';
 	import pkg_json from 'virtual:pkg.json';
-	import type {Snippet} from 'svelte';
+	import type { Snippet } from 'svelte';
 
-	const {children}: {children: Snippet} = $props();
+	const { children }: { children: Snippet } = $props();
 
 	// `glyph` and `repo_url` derive from `pkg_json`; `icon` stays explicit.
-	site_context.set(new SiteState({icon: logo_my_project, pkg_json}));
+	site_context.set(new SiteState({ icon: logo_my_project, pkg_json }));
 </script>
 
 <ThemeRoot>{@render children()}</ThemeRoot>
@@ -192,8 +192,8 @@ importer; because only the docs subtree imports it, the heavy
 
 ```typescript
 // src/routes/library.ts
-import {library_json_from_modules} from '@fuzdev/fuz_util/library_json.ts';
-import {modules} from 'virtual:svelte-docinfo';
+import { library_json_from_modules } from '@fuzdev/fuz_util/library_json.ts';
+import { modules } from 'virtual:svelte-docinfo';
 import pkg_json from 'virtual:pkg.json';
 
 export const library_json = library_json_from_modules(pkg_json, modules);
@@ -204,13 +204,13 @@ which covers all `/docs/*` pages:
 
 ```svelte
 <script lang="ts">
-	import type {Snippet} from 'svelte';
+	import type { Snippet } from 'svelte';
 	import Docs from '@fuzdev/fuz_ui/Docs.svelte';
-	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
-	import {tomes} from '#routes/docs/tomes.ts';
-	import {library_json} from '#routes/library.ts';
+	import { Library, library_context } from '@fuzdev/fuz_ui/library.svelte.ts';
+	import { tomes } from '#routes/docs/tomes.ts';
+	import { library_json } from '#routes/library.ts';
 
-	const {children}: {children: Snippet} = $props();
+	const { children }: { children: Snippet } = $props();
 
 	const library = new Library(library_json);
 	library_context.set(() => library);
@@ -235,8 +235,8 @@ a `/skills` subtree:
 
 ```svelte
 <script lang="ts">
-	import {Library, library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
-	import {library_json} from '#routes/library.ts';
+	import { Library, library_context } from '@fuzdev/fuz_ui/library.svelte.ts';
+	import { library_json } from '#routes/library.ts';
 
 	const library = new Library(library_json);
 	library_context.set(() => library);
@@ -257,7 +257,7 @@ Each tome is a `+page.svelte` in `src/routes/docs/{slug}/`:
 
 ```svelte
 <script lang="ts">
-	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.ts';
+	import { tome_get_by_slug } from '@fuzdev/fuz_ui/tome.ts';
 	import TomeContent from '@fuzdev/fuz_ui/TomeContent.svelte';
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
@@ -302,7 +302,7 @@ Sections tracked by IntersectionObserver for the right sidebar TOC.
 <script lang="ts">
 	import ApiModule from '@fuzdev/fuz_ui/ApiModule.svelte';
 
-	const {params} = $props();
+	const { params } = $props();
 	const module_path = $derived(params.module_path ?? '');
 </script>
 
@@ -373,11 +373,11 @@ Other projects **import** them:
 ```typescript
 // In fuz_ui (defines the components)
 import Docs from './Docs.svelte';
-import {library_context} from './library.svelte.ts';
+import { library_context } from './library.svelte.ts';
 
 // In fuz_css or any consumer project
 import Docs from '@fuzdev/fuz_ui/Docs.svelte';
-import {library_context} from '@fuzdev/fuz_ui/library.svelte.ts';
+import { library_context } from '@fuzdev/fuz_ui/library.svelte.ts';
 ```
 
 Layout structure is identical — only tomes, categories, and breadcrumb

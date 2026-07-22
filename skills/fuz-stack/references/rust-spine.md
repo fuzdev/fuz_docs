@@ -55,7 +55,7 @@ Shared swap points:
   actions without `fuz_testing` entering the production dep graph
 - `pre_migration_hook` — test-only DB setup
 
-The `run_app` *body* is consumer-specific (domain App, migration set,
+The `run_app` _body_ is consumer-specific (domain App, migration set,
 action-spec composition) and is not a shared helper. The boxed-closure
 shapes — `ExtraActionSpecsFactory<App>`, `PreMigrationHook<E>`, and the
 `ExtraActionSpecsRuntime` POD (`password_hasher` / `keyring` /
@@ -74,7 +74,7 @@ definition, not a re-export shim.
 passed `fuz_http::DEFAULT_DRAIN_TIMEOUT` (10 s) rather than a per-crate
 const. Remaining fields are legitimately per-consumer (zzz adds
 `force_test_actions` and `disable_login_rate_limit`; the forge has neither) —
-don't force one struct across consumers. Bind env-var *names* are also
+don't force one struct across consumers. Bind env-var _names_ are also
 per-consumer (`PORT`/`HOST` for the forge, `ZZZ_PORT` for zzz).
 
 The daemon-token keeper wiring (`BootstrapKeeperResolved` adapter + boot-time
@@ -96,22 +96,22 @@ chains as migration debt, not a competing style).
 `JsonrpcErrorCode` is a `#[repr(i32)]` enum with a hand-written `Serialize`
 emitting the bare `i32` the wire requires — not scattered `pub const … :
 i32`. Because `JsonrpcError.code` is the enum, `error_code_to_http_status` is
-an *exhaustive* match: a new code is a compile error there, not a silent 500.
+an _exhaustive_ match: a new code is a compile error there, not a silent 500.
 The TS twin is `fuz_app`'s `jsonrpc_errors`; consumers referencing a code use
 the enum (`JsonrpcErrorCode::NotFound as i64`), never a magic number.
 
 ## Env loading
 
 - **Injectable seam**: load through `from_vars(get: impl Fn(&str) ->
-  Option<String>)` so tests inject a map instead of mutating process env —
+Option<String>)` so tests inject a map instead of mutating process env —
   `fuz_forge_server`'s env struct is the exemplar, including a test that
-  actively *rejects retired var names*. Route all env reads through the seam;
+  actively _rejects retired var names_. Route all env reads through the seam;
   audit for stray `std::env::var` in router code (both consumers still have
   a few — migration debt).
 - **Fail loud, not just fail closed**: security-consequential misconfig
   refuses to boot, never warn-and-continue — an empty `FUZ_ALLOWED_ORIGINS`
   (empty allowlist = allow-all; the shared check is
-  `fuz_http::require_non_empty_origins`), a *malformed* trusted-proxy list
+  `fuz_http::require_non_empty_origins`), a _malformed_ trusted-proxy list
   (unset defaults to loopback — that's fine), missing/weak cookie keys, and a
   failed `ActionRegistry::compile()` (an empty-registry fallback would
   silently answer `method_not_found` to everything).
@@ -126,14 +126,14 @@ the enum (`JsonrpcErrorCode::NotFound as i64`), never a magic number.
 - **`OnceLock` breaks the App ↔ registry capture cycle**: action-spec
   builders capture `Arc<App>` into handler closures, so the compiled registry
   can't exist until the App does — it lives in `App.action_registry:
-  OnceLock<Arc<ActionRegistry>>`, `set()` after construction.
+OnceLock<Arc<ActionRegistry>>`, `set()` after construction.
 - **`ActionContext<'a>` is the borrowed per-request seam**: `notify: &dyn
-  Fn(&str, &Value)`, `connection_id: Option<…>` (set on WS, `None` on HTTP),
+Fn(&str, &Value)`, `connection_id: Option<…>` (set on WS, `None` on HTTP),
   `signal: &CancellationToken` (threaded into providers), `request_id`.
 - **Streaming needs an owned sender**: the borrowed `notify` can't be
   captured into a `'static` closure, so zzz's provider streaming builds a
   per-request `ProgressSender = Box<dyn Fn(Value) + Send + Sync>` — only when
-  the request carries a progress token *and* arrived over WS — wrapping
+  the request carries a progress token _and_ arrived over WS — wrapping
   chunks with `fuz_http::notification(…)` and routing through
   `Arc<fuz_realtime::ConnectionRegistry>::send_to(conn_id, …)`. HTTP requests
   get `None` → non-streaming.
@@ -144,7 +144,7 @@ the enum (`JsonrpcErrorCode::NotFound as i64`), never a magic number.
   consumer's own namespace should be small — the forge's is a single
   token-policy table.
 - **Loopback-gated internal routes**: `/internal/*` callbacks check the
-  `ConnectInfo<SocketAddr>` peer is loopback *and* a per-resource secret —
+  `ConnectInfo<SocketAddr>` peer is loopback _and_ a per-resource secret —
   X-Forwarded-For can't fake the peer address.
 - **Server boot errors carry the CLI exit-code policy**: a `StartupError`
   with `exit_code()` mapping `Config → 2`, everything else `→ 1` — the
@@ -174,7 +174,7 @@ the enum (`JsonrpcErrorCode::NotFound as i64`), never a magic number.
      (schema shared with `fuz_app` TS) + a reqwest `/health` probe + a
      `Wedged(info)` arm for "pid alive, `/health` silent". It reuses the
      `fuz_sys` primitives (`fuz_sys::{is_pid_alive, send_signal,
-     rfc3339_now}`, `fuz_sys::fs::write_atomic`) but **not** `fuz_home` —
+rfc3339_now}`, `fuz_sys::fs::write_atomic`) but **not** `fuz_home` —
      the `fuz_home` daemon helpers model the UDS schema, which doesn't fit
      HTTP/port. `daemon.json` here is world-readable `0o644` on purpose (no
      secrets in it).
@@ -203,18 +203,18 @@ don't hand-roll it:
 - Exit codes are three-way sysexits: clean → 0, policy violation → 65,
   tooling failure → 69/70.
 
-`BUILTIN_CRATE_LAYERING` — per-crate *library* layering applied
+`BUILTIN_CRATE_LAYERING` — per-crate _library_ layering applied
 unconditionally in every workspace (absent subjects are skipped; the OK
 output lists subjects actually checked so a renamed crate is visible, not
 skipped green). Each rule says a library must not transitively
 (runtime-)depend on a forbidden set. The four today:
 
-| Subject | Must not reach | Invariant |
-| ------- | -------------- | --------- |
+| Subject    | Must not reach                                            | Invariant                                                |
+| ---------- | --------------------------------------------------------- | -------------------------------------------------------- |
 | `fuz_fact` | `axum`, `fuz_http`, `fuz_cell`, `fuz_auth`, `fuz_actions` | bytes escape only through the authz'd `fuz_fact_serving` |
-| `fuz_cell` | `fuz_actions` | storage/authz half can't reach the verb layer |
-| `fuz_sys` | `axum`, `fuz_http` | the OS leaf stays HTTP-free |
-| `fuz_home` | `axum`, `fuz_db`, `fuz_http` | the `~/.fuz` layer stays HTTP/DB-free |
+| `fuz_cell` | `fuz_actions`                                             | storage/authz half can't reach the verb layer            |
+| `fuz_sys`  | `axum`, `fuz_http`                                        | the OS leaf stays HTTP-free                              |
+| `fuz_home` | `axum`, `fuz_db`, `fuz_http`                              | the `~/.fuz` layer stays HTTP/DB-free                    |
 
 The `fuz_cell` rule is deliberately narrower than `fuz_fact`'s — it
 legitimately reaches `axum`/`fuz_http` transitively via `fuz_auth`, and the

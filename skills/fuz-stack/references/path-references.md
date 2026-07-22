@@ -23,7 +23,7 @@ location rather than by code identity:
 > **A bare path is a promise it resolves on disk.** An unbackticked `./`, `../`,
 > or `~/dev/` path is a real, navigable link — it must point at a file or
 > directory that exists, resolved relative to the file it appears in (`~/dev/`
-> from the workspace root). If you mean a path *illustratively* — a conceptual
+> from the workspace root). If you mean a path _illustratively_ — a conceptual
 > location (`./build/`), an example (`./foo/bar`), an import shown in prose
 > (`import './fuz.css'`) — **wrap it in backticks**; that's the escape hatch
 > that says "literal, don't follow." Source TSDoc additionally must not point
@@ -42,7 +42,7 @@ filesystem path.
 > and `../` belong.
 
 > **Backticks are an escape hatch.** This rule applies only to references that
-> resolve to a same-repo module. A backticked path that *isn't* one — a
+> resolve to a same-repo module. A backticked path that _isn't_ one — a
 > cross-repo path, a deliberately-literal example, explanatory prose — is left
 > exactly as written. Don't rewrite `` `../some-other-repo/x.ts` `` or a
 > non-module path into the module form; the backticks mean "treat this
@@ -75,7 +75,7 @@ filesystem path.
 
 ## 4. Cross-repo references
 
-To point at a file in *another* workspace repo, use a **bare** navigational
+To point at a file in _another_ workspace repo, use a **bare** navigational
 path (form 1) — `../other-repo/src/lib/foo.ts` or `~/dev/other-repo/...`. The
 backticked module form (form 2) is **same-repo only**: it resolves against the
 current repo's module index, so it can't name another package's module. For a
@@ -100,7 +100,7 @@ file, prefer a workspace-root-anchored path (`setup/scripts/foo.md`) over deep
 
 ## 5. Import specifiers (code imports, not doc prose)
 
-The forms above govern paths *written in docs/prose*. Import specifiers in
+The forms above govern paths _written in docs/prose_. Import specifiers in
 **source** use the real source extension (`.ts` / `.svelte.ts` / `.svelte`),
 never the old `.js`-for-a-`.ts`-file form, and pick the alias by **whether the
 module ships**:

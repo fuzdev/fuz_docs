@@ -22,7 +22,7 @@ Primary nominal typing approach:
 // Implementation:
 declare const FlavoredSymbol: unique symbol;
 interface Flavor<T> {
-	readonly [FlavoredSymbol]?: T;  // optional — base types still assignable
+	readonly [FlavoredSymbol]?: T; // optional — base types still assignable
 }
 type Flavored<TValue, TName> = TValue & Flavor<TName>;
 ```
@@ -31,8 +31,8 @@ type Flavored<TValue, TName> = TValue & Flavor<TName>;
 type Email = Flavored<string, 'Email'>;
 type Address = Flavored<string, 'Address'>;
 
-const email1: Email = 'foo@bar.com';         // ok — plain string is fine
-const email2: Email = 'foo' as Address;       // error — Address !== Email
+const email1: Email = 'foo@bar.com'; // ok — plain string is fine
+const email2: Email = 'foo' as Address; // error — Address !== Email
 ```
 
 Real uses in fuz_util:
@@ -46,12 +46,12 @@ export type GitOrigin = Flavored<string, 'GitOrigin'>;
 export type GitBranch = Flavored<string, 'GitBranch'>;
 
 // fuz_util/colors.ts
-export type Hue = Flavored<number, 'Hue'>;           // [0, 1]
+export type Hue = Flavored<number, 'Hue'>; // [0, 1]
 export type Saturation = Flavored<number, 'Saturation'>; // [0, 1]
 export type Lightness = Flavored<number, 'Lightness'>; // [0, 1]
-export type Red = Flavored<number, 'Red'>;             // [0, 255]
-export type Green = Flavored<number, 'Green'>;         // [0, 255]
-export type Blue = Flavored<number, 'Blue'>;           // [0, 255]
+export type Red = Flavored<number, 'Red'>; // [0, 255]
+export type Green = Flavored<number, 'Green'>; // [0, 255]
+export type Blue = Flavored<number, 'Blue'>; // [0, 255]
 
 // fuz_util/url.ts — paired with a Zod schema of the same name
 export const Url = z.url();
@@ -69,7 +69,7 @@ assignable — must cast:
 // Implementation:
 declare const BrandedSymbol: unique symbol;
 interface Brand<T> {
-	readonly [BrandedSymbol]: T;  // required — base types NOT assignable
+	readonly [BrandedSymbol]: T; // required — base types NOT assignable
 }
 type Branded<TValue, TName> = TValue & Brand<TName>;
 ```
@@ -77,8 +77,8 @@ type Branded<TValue, TName> = TValue & Brand<TName>;
 ```typescript
 type PhoneNumber = Branded<string, 'PhoneNumber'>;
 
-const phone1: PhoneNumber = '555-1234';                // error — must cast
-const phone2: PhoneNumber = '555-1234' as PhoneNumber;  // ok
+const phone1: PhoneNumber = '555-1234'; // error — must cast
+const phone2: PhoneNumber = '555-1234' as PhoneNumber; // ok
 ```
 
 Exported but unused in the ecosystem: in practice, use `Flavored` for
@@ -108,7 +108,7 @@ export type Datetime = z.infer<typeof Datetime>;
 // zzz/diskfile_types.ts
 export const DiskfilePath = z
 	.string()
-	.refine((p) => is_path_absolute(p), {message: 'path must be absolute'})
+	.refine((p) => is_path_absolute(p), { message: 'path must be absolute' })
 	.brand('DiskfilePath');
 export type DiskfilePath = z.infer<typeof DiskfilePath>;
 ```
@@ -140,16 +140,18 @@ Standard `Pick` and `keyof` don't distribute over unions. These do:
 ```typescript
 type KeyofUnion<T> = T extends unknown ? keyof T : never;
 type PickUnion<T, K extends KeyofUnion<T>> = T extends unknown
-	? K & keyof T extends never ? never : Pick<T, K & keyof T>
+	? K & keyof T extends never
+		? never
+		: Pick<T, K & keyof T>
 	: never;
 ```
 
 ```typescript
-type A = {x: number; y: string};
-type B = {x: number; z: boolean};
+type A = { x: number; y: string };
+type B = { x: number; z: boolean };
 
-type Keys = KeyofUnion<A | B>;        // 'x' | 'y' | 'z'
-type Picked = PickUnion<A | B, 'x'>;  // {x: number} | {x: number}
+type Keys = KeyofUnion<A | B>; // 'x' | 'y' | 'z'
+type Picked = PickUnion<A | B, 'x'>; // {x: number} | {x: number}
 ```
 
 ## Partial Variants
@@ -159,13 +161,17 @@ type Picked = PickUnion<A | B, 'x'>;  // {x: number} | {x: number}
 Everything optional EXCEPT specified keys:
 
 ```typescript
-type PartialExcept<T, K extends keyof T> = {[P in K]: T[P]} & {
+type PartialExcept<T, K extends keyof T> = { [P in K]: T[P] } & {
 	[P in Exclude<keyof T, K>]?: T[P];
 };
 ```
 
 ```typescript
-interface User { id: string; name: string; email: string; }
+interface User {
+	id: string;
+	name: string;
+	email: string;
+}
 type UserUpdate = PartialExcept<User, 'id'>;
 // { id: string; name?: string; email?: string; }
 ```
@@ -175,7 +181,7 @@ type UserUpdate = PartialExcept<User, 'id'>;
 Only specified keys optional:
 
 ```typescript
-type PartialOnly<T, K extends keyof T> = {[P in K]?: T[P]} & {
+type PartialOnly<T, K extends keyof T> = { [P in K]?: T[P] } & {
 	[P in Exclude<keyof T, K>]: T[P];
 };
 ```
@@ -210,8 +216,9 @@ Used in zzz for self-referential initialization:
 ### ClassConstructor
 
 ```typescript
-type ClassConstructor<TInstance, TArgs extends Array<any> = Array<any>> =
-	new (...args: TArgs) => TInstance;
+type ClassConstructor<TInstance, TArgs extends Array<any> = Array<any>> = new (
+	...args: TArgs
+) => TInstance;
 ```
 
 Used in zzz Cell registry:
@@ -228,7 +235,7 @@ type ArrayElement<T> = T extends ReadonlyArray<infer U> ? U : never;
 ```
 
 ```typescript
-type Item = ArrayElement<Array<{id: string}>>;  // {id: string}
+type Item = ArrayElement<Array<{ id: string }>>; // {id: string}
 ```
 
 ### Defined and NotNull
@@ -240,18 +247,18 @@ type NotNull<T> = T extends null ? never : T;
 
 ## Quick Reference
 
-| Type              | Purpose                                         |
-| ----------------- | ----------------------------------------------- |
-| `Flavored<TValue, TName>` | Loose nominal typing (no cast from base) |
+| Type                      | Purpose                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `Flavored<TValue, TName>` | Loose nominal typing (no cast from base)                                     |
 | `Branded<TValue, TName>`  | Strict nominal typing (cast required, ecosystem uses Zod `.brand()` instead) |
-| `OmitStrict<T, K>`| Omit with key validation                        |
-| `PickUnion<T, K>` | Pick that distributes over unions               |
-| `KeyofUnion<T>`   | keyof that distributes over unions              |
-| `PartialExcept`   | All optional except specified keys              |
-| `PartialOnly`     | Only specified keys optional                    |
-| `PartialValues`   | Values of T become partial                      |
-| `Assignable`      | Remove readonly                                 |
-| `ClassConstructor`| Match constructor functions                     |
-| `ArrayElement`    | Extract element type from array                 |
-| `Defined`         | Exclude undefined                               |
-| `NotNull`         | Exclude null                                    |
+| `OmitStrict<T, K>`        | Omit with key validation                                                     |
+| `PickUnion<T, K>`         | Pick that distributes over unions                                            |
+| `KeyofUnion<T>`           | keyof that distributes over unions                                           |
+| `PartialExcept`           | All optional except specified keys                                           |
+| `PartialOnly`             | Only specified keys optional                                                 |
+| `PartialValues`           | Values of T become partial                                                   |
+| `Assignable`              | Remove readonly                                                              |
+| `ClassConstructor`        | Match constructor functions                                                  |
+| `ArrayElement`            | Extract element type from array                                              |
+| `Defined`                 | Exclude undefined                                                            |
+| `NotNull`                 | Exclude null                                                                 |

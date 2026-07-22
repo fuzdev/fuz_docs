@@ -1,4 +1,4 @@
-import type {StackEdge, StackEdgeKind, StackNode} from './stack_graph_types.ts';
+import type { StackEdge, StackEdgeKind, StackNode } from './stack_graph_types.ts';
 
 /**
  * Pure, deterministic layout for the public `@fuzdev` stack dependency graph.
@@ -40,7 +40,7 @@ const STRUCTURAL_KINDS: ReadonlySet<StackEdgeKind> = new Set<StackEdgeKind>(['pr
  */
 export const compute_stack_layout = (
 	nodes: ReadonlyArray<StackNodeInput>,
-	edges: ReadonlyArray<StackEdge>,
+	edges: ReadonlyArray<StackEdge>
 ): Array<StackNode> => {
 	// sorted, de-duped node names for fully deterministic iteration order
 	const names = [...new Set(nodes.map((n) => n.name))].sort();
@@ -95,7 +95,7 @@ export const compute_stack_layout = (
 			fan_in: fan_in_of.get(name)!,
 			x: x_of.get(name)!,
 			// layer 0 (foundations) gets the largest y (bottom); top layer gets y=0
-			y: (max_layer - layer) * ROW_GAP,
+			y: (max_layer - layer) * ROW_GAP
 		};
 	});
 };
@@ -108,7 +108,7 @@ export const compute_stack_layout = (
 const build_structural_reachability = (
 	names: ReadonlyArray<string>,
 	edges: ReadonlyArray<StackEdge>,
-	name_set: ReadonlySet<string>,
+	name_set: ReadonlySet<string>
 ): ((from: string, to: string) => boolean) => {
 	// structural adjacency: from -> set of direct structural deps
 	const adj = new Map<string, Set<string>>();
@@ -142,7 +142,7 @@ const build_structural_reachability = (
 const build_structural_out = (
 	names: ReadonlyArray<string>,
 	edges: ReadonlyArray<StackEdge>,
-	name_set: ReadonlySet<string>,
+	name_set: ReadonlySet<string>
 ): Map<string, Array<string>> => {
 	const out = new Map<string, Array<string>>();
 	for (const name of names) out.set(name, []);
@@ -166,7 +166,7 @@ const build_structural_out = (
  */
 const break_residual_cycles = (
 	names: ReadonlyArray<string>,
-	cut_edges: ReadonlyArray<StackEdge>,
+	cut_edges: ReadonlyArray<StackEdge>
 ): Map<string, Array<string>> => {
 	// de-dupe out-neighbors, sorted for determinism
 	const raw_adj = new Map<string, Array<string>>();
@@ -192,7 +192,7 @@ const break_residual_cycles = (
 	// iterative DFS to avoid stack overflow and guarantee termination
 	const visit = (root: string): void => {
 		// frame: node + index into its sorted neighbor list
-		const stack: Array<{node: string; i: number}> = [{node: root, i: 0}];
+		const stack: Array<{ node: string; i: number }> = [{ node: root, i: 0 }];
 		color.set(root, GRAY);
 		while (stack.length > 0) {
 			const frame = stack[stack.length - 1]!;
@@ -210,7 +210,7 @@ const break_residual_cycles = (
 			out.get(frame.node)!.push(next);
 			if (c === WHITE) {
 				color.set(next, GRAY);
-				stack.push({node: next, i: 0});
+				stack.push({ node: next, i: 0 });
 			}
 		}
 	};
@@ -227,7 +227,7 @@ const break_residual_cycles = (
  */
 const compute_layers = (
 	names: ReadonlyArray<string>,
-	out: ReadonlyMap<string, Array<string>>,
+	out: ReadonlyMap<string, Array<string>>
 ): Map<string, number> => {
 	const memo = new Map<string, number>();
 	const visiting = new Set<string>();
@@ -257,7 +257,7 @@ const compute_layers = (
 /** Distinct in-degree over the cut graph: how many nodes point at each node. */
 const compute_fan_in = (
 	names: ReadonlyArray<string>,
-	out: ReadonlyMap<string, Array<string>>,
+	out: ReadonlyMap<string, Array<string>>
 ): Map<string, number> => {
 	const incoming = new Map<string, Set<string>>();
 	for (const name of names) incoming.set(name, new Set());
@@ -278,7 +278,7 @@ const compute_x_positions = (
 	names: ReadonlyArray<string>,
 	out: ReadonlyMap<string, Array<string>>,
 	layer_of: ReadonlyMap<string, number>,
-	max_layer: number,
+	max_layer: number
 ): Map<string, number> => {
 	// nodes grouped by layer, each layer initialized alphabetically
 	const layers: Array<Array<string>> = [];
@@ -318,7 +318,7 @@ const compute_x_positions = (
 	const reorder = (
 		layer: Array<string>,
 		neighbors: ReadonlyMap<string, Array<string>>,
-		idx: ReadonlyMap<string, number>,
+		idx: ReadonlyMap<string, number>
 	): void => {
 		const bary = new Map<string, number>();
 		for (let i = 0; i < layer.length; i++) {

@@ -30,12 +30,12 @@ Always profile/bench with `--release` (debug runs with different hot paths).
 tsv keeps a `[profile.profiling]` (`inherits = "release"`, `debug = true`,
 `strip = false`) for symbolicated profiles. Curated tools:
 
-| Profiler            | Surface                                  | When                                            |
-| ------------------- | ---------------------------------------- | ----------------------------------------------- |
-| `samply`            | CPU sampling, flamegraphs                | default on Linux; "where's wall-clock going?"   |
+| Profiler            | Surface                                  | When                                             |
+| ------------------- | ---------------------------------------- | ------------------------------------------------ |
+| `samply`            | CPU sampling, flamegraphs                | default on Linux; "where's wall-clock going?"    |
 | `tokio-console`     | Live task states, busy/idle, polls       | async stalls, tasks that never yield, starvation |
-| `cargo-instruments` | macOS Instruments                        | allocations on Apple HW                         |
-| Cachegrind          | Instruction counts, I-cache, branch miss | verifying inline/cold heuristics                |
+| `cargo-instruments` | macOS Instruments                        | allocations on Apple HW                          |
+| Cachegrind          | Instruction counts, I-cache, branch miss | verifying inline/cold heuristics                 |
 
 | Bench         | Metric             | Notes                                                            |
 | ------------- | ------------------ | ---------------------------------------------------------------- |
@@ -91,7 +91,7 @@ dependency-approval gate first.
 Beyond generic hygiene:
 
 - **`get_unchecked` is off-limits in workspace-default crates.** If a bench
-  proves a bounds check is the bottleneck *and* iterator/`assert!`-hoist
+  proves a bounds check is the bottleneck _and_ iterator/`assert!`-hoist
   rewrites can't elide it, isolate the hot kernel in a crate that overrides
   `unsafe_code = "allow"` (§Unsafe escape hatch).
 - **Cross-crate inlining is free here**: the release profile's `lto = true` +
@@ -120,7 +120,7 @@ None of these are in any workspace crate today; noted tersely so the choice is
 in-context if the workload arrives.
 
 - **Zero-copy archives (`rkyv`)** — candidate for content-addressed bodies and
-  snapshot manifests read repeatedly without mutation (the on-disk bytes *are*
+  snapshot manifests read repeatedly without mutation (the on-disk bytes _are_
   the in-memory layout, no parse); not for mutation-heavy or read-once paths.
   Wire surfaces (HTTP/SSE/JSON-RPC) stay on `serde_json`. Pair untrusted reads
   with `bytecheck`; treat the archived schema as a wire format (a field rename =
@@ -148,7 +148,7 @@ A crate may override `unsafe_code = "allow"` for performance, conservatively:
 - **Reversible** — keep a safe fallback in the same crate.
 
 Cleared this bar elsewhere: `get_unchecked` in proven-safe inner loops,
-`std::arch` SIMD for a specific target. Has *not*: dodging `clone()`, "the
+`std::arch` SIMD for a specific target. Has _not_: dodging `clone()`, "the
 compiler should be able to prove this," speed claims without measurements.
 
 ## Out of scope

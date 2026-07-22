@@ -25,7 +25,7 @@ fuz_forge is the canonical twin consumer: its TS (Hono) server and Rust
   shipped/deployed; it runs directly (`deno run`) as the parity twin for
   tests, benches, and local dev. The Rust binary is the production deploy.
   Compiling a never-shipped TS server is dead weight.
-- **The CLI is not a twin.** A CLI is a *client* of the server, not a second
+- **The CLI is not a twin.** A CLI is a _client_ of the server, not a second
   spine implementation — two CLIs prove nothing about the wire. A CLI has two
   coherent states: **shipping** (compiled; a single-file binary is the point)
   or **retired** (deleted). No "run-directly TS CLI reference" middle state.
@@ -35,7 +35,7 @@ fuz_forge is the canonical twin consumer: its TS (Hono) server and Rust
 Shared spine concepts — types, fields, error-reason literals, the named steps
 of a shared algorithm — carry **parallel identifiers** across both spines,
 modulo each language's case convention (`post_commit_effects` ↔
-`PostCommitEffects`). A cross-impl name mismatch for the *same* concept is a
+`PostCommitEffects`). A cross-impl name mismatch for the _same_ concept is a
 convergence defect, tracked and closed like a bug; when one side renames, the
 other follows. Two subtleties:
 
@@ -54,7 +54,7 @@ cheap.
 
 - **The cross-backend harness** (in `fuz_app`) drives both backends with the
   same requests and asserts responses **byte-for-byte** — status, body,
-  headers. Consumers inherit shared *conformance principals* (credential
+  headers. Consumers inherit shared _conformance principals_ (credential
   type × context combinations, e.g. daemon-token-with-Origin, invalid-token
   variants) so a new auth edge case added upstream tests every consumer.
 - **`testing_spine_stub`** is the domain-free third consumer: it exercises
@@ -65,7 +65,7 @@ cheap.
   it catches missing/extra/renamed fields wholesale.
 - **Schema parity**: DB schema introspection compared across backends with
   zero excluded tables as the target.
-- **Env contract tests** that actively *reject retired variable names* — the
+- **Env contract tests** that actively _reject retired variable names_ — the
   strongest anti-drift guard, since env handling is hand-written on both
   sides.
 - **When the cross harness can't reach a path**, Rust unit serialization
@@ -77,7 +77,7 @@ especially auth/error negatives (401 anti-enumeration, malformed input,
 browser-context guards). Two hand-written stacks agree on the happy path and
 drift on the edges; port single-backend tests to cross tests. A live behavior
 difference is either converged or explicitly documented as intentional (e.g.
-a version *value* differs while the parity test asserts the shape).
+a version _value_ differs while the parity test asserts the shape).
 
 ## Scoping the parity burden
 

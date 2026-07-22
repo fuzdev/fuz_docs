@@ -13,7 +13,7 @@ daemons, the WASM/FFI/N-API bindings, the web servers and their spine crates.
 Different-paradigm or pre-canonical repos (games, protocol research) carry
 their own deps and are out of scope here. For an external project adopting
 fuz-stack, the list is advisory — a vetted starting set, not a gate; the
-approval *process* below applies only inside the ecosystem workspaces.
+approval _process_ below applies only inside the ecosystem workspaces.
 
 **Source of truth**: each repo's root `[workspace.dependencies]`. This doc
 mirrors the **union** of those for human and agent audit; it is not
@@ -33,112 +33,112 @@ deps and belong here.
 
 ## Serialization & encoding
 
-| Crate | Purpose |
-| ----- | ------- |
-| `serde` | Derive-based serialization framework |
+| Crate        | Purpose                                                 |
+| ------------ | ------------------------------------------------------- |
+| `serde`      | Derive-based serialization framework                    |
 | `serde_json` | JSON (tsv enables `preserve_order` + `float_roundtrip`) |
-| `postcard` | Compact binary serialization (the fuzd UDS wire) |
-| `hex` | Hex encoding/decoding |
-| `base64` | URL-safe base64 (tokens) |
+| `postcard`   | Compact binary serialization (the fuzd UDS wire)        |
+| `hex`        | Hex encoding/decoding                                   |
+| `base64`     | URL-safe base64 (tokens)                                |
 
 ## Errors & core utilities
 
-| Crate | Purpose |
-| ----- | ------- |
-| `thiserror` | Derive typed error enums |
-| `futures` / `futures-util` | Async combinators, `BoxFuture` |
-| `time` | Date/time |
-| `uuid` | UUIDs |
-| `semver` | Semantic-version parsing |
-| `url` | URL parsing |
-| `tempfile` | Temp files/dirs (`NamedTempFile`) |
-| `smallvec` | Stack-allocated small vectors |
-| `bumpalo` | Arena allocation (`collections` feature) — tsv's core AST strategy; see rust-perf.md §Arena allocation |
-| `string-interner` | String interning |
-| `phf` | Compile-time perfect-hash maps/sets (keyword tables) |
-| `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling |
-| `similar` | Text diffing (tsv's debug/compare tooling) |
+| Crate                                                      | Purpose                                                                                                |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `thiserror`                                                | Derive typed error enums                                                                               |
+| `futures` / `futures-util`                                 | Async combinators, `BoxFuture`                                                                         |
+| `time`                                                     | Date/time                                                                                              |
+| `uuid`                                                     | UUIDs                                                                                                  |
+| `semver`                                                   | Semantic-version parsing                                                                               |
+| `url`                                                      | URL parsing                                                                                            |
+| `tempfile`                                                 | Temp files/dirs (`NamedTempFile`)                                                                      |
+| `smallvec`                                                 | Stack-allocated small vectors                                                                          |
+| `bumpalo`                                                  | Arena allocation (`collections` feature) — tsv's core AST strategy; see rust-perf.md §Arena allocation |
+| `string-interner`                                          | String interning                                                                                       |
+| `phf`                                                      | Compile-time perfect-hash maps/sets (keyword tables)                                                   |
+| `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling                                                                                  |
+| `similar`                                                  | Text diffing (tsv's debug/compare tooling)                                                             |
 
 ## Async runtime & networking
 
-| Crate | Purpose |
-| ----- | ------- |
-| `tokio` | Async runtime |
-| `tokio-util` | `CancellationToken`, `TaskTracker` |
-| `axum` | HTTP server (on hyper) |
-| `axum-extra` | axum extras (typed headers, cookies) |
-| `tower` / `tower-http` | Service middleware |
-| `reqwest` | HTTP client |
-| `rustls` | TLS backend for `reqwest` — installs the `ring` crypto provider as the process default (`reqwest` is wired `rustls-no-provider`) |
+| Crate                  | Purpose                                                                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `tokio`                | Async runtime                                                                                                                    |
+| `tokio-util`           | `CancellationToken`, `TaskTracker`                                                                                               |
+| `axum`                 | HTTP server (on hyper)                                                                                                           |
+| `axum-extra`           | axum extras (typed headers, cookies)                                                                                             |
+| `tower` / `tower-http` | Service middleware                                                                                                               |
+| `reqwest`              | HTTP client                                                                                                                      |
+| `rustls`               | TLS backend for `reqwest` — installs the `ring` crypto provider as the process default (`reqwest` is wired `rustls-no-provider`) |
 
 ## Concurrency
 
-| Crate | Purpose |
-| ----- | ------- |
+| Crate         | Purpose                                                                                                                                                     |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `parking_lot` | `Mutex`/`RwLock` for sync-only critical sections (no poisoning). See rust-perf.md §Async lock hygiene for when to use `tokio::sync` or `std::sync` instead. |
-| `lru` | Bounded LRU cache backing the `RateLimiter` — caps tracked keys so a key-enumeration attacker can't grow the map unboundedly (twin of fuz_app's `LruMap`). |
+| `lru`         | Bounded LRU cache backing the `RateLimiter` — caps tracked keys so a key-enumeration attacker can't grow the map unboundedly (twin of fuz_app's `LruMap`).  |
 
 ## Database
 
-| Crate | Purpose |
-| ----- | ------- |
-| `tokio-postgres` | Async PostgreSQL client |
-| `deadpool-postgres` | Connection pooling |
+| Crate               | Purpose                 |
+| ------------------- | ----------------------- |
+| `tokio-postgres`    | Async PostgreSQL client |
+| `deadpool-postgres` | Connection pooling      |
 
 ## Crypto & auth
 
-| Crate | Purpose |
-| ----- | ------- |
-| `blake3` | Content-addressed hashing, token hashing |
-| `argon2` | Password hashing |
-| `ed25519-dalek` | Ed25519 signing/verification (artifact + release signatures) |
-| `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring) |
-| `subtle` | Constant-time comparison |
-| `zeroize` | Secure memory clearing |
-| `getrandom` | OS randomness — the spine standard for new randomness (`fuz_sys::rand`, `fuz_auth`, `fuz_storage`) |
-| `rand` | RNG — pinned `0.8` in `[workspace.dependencies]`, consumed only by `fuz_sign` (the `ed25519-dalek` → `rand_core 0.6` constraint). Prefer `getrandom` for new code. |
+| Crate           | Purpose                                                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `blake3`        | Content-addressed hashing, token hashing                                                                                                                           |
+| `argon2`        | Password hashing                                                                                                                                                   |
+| `ed25519-dalek` | Ed25519 signing/verification (artifact + release signatures)                                                                                                       |
+| `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring)                                                                                                                              |
+| `subtle`        | Constant-time comparison                                                                                                                                           |
+| `zeroize`       | Secure memory clearing                                                                                                                                             |
+| `getrandom`     | OS randomness — the spine standard for new randomness (`fuz_sys::rand`, `fuz_auth`, `fuz_storage`)                                                                 |
+| `rand`          | RNG — pinned `0.8` in `[workspace.dependencies]`, consumed only by `fuz_sign` (the `ed25519-dalek` → `rand_core 0.6` constraint). Prefer `getrandom` for new code. |
 
 ## Filesystem & OS
 
-| Crate | Purpose |
-| ----- | ------- |
-| `nix` | POSIX syscalls (advisory `flock`, permissions) |
-| `libc` | Raw libc FFI for syscalls/types beyond `nix` (PTY, signals) |
-| `notify` | Filesystem watching (inotify / FSEvents) |
-| `tar` | tar archives |
-| `flate2` | gzip / deflate |
+| Crate    | Purpose                                                     |
+| -------- | ----------------------------------------------------------- |
+| `nix`    | POSIX syscalls (advisory `flock`, permissions)              |
+| `libc`   | Raw libc FFI for syscalls/types beyond `nix` (PTY, signals) |
+| `notify` | Filesystem watching (inotify / FSEvents)                    |
+| `tar`    | tar archives                                                |
+| `flate2` | gzip / deflate                                              |
 
 ## CLI
 
-| Crate | Purpose |
-| ----- | ------- |
+| Crate  | Purpose                                                                                             |
+| ------ | --------------------------------------------------------------------------------------------------- |
 | `argh` | Derive arg parser, size-optimized. See rust-patterns.md §CLI Patterns for the parser-tier guidance. |
 
 ## Logging
 
-| Crate | Purpose |
-| ----- | ------- |
-| `tracing` | Structured logging |
+| Crate                | Purpose                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `tracing`            | Structured logging                                                                 |
 | `tracing-subscriber` | Subscriber / formatting layers (consumed via `fuz_sys::logging`, not per-consumer) |
-| `tracing-appender` | Non-blocking file appender |
+| `tracing-appender`   | Non-blocking file appender                                                         |
 
 ## WASM, N-API & host
 
-| Crate | Purpose |
-| ----- | ------- |
-| `wasm-bindgen` | JS interop (wasm-pack) |
-| `js-sys` | engine-native `JSON.parse` for the wasm-bindgen parse exports (tsv) |
-| `talc` | WASM global allocator (`tsv_wasm`, wasm32-only target dep) — pure-Rust `no_std` replacement for std's dlmalloc; use the `WasmGrowAndExtend` source (the default claim source fragments a long-lived instance's linear memory). Pulls `lock_api` + `allocator-api2` into the wasm32 graph only |
-| `napi` / `napi-derive` / `napi-build` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep |
-| `wit-bindgen` | Component-model bindings |
-| `wasmtime` / `wasmtime-wasi` | WASM host (tests, benches) |
+| Crate                                 | Purpose                                                                                                                                                                                                                                                                                       |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `wasm-bindgen`                        | JS interop (wasm-pack)                                                                                                                                                                                                                                                                        |
+| `js-sys`                              | engine-native `JSON.parse` for the wasm-bindgen parse exports (tsv)                                                                                                                                                                                                                           |
+| `talc`                                | WASM global allocator (`tsv_wasm`, wasm32-only target dep) — pure-Rust `no_std` replacement for std's dlmalloc; use the `WasmGrowAndExtend` source (the default claim source fragments a long-lived instance's linear memory). Pulls `lock_api` + `allocator-api2` into the wasm32 graph only |
+| `napi` / `napi-derive` / `napi-build` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep                                                                                                                                                                                         |
+| `wit-bindgen`                         | Component-model bindings                                                                                                                                                                                                                                                                      |
+| `wasmtime` / `wasmtime-wasi`          | WASM host (tests, benches)                                                                                                                                                                                                                                                                    |
 
 See wasm-patterns.md for the binding-layer conventions these support.
 
 ## Image processing
 
-| Crate | Purpose |
-| ----- | ------- |
+| Crate     | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `libvips` | Rust bindings to the system **libvips** image library — the same engine `sharp` wraps — for decode/resize/encode (JPEG/PNG/WebP/AVIF), EXIF-orientation baking, metadata stripping, and thumbnailing. For spine-consumer servers with an image-upload pipeline (e.g. `visiones_server`). Dynamically links system libvips: `libvips42` (Debian) at runtime + `libvips-dev` at build time — not a static-musl crate; on a Debian host `zap` installs it via apt. The `unsafe` FFI lives inside the binding — consumer crates keep `unsafe_code = "forbid"`. Chosen over the pure-Rust `image`/`ravif`/`image-webp` stack because matching `sharp`'s formats there pulls in `libwebp` + `dav1d` C deps anyway, across more crates and with worse parity. |
 
 ## Crate-vs-feature isolation (supply-chain)
@@ -193,7 +193,7 @@ workspace for the same job.
   optional trees — `reqwest`, `nix`, `notify`, `futures-util` all do. Opt into
   exactly what the workspace uses; don't inherit a crate's default surface.
 - **`multiple_crate_versions = "allow"`** (rust-patterns.md §Lints) tolerates
-  *forced* duplicate majors from the dep graph — e.g. `tsv` carries hashbrown
+  _forced_ duplicate majors from the dep graph — e.g. `tsv` carries hashbrown
   0.16 (via `string-interner`) and 0.17 (via `serde_json` → `indexmap`),
   unresolvable until `string-interner` bumps upstream. Not a license to ignore
   version drift you control.

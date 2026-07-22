@@ -79,7 +79,7 @@ methods unless the replacement improves failure diagnostics without losing
 narrowing.
 
 ```typescript
-import {test, assert} from 'vitest';
+import { test, assert } from 'vitest';
 
 assert.ok(value); // narrows away null/undefined — the standard guard
 assert.strictEqual(a, b);
@@ -166,7 +166,7 @@ const api = src('https://api.fuz.dev/');
 const untrusted = src('untrusted-cdn.fuz.dev');
 
 // Generated placeholders
-Array.from({length: 100}, (_, i) => src(`source${i}.fuz.dev`));
+Array.from({ length: 100 }, (_, i) => src(`source${i}.fuz.dev`));
 ```
 
 Real third-party domains (`fonts.googleapis.com`, `js.stripe.com`,
@@ -180,17 +180,17 @@ For async functions that should reject, use `assert_rejects` from
 block so the test's own assertion errors aren't accidentally caught:
 
 ```typescript
-import {assert_rejects} from '@fuzdev/fuz_util/testing.ts';
+import { assert_rejects } from '@fuzdev/fuz_util/testing.ts';
 
 // Simple — just check the error pattern
 await assert_rejects(
-	() => local_repo_load({local_repo_path, git_ops, npm_ops}),
-	/Failed to pull.*unstaged changes/,
+	() => local_repo_load({ local_repo_path, git_ops, npm_ops }),
+	/Failed to pull.*unstaged changes/
 );
 
 // Pattern is optional — returns the Error for further assertions
 const err = await assert_rejects(() =>
-	local_repos_load({local_repo_paths: paths, git_ops, npm_ops}),
+	local_repos_load({ local_repo_paths: paths, git_ops, npm_ops })
 );
 assert.include(err.message, 'repo-a');
 assert.include(err.message, 'repo-b');
@@ -215,7 +215,7 @@ before importing components:
 
 ```typescript
 // @vitest-environment jsdom
-import {vi} from 'vitest';
+import { vi } from 'vitest';
 
 class ResizeObserverMock {
 	observe = vi.fn();
@@ -245,9 +245,9 @@ The core pattern, adapted from fuz_app's `vite.config.ts` (simplified — the
 real file adds more plugins and the cross-backend projects below):
 
 ```typescript
-import {availableParallelism} from 'node:os';
-import {defineConfig} from 'vitest/config';
-import {sveltekit} from '@sveltejs/kit/vite';
+import { availableParallelism } from 'node:os';
+import { defineConfig } from 'vitest/config';
+import { sveltekit } from '@sveltejs/kit/vite';
 
 const max_threads = Math.max(1, Math.ceil(availableParallelism() / 2));
 
@@ -262,8 +262,8 @@ export default defineConfig({
 					include: ['src/test/**/*.test.ts'],
 					exclude: ['src/test/**/*.db.test.ts', 'src/test/**/*.cross.test.ts'],
 					maxWorkers: max_threads,
-					sequence: {groupOrder: 1},
-				},
+					sequence: { groupOrder: 1 }
+				}
 			},
 			{
 				extends: true,
@@ -272,11 +272,11 @@ export default defineConfig({
 					include: ['src/test/**/*.db.test.ts'],
 					isolate: false,
 					fileParallelism: false,
-					sequence: {groupOrder: 2},
-				},
-			},
-		],
-	},
+					sequence: { groupOrder: 2 }
+				}
+			}
+		]
+	}
 });
 ```
 
@@ -298,15 +298,15 @@ fuz_app's `testing/db.ts` provides
 ```typescript
 // src/test/db_fixture.ts (adapted from fuz_app's, which also wires
 // pglet + pglet-wasm factories from local test modules)
-import type {Db} from '#lib/db/db.ts';
-import {run_migrations} from '#lib/db/migrate.ts';
-import {auth_migration_ns} from '#lib/auth/migrations.ts';
+import type { Db } from '#lib/db/db.ts';
+import { run_migrations } from '#lib/db/migrate.ts';
+import { auth_migration_ns } from '#lib/auth/migrations.ts';
 import {
 	create_pglite_factory,
 	create_pg_factory,
 	create_describe_db,
 	auth_integration_truncate_tables,
-	log_db_factory_status,
+	log_db_factory_status
 } from '#lib/testing/db.ts';
 
 const init_schema = async (db: Db): Promise<void> => {
@@ -326,17 +326,17 @@ Test files import and use as a wrapper:
 
 ```typescript
 // src/test/auth/account_queries.db.test.ts
-import {describe, assert, test} from 'vitest';
-import {query_create_account} from '#lib/auth/account_queries.ts';
-import {describe_db} from '../db_fixture.ts';
+import { describe, assert, test } from 'vitest';
+import { query_create_account } from '#lib/auth/account_queries.ts';
+import { describe_db } from '../db_fixture.ts';
 
 describe_db('account queries', (get_db) => {
 	test('create returns an account with generated uuid', async () => {
 		const db = get_db();
-		const deps = {db};
+		const deps = { db };
 		const account = await query_create_account(deps, {
 			username: 'alice',
-			password_hash: 'hash123',
+			password_hash: 'hash123'
 		});
 		assert.ok(account.id);
 		assert.strictEqual(account.username, 'alice');
@@ -351,10 +351,10 @@ Named `.integration.db.test.ts`. Use `create_test_app()` from
 database:
 
 ```typescript
-const {app, create_session_headers, create_bearer_headers, create_account, cleanup} =
+const { app, create_session_headers, create_bearer_headers, create_account, cleanup } =
 	await create_test_app({
 		session_options: create_session_config('test_session'),
-		create_route_specs: (ctx) => my_routes(ctx),
+		create_route_specs: (ctx) => my_routes(ctx)
 	});
 ```
 
@@ -372,7 +372,7 @@ Cross-repo test assertions live in `@fuzdev/fuz_util/testing.ts`. Depends
 only on vitest — safe for fuz_util's zero-runtime-deps constraint.
 
 ```typescript
-import {assert_rejects, create_mock_logger} from '@fuzdev/fuz_util/testing.ts';
+import { assert_rejects, create_mock_logger } from '@fuzdev/fuz_util/testing.ts';
 
 // Async rejection — pattern is optional, returns Error
 const err = await assert_rejects(() => do_thing(), /expected pattern/);
@@ -476,7 +476,7 @@ modules exporting `create_shared_*_tests()`; test files become thin wrappers:
 export const create_shared_core_tests = (
 	Component: any,
 	component_name: string,
-	options: SharedTestOptions = {},
+	options: SharedTestOptions = {}
 ): void => {
 	describe(`${component_name} - Core Functionality`, () => {
 		// shared tests here
@@ -487,8 +487,8 @@ export const create_shared_core_tests = (
 ```typescript
 // src/test/ContextmenuRoot.core.test.ts — thin wrapper
 // @vitest-environment jsdom
-import {vi} from 'vitest';
-import {create_shared_core_tests} from './contextmenu_test_core.ts';
+import { vi } from 'vitest';
+import { create_shared_core_tests } from './contextmenu_test_core.ts';
 import ContextmenuRoot from '#lib/ContextmenuRoot.svelte';
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
@@ -500,7 +500,7 @@ create_shared_core_tests(ContextmenuRoot, 'ContextmenuRoot');
 create_shared_core_tests(
 	ContextmenuRootForSafariCompatibility,
 	'ContextmenuRootForSafariCompatibility',
-	{requires_longpress: true},
+	{ requires_longpress: true }
 );
 ```
 
@@ -546,23 +546,23 @@ writes on change:
 
 ```typescript
 // src/test/fixtures/mdz/update.task.ts — from mdz
-import type {Task} from '@fuzdev/gro';
-import {join} from 'node:path';
-import {mdz_parse} from '$lib/mdz.ts';
-import {run_update_task} from '../../test_helpers.ts';
+import type { Task } from '@fuzdev/gro';
+import { join } from 'node:path';
+import { mdz_parse } from '$lib/mdz.ts';
+import { run_update_task } from '../../test_helpers.ts';
 
 export const task: Task = {
 	summary: 'generate expected.json files for mdz fixtures',
-	run: async ({log}) => {
+	run: async ({ log }) => {
 		await run_update_task(
 			{
 				fixtures_dir: join(import.meta.dirname),
 				input_extension: '.mdz',
-				process: (input) => mdz_parse(input),
+				process: (input) => mdz_parse(input)
 			},
-			log,
+			log
 		);
-	},
+	}
 };
 ```
 
@@ -577,12 +577,12 @@ needs a shared checker).
 
 ```typescript
 // src/test/svelte_preprocess_mdz.fixtures.test.ts — from mdz
-import {test, assert, describe, beforeAll} from 'vitest';
+import { test, assert, describe, beforeAll } from 'vitest';
 import {
 	load_fixtures,
 	run_preprocess,
 	DEFAULT_TEST_OPTIONS,
-	type PreprocessMdzFixture,
+	type PreprocessMdzFixture
 } from './fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts';
 
 let fixtures: Array<PreprocessMdzFixture> = [];
@@ -597,7 +597,7 @@ describe('svelte_preprocess_mdz fixtures', () => {
 			const result = await run_preprocess(
 				fixture.input,
 				DEFAULT_TEST_OPTIONS,
-				`${fixture.name}.svelte`,
+				`${fixture.name}.svelte`
 			);
 			assert.equal(result, fixture.expected.code, `Fixture "${fixture.name}" failed`);
 		}
@@ -640,12 +640,12 @@ See ./dependency-injection.md for the full pattern.
 export interface GitOperations {
 	current_branch_name: (options?: {
 		cwd?: string;
-	}) => Promise<Result<{value: string}, {message: string}>>;
+	}) => Promise<Result<{ value: string }, { message: string }>>;
 	add_and_commit: (options: {
 		files: string | Array<string>;
 		message: string;
 		cwd?: string;
-	}) => Promise<Result<object, {message: string}>>;
+	}) => Promise<Result<object, { message: string }>>;
 	// ... ~15 more methods
 }
 export interface GitopsOperations {
@@ -680,8 +680,8 @@ fuz_gitops injects mock operations via DI nearly everywhere — its one
 **fuz_app deps pattern:**
 
 ```typescript
-import {stub_app_deps} from '#lib/testing/stubs.ts';
-import {create_mock_runtime} from '#lib/runtime/mock.ts';
+import { stub_app_deps } from '#lib/testing/stubs.ts';
+import { create_mock_runtime } from '#lib/runtime/mock.ts';
 
 const deps = stub_app_deps; // throwing stubs for auth deps
 const runtime = create_mock_runtime(); // MockRuntime for CLI tests
@@ -695,7 +695,7 @@ call site has no injectable seam (fuz_app's bearer-auth middleware calls
 `query_*` functions by name; the module mocks live in
 `testing/middleware.ts`, which wraps them in table-driven
 `describe_bearer_auth_cases` / `create_bearer_auth_test_app` helpers as a
-documented carve-out). Treat any *new* `vi.mock` as a signal to add a deps seam
+documented carve-out). Treat any _new_ `vi.mock` as a signal to add a deps seam
 instead. Avoid entirely in `.db.test.ts` where `isolate: false` shares
 module state. When unavoidable:
 
@@ -752,11 +752,11 @@ describe.skipIf(SKIP)('vite plugin examples', () => {
 SKIP_EXAMPLE_TESTS=1 gro test
 ```
 
-| Flag                              | Repo    | Purpose                                          |
-| --------------------------------- | ------- | ------------------------------------------------ |
-| `SKIP_EXAMPLE_TESTS`              | fuz_css | Skip slow Vite plugin integration tests          |
-| `TEST_DATABASE_URL`               | fuz_app | Enable PostgreSQL tests (PGlite always runs)     |
-| `FUZ_TEST_CROSS_BACKEND`          | fuz_app | Enable the `cross_backend_*` vitest projects     |
+| Flag                              | Repo    | Purpose                                           |
+| --------------------------------- | ------- | ------------------------------------------------- |
+| `SKIP_EXAMPLE_TESTS`              | fuz_css | Skip slow Vite plugin integration tests           |
+| `TEST_DATABASE_URL`               | fuz_app | Enable PostgreSQL tests (PGlite always runs)      |
+| `FUZ_TEST_CROSS_BACKEND`          | fuz_app | Enable the `cross_backend_*` vitest projects      |
 | `FUZ_TESTING_RUST_SPINE_STUB_BIN` | fuz_app | Path to the Rust spine stub binary for cross runs |
 
 ## Test Structure
@@ -764,18 +764,18 @@ SKIP_EXAMPLE_TESTS=1 gro test
 ### Basic Test Pattern
 
 ```typescript
-import {describe, test, assert} from 'vitest';
-import {query_create_account} from '#lib/auth/account_queries.ts';
+import { describe, test, assert } from 'vitest';
+import { query_create_account } from '#lib/auth/account_queries.ts';
 
 describe('account queries', () => {
 	test('create returns an account with generated uuid', async () => {
 		const db = get_db();
 		const account = await query_create_account(
-			{db},
+			{ db },
 			{
 				username: 'alice',
-				password_hash: 'hash123',
-			},
+				password_hash: 'hash123'
+			}
 		);
 
 		assert.ok(account.id);
@@ -821,7 +821,7 @@ const duration_cases: Array<[label: string, input: number, expected: string]> = 
 	['seconds', 1000, '1s'],
 	['minutes', 60000, '1m'],
 	['hours', 3600000, '1h'],
-	['mixed', 3661000, '1h 1m 1s'],
+	['mixed', 3661000, '1h 1m 1s']
 ];
 
 describe('format_duration', () => {
@@ -836,11 +836,11 @@ For larger tables, extract as a typed constant. Use `null` for "missing" cases:
 ```typescript
 const cases: Array<[label: string, initial: string | null, key: string, expected: string]> = [
 	['updates existing', 'KEY="old"', 'KEY', 'KEY="new"'],
-	['creates if missing', null, 'KEY', 'KEY="new"'],
+	['creates if missing', null, 'KEY', 'KEY="new"']
 ];
 
 test.each(cases)('%s', async (_label, initial, key, expected) => {
-	const fs = create_mock_fs(initial !== null ? {'.env': initial} : {});
+	const fs = create_mock_fs(initial !== null ? { '.env': initial } : {});
 	await update(key, 'new', fs);
 	assert.strictEqual(fs.get('.env'), expected);
 });
@@ -850,18 +850,18 @@ Object array form with `$prop` interpolation:
 
 ```typescript
 const POSITION_CASES = [
-	{position: 'left', align: 'start', expected: {right: '100%', top: '0px'}},
-	{position: 'right', align: 'center', expected: {left: '100%', top: '50%'}},
+	{ position: 'left', align: 'start', expected: { right: '100%', top: '0px' } },
+	{ position: 'right', align: 'center', expected: { left: '100%', top: '50%' } }
 ];
 
 test.each(POSITION_CASES)(
 	'$position/$align applies correct styles',
-	({position, align, expected}) => {
+	({ position, align, expected }) => {
 		const styles = generate_position_styles(position, align);
 		for (const [prop, value] of Object.entries(expected)) {
 			assert.strictEqual(styles[prop], value, `style '${prop}'`);
 		}
-	},
+	}
 );
 ```
 
@@ -869,19 +869,19 @@ Tests with dynamic expected values or extra assertions should stay standalone.
 
 ### Composable Test Suites (fuz_app)
 
-| Suite                                       | Groups | Purpose                                         |
-| ------------------------------------------- | ------ | ----------------------------------------------- |
-| `describe_standard_attack_surface_tests`    | 5      | Snapshot, structure, adversarial auth/input/404 |
-| `describe_standard_integration_tests`       | 10     | Login, cookies, sessions, bearer, passwords     |
-| `describe_standard_admin_integration_tests` | 7      | Accounts, permits, sessions, audit log          |
-| `describe_audit_completeness_tests`         | varies | End-to-end audit emit → persist → query         |
-| `describe_bootstrap_success_tests`          | 3      | Bootstrap success path (empty DB, real flow)    |
-| `describe_rate_limiting_tests`              | 3      | IP, per-account, bearer rate limiting           |
-| `describe_round_trip_validation`            | varies | Schema-driven positive-path validation          |
-| `describe_rpc_round_trip_tests`             | varies | RPC schema-driven positive-path validation      |
-| `describe_data_exposure_tests`              | 6      | Schema-level + runtime field blocklists         |
-| `describe_standard_adversarial_headers`     | 7      | Header injection cases                          |
-| `describe_rpc_attack_surface_tests`         | 3      | RPC adversarial auth/envelope/params            |
+| Suite                                       | Groups | Purpose                                                       |
+| ------------------------------------------- | ------ | ------------------------------------------------------------- |
+| `describe_standard_attack_surface_tests`    | 5      | Snapshot, structure, adversarial auth/input/404               |
+| `describe_standard_integration_tests`       | 10     | Login, cookies, sessions, bearer, passwords                   |
+| `describe_standard_admin_integration_tests` | 7      | Accounts, permits, sessions, audit log                        |
+| `describe_audit_completeness_tests`         | varies | End-to-end audit emit → persist → query                       |
+| `describe_bootstrap_success_tests`          | 3      | Bootstrap success path (empty DB, real flow)                  |
+| `describe_rate_limiting_tests`              | 3      | IP, per-account, bearer rate limiting                         |
+| `describe_round_trip_validation`            | varies | Schema-driven positive-path validation                        |
+| `describe_rpc_round_trip_tests`             | varies | RPC schema-driven positive-path validation                    |
+| `describe_data_exposure_tests`              | 6      | Schema-level + runtime field blocklists                       |
+| `describe_standard_adversarial_headers`     | 7      | Header injection cases                                        |
+| `describe_rpc_attack_surface_tests`         | 3      | RPC adversarial auth/envelope/params                          |
 | `describe_standard_tests`                   | 8      | Bundle: 8 DB-backed suites, relevant-config silent-skip gates |
 
 Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
@@ -924,8 +924,8 @@ The pieces (split across two fuz_app testing modules — don't conflate with
      `rpc #id failed: [code] message data=...` on error frames.
    - `client.send(message)` + `client.wait_for(predicate)` — raw
      primitives for asserting on an error frame directly (e.g. `-32602`
-     + zod issues) or when the request never resolves (`ctx.signal`
-     abort tests).
+     - zod issues) or when the request never resolves (`ctx.signal`
+       abort tests).
    - Predicates: `is_notification(method)`, `is_response_for(id)`, and
      `is_notification_with<P>(method, (params) => boolean)` — a type
      guard narrowing `wait_for` / `messages.filter` results without an
@@ -958,7 +958,7 @@ coverage enforcement or a published JSON Schema for external consumers.
 
 1. **Round-trip conformance.** One typed "kitchen-sink" fixture exercising every
    type/field/variant, `import type`'d against the TS types and `export
-   default`ing a builder function. One source, gated twice:
+default`ing a builder function. One source, gated twice:
    - `gro typecheck` includes it → catches **types-too-strict** (a valid shape
      the TS types wrongly reject).
    - A Rust integration test evaluates it and parses the emitted JSON with the
@@ -967,6 +967,7 @@ coverage enforcement or a published JSON Schema for external consumers.
 
    The `import type` is erased at runtime, so the evaluator needs no module
    resolution — the same file is both typechecked and executed.
+
 2. **Coverage guard.** Iterate the Rust canonical variant list (e.g. a
    `ResourceType::ALL` const) and assert the fixture exercises **every** variant:
    `for v in ALL { assert!(seen.contains(&v), "kitchen-sink missing {v}") }`.

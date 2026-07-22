@@ -3,4 +3,4 @@ export interface ToolMeta {
 	title: string;
 }
 
-export const tools: Array<ToolMeta> = [{name: 'hash', title: 'BLAKE3 and SHA hashing'}];
+export const tools: Array<ToolMeta> = [{ name: 'hash', title: 'BLAKE3 and SHA hashing' }];

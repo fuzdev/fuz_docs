@@ -21,8 +21,8 @@ vertically** via the flow-margin system: `p`, `ul`, `ol`, `menu`, `form`,
 `.unstyled`. So a stack of paragraphs, a heading followed by prose, a list under
 a heading — all already have correct rhythm with **zero classes**.
 
-Before adding any class or `<style>`, ask: *what specific gap in the defaults
-does this close?* Hand-adding `mb_*`/`gap_*`/`p_*` to elements flow margin
+Before adding any class or `<style>`, ask: _what specific gap in the defaults
+does this close?_ Hand-adding `mb_*`/`gap_*`/`p_*` to elements flow margin
 already spaces, or re-declaring the color/font an element already carries, is
 churn that fights the framework. This isn't stylistic — most fuz app source
 files have **no `<style>` block at all**, and where classes appear the
@@ -37,7 +37,7 @@ use `gap_*` for spacing there.
 
 ## The Styling Ladder
 
-When you *do* style, work down this ladder and stop at the first rung that
+When you _do_ style, work down this ladder and stop at the first rung that
 suffices:
 
 1. **Semantic HTML** — the right element, no class. Often the whole job.
@@ -55,7 +55,7 @@ suffices:
 
 **Rungs 3–5 are one tier in practice, not a strict frequency ranking.** They're
 all utility classes you mix freely on the same element. The ordering is a mild
-preference — reach for a composite when one *exactly* matches (`row` over
+preference — reach for a composite when one _exactly_ matches (`row` over
 `display:flex align-items:center`), tokens for spacing/color, literals for
 one-off layout. Empirically, spacing token classes (`mb_*`, `gap_*`, `p_*`) are
 the single most-used class family, and **literal flex classes (`display:flex`,
@@ -71,14 +71,14 @@ over a hand-built callout.
 ### Direction matters — don't churn `<style>` into class soup
 
 The ladder describes how to **author** from scratch, not a mandate to rewrite
-`<style>` blocks as classes. Pushing styling *up* the ladder (a `<div
-class="callout">` → `<aside>`) is neutral-to-good; pushing it *down* (a working
+`<style>` blocks as classes. Pushing styling _up_ the ladder (a `<div
+class="callout">` → `<aside>`) is neutral-to-good; pushing it _down_ (a working
 `<style>` block → a 12-class string) is usually churn.
 
 - **Class → right semantic element** — good.
 - **Trivially-redundant `<style>` → composite/token** — good only when the
   block's entire content is one composite's worth: `display: flex;
-  flex-direction: column; gap: var(--space_md)` (→ `column gap_md`),
+flex-direction: column; gap: var(--space_md)` (→ `column gap_md`),
   `display: flex; align-items: center; gap: …` (→ `row gap_*`), or a single
   token-mappable value. Intent must survive the rewrite verbatim.
 - **Non-trivial `<style>` → long class string** — don't. If the block has
@@ -97,7 +97,7 @@ because the styling exceeded "simple."
 | `<h1>`–`<h6>`                     | Serif font, tiered sizes/weights, balanced text wrap, flow margins                       |
 | `<a>`                             | Link color, focus outline, `.selected` state                                             |
 | `<button>`                        | Fill, border, hover/active/focus/disabled/selected states                                |
-| `<button class="palette_a">`        | Hue variants `palette_a` through `palette_j` (intent/status colors)                          |
+| `<button class="palette_a">`      | Hue variants `palette_a` through `palette_j` (intent/status colors)                      |
 | `<input>`/`<textarea>`/`<select>` | Padding, border, focus outline, hover/disabled states; range, checkbox, radio all styled |
 | `<aside>`                         | Left border, tinted background, padding — callout/info box                               |
 | `<blockquote>`                    | Thick left border, padding                                                               |
@@ -124,14 +124,14 @@ overrides it, regardless of import order.
 State/variant classes authored into the semantic styles (`style.css`) — reach
 for these before any utility class or custom CSS:
 
-| Class                 | Where it applies                                | Effect                                                     |
-| --------------------- | ----------------------------------------------- | ---------------------------------------------------------- |
-| `.selected`           | `button`, `a`, `label`, `.menuitem`             | Filled selected appearance; `button`/`label` also switch to `cursor: default` (links stay interactive) |
-| `.deselectable`       | selected `button`, and the `selectable`/`menuitem` composites | Keeps interactivity on a selected element                  |
-| `.disabled`           | `label`                                          | Muted color, default cursor                                |
-| `.palette_a`–`.palette_j` | `button`                                        | Palette variants (a=blue·accent, c=red·negative, etc.)     |
-| `.inline`             | `button`, `input`, `code`, `select`, `textarea` | Inline-block display for use inside paragraph text         |
-| `.unstyled`           | Most elements                                   | Opts out of opinionated styling, keeps normalizations      |
+| Class                     | Where it applies                                              | Effect                                                                                                 |
+| ------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `.selected`               | `button`, `a`, `label`, `.menuitem`                           | Filled selected appearance; `button`/`label` also switch to `cursor: default` (links stay interactive) |
+| `.deselectable`           | selected `button`, and the `selectable`/`menuitem` composites | Keeps interactivity on a selected element                                                              |
+| `.disabled`               | `label`                                                       | Muted color, default cursor                                                                            |
+| `.palette_a`–`.palette_j` | `button`                                                      | Palette variants (a=blue·accent, c=red·negative, etc.)                                                 |
+| `.inline`                 | `button`, `input`, `code`, `select`, `textarea`               | Inline-block display for use inside paragraph text                                                     |
+| `.unstyled`               | Most elements                                                 | Opts out of opinionated styling, keeps normalizations                                                  |
 
 A `<button class="palette_c selected">` is already a "selected destructive
 action" — no hand-rolled state styling. (Size classes `sm`/`md`/`lg`/etc. read
@@ -163,8 +163,8 @@ for any Vite project:
 
 ```typescript
 // vite.config.ts
-import {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';
-export default defineConfig({plugins: [vite_plugin_fuz_css()]});
+import { vite_plugin_fuz_css } from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';
+export default defineConfig({ plugins: [vite_plugin_fuz_css()] });
 
 // src/routes/+layout.svelte (or main.ts)
 import 'virtual:fuz.css';
@@ -284,7 +284,7 @@ Three types, generated on-demand:
 
 | Type                  | Example                               | Purpose                      |
 | --------------------- | ------------------------------------- | ---------------------------- |
-| **Token classes**     | `.p_md`, `.palette_a_50`, `.gap_lg`     | Map to style variables       |
+| **Token classes**     | `.p_md`, `.palette_a_50`, `.gap_lg`   | Map to style variables       |
 | **Composite classes** | `.box`, `.row`, `.ellipsis`           | Multi-property shortcuts     |
 | **Literal classes**   | `.display:flex`, `.hover:opacity:80%` | Arbitrary CSS property:value |
 
@@ -306,24 +306,24 @@ Three types, generated on-demand:
 
 ### Composite Classes
 
-| Class         | What it does                                                       |
-| ------------- | ------------------------------------------------------------------ |
-| `box`         | Flex column, items centered, justify centered                      |
-| `row`         | Flex row, align-items centered (overrides `box` direction)         |
-| `column`      | Flex column (like `box` but uncentered)                            |
-| `panel`       | Embedded container with tinted background and border-radius        |
-| `pane`        | Floating container with opaque background and shadow               |
-| `ellipsis`    | Block with text truncation (nowrap, overflow hidden, ellipsis)     |
-| `chip`        | Inline label styling (font/padding/bg/radius + `palette_X` hues); display comes from the host element |
-| `menuitem`    | Full-width list item with icon, title, and selected state          |
-| `icon_button` | Square button sized to `--input_height` (flex-shrink: 0)           |
-| `selectable`  | Button-like fill with hover/active/selected states                 |
-| `clickable`   | Hover/focus/active scale transform effects (includes state styles) |
-| `plain`       | Transparent border/fill/shadow when not hovered                    |
-| `chevron`     | Small right-pointing arrow via CSS border trick                    |
-| `circular`    | `border-radius: 50%`                                               |
-| `pixelated`   | Crisp pixel-art image rendering                                    |
-| `xs`/`sm`/`md`/`lg`/`xl` | **Size composites** — see below                         |
+| Class                    | What it does                                                                                          |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `box`                    | Flex column, items centered, justify centered                                                         |
+| `row`                    | Flex row, align-items centered (overrides `box` direction)                                            |
+| `column`                 | Flex column (like `box` but uncentered)                                                               |
+| `panel`                  | Embedded container with tinted background and border-radius                                           |
+| `pane`                   | Floating container with opaque background and shadow                                                  |
+| `ellipsis`               | Block with text truncation (nowrap, overflow hidden, ellipsis)                                        |
+| `chip`                   | Inline label styling (font/padding/bg/radius + `palette_X` hues); display comes from the host element |
+| `menuitem`               | Full-width list item with icon, title, and selected state                                             |
+| `icon_button`            | Square button sized to `--input_height` (flex-shrink: 0)                                              |
+| `selectable`             | Button-like fill with hover/active/selected states                                                    |
+| `clickable`              | Hover/focus/active scale transform effects (includes state styles)                                    |
+| `plain`                  | Transparent border/fill/shadow when not hovered                                                       |
+| `chevron`                | Small right-pointing arrow via CSS border trick                                                       |
+| `circular`               | `border-radius: 50%`                                                                                  |
+| `pixelated`              | Crisp pixel-art image rendering                                                                       |
+| `xs`/`sm`/`md`/`lg`/`xl` | **Size composites** — see below                                                                       |
 
 **Size composites cascade to a subtree.** `xs`/`sm`/`md`/`lg`/`xl` are a
 five-member family at fixed step offsets from the `md` default. Put one on any
@@ -473,7 +473,7 @@ block exists it's usually
 	<small class="text_50">{subtitle}</small>
 	<p>{description}</p>
 	<button class="palette_a">Confirm</button>
-	<button class={['palette_c', {selected: destructive}]}>Delete</button>
+	<button class={['palette_c', { selected: destructive }]}>Delete</button>
 </aside>
 ```
 
@@ -548,8 +548,14 @@ Two naming systems coexist:
 </div>
 
 <style>
-	.site-header { position: sticky; top: 0; z-index: 10; }
-	.nav-links { border-bottom: var(--border_width_1) var(--border_style) var(--border_color); }
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
+	}
+	.nav-links {
+		border-bottom: var(--border_width_1) var(--border_style) var(--border_color);
+	}
 </style>
 ```
 
@@ -578,5 +584,5 @@ classes is the comfortable upper bound (98%+ of real class attributes are ≤6
 tokens); 8+ (especially several literal `property:value` classes) usually reads
 worse than the equivalent `<style>` block with design tokens, which also gets
 IDE autocomplete and composes with conditional logic without `clsx` gymnastics.
-And per §Direction matters, don't churn *existing* `<style>` blocks into class
+And per §Direction matters, don't churn _existing_ `<style>` blocks into class
 strings.

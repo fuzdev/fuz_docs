@@ -5,10 +5,10 @@ export type {
 	StackEdge,
 	StackCategory,
 	StackLanguage,
-	StackEdgeKind,
+	StackEdgeKind
 } from '$lib/stack_graph_types.ts';
 
-import type {StackNode, StackEdge} from '$lib/stack_graph_types.ts';
+import type { StackNode, StackEdge } from '$lib/stack_graph_types.ts';
 
 /** All public stack repos as positioned graph nodes, sorted by name. */
 export const stack_nodes: Array<StackNode> = [
@@ -20,7 +20,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 0,
 		fan_in: 11,
 		x: -75,
-		y: 960,
+		y: 960
 	},
 	{
 		name: 'fuz_app',
@@ -30,7 +30,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 7,
 		fan_in: 1,
 		x: -375,
-		y: 120,
+		y: 120
 	},
 	{
 		name: 'fuz_blog',
@@ -40,7 +40,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 8,
 		fan_in: 0,
 		x: -75,
-		y: 0,
+		y: 0
 	},
 	{
 		name: 'fuz_code',
@@ -51,7 +51,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 5,
 		fan_in: 9,
 		x: 0,
-		y: 360,
+		y: 360
 	},
 	{
 		name: 'fuz_css',
@@ -61,7 +61,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 4,
 		fan_in: 10,
 		x: 0,
-		y: 480,
+		y: 480
 	},
 	{
 		name: 'fuz_docs',
@@ -72,7 +72,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 7,
 		fan_in: 0,
 		x: -225,
-		y: 120,
+		y: 120
 	},
 	{
 		name: 'fuz_gitops',
@@ -82,7 +82,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 7,
 		fan_in: 0,
 		x: -75,
-		y: 120,
+		y: 120
 	},
 	{
 		name: 'fuz_mastodon',
@@ -92,7 +92,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 7,
 		fan_in: 1,
 		x: 75,
-		y: 120,
+		y: 120
 	},
 	{
 		name: 'fuz_template',
@@ -102,7 +102,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 7,
 		fan_in: 0,
 		x: 225,
-		y: 120,
+		y: 120
 	},
 	{
 		name: 'fuz_ui',
@@ -112,7 +112,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 6,
 		fan_in: 8,
 		x: 0,
-		y: 240,
+		y: 240
 	},
 	{
 		name: 'fuz_util',
@@ -122,7 +122,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 1,
 		fan_in: 13,
 		x: 0,
-		y: 840,
+		y: 840
 	},
 	{
 		name: 'fuz.dev',
@@ -132,7 +132,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 7,
 		fan_in: 0,
 		x: 375,
-		y: 120,
+		y: 120
 	},
 	{
 		name: 'gro',
@@ -142,7 +142,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 3,
 		fan_in: 11,
 		x: 0,
-		y: 600,
+		y: 600
 	},
 	{
 		name: 'mdz',
@@ -153,7 +153,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 2,
 		fan_in: 10,
 		x: 0,
-		y: 720,
+		y: 720
 	},
 	{
 		name: 'svelte-docinfo',
@@ -163,7 +163,7 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 0,
 		fan_in: 13,
 		x: 75,
-		y: 960,
+		y: 960
 	},
 	{
 		name: 'zzz',
@@ -173,8 +173,8 @@ export const stack_nodes: Array<StackNode> = [
 		layer: 8,
 		fan_in: 0,
 		x: 75,
-		y: 0,
-	},
+		y: 0
+	}
 ];
 
 /** Every dependency edge (including `dev`), sorted by from, then to, then kind. */
@@ -182,578 +182,578 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'blake3',
 		to: 'fuz_util',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_app',
 		to: 'blake3',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_app',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_app',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_app',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_app',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_app',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_app',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_app',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'fuz_css',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'fuz_mastodon',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'fuz_ui',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'gro',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_blog',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_code',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_code',
 		to: 'fuz_css',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_code',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_code',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_code',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_code',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_code',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_css',
 		to: 'blake3',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_css',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_css',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_css',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_css',
 		to: 'gro',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_css',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_css',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'fuz_util',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_docs',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'fuz_css',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'fuz_ui',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'gro',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_gitops',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'fuz_css',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'fuz_ui',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_mastodon',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'fuz_util',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_template',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'fuz_code',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'fuz_css',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'gro',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'mdz',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_ui',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_util',
 		to: 'blake3',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_util',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_util',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_util',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_util',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_util',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_util',
 		to: 'svelte-docinfo',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'fuz_util',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'fuz.dev',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'gro',
 		to: 'blake3',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'gro',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'gro',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'gro',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'gro',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'gro',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'gro',
 		to: 'svelte-docinfo',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'mdz',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'mdz',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'mdz',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'mdz',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'mdz',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'mdz',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'mdz',
 		to: 'svelte-docinfo',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'blake3',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'fuz_ui',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'fuz_util',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'gro',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'svelte-docinfo',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'zzz',
 		to: 'blake3',
-		kind: 'prod',
+		kind: 'prod'
 	},
 	{
 		from: 'zzz',
 		to: 'fuz_app',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'zzz',
 		to: 'fuz_code',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'zzz',
 		to: 'fuz_css',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'zzz',
 		to: 'fuz_ui',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'zzz',
 		to: 'fuz_util',
-		kind: 'peer',
+		kind: 'peer'
 	},
 	{
 		from: 'zzz',
 		to: 'gro',
-		kind: 'prod',
+		kind: 'prod'
 	},
 	{
 		from: 'zzz',
 		to: 'mdz',
-		kind: 'dev',
+		kind: 'dev'
 	},
 	{
 		from: 'zzz',
 		to: 'svelte-docinfo',
-		kind: 'dev',
-	},
+		kind: 'dev'
+	}
 ];
 
 // generated by src/routes/docs/stack/stack_graph.gen.ts - do not edit

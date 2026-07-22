@@ -1,12 +1,12 @@
 <script lang="ts">
 	import ApiIndex from '@fuzdev/fuz_ui/ApiIndex.svelte';
 	import ApiModule from '@fuzdev/fuz_ui/ApiModule.svelte';
-	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.ts';
-	import {resolve} from '$app/paths';
+	import { tome_get_by_slug } from '@fuzdev/fuz_ui/tome.ts';
+	import { resolve } from '$app/paths';
 
-	import {get_library} from '$routes/libraries.ts';
+	import { get_library } from '$routes/libraries.ts';
 
-	const {params} = $props();
+	const { params } = $props();
 
 	const tome = tome_get_by_slug('api');
 

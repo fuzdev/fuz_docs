@@ -15,7 +15,7 @@
  * @module
  */
 
-import type {StackCategory, StackLanguage} from './stack_graph_types.ts';
+import type { StackCategory, StackLanguage } from './stack_graph_types.ts';
 
 /** One public stack repo, identified by its workspace directory name. */
 export interface StackRepo {
@@ -35,20 +35,20 @@ export interface StackRepo {
  * generated `libraries.json` / `stack.json`.
  */
 export const stack_repos: ReadonlyArray<StackRepo> = [
-	{path: 'fuz_util', name: '@fuzdev/fuz_util', category: 'foundation', language: 'ts'},
-	{path: 'gro', name: '@fuzdev/gro', category: 'build', language: 'ts'},
-	{path: 'fuz_css', name: '@fuzdev/fuz_css', category: 'styling', language: 'ts'},
-	{path: 'mdz', name: '@fuzdev/mdz', category: 'ui', language: 'ts'},
-	{path: 'fuz_ui', name: '@fuzdev/fuz_ui', category: 'ui', language: 'ts'},
-	{path: 'fuz_app', name: '@fuzdev/fuz_app', category: 'fullstack', language: 'ts'},
-	{path: 'fuz_code', name: '@fuzdev/fuz_code', category: 'ui', language: 'ts'},
-	{path: 'fuz_template', name: '@fuzdev/fuz_template', category: 'app', language: 'ts'},
-	{path: 'fuz_blog', name: '@fuzdev/fuz_blog', category: 'app', language: 'ts'},
-	{path: 'fuz_mastodon', name: '@fuzdev/fuz_mastodon', category: 'app', language: 'ts'},
-	{path: 'fuz_gitops', name: '@fuzdev/fuz_gitops', category: 'tooling', language: 'ts'},
-	{path: 'fuz_docs', name: '@fuzdev/fuz_docs', category: 'app', language: 'ts'},
-	{path: 'fuz.dev', name: '@fuzdev/fuz.dev', category: 'site', language: 'ts'},
-	{path: 'zzz', name: '@fuzdev/zzz', category: 'app', language: 'ts'},
-	{path: 'svelte-docinfo', name: 'svelte-docinfo', category: 'tooling', language: 'ts'},
-	{path: 'blake3', name: '@fuzdev/blake3', category: 'foundation', language: 'wasm'},
+	{ path: 'fuz_util', name: '@fuzdev/fuz_util', category: 'foundation', language: 'ts' },
+	{ path: 'gro', name: '@fuzdev/gro', category: 'build', language: 'ts' },
+	{ path: 'fuz_css', name: '@fuzdev/fuz_css', category: 'styling', language: 'ts' },
+	{ path: 'mdz', name: '@fuzdev/mdz', category: 'ui', language: 'ts' },
+	{ path: 'fuz_ui', name: '@fuzdev/fuz_ui', category: 'ui', language: 'ts' },
+	{ path: 'fuz_app', name: '@fuzdev/fuz_app', category: 'fullstack', language: 'ts' },
+	{ path: 'fuz_code', name: '@fuzdev/fuz_code', category: 'ui', language: 'ts' },
+	{ path: 'fuz_template', name: '@fuzdev/fuz_template', category: 'app', language: 'ts' },
+	{ path: 'fuz_blog', name: '@fuzdev/fuz_blog', category: 'app', language: 'ts' },
+	{ path: 'fuz_mastodon', name: '@fuzdev/fuz_mastodon', category: 'app', language: 'ts' },
+	{ path: 'fuz_gitops', name: '@fuzdev/fuz_gitops', category: 'tooling', language: 'ts' },
+	{ path: 'fuz_docs', name: '@fuzdev/fuz_docs', category: 'app', language: 'ts' },
+	{ path: 'fuz.dev', name: '@fuzdev/fuz.dev', category: 'site', language: 'ts' },
+	{ path: 'zzz', name: '@fuzdev/zzz', category: 'app', language: 'ts' },
+	{ path: 'svelte-docinfo', name: 'svelte-docinfo', category: 'tooling', language: 'ts' },
+	{ path: 'blake3', name: '@fuzdev/blake3', category: 'foundation', language: 'wasm' }
 ];

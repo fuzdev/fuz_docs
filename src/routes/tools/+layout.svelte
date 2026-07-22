@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type {Snippet} from 'svelte';
+	import type { Snippet } from 'svelte';
 
 	import SidebarLayout from '$routes/SidebarLayout.svelte';
 
-	const {children}: {children: Snippet} = $props();
+	const { children }: { children: Snippet } = $props();
 </script>
 
 <SidebarLayout>

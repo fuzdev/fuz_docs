@@ -41,23 +41,23 @@ part transfers to understanding the others.
 `@fuzdev/*` packages draw from these conventions. Each package's `CLAUDE.md`
 is authoritative for what it actually uses.
 
-| Package        | Description                                                                           |
-| -------------- | ------------------------------------------------------------------------------------- |
-| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                     |
+| Package        | Description                                                                            |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types                      |
 | `gro`          | task runner and toolkit extending SvelteKit (web-dev surface; internals adopting Rust) |
-| `fuz_css`      | semantic-first CSS framework and design system — apps look good by default            |
-| `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                      |
-| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                            |
-| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                        |
-| `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                     |
-| `fuz_template` | a web app template with TypeScript + SvelteKit + optional Rust for the fuz-stack      |
-| `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more    |
-| `fuz_blog`     | blog software from scratch with SvelteKit                                             |
-| `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                        |
-| `fuz_gitops`   | a tool for managing many repos                                                        |
-| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`)         |
-| `zzz`          | software garage — produce software with AI assistance                                 |
-| `zap`          | convergence — deploy and operate infrastructure                                       |
+| `fuz_css`      | semantic-first CSS framework and design system — apps look good by default             |
+| `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                       |
+| `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                             |
+| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                         |
+| `fuz_docs`     | experimental AI-generated docs and skills for Fuz                                      |
+| `fuz_template` | a web app template with TypeScript + SvelteKit + optional Rust for the fuz-stack       |
+| `fuz_code`     | syntax styling utilities and components for TypeScript, Svelte, Markdown, and more     |
+| `fuz_blog`     | blog software from scratch with SvelteKit                                              |
+| `fuz_mastodon` | Mastodon components and helpers for Svelte, SvelteKit, and Fuz                         |
+| `fuz_gitops`   | a tool for managing many repos                                                         |
+| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`)          |
+| `zzz`          | software garage — produce software with AI assistance                                  |
+| `zap`          | convergence — deploy and operate infrastructure                                        |
 
 **Dependency flow**: `fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps`
 (zap sits beside this chain: its site/authoring surface builds on fuz_ui, and
@@ -370,8 +370,10 @@ no `<style>` block at all.
 ```svelte
 <!-- BAD: these classes fight defaults the elements already have -->
 <section>
-	<h2 class="mb_md">{title}</h2>  <!-- headings already carry flow margin -->
-	<p class="mb_md">{body}</p>      <!-- so do paragraphs -->
+	<h2 class="mb_md">{title}</h2>
+	<!-- headings already carry flow margin -->
+	<p class="mb_md">{body}</p>
+	<!-- so do paragraphs -->
 </section>
 
 <!-- GOOD: correct vertical rhythm with zero classes -->
@@ -515,7 +517,7 @@ crates consumed by `zzz_server`/`fuz_forge_server`, the `zap` convergence
 engine, the `blake3`/`tsv` bindings) share a distinct set of conventions from
 the TS/Svelte side. snake_case carries over for cross-language alignment, but
 Rust solves with the type system + crate graph what TS solves with `*Deps`
-injection. These references own *conventions and patterns* — adoptable by any
+injection. These references own _conventions and patterns_ — adoptable by any
 Rust workspace, including new/external ones, with ecosystem repos as
 exemplars; each repo's `CLAUDE.md` owns its inventory (crates, commands, env
 vars). Five references, loaded on demand:

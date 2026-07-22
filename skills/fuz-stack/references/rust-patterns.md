@@ -11,9 +11,9 @@ spine-consumer servers `zzz`/`fuz_forge`, the `zap` convergence CLI, the
 workspaces starting from these conventions. All use **Rust edition 2024**,
 resolver 2.
 
-**Boundary**: this skill owns *conventions and patterns* — rules a workspace
+**Boundary**: this skill owns _conventions and patterns_ — rules a workspace
 adopts, with ecosystem repos cited as exemplars. Each repo's `CLAUDE.md` owns
-its *inventory* (crate lists, commands, env vars, package tables) and is
+its _inventory_ (crate lists, commands, env vars, package tables) and is
 authoritative for project-specific choices. Every pattern here stands alone;
 where a spine crate is named as the canonical implementation, that's the
 ecosystem wiring — a spine-free workspace adopts the pattern's shape (zap is
@@ -113,7 +113,7 @@ block, not the generic one above.
 ### Crate-level overrides — re-declare the whole block
 
 A crate that needs `unsafe_code` (C-FFI/N-API ABI layers, wit-bindgen
-components, PTY wrappers) can't *partially* override the workspace `forbid`:
+components, PTY wrappers) can't _partially_ override the workspace `forbid`:
 Cargo replaces the entire `[lints]` table, so relaxing one lint means
 re-declaring **all** the others in the crate's own `[lints]`. Re-paste the
 full workspace block and change only what must change.
@@ -181,8 +181,9 @@ fn main() -> ExitCode {
 Use `#[source]` to chain causes: `Display` shows only the variant's own
 message; the chain surfaces via `e.source()` for structured logging
 (`ResponseParse(#[source] serde_json::Error)`). For parsers, carry `position`
-+ optional context on variants so the renderer can draw a caret pointer
-(tsv's `ParseError`).
+
+- optional context on variants so the renderer can draw a caret pointer
+  (tsv's `ParseError`).
 
 ### Helper methods
 
@@ -190,7 +191,7 @@ message; the chain surfaces via `e.source()` for structured logging
   variants lack one, or `&'static str` (`""` = absent) when all have one.
   `HintMessage` (`Static(&'static str) | Owned(String)`) is the shared
   primitive (`fuz_sys::cli`); import it, don't re-declare. Hint strings carry
-  *advice only* — the print site owns the `hint:` label.
+  _advice only_ — the print site owns the `hint:` label.
 - **`.exit_code()`** — `u8` for `ExitCode::from`; match arms over variants.
   Code policy: §CLI Patterns.
 - **Classifiers** — small `&self -> bool` methods the caller branches on,
@@ -290,7 +291,7 @@ single-variant enum earns its keep: it rejects unknown values now, and the
 next variant forces every `match` to handle it.
 
 **Leniency is only for genuine extensibility.** Keep a `String` (or a
-catch-all variant) *only* when the value passes through verbatim to an
+catch-all variant) _only_ when the value passes through verbatim to an
 external system whose set is genuinely open and you don't dispatch on it.
 
 ### Make impossible states unrepresentable
@@ -322,17 +323,17 @@ newtype wrapping `ContentHash`).
 **Two anti-patterns reviewers actually hit:**
 
 - **The flattened discriminated union.** A `struct { available: bool, error:
-  Option<String> }` whose doc-comment says "matches a TS discriminated union"
-  but whose type permits the impossible combos. The doc-comment *is* the
+Option<String> }` whose doc-comment says "matches a TS discriminated union"
+  but whose type permits the impossible combos. The doc-comment _is_ the
   smell — lift to an enum with payload-on-variant and a hand-written
   `Serialize` for the flat wire shape (zzz's `ProviderStatus`:
   `Available{…} | Unavailable{…, error}`).
 - **The `json!({"kind": …})` closed set.** Response bodies built with bare
   `json!({"kind":"truncated", …})` across `match` arms are a discriminated
   union evading the enum rule — model as `#[serde(tag = "kind", rename_all =
-  "snake_case")]` so each variant carries only its payload. Identical wire
+"snake_case")]` so each variant carries only its payload. Identical wire
   output (`fuz_forge_wire`'s `BlobBody`: `Text{text} | Binary |
-  Truncated{size}`).
+Truncated{size}`).
 
 ### Push a unifying newtype through the wire
 
@@ -381,7 +382,7 @@ The ladder's goal is a pure-ish core with effects pushed to the boundary —
 most code testable without IO, mocks, or a runtime:
 
 - **Split IO from logic; inject the result, not the source.** A function that
-  reads a file *and* decides on the contents becomes a thin edge doing the
+  reads a file _and_ decides on the contents becomes a thin edge doing the
   read + a pure function over the parsed value.
 - **Presentation is a returned value, not prints in the library.** The
   library returns a structured result; the binary renders it (human /
@@ -452,7 +453,7 @@ name (`*Actions`, `*Runtime`), never `*Deps`.
 
 ### Enum dispatch before trait objects
 
-Before reaching for *any* trait, ask whether the impl set is closed and known
+Before reaching for _any_ trait, ask whether the impl set is closed and known
 at compile time. If so, an **enum with methods that match on `self`**
 dispatches statically, needs no vtable, and stays exhaustively checked. A
 trait earns its place only when the impl set is genuinely open or crosses a
@@ -481,12 +482,12 @@ capability trait (PG-only / PG+disk / mock).
 
 ### Hot/cold dispatch rule
 
-| Path     | Dispatch                                    | Why                                                    |
-| -------- | ------------------------------------------- | ------------------------------------------------------ |
-| **Hot**  | concrete `Arc<T>`, `<T: Trait>`, or enum    | Per-request HMAC, rate-limit checks; vtable cost measurable vs the op |
-| **Cold** | `Arc<dyn Trait>`                            | `Arc<dyn PasswordHasher>` (Argon2), `Arc<dyn FactStore>`; op cost dwarfs vtable, testability earns it |
+| Path     | Dispatch                                 | Why                                                                                                   |
+| -------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Hot**  | concrete `Arc<T>`, `<T: Trait>`, or enum | Per-request HMAC, rate-limit checks; vtable cost measurable vs the op                                 |
+| **Cold** | `Arc<dyn Trait>`                         | `Arc<dyn PasswordHasher>` (Argon2), `Arc<dyn FactStore>`; op cost dwarfs vtable, testability earns it |
 
-`Arc<dyn>` also buys *type erasure* (one field, no generic plumbing) — a
+`Arc<dyn>` also buys _type erasure_ (one field, no generic plumbing) — a
 separate axis that sometimes justifies it on a hot path.
 
 ### Async traits — RPITIT, with one carve-out
@@ -509,14 +510,14 @@ support yet). Return `BoxFuture<'_, T>` manually rather than reaching for
 ### Object-safety annotation on the trait def
 
 Every `pub` trait in a shared crate declares its object-safety status as an
-item-level `///` doc line, by *consumption pattern*:
+item-level `///` doc line, by _consumption pattern_:
 
 - **`**Object-safe**`** — dispatched dynamically anywhere. Shape locked: no
   generic methods, no RPITIT (use `BoxFuture`).
 - **`**Not object-safe**`** — generic-bound / concrete-adapter use only; free
   to use RPITIT.
 
-The annotation tells contributors *why* they can't add a generic method (or
+The annotation tells contributors _why_ they can't add a generic method (or
 that they can). Private one-off helper traits need no marker.
 
 ### Test injection — concrete impls in a separate crate
@@ -585,9 +586,9 @@ type layer) is the cheapest place to enforce the §Idioms modeling rules.
   to the app home → restart daemon), the `check-release` audit (spine
   workspaces — ./rust-spine.md), and publisher-only operations (signing,
   publishing) kept out of shipped binaries. The `[alias] xtask = "run
-  --package xtask --"` lives in `.cargo/config.toml`.
+--package xtask --"` lives in `.cargo/config.toml`.
 - **Config vs secrets, by source**: a checked-in `.cargo/config.toml` `[env]`
-  holds *only non-secret dev overrides* — anything checked in is silently
+  holds _only non-secret dev overrides_ — anything checked in is silently
   inherited by every `cargo run`. Generated, gitignored files (mode 0600) for
   dev env; systemd/secrets infra for prod. Where the transport allows,
   prefer OS-level peer auth over tokens entirely — `fuzd` authenticates its
@@ -603,8 +604,8 @@ tests in `tests/` where applicable. Three testing shapes recur:
   hand-edited) plus a **differential oracle** — corpus comparison against the
   reference implementation (Prettier), built with the unwind profile so
   panics surface as data — plus per-runtime binding tests.
-- **Binding crates** (blake3): correctness asserted from the *consumer
-  language* against shared test vectors (TS for WASM, a Wasmtime compare
+- **Binding crates** (blake3): correctness asserted from the _consumer
+  language_ against shared test vectors (TS for WASM, a Wasmtime compare
   binary for the component); zero Rust unit tests by design, `cargo test` as
   a compile gate. Legitimate — the boundary is where the bugs are.
 - **Twin servers** (zzz, fuz_forge): the integration harness is the TS
@@ -614,11 +615,11 @@ tests in `tests/` where applicable. Three testing shapes recur:
 
 Arg parsing tracks binary size. Three tiers:
 
-| Use case | Parser | +bytes vs `println!("hello")` |
-|----------|--------|-------------------------------|
-| Backend daemons, a few flags | manual `std::env::args` | +5 KB |
-| User-facing CLIs with subcommands | **argh** | +16 KB |
-| Needs env-var binding, shell completions, or `wrap_help` | clap (`derive`) | +340 KB |
+| Use case                                                 | Parser                  | +bytes vs `println!("hello")` |
+| -------------------------------------------------------- | ----------------------- | ----------------------------- |
+| Backend daemons, a few flags                             | manual `std::env::args` | +5 KB                         |
+| User-facing CLIs with subcommands                        | **argh**                | +16 KB                        |
+| Needs env-var binding, shell completions, or `wrap_help` | clap (`derive`)         | +340 KB                       |
 
 argh is schema-driven (`#[derive(FromArgs)]`) — same mental model as
 fuz_util's `args_parse` (Zod). Where a CLI exists in both TS and Rust, align
@@ -629,7 +630,7 @@ modes: file path, `--content <string>`, `--stdin`.
 
 ### Exit codes
 
-A small, *stable* contract — treat it as a versioned API: settle it pre-1.0,
+A small, _stable_ contract — treat it as a versioned API: settle it pre-1.0,
 assert each category → code in a test, document the table in the crate doc.
 Mechanism: `fn main() -> ExitCode` + `exit_code(&self) -> u8`. **Key codes to
 the caller's remediation, not to error type** — there are more error types
@@ -640,7 +641,7 @@ than useful codes.
   (bad args, config, credentials — "don't retry as-is"); `1` = everything
   else (server error, transient failure, local IO — "a retry may help, or
   it's out of the caller's hands"). Don't mint codes for categories nothing
-  branches on. A tool whose *success* has grades returns them too (zap: `0`
+  branches on. A tool whose _success_ has grades returns them too (zap: `0`
   converged, `2` dry-run drift, `1` wetrun failure).
 - **Agent tier** (automation-primary CLIs whose consumers branch on
   category): `sysexits.h` codes **plus** a stable snake_case `error.kind` in
@@ -686,7 +687,7 @@ enforces **determinism by construction**: `Date.now` / `Math.random` /
 throw, and `console.log/info/debug` reroute to stderr so stdout stays pure
 JSON — the evaluated plan must be a content-addressed fact.
 
-The wrapper *ingredients* are shared exports of `fuz_eval` — the
+The wrapper _ingredients_ are shared exports of `fuz_eval` — the
 determinism stubs (`DETERMINISM_STUBS_JS`), the console redirect
 (`CONSOLE_TO_STDERR_JS`), and `build_extract_export_wrapper(name, stubs)`
 for the common "eval a module, extract one named export as JSON" shape
@@ -708,7 +709,7 @@ map keyed by request id, and the script embedded via `include_str!` + written
 to a `NamedTempFile` at spawn. Skip it for one-shot invocations (plain
 `tokio::process::Command`) or pure in-process work.
 
-**Currently dormant** — the sidecar *runtimes* (`fuz_deno`/`fuz_python`
+**Currently dormant** — the sidecar _runtimes_ (`fuz_deno`/`fuz_python`
 factories, behind `fuzd`'s off-by-default `sidecar` feature) are gated off, so
 the shipped daemon wires no runtime into the pool; `fuz_sidecar` itself always
 links into `fuzd`/`fuzd_server` for the empty pool and dispatch (tsv replaced
@@ -722,7 +723,7 @@ runtime-hosting workload returns.
 - **TOCTOU-safe file operations**: open with `O_NOFOLLOW`, check permissions
   on the fd, not the path.
 - **Secure file permissions**: `0o600` files, `0o700` directories — and
-  deliberately *not* for non-secret state (a daemon-info file readable by
+  deliberately _not_ for non-secret state (a daemon-info file readable by
   tooling is `0o644` on purpose; state the choice).
 - **Supply-chain isolation** is a crate-graph property, not a code pattern —
   see ./rust-dependencies.md §Crate-vs-feature isolation.
@@ -741,14 +742,14 @@ The ecosystem implementation is `fuz_sys::fs::write_atomic` (write
 `.<name>.tmp.<pid>` → `sync_all` → rename → **fsync the parent dir**); it
 replaced ~five hand-rolled copies — use it, don't re-roll. **Calibrate the
 durability by authority**: the parent-dir fsync is required for
-*authoritative, non-regenerable* state (lock ledgers, credentials) and
+_authoritative, non-regenerable_ state (lock ledgers, credentials) and
 deliberately waived for content-addressed bodies (a torn write is caught by
 re-hashing) and ephemeral regenerable run-state. State the choice when you
 skip it. zap — spine-free — hand-rolls both calibrations correctly: flock +
 full fsync dance for its authoritative lock file, temp + rename only for its
 regenerable detection cache ("the cache holds no authority").
 
-For the lock itself: `flock` locks the *inode*, so lock a stable sidecar path
+For the lock itself: `flock` locks the _inode_, so lock a stable sidecar path
 and **never unlink on release** (truncate-but-keep-dirent) — else two
 acquirers hold different inodes. (zap's lock currently locks the pre-rename
 inode with a `TODO` — known wart, not a competing convention.)
@@ -764,10 +765,10 @@ The shape of a blob store keyed by content hash (ecosystem impl:
 - Larger blobs go to sharded disk paths (`<2-hex>/<62-hex>` of the hash) via
   atomic temp + rename; the row stores a `file:<shard>/<rest>` pointer.
 - **Verify-on-read applies to the buffered `get`** (re-hash, mismatch →
-  treated as absent). The streaming serve path deliberately does *not*
+  treated as absent). The streaming serve path deliberately does _not_
   re-hash — it trusts write-time `sync_all` on hash-named files.
 - Idempotent writes: content-addressed names + `INSERT … ON CONFLICT (hash)
-  DO NOTHING` make a re-store a no-op.
+DO NOTHING` make a re-store a no-op.
 
 ### Bounded reads / size guards
 

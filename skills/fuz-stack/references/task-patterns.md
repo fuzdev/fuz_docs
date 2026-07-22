@@ -13,7 +13,7 @@ modules with a `.task.ts` suffix exporting a `task` object with a `run` function
 interface Task<
 	TArgs = Args,
 	TArgsSchema extends z.ZodType<Args, Args> = z.ZodType<Args, Args>,
-	TReturn = unknown,
+	TReturn = unknown
 > {
 	run: (ctx: TaskContext<TArgs>) => TReturn | Promise<TReturn>;
 	summary?: string;
@@ -32,13 +32,13 @@ interface Task<
 
 ```typescript
 // src/lib/greet.task.ts
-import type {Task} from '@fuzdev/gro';
+import type { Task } from '@fuzdev/gro';
 
 export const task: Task = {
 	summary: 'greet the user',
-	run: async ({log}) => {
+	run: async ({ log }) => {
 		log.info('hello!');
-	},
+	}
 };
 ```
 
@@ -50,20 +50,20 @@ Both the Zod schema (value) and inferred type share the name `Args`:
 
 ```typescript
 // src/lib/greet.task.ts
-import type {Task} from '@fuzdev/gro';
-import {z} from 'zod';
+import type { Task } from '@fuzdev/gro';
+import { z } from 'zod';
 
 export const Args = z.strictObject({
-	name: z.string().meta({description: 'who to greet'}).default('world'),
+	name: z.string().meta({ description: 'who to greet' }).default('world')
 });
 export type Args = z.infer<typeof Args>;
 
 export const task: Task<Args> = {
 	summary: 'greet someone by name',
 	Args,
-	run: async ({args, log}) => {
+	run: async ({ args, log }) => {
 		log.info(`hello, ${args.name}!`);
-	},
+	}
 };
 ```
 
@@ -84,15 +84,15 @@ interface TaskContext<TArgs = object> {
 }
 ```
 
-| Field           | Type                | Purpose                                         |
-| --------------- | ------------------- | ----------------------------------------------- |
-| `args`          | `TArgs`             | Parsed CLI arguments (validated by Zod if set)   |
-| `config`        | `GroConfig`         | Gro configuration (plugins, task_root_dirs, etc) |
-| `svelte_config` | `ParsedSvelteConfig`| Parsed SvelteKit config (aliases, paths)         |
-| `filer`         | `Filer`             | Filesystem tracker (watches files in dev mode)   |
-| `log`           | `Logger`            | Logger instance scoped to the task               |
-| `timings`       | `Timings`           | Performance measurement (start/stop timers)      |
-| `invoke_task`   | `InvokeTask`        | Call other tasks programmatically                |
+| Field           | Type                 | Purpose                                          |
+| --------------- | -------------------- | ------------------------------------------------ |
+| `args`          | `TArgs`              | Parsed CLI arguments (validated by Zod if set)   |
+| `config`        | `GroConfig`          | Gro configuration (plugins, task_root_dirs, etc) |
+| `svelte_config` | `ParsedSvelteConfig` | Parsed SvelteKit config (aliases, paths)         |
+| `filer`         | `Filer`              | Filesystem tracker (watches files in dev mode)   |
+| `log`           | `Logger`             | Logger instance scoped to the task               |
+| `timings`       | `Timings`            | Performance measurement (start/stop timers)      |
+| `invoke_task`   | `InvokeTask`         | Call other tasks programmatically                |
 
 ### invoke_task
 
@@ -105,13 +105,13 @@ Omitting `config` passes the current config. Respects the override system:
 
 ```typescript
 export const task: Task = {
-	run: async ({invoke_task}) => {
+	run: async ({ invoke_task }) => {
 		await invoke_task('typecheck');
 		await invoke_task('test');
-		await invoke_task('gen', {check: true});
-		await invoke_task('format', {check: true});
+		await invoke_task('gen', { check: true });
+		await invoke_task('format', { check: true });
 		await invoke_task('lint');
-	},
+	}
 };
 ```
 
@@ -134,8 +134,8 @@ execution via `--no-*` flags).
 
 ```typescript
 export const Args = z.strictObject({
-	_: z.array(z.string()).meta({description: 'file patterns to filter'}).default(['.test.']),
-	dir: z.string().meta({description: 'working directory'}).default('src/'),
+	_: z.array(z.string()).meta({ description: 'file patterns to filter' }).default(['.test.']),
+	dir: z.string().meta({ description: 'working directory' }).default('src/')
 });
 export type Args = z.infer<typeof Args>;
 ```
@@ -148,10 +148,10 @@ Run with: `gro test foo bar --dir src/lib/` (positional `foo`, `bar` go to `_`).
 
 ```typescript
 export const Args = z.strictObject({
-	typecheck: z.boolean().meta({description: 'dual of no-typecheck'}).default(true),
-	'no-typecheck': z.boolean().meta({description: 'opt out of typechecking'}).default(false),
-	test: z.boolean().meta({description: 'dual of no-test'}).default(true),
-	'no-test': z.boolean().meta({description: 'opt out of running tests'}).default(false),
+	typecheck: z.boolean().meta({ description: 'dual of no-typecheck' }).default(true),
+	'no-typecheck': z.boolean().meta({ description: 'opt out of typechecking' }).default(false),
+	test: z.boolean().meta({ description: 'dual of no-test' }).default(true),
+	'no-test': z.boolean().meta({ description: 'opt out of running tests' }).default(false)
 });
 ```
 
@@ -166,7 +166,7 @@ Known failure with clean message (no stack trace). Use when the message is
 sufficient for the user to fix the problem:
 
 ```typescript
-import {TaskError} from '@fuzdev/gro';
+import { TaskError } from '@fuzdev/gro';
 
 throw new TaskError('Missing required config file: gro.config.ts');
 ```
@@ -177,7 +177,7 @@ Exit with non-zero code when the error is already logged. Primarily
 internal to `invoke_task.ts`:
 
 ```typescript
-import {SilentError} from '@fuzdev/gro/task.ts';
+import { SilentError } from '@fuzdev/gro/task.ts';
 
 log.error('Detailed error information...');
 throw new SilentError();
@@ -215,15 +215,15 @@ Local tasks override Gro builtins with the same name:
 The common pattern wraps the builtin:
 
 ```typescript
-import type {Task} from '@fuzdev/gro';
+import type { Task } from '@fuzdev/gro';
 
 export const task: Task = {
 	summary: 'run tests with custom setup',
-	run: async ({invoke_task, args}) => {
+	run: async ({ invoke_task, args }) => {
 		// custom setup
 		await invoke_task('gro/test', args); // call the builtin
 		// custom teardown
-	},
+	}
 };
 ```
 
@@ -233,13 +233,13 @@ export const task: Task = {
 auto-forwards CLI args from `--` sections:
 
 ```typescript
-await invoke_task('build', {sync: false, gen: false});
+await invoke_task('build', { sync: false, gen: false });
 ```
 
 **Direct import:** Bypasses override resolution, tighter coupling:
 
 ```typescript
-import {task as test_task} from './test.task.ts';
+import { task as test_task } from './test.task.ts';
 await test_task.run(ctx);
 ```
 

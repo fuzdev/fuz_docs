@@ -72,11 +72,11 @@ let selections: ReadonlyArray<Item> = $state.raw([]); // array replaced wholesal
 // $state() — opt-in for in-place mutation
 let items = $state<string[]>([]);
 items.push('new'); // triggers reactivity
-let form_data = $state({name: '', email: ''});
+let form_data = $state({ name: '', email: '' });
 form_data.name = 'Alice'; // triggers reactivity via proxy
 
 // const objects with property writes need $state()
-const config = $state({iterations: 5, warmup: 2});
+const config = $state({ iterations: 5, warmup: 2 });
 // bind:value={config.iterations} writes a property; $state.raw() here silently
 // breaks (const can't be reassigned, raw doesn't track property writes)
 ```
@@ -189,7 +189,7 @@ export class Library {
 	readonly modules = $derived(
 		this.source_json.modules
 			? this.source_json.modules.map((module_json) => new Module(this, module_json))
-			: [],
+			: []
 	);
 	readonly module_by_path = $derived(new Map(this.modules.map((m) => [m.path, m])));
 }
@@ -225,7 +225,7 @@ export class ProviderCapability {
 	// Don't do this — `this.app`/`this.name` are read in a field initializer,
 	// which runs before the constructor body assigns them (TS2729).
 	readonly status = $derived(this.app.lookup_provider_status(this.name));
-	constructor(o: {app: Frontend; name: ProviderName}) {
+	constructor(o: { app: Frontend; name: ProviderName }) {
 		this.app = o.app;
 		this.name = o.name;
 	}
@@ -251,7 +251,7 @@ Treat props as though they will change — use `$derived` for values depending
 on props:
 
 ```typescript
-let {type} = $props();
+let { type } = $props();
 
 // Do this — updates when type changes
 let color = $derived(type === 'danger' ? 'red' : 'green');
@@ -267,7 +267,7 @@ let color = $derived(type === 'danger' ? 'red' : 'green');
 From `svelte/reactivity` — reactive Map/Set that trigger updates on mutations:
 
 ```typescript
-import {SvelteMap, SvelteSet} from 'svelte/reactivity';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 // From DocsLinks class (fuz_ui/docs_helpers.svelte.ts)
 export class DocsLinks {
@@ -313,7 +313,7 @@ export class ThemeState {
 	toJSON(): ThemeStateJson {
 		return {
 			theme: this.theme,
-			color_scheme: this.color_scheme,
+			color_scheme: this.color_scheme
 		};
 	}
 }
@@ -360,10 +360,10 @@ export const section_depth_context = create_context(() => 0);
 ```svelte
 <!-- Provider component sets the context -->
 <script>
-	import type {Snippet} from 'svelte';
-	import {frontend_context} from './frontend.svelte.ts';
+	import type { Snippet } from 'svelte';
+	import { frontend_context } from './frontend.svelte.ts';
 
-	const {app, children}: {app: Frontend; children: Snippet} = $props();
+	const { app, children }: { app: Frontend; children: Snippet } = $props();
 	frontend_context.set(app);
 </script>
 
@@ -373,7 +373,7 @@ export const section_depth_context = create_context(() => 0);
 ```svelte
 <!-- Consumer components get the context -->
 <script>
-	import {frontend_context} from './frontend.svelte.ts';
+	import { frontend_context } from './frontend.svelte.ts';
 	const app = frontend_context.get();
 </script>
 ```
@@ -408,7 +408,7 @@ script-level `$derived` above, two other lazy forms appear in real consumers:
 
 ```typescript
 // prop default, re-evaluated while the prop is undefined (ColorSchemeInput.svelte)
-const {value = get_theme_state()} = $props();
+const { value = get_theme_state() } = $props();
 ```
 
 Used when the context value might be reassigned (e.g., `theme_state` is a
@@ -435,7 +435,7 @@ the consumer (`DialogContext` from `@fuzdev/fuz_ui/dialog.ts` is
 <!-- Dialog.svelte -->
 <script lang="ts">
 	const {
-		children,
+		children
 	}: {
 		children: Snippet<[dialog: DialogContext]>;
 	} = $props();
@@ -456,12 +456,12 @@ renderer — fuz_ui's real `generics=` user is `Contextmenu.svelte`:
 
 ```svelte
 <script lang="ts" generics="T">
-	import type {Snippet} from 'svelte';
+	import type { Snippet } from 'svelte';
 
 	const {
 		items,
 		item,
-		empty,
+		empty
 	}: {
 		items: T[];
 		item: Snippet<[T]>;
@@ -527,7 +527,7 @@ From `@fuzdev/fuz_ui/rune_helpers.svelte.ts` — passes call count to the
 effect, useful for skipping the initial run:
 
 ```typescript
-import {effect_with_count} from '@fuzdev/fuz_ui/rune_helpers.svelte.ts';
+import { effect_with_count } from '@fuzdev/fuz_ui/rune_helpers.svelte.ts';
 
 // Skip the first run (count === 1), save on subsequent changes
 effect_with_count((count) => {
@@ -544,7 +544,7 @@ trigger re-runs, stable references, or breaking infinite loops in
 bidirectional syncing:
 
 ```typescript
-import {untrack} from 'svelte';
+import { untrack } from 'svelte';
 
 $effect(() => {
 	// count is tracked
@@ -567,7 +567,7 @@ An attachment is `(element) => cleanup | void`. fuz_ui uses a **factory
 pattern** — export a function that accepts config and returns the `Attachment`:
 
 ```typescript
-import type {Attachment} from 'svelte/attachments';
+import type { Attachment } from 'svelte/attachments';
 
 export const my_attachment =
 	(options?: MyOptions): Attachment<HTMLElement | SVGElement> =>
@@ -590,25 +590,25 @@ reactive conditionals (`{#if}`) in SPAs.
 
 ```typescript
 // autofocus.svelte.ts
-import type {Attachment} from 'svelte/attachments';
+import type { Attachment } from 'svelte/attachments';
 
 export const autofocus =
 	(options?: FocusOptions): Attachment<HTMLElement | SVGElement> =>
 	(el) => {
-		el.focus({focusVisible: true, ...options} as FocusOptions);
+		el.focus({ focusVisible: true, ...options } as FocusOptions);
 	};
 ```
 
 ```svelte
 <script>
-	import {autofocus} from '@fuzdev/fuz_ui/autofocus.svelte.ts';
+	import { autofocus } from '@fuzdev/fuz_ui/autofocus.svelte.ts';
 </script>
 
 <!-- Basic usage -->
 <input {@attach autofocus()} />
 
 <!-- With options -->
-<input {@attach autofocus({preventScroll: true})} />
+<input {@attach autofocus({ preventScroll: true })} />
 ```
 
 #### `intersect` -- IntersectionObserver
@@ -620,7 +620,7 @@ callbacks update without recreating the observer:
 // intersect.svelte.ts — signature only, see source for implementation
 export const intersect =
 	(
-		get_params: () => IntersectParamsOrCallback | null | undefined,
+		get_params: () => IntersectParamsOrCallback | null | undefined
 	): Attachment<HTMLElement | SVGElement> =>
 	(el) => {
 		// Uses $effect internally: callbacks update reactively,
@@ -656,7 +656,7 @@ function). Returns cleanup that removes the cache entry.
 // contextmenu_state.svelte.ts (exported alongside Contextmenu state class)
 export const contextmenu_attachment =
 	(
-		params: ContextmenuParams | Array<ContextmenuParams> | null | undefined,
+		params: ContextmenuParams | Array<ContextmenuParams> | null | undefined
 	): Attachment<HTMLElement | SVGElement> =>
 	(el): undefined | (() => void) => {
 		if (params == null) return;
@@ -725,7 +725,7 @@ Use `let` (not `const`) for `$bindable()` props:
 <script lang="ts">
 	let {
 		value = $bindable(180),
-		children,
+		children
 	}: {
 		value?: number;
 		children?: Snippet;
@@ -740,13 +740,13 @@ Real examples from fuz_ui:
 
 ```typescript
 // HueInput.svelte
-let {value = $bindable(180), children, ...rest} = $props();
+let { value = $bindable(180), children, ...rest } = $props();
 
 // Details.svelte
-let {open = $bindable(), ...rest} = $props();
+let { open = $bindable(), ...rest } = $props();
 
 // DocsSearch.svelte
-let {search_query = $bindable(), ...rest} = $props();
+let { search_query = $bindable(), ...rest } = $props();
 ```
 
 ### Rest Props with SvelteHTMLElements
@@ -755,8 +755,8 @@ Intersect `SvelteHTMLElements` from `svelte/elements` with custom props:
 
 ```svelte
 <script lang="ts">
-	import type {Snippet} from 'svelte';
-	import type {SvelteHTMLElements} from 'svelte/elements';
+	import type { Snippet } from 'svelte';
+	import type { SvelteHTMLElements } from 'svelte/elements';
 
 	const {
 		align = 'left',
@@ -792,14 +792,14 @@ cleanup function. Always prefer `on()` over `addEventListener`, even in
 non-component code:
 
 ```typescript
-import {on} from 'svelte/events';
+import { on } from 'svelte/events';
 
 // Inside an attachment or module
 const cleanup = on(element, 'scroll', onscroll);
 return () => cleanup();
 
 // With options (e.g., passive: false for wheel events)
-const cleanup = on(element, 'wheel', onwheel, {passive: false});
+const cleanup = on(element, 'wheel', onwheel, { passive: false });
 ```
 
 ### `swallow` — Claiming Events
@@ -814,7 +814,7 @@ already says "I own this event's default behavior"; `swallow` extends that to
 them, use the `capture` phase explicitly — don't rely on implicit bubbling.
 
 ```typescript
-import {swallow} from '@fuzdev/fuz_util/dom.ts';
+import { swallow } from '@fuzdev/fuz_util/dom.ts';
 
 // swallow(event, immediate?, preventDefault?)
 swallow(e); // preventDefault + stopImmediatePropagation (default)
@@ -829,7 +829,7 @@ preventing game input from seeing keystrokes in a chat input), use
 ```svelte
 <!-- Claiming an event in a handler -->
 <script lang="ts">
-	import {swallow} from '@fuzdev/fuz_util/dom.ts';
+	import { swallow } from '@fuzdev/fuz_util/dom.ts';
 
 	const on_keydown = (e: KeyboardEvent): void => {
 		if (e.key === 'Enter') {
@@ -859,7 +859,7 @@ const cleanup_wheel = on(
 		handle_zoom(e);
 		swallow(e);
 	},
-	{passive: false},
+	{ passive: false }
 );
 ```
 
@@ -872,7 +872,7 @@ Use `<script lang="ts" module>` for component-level exports (contexts, types):
 ```svelte
 <!-- TomeSection.svelte -->
 <script lang="ts" module>
-	import {create_context} from './context_helpers.ts';
+	import { create_context } from './context_helpers.ts';
 
 	export type RegisterSectionHeader = (get_fragment: () => string) => string | undefined;
 	export const register_section_header_context = create_context<RegisterSectionHeader>();
@@ -916,7 +916,7 @@ export const world_ui = {
 	},
 	set show_sidebar(v: boolean) {
 		show_sidebar = v;
-	},
+	}
 };
 ```
 
@@ -925,7 +925,7 @@ component sets it once:
 
 ```typescript
 // world_ui_state.svelte.ts
-import {create_context} from '@fuzdev/fuz_ui/context_helpers.ts';
+import { create_context } from '@fuzdev/fuz_ui/context_helpers.ts';
 
 export const world_ui_context = create_context<WorldUiState>();
 
@@ -938,7 +938,7 @@ export class WorldUiState {
 ```svelte
 <!-- +layout.svelte or similar root component -->
 <script>
-	import {WorldUiState, world_ui_context} from '#lib/world_ui_state.svelte.ts';
+	import { WorldUiState, world_ui_context } from '#lib/world_ui_state.svelte.ts';
 	world_ui_context.set(new WorldUiState());
 </script>
 ```
@@ -946,7 +946,7 @@ export class WorldUiState {
 ```svelte
 <!-- any descendant component -->
 <script>
-	import {world_ui_context} from '#lib/world_ui_state.svelte.ts';
+	import { world_ui_context } from '#lib/world_ui_state.svelte.ts';
 	const world_ui = world_ui_context.get();
 </script>
 ```
@@ -992,7 +992,7 @@ export const create_api_search = (library: Library): ApiSearchState => {
 			},
 			get filtered() {
 				return filtered_modules;
-			},
+			}
 		},
 		declarations: {
 			get all() {
@@ -1000,8 +1000,8 @@ export const create_api_search = (library: Library): ApiSearchState => {
 			},
 			get filtered() {
 				return filtered_declarations;
-			},
-		},
+			}
+		}
 	};
 };
 ```

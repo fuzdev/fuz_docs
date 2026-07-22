@@ -2,10 +2,10 @@
 	import TomeContent from '@fuzdev/fuz_ui/TomeContent.svelte';
 	import TomeSection from '@fuzdev/fuz_ui/TomeSection.svelte';
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
-	import {tome_get_by_slug} from '@fuzdev/fuz_ui/tome.ts';
+	import { tome_get_by_slug } from '@fuzdev/fuz_ui/tome.ts';
 
-	import {stack} from '$routes/stack.ts';
-	import {SvelteMap} from 'svelte/reactivity';
+	import { stack } from '$routes/stack.ts';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	import StackMap from './StackMap.svelte';
 
@@ -19,15 +19,15 @@
 	const total_exported_modules = packages.reduce((sum, pkg) => sum + pkg.exported_module_count!, 0);
 
 	// Group crates by workspace
-	const crate_workspaces: Array<{name: string; edition: string; crates: typeof crates}> = $state(
-		[],
+	const crate_workspaces: Array<{ name: string; edition: string; crates: typeof crates }> = $state(
+		[]
 	);
 	{
 		const ws_map: Map<string, (typeof crate_workspaces)[number]> = new SvelteMap();
 		for (const crate of crates) {
 			const ws_name = crate.workspace!;
 			if (!ws_map.has(ws_name)) {
-				const ws = {name: ws_name, edition: crate.edition!, crates: [] as typeof crates};
+				const ws = { name: ws_name, edition: crate.edition!, crates: [] as typeof crates };
 				crate_workspaces.push(ws);
 				ws_map.set(ws_name, ws);
 			}

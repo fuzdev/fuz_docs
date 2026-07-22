@@ -26,88 +26,88 @@ third-party deps, and never appear here.
 
 ## Language & build toolchain
 
-| Package | Purpose |
-| ------- | ------- |
-| `typescript` | TypeScript compiler |
-| `tslib` | TS runtime helpers |
-| `svelte` | Component framework (runes) |
-| `@sveltejs/kit` | Application framework |
-| `@sveltejs/vite-plugin-svelte` | Svelte ↔ Vite integration |
-| `@sveltejs/adapter-static` | Static-site adapter |
-| `@sveltejs/acorn-typescript` | TS-aware acorn parser (Svelte toolchain) |
-| `@sveltejs/package` | Library packaging (`svelte-package`) |
-| `svelte-check` | Svelte / TS diagnostics |
-| `svelte2tsx` | Svelte → TSX for typechecking |
-| `vite` | Build tool / dev server |
-| `vitest` | Test runner |
-| `jsdom` | DOM implementation for tests |
+| Package                        | Purpose                                  |
+| ------------------------------ | ---------------------------------------- |
+| `typescript`                   | TypeScript compiler                      |
+| `tslib`                        | TS runtime helpers                       |
+| `svelte`                       | Component framework (runes)              |
+| `@sveltejs/kit`                | Application framework                    |
+| `@sveltejs/vite-plugin-svelte` | Svelte ↔ Vite integration                |
+| `@sveltejs/adapter-static`     | Static-site adapter                      |
+| `@sveltejs/acorn-typescript`   | TS-aware acorn parser (Svelte toolchain) |
+| `@sveltejs/package`            | Library packaging (`svelte-package`)     |
+| `svelte-check`                 | Svelte / TS diagnostics                  |
+| `svelte2tsx`                   | Svelte → TSX for typechecking            |
+| `vite`                         | Build tool / dev server                  |
+| `vitest`                       | Test runner                              |
+| `jsdom`                        | DOM implementation for tests             |
 
 ## Lint & format
 
-| Package | Purpose |
-| ------- | ------- |
-| `eslint` | Linter |
-| `eslint-plugin-svelte` | Svelte lint rules |
-| `typescript-eslint` | TypeScript lint integration |
-| `@eslint/js` | ESLint's built-in JS rule presets (used only inside the shared eslint-config package) |
-| `globals` | Global-identifier sets for ESLint configs (used only inside the shared eslint-config package) |
+| Package                | Purpose                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| `eslint`               | Linter                                                                                        |
+| `eslint-plugin-svelte` | Svelte lint rules                                                                             |
+| `typescript-eslint`    | TypeScript lint integration                                                                   |
+| `@eslint/js`           | ESLint's built-in JS rule presets (used only inside the shared eslint-config package)         |
+| `globals`              | Global-identifier sets for ESLint configs (used only inside the shared eslint-config package) |
 
 ## Release tooling
 
-| Package | Purpose |
-| ------- | ------- |
+| Package                     | Purpose                                      |
+| --------------------------- | -------------------------------------------- |
 | `@changesets/changelog-git` | Git-based changelog generator for changesets |
-| `@changesets/types` | Changesets type definitions |
+| `@changesets/types`         | Changesets type definitions                  |
 
 ## Type definitions
 
-| Package | Purpose |
-| ------- | ------- |
-| `@types/node` | Node.js types |
-| `@types/estree` | ESTree AST types |
-| `@types/pg` | `pg` (node-postgres) types |
-| `@types/ws` | `ws` types |
-| `@types/picomatch` | `picomatch` types |
+| Package            | Purpose                    |
+| ------------------ | -------------------------- |
+| `@types/node`      | Node.js types              |
+| `@types/estree`    | ESTree AST types           |
+| `@types/pg`        | `pg` (node-postgres) types |
+| `@types/ws`        | `ws` types                 |
+| `@types/picomatch` | `picomatch` types          |
 
 ## Core utilities
 
-| Package | Purpose |
-| ------- | ------- |
-| `zod` | Schema validation |
-| `esm-env` | Environment flags (`DEV` / `BROWSER`) |
-| `zimmerframe` | AST walker |
-| `magic-string` | Source-string edits with sourcemaps |
-| `@webref/css` | W3C CSS reference data |
-| `@jridgewell/trace-mapping` | Sourcemap decoding |
-| `dequal` | Deep equality |
-| `fast-deep-equal` | Deep equality (fast path) |
-| `date-fns` | Date utilities |
+| Package                     | Purpose                               |
+| --------------------------- | ------------------------------------- |
+| `zod`                       | Schema validation                     |
+| `esm-env`                   | Environment flags (`DEV` / `BROWSER`) |
+| `zimmerframe`               | AST walker                            |
+| `magic-string`              | Source-string edits with sourcemaps   |
+| `@webref/css`               | W3C CSS reference data                |
+| `@jridgewell/trace-mapping` | Sourcemap decoding                    |
+| `dequal`                    | Deep equality                         |
+| `fast-deep-equal`           | Deep equality (fast path)             |
+| `date-fns`                  | Date utilities                        |
 
 ## Backend & server
 
-| Package | Purpose |
-| ------- | ------- |
-| `pg` | PostgreSQL client |
-| `@electric-sql/pglite` | Embedded Postgres (WASM) |
-| `hono` | HTTP server framework |
-| `@hono/node-server` | Hono Node adapter |
-| `@hono/node-ws` | Hono Node WebSocket adapter |
-| `@node-rs/argon2` | Argon2 password hashing (native) |
-| `ws` | WebSocket implementation |
+| Package                | Purpose                          |
+| ---------------------- | -------------------------------- |
+| `pg`                   | PostgreSQL client                |
+| `@electric-sql/pglite` | Embedded Postgres (WASM)         |
+| `hono`                 | HTTP server framework            |
+| `@hono/node-server`    | Hono Node adapter                |
+| `@hono/node-ws`        | Hono Node WebSocket adapter      |
+| `@node-rs/argon2`      | Argon2 password hashing (native) |
+| `ws`                   | WebSocket implementation         |
 
 ## Parsing & build internals
 
-| Package | Purpose |
-| ------- | ------- |
-| `esbuild` | Bundler / transform |
-| `oxc-parser` | Fast JS/TS parser |
-| `ts-blank-space` | Type-stripping transform |
-| `es-module-lexer` | ESM import/export lexer |
-| `acorn-jsx` | JSX plugin for acorn |
-| `chokidar` | File watching |
-| `dotenv` | `.env` loader |
-| `picomatch` / `tinyglobby` | Glob matching |
-| `commander` | CLI argument parsing |
+| Package                    | Purpose                  |
+| -------------------------- | ------------------------ |
+| `esbuild`                  | Bundler / transform      |
+| `oxc-parser`               | Fast JS/TS parser        |
+| `ts-blank-space`           | Type-stripping transform |
+| `es-module-lexer`          | ESM import/export lexer  |
+| `acorn-jsx`                | JSX plugin for acorn     |
+| `chokidar`                 | File watching            |
+| `dotenv`                   | `.env` loader            |
+| `picomatch` / `tinyglobby` | Glob matching            |
+| `commander`                | CLI argument parsing     |
 
 ## Adding a dependency
 
@@ -134,7 +134,7 @@ correctness decision, not bookkeeping.
   it's an opt-in / à-la-carte path (a preprocessor, a deep-import module many
   consumers skip). Mirror the version in `devDependencies` so the library's own
   build/test resolves it. **An optional peer is only safe to leave optional
-  when a *required* peer guarantees it transitively** — `svelte` and
+  when a _required_ peer guarantees it transitively** — `svelte` and
   `@sveltejs/kit` both depend on `esm-env`, so a lib that requires either can
   leave `esm-env` optional. A runtime import of a singleton on a path with
   **no** required framework peer (e.g. `esm-env` in a node-only utility like
@@ -152,7 +152,7 @@ with (`magic-string`, `zimmerframe` for a Svelte preprocessor) carry no
 singleton hazard — classify them as **`dependencies`** so the library ships its
 own self-contained copy and never leans on a consumer (or a transitive
 framework dep) to supply them. An **optional peer** is acceptable only when the
-helper is already guaranteed by a *required* framework peer — e.g. a type-only
+helper is already guaranteed by a _required_ framework peer — e.g. a type-only
 `@types/estree` reached through `svelte`, which depends on it, and is erased at
 build anyway. Never a `devDependency`-only import: that breaks any consumer who
 reaches the path. Either `dependencies` or a peer is correct for these; only a
@@ -162,6 +162,6 @@ reaches the path. Either `dependencies` or a peer is correct for these; only a
 with no installing consumers, so they classify everything as `dependencies` /
 `devDependencies` and never declare peers.
 
-The litmus test: *if a consumer ended up with a second copy of this package,
-would anything break?* Yes → peer (optional if the path is opt-in). No, but
+The litmus test: _if a consumer ended up with a second copy of this package,
+would anything break?_ Yes → peer (optional if the path is opt-in). No, but
 published code imports it → dependency. Only the build sees it → devDependency.

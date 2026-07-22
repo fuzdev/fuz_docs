@@ -13,16 +13,20 @@
 	const world_to_screen = (
 		viewport: Viewport,
 		wx: number,
-		wy: number,
-	): {sx: number; sy: number} => ({
+		wy: number
+	): { sx: number; sy: number } => ({
 		sx: wx * viewport.scale + viewport.tx,
-		sy: wy * viewport.scale + viewport.ty,
+		sy: wy * viewport.scale + viewport.ty
 	});
 
 	/** Inverse of `world_to_screen` — panel-local screen pixels to world coordinates. */
-	const screen_to_world = (viewport: Viewport, sx: number, sy: number): {x: number; y: number} => ({
+	const screen_to_world = (
+		viewport: Viewport,
+		sx: number,
+		sy: number
+	): { x: number; y: number } => ({
 		x: (sx - viewport.tx) / viewport.scale,
-		y: (sy - viewport.ty) / viewport.scale,
+		y: (sy - viewport.ty) / viewport.scale
 	});
 
 	/** A circular hit-test target with painter's-algorithm z-order. */
@@ -45,7 +49,7 @@
 	const pick_topmost = (
 		targets: ReadonlyArray<HitTarget>,
 		wx: number,
-		wy: number,
+		wy: number
 	): string | null => {
 		let best: HitTarget | null = null;
 		for (const t of targets) {
@@ -77,7 +81,7 @@
 		fullstack: 'var(--color_i_50)', // cyan
 		tooling: 'var(--color_e_50)', // yellow
 		app: 'var(--color_b_50)', // green
-		site: 'var(--color_h_50)', // orange
+		site: 'var(--color_h_50)' // orange
 	};
 
 	/** Human-readable legend labels for each category, in display order. */
@@ -89,19 +93,19 @@
 		['styling', 'styling'],
 		['build', 'build'],
 		['tooling', 'tooling'],
-		['foundation', 'foundation'],
+		['foundation', 'foundation']
 	];
 </script>
 
 <script lang="ts">
-	import {onMount} from 'svelte';
-	import {browser} from '$app/environment';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
-	import {stack_nodes, stack_edges} from './stack_graph.ts';
-	import type {StackNode, StackEdge, StackCategory} from '$lib/stack_graph_types.ts';
+	import { stack_nodes, stack_edges } from './stack_graph.ts';
+	import type { StackNode, StackEdge, StackCategory } from '$lib/stack_graph_types.ts';
 
 	// Camera (`$state` not raw so in-place `.tx`/`.ty`/`.scale` mutations stay reactive).
-	let camera: Viewport = $state({scale: 1, tx: 0, ty: 0});
+	let camera: Viewport = $state({ scale: 1, tx: 0, ty: 0 });
 	let show_dev = $state(false);
 	let selected: string | null = $state(null);
 	let hovered: string | null = $state(null);
@@ -127,14 +131,18 @@
 
 	// Edges visible under the current `show_dev` filter (dev edges hidden by default).
 	const visible_edges = $derived(
-		show_dev ? stack_edges : stack_edges.filter((e) => e.kind !== 'dev'),
+		show_dev ? stack_edges : stack_edges.filter((e) => e.kind !== 'dev')
 	);
 
 	// Hit targets in painter order (later nodes win ties), one per node.
 	const hit_targets = $derived.by(() =>
-		stack_nodes.map(
-			(n, i): HitTarget => ({id: n.name, x: n.x, y: n.y, r: node_radius(n.fan_in), z: i}),
-		),
+		stack_nodes.map((n, i): HitTarget => ({
+			id: n.name,
+			x: n.x,
+			y: n.y,
+			r: node_radius(n.fan_in),
+			z: i
+		}))
 	);
 
 	// Direct-dependency counts using the same edge set the user currently sees.
@@ -195,7 +203,7 @@
 
 	const hovered_node = $derived(hovered ? (nodes_by_name.get(hovered) ?? null) : null);
 	const tooltip_pos = $derived(
-		hovered_node ? world_to_screen(camera, hovered_node.x, hovered_node.y) : null,
+		hovered_node ? world_to_screen(camera, hovered_node.x, hovered_node.y) : null
 	);
 
 	/** Axis-aligned bounding box of all node centers, padded by their radii. */
@@ -212,29 +220,29 @@
 			max_x = Math.max(max_x, n.x + r);
 			max_y = Math.max(max_y, n.y + r);
 		}
-		return {min_x, min_y, max_x, max_y};
+		return { min_x, min_y, max_x, max_y };
 	});
 
 	/** A camera that fits the whole graph within the current panel with margin. */
 	const framing_camera = (): Viewport => {
 		const b = graph_bounds;
-		if (!b) return {scale: 1, tx: panel_w / 2, ty: panel_h / 2};
+		if (!b) return { scale: 1, tx: panel_w / 2, ty: panel_h / 2 };
 		const margin = 64;
 		const w = Math.max(1, b.max_x - b.min_x);
 		const h = Math.max(1, b.max_y - b.min_y);
 		const scale = Math.min(
 			MAX_SCALE,
-			Math.max(MIN_SCALE, Math.min((panel_w - margin) / w, (panel_h - margin) / h)),
+			Math.max(MIN_SCALE, Math.min((panel_w - margin) / w, (panel_h - margin) / h))
 		);
 		const cx = (b.min_x + b.max_x) / 2;
 		const cy = (b.min_y + b.max_y) / 2;
-		return {scale, tx: panel_w / 2 - cx * scale, ty: panel_h / 2 - cy * scale};
+		return { scale, tx: panel_w / 2 - cx * scale, ty: panel_h / 2 - cy * scale };
 	};
 
 	const persist = (): void => {
 		if (!browser) return;
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify({camera}));
+			localStorage.setItem(STORAGE_KEY, JSON.stringify({ camera }));
 		} catch {
 			// ignore — quota or serialization failure is non-fatal
 		}
@@ -250,7 +258,7 @@
 	const zoom_at = (sx: number, sy: number, delta_y: number): void => {
 		const next = Math.min(
 			MAX_SCALE,
-			Math.max(MIN_SCALE, camera.scale * Math.exp(-delta_y * 0.0015)),
+			Math.max(MIN_SCALE, camera.scale * Math.exp(-delta_y * 0.0015))
 		);
 		const world = screen_to_world(camera, sx, sy);
 		camera.scale = next;
@@ -277,7 +285,7 @@
 		try {
 			const raw = localStorage.getItem(STORAGE_KEY);
 			if (raw) {
-				const parsed = JSON.parse(raw) as {camera?: Partial<Viewport>};
+				const parsed = JSON.parse(raw) as { camera?: Partial<Viewport> };
 				if (
 					parsed.camera &&
 					typeof parsed.camera.scale === 'number' &&
@@ -287,7 +295,7 @@
 					camera = {
 						scale: Math.min(MAX_SCALE, Math.max(MIN_SCALE, parsed.camera.scale)),
 						tx: parsed.camera.tx,
-						ty: parsed.camera.ty,
+						ty: parsed.camera.ty
 					};
 					restored = true;
 				}
@@ -314,9 +322,9 @@
 		return undefined;
 	});
 
-	const local_point = (e: PointerEvent | WheelEvent): {x: number; y: number} => {
+	const local_point = (e: PointerEvent | WheelEvent): { x: number; y: number } => {
 		const rect = svg_el?.getBoundingClientRect();
-		return {x: e.clientX - (rect?.left ?? 0), y: e.clientY - (rect?.top ?? 0)};
+		return { x: e.clientX - (rect?.left ?? 0), y: e.clientY - (rect?.top ?? 0) };
 	};
 
 	const onpointerdown = (e: PointerEvent): void => {
@@ -342,7 +350,7 @@
 		if (mode === 'idle') return;
 		// A press without drag is a click → hit-test → select (null clears).
 		if (!drag_moved) {
-			const {x, y} = local_point(e);
+			const { x, y } = local_point(e);
 			const world = screen_to_world(camera, x, y);
 			selected = pick_topmost(hit_targets, world.x, world.y);
 		}
@@ -356,7 +364,7 @@
 
 	const onwheel = (e: WheelEvent): void => {
 		e.preventDefault();
-		const {x, y} = local_point(e);
+		const { x, y } = local_point(e);
 		zoom_at(x, y, e.deltaY);
 	};
 </script>
@@ -379,7 +387,7 @@
 				{@const to = nodes_by_name.get(edge.to)}
 				{#if from && to}
 					<line
-						class={['edge', {dimmed: edge_is_dimmed(edge)}]}
+						class={['edge', { dimmed: edge_is_dimmed(edge) }]}
 						x1={from.x}
 						y1={from.y}
 						x2={to.x}
@@ -394,7 +402,7 @@
 					class={[
 						'node',
 						`cat-${node.category}`,
-						{selected: selected === node.name, dimmed: node_is_dimmed(node.name)},
+						{ selected: selected === node.name, dimmed: node_is_dimmed(node.name) }
 					]}
 					transform="translate({node.x} {node.y})"
 					onpointerenter={() => (hovered = node.name)}
@@ -429,7 +437,7 @@
 			<p class="description">{hovered_node.description}</p>
 			<small class="color_c">
 				depended on by {dependents_count.get(hovered_node.name) ?? 0} · depends on {dependency_count.get(
-					hovered_node.name,
+					hovered_node.name
 				) ?? 0}
 			</small>
 		</div>
