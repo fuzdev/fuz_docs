@@ -64,6 +64,7 @@ third-party deps, and never appear here.
 | Package            | Purpose                    |
 | ------------------ | -------------------------- |
 | `@types/node`      | Node.js types              |
+| `@types/deno`      | Deno runtime types         |
 | `@types/estree`    | ESTree AST types           |
 | `@types/pg`        | `pg` (node-postgres) types |
 | `@types/ws`        | `ws` types                 |
