@@ -50304,23 +50304,6 @@
 									"returnType": "Promise<void>"
 								},
 								{
-									"name": "rename",
-									"kind": "function",
-									"docComment": "Rename (move) a file.",
-									"typeSignature": "(old_path: string, new_path: string): Promise<void>",
-									"parameters": [
-										{
-											"name": "old_path",
-											"type": "string"
-										},
-										{
-											"name": "new_path",
-											"type": "string"
-										}
-									],
-									"returnType": "Promise<void>"
-								},
-								{
 									"name": "write_text_file",
 									"kind": "function",
 									"docComment": "Write text to a file.",
@@ -50332,6 +50315,23 @@
 										},
 										{
 											"name": "content",
+											"type": "string"
+										}
+									],
+									"returnType": "Promise<void>"
+								},
+								{
+									"name": "rename",
+									"kind": "function",
+									"docComment": "Rename (move) a file.",
+									"typeSignature": "(old_path: string, new_path: string): Promise<void>",
+									"parameters": [
+										{
+											"name": "old_path",
+											"type": "string"
+										},
+										{
+											"name": "new_path",
 											"type": "string"
 										}
 									],
@@ -50458,7 +50458,7 @@
 							"name": "start_daemon_token_rotation",
 							"kind": "function",
 							"docComment": "Start daemon token rotation.\n\nGenerates an initial token, writes it to disk, resolves the keeper account,\nand sets up periodic rotation. Returns the mutable state object and a stop function.",
-							"typeSignature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"rename\" | \"write_text_file\"> & { chmod?: ((path: string, mode: number) => Promise<...>) | undefined; } & FsRemoveDeps, deps: QueryDeps, options: DaemonTokenRotationOptions, log: Logger): Promise<...>",
+							"typeSignature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"write_text_file\" | \"rename\"> & { chmod?: ((path: string, mode: number) => Promise<...>) | undefined; } & FsRemoveDeps, deps: QueryDeps, options: DaemonTokenRotationOptions, log: Logger): Promise<...>",
 							"sourceLine": 138,
 							"mutates": {
 								"filesystem": "writes the token file on each rotation; `stop` removes it"
@@ -50466,7 +50466,7 @@
 							"parameters": [
 								{
 									"name": "runtime",
-									"type": "Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"rename\" | \"write_text_file\"> & { chmod?: ((path: string, mode: number) => Promise<void>) | undefined; } & FsRemoveDeps",
+									"type": "Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"write_text_file\" | \"rename\"> & { chmod?: ((path: string, mode: number) => Promise<void>) | undefined; } & FsRemoveDeps",
 									"description": "runtime with file and remove capabilities"
 								},
 								{
@@ -53693,7 +53693,7 @@
 							"name": "BuiltinRole",
 							"kind": "type",
 							"docComment": "Zod schema for builtin roles only.",
-							"typeSignature": "ZodEnum<{ admin: \"admin\"; keeper: \"keeper\"; }>",
+							"typeSignature": "ZodEnum<{ keeper: \"keeper\"; admin: \"admin\"; }>",
 							"sourceLine": 58
 						},
 						{
@@ -55436,7 +55436,7 @@
 							"name": "write_daemon_info",
 							"kind": "function",
 							"docComment": "Write daemon info to the PID file, creating directories as needed.",
-							"typeSignature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"rename\" | \"write_text_file\">, name: string, info: { version: number; pid: number; port: number; started: string; app_version: string; }): Promise<...>",
+							"typeSignature": "(runtime: Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"write_text_file\" | \"rename\">, name: string, info: { version: number; pid: number; port: number; started: string; app_version: string; }): Promise<...>",
 							"sourceLine": 66,
 							"throws": [
 								{
@@ -55450,7 +55450,7 @@
 							"parameters": [
 								{
 									"name": "runtime",
-									"type": "Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"rename\" | \"write_text_file\">",
+									"type": "Pick<EnvDeps, \"env_get\"> & Pick<FsWriteDeps, \"mkdir\" | \"write_text_file\" | \"rename\">",
 									"description": "runtime with file write and env capabilities"
 								},
 								{
@@ -61537,7 +61537,7 @@
 							"name": "ValidationError",
 							"kind": "type",
 							"docComment": "Input validation error — returned when params / query / body fails Zod\nparsing, or when the request body is not valid JSON.\n\n`error` is one of the four validation codes the framework emits.\n`issues` carries Zod's validation issues for diagnostic display on the\nthree schema-failure cases (`invalid_request_body`,\n`invalid_route_params`, `invalid_query_params`). The field is optional:\nthe `invalid_json_body` case (request body parse failure or non-object\nroot) emits no `issues`, and the schema-failure cases emit them only in\ndevelopment — production omits them (via `dev_only`) so error responses\ndon't leak input-schema structure to callers.",
-							"typeSignature": "ZodObject<{ error: ZodEnum<{ invalid_json_body: \"invalid_json_body\"; invalid_request_body: \"invalid_request_body\"; invalid_route_params: \"invalid_route_params\"; invalid_query_params: \"invalid_query_params\"; }>; issues: ZodOptional<...>; }, $loose>",
+							"typeSignature": "ZodObject<{ error: ZodEnum<{ invalid_request_body: \"invalid_request_body\"; invalid_json_body: \"invalid_json_body\"; invalid_route_params: \"invalid_route_params\"; invalid_query_params: \"invalid_query_params\"; }>; issues: ZodOptional<...>; }, $loose>",
 							"sourceLine": 190
 						},
 						{
@@ -65684,7 +65684,7 @@
 							"name": "write_file_atomic",
 							"kind": "function",
 							"docComment": "Write a file atomically via temp file + rename.\n\nWrites to `<path>.tmp` then renames over `path` so readers either see the\nold contents or the full new contents — never a partial write.",
-							"typeSignature": "(deps: Pick<FsWriteDeps, \"rename\" | \"write_text_file\">, path: string, content: string): Promise<void>",
+							"typeSignature": "(deps: Pick<FsWriteDeps, \"write_text_file\" | \"rename\">, path: string, content: string): Promise<void>",
 							"sourceLine": 18,
 							"throws": [
 								{
@@ -65698,7 +65698,7 @@
 							"parameters": [
 								{
 									"name": "deps",
-									"type": "Pick<FsWriteDeps, \"rename\" | \"write_text_file\">"
+									"type": "Pick<FsWriteDeps, \"write_text_file\" | \"rename\">"
 								},
 								{
 									"name": "path",
@@ -71036,14 +71036,14 @@
 							"name": "ConformancePrincipal",
 							"kind": "type",
 							"docComment": "Closed enum of fixture-provisioned principals a case runs `as`. Each\nvalue maps to a `TestFixture` accessor (or a seeded `extra_accounts`\nentry) in the runner's `resolve_principal` — there is **no** inline\ncredential minting in a case (that would be the setup-DSL trap).\n\n- `keeper` — the per-test bootstrapped keeper (holds `ROLE_KEEPER` +\n  `ROLE_ADMIN`), session credential.\n- `daemon` — the keeper authenticated via the daemon-token header.\n- `invalid_daemon` — a *malformed/invalid* `X-Daemon-Token` carried\n  alongside the keeper's session cookie, over a non-browser (no-Origin)\n  transport. The middleware soft-fail-discards the invalid daemon token\n  (matching the Rust spine's `None`), so auth falls through to the session\n  leg: the request authenticates as the keeper-via-session and a\n  daemon-gated action then refuses the session credential with\n  `credential_type_required` — not a hard `invalid_daemon_token` 401. The\n  no-Origin transport keeps the daemon token on the invalid-token path\n  rather than the browser-context discard; the session base credential is\n  what makes the credential-type gate (not the auth gate) the refusing\n  layer (without it the discard would 401 anonymous).\n- `daemon_browser` — a *valid* `X-Daemon-Token` carried in a browser\n  context (default `Origin` present) alongside the keeper's session cookie.\n  Browsers attach `Origin` automatically; the daemon-token middleware\n  discards a header-bearing daemon token as browser context (mirroring the\n  bearer guard and the Rust spine's `is_browser_context`), so the *valid*\n  token is dropped and auth falls through to the session leg → a daemon-gated\n  action then refuses the session credential with `credential_type_required`.\n  Distinct from `invalid_daemon`: here the token is well-formed and current,\n  so a 403 (not a 400 confirm-guard hit like `daemon`) proves the\n  browser-context discard fired — a valid daemon token does NOT authenticate\n  when an `Origin` is present. `Origin` is deliberately NOT suppressed; its\n  presence is the signal under test.\n- `token` — the keeper authenticated via a bearer api-token (non-browser\n  context; the runner suppresses `Origin` so the token isn't discarded).\n- `bearer_browser` — a *valid* bearer api-token carried in a browser context\n  (default `Origin` present), fresh jar so NO session rides alongside. The\n  bearer middleware discards the token as browser context (mirroring the\n  daemon guard + the Rust spine's `is_browser_context`), so the request\n  arrives anonymous and an authed action 401s. Proves a stolen bearer cannot\n  be replayed from a browser — wire-indistinguishable from sending no\n  credential (the `token` principal is the honored counterpart: it suppresses\n  `Origin`, so the same token authenticates).\n- `anonymous` — no credential, fresh cookie jar.\n- `fresh_non_admin` — a freshly minted account with no roles, session\n  credential (via the production invite → signup → login flow).\n- `role_holder` — a seeded `extra_accounts` principal holding a specific\n  role; the runner reads it by the username named in\n  `ConformanceTableOptions.principals.role_holder`.\n- `wrong_role` — a seeded `extra_accounts` principal holding a role\n  other than the one a route requires; named via\n  `ConformanceTableOptions.principals.wrong_role`.\n- `expired_session` — the keeper account presented via an *expired\n  server-side session* cookie (minted by `fixture.mint_expired_session()`:\n  a backdated `auth_session` row behind a still-valid signed cookie\n  payload, so the authoritative DB-row expiry gate is what refuses it).",
-							"typeSignature": "ZodEnum<{ token: \"token\"; keeper: \"keeper\"; daemon: \"daemon\"; invalid_daemon: \"invalid_daemon\"; daemon_browser: \"daemon_browser\"; bearer_browser: \"bearer_browser\"; anonymous: \"anonymous\"; fresh_non_admin: \"fresh_non_admin\"; role_holder: \"role_holder\"; wrong_role: \"wrong_role\"; expired_session: \"expired_session\"; }>",
+							"typeSignature": "ZodEnum<{ keeper: \"keeper\"; token: \"token\"; daemon: \"daemon\"; invalid_daemon: \"invalid_daemon\"; daemon_browser: \"daemon_browser\"; bearer_browser: \"bearer_browser\"; anonymous: \"anonymous\"; fresh_non_admin: \"fresh_non_admin\"; role_holder: \"role_holder\"; wrong_role: \"wrong_role\"; expired_session: \"expired_session\"; }>",
 							"sourceLine": 86
 						},
 						{
 							"name": "ConformanceCaseRequest",
 							"kind": "type",
 							"docComment": "The request a conformance case issues.",
-							"typeSignature": "ZodObject<{ method: ZodString; params: ZodOptional<ZodUnknown>; as: ZodEnum<{ token: \"token\"; keeper: \"keeper\"; daemon: \"daemon\"; invalid_daemon: \"invalid_daemon\"; ... 6 more ...; expired_session: \"expired_session\"; }>; verb: ZodOptional<...>; }, $strict>",
+							"typeSignature": "ZodObject<{ method: ZodString; params: ZodOptional<ZodUnknown>; as: ZodEnum<{ keeper: \"keeper\"; token: \"token\"; daemon: \"daemon\"; invalid_daemon: \"invalid_daemon\"; ... 6 more ...; expired_session: \"expired_session\"; }>; verb: ZodOptional<...>; }, $strict>",
 							"sourceLine": 102
 						},
 						{
@@ -71064,7 +71064,7 @@
 							"name": "ConformanceCase",
 							"kind": "type",
 							"docComment": "A single conformance case. `name` is the assertion; the optional\nfree-text `note` is printed in the test label / failure output. A\nsecurity case's `note` should reference a **public** fuz_app doc\nproperty (`security.md` / `architecture.md` / module TSDoc), since the\ntable ships in a public package — not an internal planning doc. The note\nis documentation, not a gate: it stays free-text by design because a\nnon-empty-string check never catches a *wrong* citation — the citation\nis verified in review.",
-							"typeSignature": "ZodObject<{ name: ZodString; request: ZodObject<{ method: ZodString; params: ZodOptional<ZodUnknown>; as: ZodEnum<{ token: \"token\"; keeper: \"keeper\"; daemon: \"daemon\"; ... 7 more ...; expired_session: \"expired_session\"; }>; verb: ZodOptional<...>; }, $strict>; expect: ZodObject<...>; note: ZodOptional<...>; xfail: Z...",
+							"typeSignature": "ZodObject<{ name: ZodString; request: ZodObject<{ method: ZodString; params: ZodOptional<ZodUnknown>; as: ZodEnum<{ keeper: \"keeper\"; token: \"token\"; daemon: \"daemon\"; ... 7 more ...; expired_session: \"expired_session\"; }>; verb: ZodOptional<...>; }, $strict>; expect: ZodObject<...>; note: ZodOptional<...>; xfail: Z...",
 							"sourceLine": 213
 						}
 					],
@@ -75700,6 +75700,12 @@
 							"sourceLine": 23,
 							"members": [
 								{
+									"name": "email",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
 									"name": "created_at",
 									"kind": "variable",
 									"typeSignature": "string",
@@ -75707,12 +75713,6 @@
 								},
 								{
 									"name": "username",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
-									"name": "email",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
@@ -75792,13 +75792,13 @@
 							"sourceLine": 46,
 							"members": [
 								{
-									"name": "created_at",
+									"name": "name",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
 								},
 								{
-									"name": "name",
+									"name": "created_at",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true

@@ -22,7 +22,7 @@ location rather than by code identity:
 
 > **Don't attach a possessive to a bare path.** mdz's autolink treats `'` as a
 > valid path character, so `./foo.md's` links to a 404 href ending in `'s`.
-> Reword ("all live in ./foo.md") or backtick the path.
+> Reword ("all live in `./foo.md`") or backtick the path.
 
 > **A bare path is a promise it resolves on disk.** An unbackticked `./`, `../`,
 > or `~/dev/` path is a real, navigable link — it must point at a file or
@@ -144,8 +144,8 @@ The linkifier won't fire on these, costing tokens and navigability:
 
 - **Mixing the two forms**: backticks + a leading `./` or `../` is the
   wrong-of-both-worlds case. Pick a form. "`./foo.md`" should be either bare
-  `./foo.md` (navigational) or — for src/lib — "`subsystem/foo.ts`" (module-form,
-  drop the relative prefix).
+  (`./foo.md`, navigational) or — for src/lib — "`subsystem/foo.ts`"
+  (module-form, drop the relative prefix).
 - **Backticking a navigable target**: "`~/dev/fuz_util`" reads as a code
   identifier when it's actually a path. Use bare `~/dev/fuz_util`.
 - **Redundant markdown-link syntax** when target equals visible text:
