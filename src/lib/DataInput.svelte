@@ -161,8 +161,10 @@
 			<button
 				type="button"
 				class={{ selected: input_mode === mode }}
-				onclick={() => (input_mode = mode)}>{mode}</button
+				onclick={() => (input_mode = mode)}
 			>
+				{mode}
+			</button>
 		{/each}
 	</nav>
 

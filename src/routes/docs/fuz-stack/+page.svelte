@@ -18,9 +18,9 @@
 	<TomeSection>
 		<TomeSectionHeader text="Overview" />
 		<p>
-			Coding conventions and patterns for the <code>@fuzdev</code> TypeScript, Svelte 5, and Rust ecosystem.
-			These conventions keep agent-assisted development consistent across ~20 repos — from naming and
-			file organization to error handling, testing, and validation patterns.
+			Coding conventions and patterns for the <code>@fuzdev</code> TypeScript, Svelte 5, and Rust
+			ecosystem. These conventions keep agent-assisted development consistent across ~20 repos —
+			from naming and file organization to error handling, testing, and validation patterns.
 		</p>
 		<p>
 			This content is AI-generated and mostly poorly reviewed. Not all patterns described here are
@@ -39,40 +39,39 @@
 				<tr><th>Area</th><th>Convention</th></tr>
 			</thead>
 			<tbody>
-				<tr
-					><td>Naming</td><td
-						>snake_case functions/variables, PascalCase types/components, SCREAMING_SNAKE_CASE
-						constants</td
-					></tr
-				>
-				<tr
-					><td>File organization</td><td
-						><code>src/lib/</code> for library code, <code>src/test/</code> for tests (not
-						co-located), <code>src/routes/</code> for SvelteKit</td
-					></tr
-				>
-				<tr
-					><td>Imports</td><td
-						>Import by real source extension (<code>.ts</code>/<code>.svelte.ts</code>), directly
-						from source (no barrels/re-exports)</td
-					></tr
-				>
+				<tr>
+					<td>Naming</td><td>
+						snake_case functions/variables, PascalCase types/components, SCREAMING_SNAKE_CASE
+						constants
+					</td>
+				</tr>
+				<tr>
+					<td>File organization</td><td>
+						<code>src/lib/</code> for library code, <code>src/test/</code> for tests (not
+						co-located), <code>src/routes/</code> for SvelteKit
+					</td>
+				</tr>
+				<tr>
+					<td>Imports</td><td>
+						Import by real source extension (<code>.ts</code>/<code>.svelte.ts</code>), directly
+						from source (no barrels/re-exports)
+					</td>
+				</tr>
 				<tr><td>Formatting</td><td><code>tsv</code> with tabs, 100 char width</td></tr>
-				<tr
-					><td>Breaking changes</td><td>Acceptable — delete unused code, don't shim or alias</td
-					></tr
-				>
-				<tr
-					><td>Flat namespace</td><td
-						>All exported identifiers unique across all modules; the <code>svelte-docinfo</code> analysis
-						enforces it</td
-					></tr
-				>
-				<tr
-					><td>Build</td><td
-						><code>gro check</code> runs typecheck + test + gen --check + format --check + lint</td
-					></tr
-				>
+				<tr>
+					<td>Breaking changes</td><td>Acceptable — delete unused code, don't shim or alias</td>
+				</tr>
+				<tr>
+					<td>Flat namespace</td><td>
+						All exported identifiers unique across all modules; the <code>svelte-docinfo</code>
+						analysis enforces it
+					</td>
+				</tr>
+				<tr>
+					<td>Build</td><td>
+						<code>gro check</code> runs typecheck + test + gen --check + format --check + lint
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<Code
@@ -93,36 +92,39 @@ import {git_push} from './git.ts';`}
 	<TomeSection>
 		<TomeSectionHeader text="Core patterns" />
 		<p>
-			Beyond surface conventions, several deeper patterns define how <code>@fuzdev</code> code is structured:
+			Beyond surface conventions, several deeper patterns define how <code>@fuzdev</code> code is
+			structured:
 		</p>
 		<table>
 			<thead>
 				<tr><th>Pattern</th><th>Convention</th></tr>
 			</thead>
 			<tbody>
-				<tr
-					><td>Error handling</td><td
-						><code>Result&lt;TValue, TError&gt;</code> discriminated union — never throw for expected
-						errors</td
-					></tr
-				>
-				<tr
-					><td>Dependency injection</td><td
-						>Small <code>*Deps</code> interfaces for all I/O, plain object mocks — no mocking libraries</td
-					></tr
-				>
-				<tr
-					><td>Validation</td><td
-						><code>z.strictObject()</code> by default, PascalCase schema naming,
-						<code>.brand()</code> for nominal types</td
-					></tr
-				>
-				<tr
-					><td>Testing</td><td
-						>Fixture-based testing for parsers — input files, generated
-						<code>expected.json</code>, never manually edit</td
-					></tr
-				>
+				<tr>
+					<td>Error handling</td><td>
+						<code>Result&lt;TValue, TError&gt;</code> discriminated union — never throw for expected
+						errors
+					</td>
+				</tr>
+				<tr>
+					<td>Dependency injection</td><td>
+						Small <code>*Deps</code> interfaces for all I/O, plain object mocks — no mocking
+						libraries
+					</td>
+				</tr>
+				<tr>
+					<td>Validation</td><td>
+						<code>z.strictObject()</code> by default, PascalCase schema naming,
+						<code>.brand()</code>
+						for nominal types
+					</td>
+				</tr>
+				<tr>
+					<td>Testing</td><td>
+						Fixture-based testing for parsers — input files, generated
+						<code>expected.json</code>, never manually edit
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<Code
@@ -149,12 +151,11 @@ export interface FsDeps {
 			</thead>
 			<tbody>
 				{#each fuz_stack.references as ref (ref.slug)}
-					<tr
-						><td
-							><a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a
-							></td
-						><td>{ref.description}</td></tr
-					>
+					<tr>
+						<td>
+							<a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a>
+						</td><td>{ref.description}</td>
+					</tr>
 				{/each}
 			</tbody>
 		</table>
@@ -166,8 +167,8 @@ export interface FsDeps {
 		<p>
 			<code>gro</code> is the durable web-dev workflow surface — its internals progressively adopt
 			Rust (<code>tsv</code>, then <code>fuz</code> crates) while it stays complementary to
-			<code>fuz</code> and <code>zap</code>. See <TomeLink slug="stack" /> for the full dependency graph
-			and package details.
+			<code>fuz</code> and <code>zap</code>. See <TomeLink slug="stack" /> for the full dependency
+			graph and package details.
 		</p>
 		<p>
 			For cross-repo coordination patterns — planning, TODOs, and multi-repo goals — see

@@ -90,9 +90,9 @@
 					<strong style:width="7rem">{algo}</strong>
 					{#if result}
 						<small class="color_c" style:width="6rem">{result.hash.length * 4}-bit</small>
-						<small class="color_c" style:width="6rem"
-							>{result.duration < 1 ? '<1' : result.duration.toFixed(1)}ms</small
-						>
+						<small class="color_c" style:width="6rem">
+							{result.duration < 1 ? '<1' : result.duration.toFixed(1)}ms
+						</small>
 					{:else if algo === 'BLAKE3' && !blake3_loaded}
 						<small class="color_c">(loading)</small>
 					{/if}

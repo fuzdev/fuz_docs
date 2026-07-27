@@ -436,9 +436,8 @@
 			<strong>{hovered_node.name}</strong>
 			<p class="description">{hovered_node.description}</p>
 			<small class="color_c">
-				depended on by {dependents_count.get(hovered_node.name) ?? 0} · depends on {dependency_count.get(
-					hovered_node.name
-				) ?? 0}
+				depended on by {dependents_count.get(hovered_node.name) ?? 0} · depends
+				on {dependency_count.get(hovered_node.name) ?? 0}
 			</small>
 		</div>
 	{/if}
@@ -459,9 +458,9 @@
 				</span>
 			{/each}
 		</div>
-		<small class="color_c help"
-			>drag to pan · scroll to zoom · click a node to trace its dependencies</small
-		>
+		<small class="color_c help">
+			drag to pan · scroll to zoom · click a node to trace its dependencies
+		</small>
 	</div>
 </div>
 

@@ -36,9 +36,9 @@
 						<span class="glyph">{pkg.glyph}</span>
 						<span class="name">{pkg.name}</span>
 						<span class="description">{pkg.description}</span>
-						<span class="stats"
-							>{pkg.exported_module_count} modules, {pkg.export_count} exports</span
-						>
+						<span class="stats">
+							{pkg.exported_module_count} modules, {pkg.export_count} exports
+						</span>
 					</a>
 				</li>
 			{/each}

@@ -27,16 +27,18 @@
 				<li>
 					<a
 						class={['menuitem', { selected: pathname === resolve('/skills') }]}
-						href={resolve('/skills')}>skills</a
+						href={resolve('/skills')}
 					>
+						skills
+					</a>
 				</li>
 				{#each skills as skill (skill.name)}
 					{@const skill_path = resolve(('/skills/' + skill.name) as any)}
 					{@const skill_active = pathname.startsWith(skill_path)}
 					<li>
-						<a class={['menuitem pl_lg', { selected: pathname === skill_path }]} href={skill_path}
-							>{skill.name}</a
-						>
+						<a class={['menuitem pl_lg', { selected: pathname === skill_path }]} href={skill_path}>
+							{skill.name}
+						</a>
 						{#if skill_active && skill.references.length > 0}
 							<ul class="unstyled">
 								{#each skill.references as ref (ref.slug)}
@@ -47,13 +49,14 @@
 												{
 													selected:
 														pathname ===
-														resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)
+															resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)
 												}
 											]}
 											style:padding-left="calc(2 * var(--space_lg))"
 											href={resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)}
-											>{ref.title}</a
 										>
+											{ref.title}
+										</a>
 									</li>
 								{/each}
 							</ul>
@@ -63,15 +66,17 @@
 				<li>
 					<a
 						class={['menuitem', { selected: pathname === resolve('/tools') }]}
-						href={resolve('/tools')}>tools</a
+						href={resolve('/tools')}
 					>
+						tools
+					</a>
 				</li>
 				{#each tools as tool (tool.name)}
 					{@const tool_path = resolve(('/tools/' + tool.name) as any)}
 					<li>
-						<a class={['menuitem pl_lg', { selected: pathname === tool_path }]} href={tool_path}
-							>{tool.name}</a
-						>
+						<a class={['menuitem pl_lg', { selected: pathname === tool_path }]} href={tool_path}>
+							{tool.name}
+						</a>
 					</li>
 				{/each}
 			</ul>

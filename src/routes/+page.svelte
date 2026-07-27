@@ -25,17 +25,19 @@
 			<div class="mb_lg p_xs2 shadow_md border_radius_sm">
 				<div class="width_atmost_sm panel p_lg shadow_inset_xs shade_00">
 					<p>
-						fuz_docs is an AI-generated site with docs and <a href="https://agentskills.io/"
-							>agent skills</a
-						>
+						fuz_docs is an AI-generated site with docs and <a href="https://agentskills.io/">
+							agent skills
+						</a>
 						for the
-						<a href="https://www.fuz.dev/">Fuz</a> ecosystem, designed for both human and machine consumption.
+						<a href="https://www.fuz.dev/">Fuz</a>
+						ecosystem, designed for both human and machine consumption.
 					</p>
 					<p>
 						This website is inconsistently human-reviewed — everything is in flux, not all patterns
 						are endorsed, and some content is plain slop. It's an actively evolving dumping ground
 						of conventions, patterns, and reference material for
-						<a href="https://github.com/fuzdev"><code>@fuzdev</code></a> projects.
+						<a href="https://github.com/fuzdev"><code>@fuzdev</code></a>
+						projects.
 					</p>
 					<p>
 						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->

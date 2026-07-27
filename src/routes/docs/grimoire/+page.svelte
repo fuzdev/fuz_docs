@@ -38,24 +38,24 @@
 				<tr><th>Primitive</th><th>Location</th><th>Purpose</th></tr>
 			</thead>
 			<tbody>
-				<tr
-					><td>Lore</td><td><code>lore/&#123;project&#125;/</code></td><td
-						>Per-repo planning projections — decisions, TODOs, cross-cutting concerns. Standard
-						pair: <code>CLAUDE.md</code> + <code>TODO.md</code></td
-					></tr
-				>
-				<tr
-					><td>Quests</td><td><code>quests/</code></td><td
-						>Cross-repo goals with dependencies and completion criteria. Single-repo work stays in
-						lore TODOs</td
-					></tr
-				>
-				<tr
-					><td>Skills</td><td><code>skills/&#123;name&#125;/</code></td><td
-						><a href="https://agentskills.io/">Agent skill</a> knowledge files — conventions, references,
-						and tooling scripts</td
-					></tr
-				>
+				<tr>
+					<td>Lore</td><td><code>lore/&#123;project&#125;/</code></td><td>
+						Per-repo planning projections — decisions, TODOs, cross-cutting concerns. Standard pair:
+						<code>CLAUDE.md</code> + <code>TODO.md</code>
+					</td>
+				</tr>
+				<tr>
+					<td>Quests</td><td><code>quests/</code></td><td>
+						Cross-repo goals with dependencies and completion criteria. Single-repo work stays in
+						lore TODOs
+					</td>
+				</tr>
+				<tr>
+					<td>Skills</td><td><code>skills/&#123;name&#125;/</code></td><td>
+						<a href="https://agentskills.io/">Agent skill</a> knowledge files — conventions,
+						references, and tooling scripts
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<Code
@@ -90,26 +90,28 @@
 				<tr><th>Phase</th><th>Action</th></tr>
 			</thead>
 			<tbody>
-				<tr
-					><td>Orient</td><td
-						>Read <code>lore/&#123;project&#125;/</code> for planning context and TODOs. Check
+				<tr>
+					<td>Orient</td><td>
+						Read <code>lore/&#123;project&#125;/</code> for planning context and TODOs. Check
 						<code>quests/</code> for cross-repo goals touching this project. Read the repo's own
-						<code>CLAUDE.md</code> for implementation context.</td
-					></tr
-				>
+						<code>CLAUDE.md</code>
+						for implementation context.
+					</td>
+				</tr>
 				<tr><td>Work</td><td>Do the implementation work in the target repo.</td></tr>
-				<tr
-					><td>Update</td><td
-						>Update <code>TODO.md</code> for work items. Check off quest tasks. Update
-						<code>CLAUDE.md</code> if decisions changed.</td
-					></tr
-				>
-				<tr
-					><td>Graduate</td><td
-						>Should content advance? Done quests synthesize into lore, then get deleted. Ideas that
-						matured into code get removed from TODOs.</td
-					></tr
-				>
+				<tr>
+					<td>Update</td><td>
+						Update <code>TODO.md</code> for work items. Check off quest tasks. Update
+						<code>CLAUDE.md</code>
+						if decisions changed.
+					</td>
+				</tr>
+				<tr>
+					<td>Graduate</td><td>
+						Should content advance? Done quests synthesize into lore, then get deleted. Ideas that
+						matured into code get removed from TODOs.
+					</td>
+				</tr>
 			</tbody>
 		</table>
 	</TomeSection>
@@ -135,14 +137,15 @@
 		<p>
 			<strong>Taste.</strong> A grimoire encodes a developer's preferences — which patterns are
 			valued, which tradeoffs are preferred, what "good" looks like. This is what makes a grimoire
-			<em>yours</em> rather than generic documentation. Agents can apply taste fluidly rather than following
-			rigid rules.
+			<em>yours</em>
+			rather than generic documentation. Agents can apply taste fluidly rather than following rigid
+			rules.
 		</p>
 		<p>
-			<strong>Always slightly wrong.</strong> A grimoire is approximate context, not ground truth. It's
-			trying to capture dimensions of a person's entire body of work — too large for any document to represent
-			faithfully. When current state matters, read the actual repo. Past a certain threshold of staleness,
-			a doc misleads more than it helps.
+			<strong>Always slightly wrong.</strong> A grimoire is approximate context, not ground truth.
+			It's trying to capture dimensions of a person's entire body of work — too large for any
+			document to represent faithfully. When current state matters, read the actual repo. Past a
+			certain threshold of staleness, a doc misleads more than it helps.
 		</p>
 		<p>
 			<strong>Rewrite, don't just prune.</strong> Conceptual staleness — content whose framing no
@@ -153,8 +156,9 @@
 		</p>
 		<p>
 			<strong>Growth trajectory.</strong> A grimoire starts small — one <code>CLAUDE.md</code>, a
-			couple of <code>TODO.md</code> files. Quests appear when work first spans multiple repos. Writing
-			appears when ideas emerge that don't project any single repo. Don't build structure speculatively.
+			couple of <code>TODO.md</code> files. Quests appear when work first spans multiple repos.
+			Writing appears when ideas emerge that don't project any single repo. Don't build structure
+			speculatively.
 		</p>
 	</TomeSection>
 
