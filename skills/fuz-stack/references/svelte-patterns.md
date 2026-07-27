@@ -31,74 +31,41 @@ Only use `$state` for variables that should be _reactive_ — variables that
 cause an `$effect`, `$derived`, or template expression to update. Everything
 else can be a normal variable.
 
-### `$state.raw()` vs `$state()` — opt into mutation reactivity, raw otherwise
+### `$state()` is the default
 
-**Principle: be explicit about when you're opting into mutation reactivity.**
-For primitives the two are equivalent (one extra `typeof` check on set). For
-objects and arrays, `$state()` proxies the value so in-place mutations trigger
-updates; `$state.raw()` stores the value directly and only tracks reassignment.
+`$state()` for all reactive state. It proxies objects and arrays so in-place
+mutations trigger updates — `push`, `splice`, `sort`, index assignment,
+property writes, and `bind:value={obj.field}` all work without further
+thought. For primitives it costs one extra `typeof` check on set.
 
-**Use `$state()`** for in-place mutation reactivity:
-
-- Arrays you `push`, `splice`, `pop`, `sort`, or index-assign
-- Objects with individual property mutations
-- `bind:value={obj.field}` — binding writes to a property on the object, which
-  needs deep proxy reactivity (binding to a primitive `let` works either way,
-  since the binding reassigns the variable)
-
-**Use `$state.raw()`** for everything else — primitives, values replaced
-wholesale (filter/spread/reassignment), API responses, data passed to APIs
-that compare object identity, anything where property-level reactivity isn't
-wanted.
-
-This is a fuz-stack stylistic preference, not a technical requirement, and
-diverges from Svelte's official guidance — which defaults to `$state()` and
-treats `$state.raw` as a perf opt-out for large values that are only ever
-reassigned (API responses and similar). The benefit is explicit intent —
-reading a state class tells you which fields are designed to mutate in place.
-The cost is friction with idiomatic-Svelte reviewers and AI assistants that
-default to `$state()`.
+`$state.raw()` is a **performance opt-out**, not a style choice: it stores the
+value directly and tracks only reassignment. Reach for it when a large value is
+replaced wholesale, never mutated in place, and proxying it is measurably
+expensive. Don't reach for it to signal intent — an unnecessary `raw` silently
+breaks reactivity the moment someone mutates the value in place.
 
 `structuredClone`, `JSON.stringify`, and `postMessage` all walk through
 `$state()` proxies cleanly — proxy traps return the target's own keys.
 `JSON.stringify` also calls `toJSON()` through the proxy.
 
 ```typescript
-// $state.raw() — values replaced wholesale or never reassigned
-let name = $state.raw(''); // primitive
-let api_response = $state.raw<ApiResponse | null>(null); // replaced wholesale
-let selections: ReadonlyArray<Item> = $state.raw([]); // array replaced wholesale
-
-// $state() — opt-in for in-place mutation
+let name = $state(''); // primitive
 let items = $state<string[]>([]);
 items.push('new'); // triggers reactivity
 let form_data = $state({ name: '', email: '' });
 form_data.name = 'Alice'; // triggers reactivity via proxy
-
-// const objects with property writes need $state()
 const config = $state({ iterations: 5, warmup: 2 });
-// bind:value={config.iterations} writes a property; $state.raw() here silently
-// breaks (const can't be reassigned, raw doesn't track property writes)
+// bind:value={config.iterations} writes a property — the proxy tracks it
 ```
 
-**Watch for `const` objects:** A `const` object declared with `$state.raw()`
-can't trigger reactivity at all — it can't be reassigned and property mutations
-aren't tracked. If its properties are mutated (directly or via `bind:`), use
-`$state()`.
+### The `$state()!` Non-null Assertion Pattern
 
-**Check consumer files, not just the declaring file.** A class field may be
-mutated in place by external code — e.g., a component importing a state class
-and calling `thing.items.splice(i, 1)`. Grep all of `src/` for mutation
-patterns on the field name before deciding.
-
-### The `$state.raw()!` Non-null Assertion Pattern
-
-Class properties initialized by a constructor or `init()` use `$state.raw()!`:
+Class properties initialized by a constructor or `init()` use `$state()!`:
 
 ```typescript
 export class ThemeState {
-	theme: Theme = $state.raw()!;
-	color_scheme: ColorScheme = $state.raw()!;
+	theme: Theme = $state()!;
+	color_scheme: ColorScheme = $state()!;
 
 	constructor(options?: ThemeStateOptions) {
 		this.theme = options?.theme ?? default_themes[0]!;
@@ -107,8 +74,7 @@ export class ThemeState {
 }
 ```
 
-Used across fuz_ui state classes and zzz Cell subclasses. Use `$state()!` only
-for arrays/objects that are mutated in place (see above).
+Used across fuz_ui state classes and zzz Cell subclasses.
 
 ### `$state.snapshot()`
 
@@ -126,9 +92,8 @@ encode_property(value: unknown, _key: string): unknown {
 
 Use it when handing a `$state()` proxy structure to code that does
 reference-identity checks on members and would otherwise see proxy
-identities. `$state.raw()` values holding plain data don't need it at all;
-for serialization, `JSON.stringify` and `structuredClone` walk proxies on
-their own.
+identities. For serialization it's usually unnecessary — `JSON.stringify` and
+`structuredClone` walk proxies on their own.
 
 **Observed quirk** (Svelte 5.56 + vite-plugin-svelte): `const r = $state.snapshot(x)` is
 silently elided to `const r = x` somewhere downstream of Svelte's
@@ -178,7 +143,7 @@ reassignment (which Svelte 5 does allow):
 ```typescript
 // From Library class (fuz_ui/library.svelte.ts)
 export class Library {
-	readonly library_json: LibraryJson = $state.raw()!;
+	readonly library_json: LibraryJson = $state()!;
 
 	readonly pkg_json = $derived(this.library_json.pkg_json);
 	readonly source_json = $derived(this.library_json.source_json);
@@ -241,7 +206,7 @@ readonly status = $derived.by(() => this.app.lookup_provider_status(this.name));
 ```
 
 Cells don't hit this — `app` comes from the base `Cell` constructor (runs before
-subclass fields), and schema fields use `$state.raw()!` (counts as initialized in
+subclass fields), and schema fields use `$state()!` (counts as initialized in
 declaration order). It bites only plain classes that read constructor-assigned
 fields in a `$derived`.
 
@@ -302,8 +267,8 @@ shape, the class adds reactivity and behavior. See ./zod-schemas.md.
 ```typescript
 // theme_state.svelte.ts
 export class ThemeState {
-	theme: Theme = $state.raw()!;
-	color_scheme: ColorScheme = $state.raw()!;
+	theme: Theme = $state()!;
+	color_scheme: ColorScheme = $state()!;
 
 	constructor(options?: ThemeStateOptions) {
 		this.theme = options?.theme ?? default_themes[0]!;
@@ -322,9 +287,9 @@ export class ThemeState {
 ### Cell Pattern (zzz)
 
 Advanced version with a `Cell` base class that automates JSON hydration from
-Zod schemas. Same rune conventions (`$state.raw()!` by default, `$state()!`
-for in-place mutations, `readonly $derived` for computed values). See
-./zod-schemas.md for the full pattern.
+Zod schemas. Same rune conventions (`$state()!` for schema fields,
+`readonly $derived` for computed values). See ./zod-schemas.md for the full
+pattern.
 
 ## Context Patterns
 
@@ -451,34 +416,10 @@ pattern with multiple values:
 
 ### Snippets with Parameters
 
-A snippet prop can take parameters (`Snippet<[T]>`). Illustrative generic list
-renderer — fuz_ui's real `generics=` user is `Contextmenu.svelte`:
-
-```svelte
-<script lang="ts" generics="T">
-	import type { Snippet } from 'svelte';
-
-	const {
-		items,
-		item,
-		empty
-	}: {
-		items: T[];
-		item: Snippet<[T]>;
-		empty?: Snippet;
-	} = $props();
-</script>
-
-{#if items.length === 0}
-	{#if empty}
-		{@render empty()}
-	{/if}
-{:else}
-	{#each items as entry}
-		{@render item(entry)}
-	{/each}
-{/if}
-```
+A snippet prop can take parameters (`Snippet<[T]>`), and `generics="T"` on the
+`<script>` tag makes them generic over the component's data — a list renderer
+takes `items: T[]` plus `item: Snippet<[T]>` and renders `{@render item(entry)}`
+per entry. fuz_ui's real `generics=` user is `Contextmenu.svelte`.
 
 ### Default Snippet Content and String/Snippet Unions
 
@@ -583,112 +524,49 @@ Usage: `{@attach my_attachment()}` or `{@attach my_attachment({...options})}`
 
 ### fuz_ui Attachments
 
-#### `autofocus` -- Focus on Mount
+The three factory shapes, one per row of the table below:
 
-Solves the HTML `autofocus` attribute not working when elements mount from
-reactive conditionals (`{#if}`) in SPAs.
+- **`autofocus(options?)`** — simple factory, fire-once. Solves the HTML
+  `autofocus` attribute not firing when an element mounts from a reactive
+  `{#if}` in an SPA. `<input {@attach autofocus()} />`
+- **`intersect(get_params)`** — takes a **lazy function**
+  (`() => IntersectParamsOrCallback | null | undefined`), not params directly.
+  It runs `$effect` internally so reactive callbacks update without recreating
+  the IntersectionObserver, which rebuilds only when the options themselves
+  change (deep equality). Accepts a bare callback or a full params object
+  (`onintersect`, `ondisconnect`, `count`, `options`).
+- **`contextmenu_attachment(params)`** — direct params, no lazy function.
+  Caches menu params on the element's dataset, returns cleanup that removes the
+  entry.
 
-```typescript
-// autofocus.svelte.ts
-import type { Attachment } from 'svelte/attachments';
-
-export const autofocus =
-	(options?: FocusOptions): Attachment<HTMLElement | SVGElement> =>
-	(el) => {
-		el.focus({ focusVisible: true, ...options } as FocusOptions);
-	};
-```
-
-```svelte
-<script>
-	import { autofocus } from '@fuzdev/fuz_ui/autofocus.svelte.ts';
-</script>
-
-<!-- Basic usage -->
-<input {@attach autofocus()} />
-
-<!-- With options -->
-<input {@attach autofocus({ preventScroll: true })} />
-```
-
-#### `intersect` -- IntersectionObserver
-
-Wraps IntersectionObserver with a **lazy function pattern** — reactive
-callbacks update without recreating the observer:
-
-```typescript
-// intersect.svelte.ts — signature only, see source for implementation
-export const intersect =
-	(
-		get_params: () => IntersectParamsOrCallback | null | undefined
-	): Attachment<HTMLElement | SVGElement> =>
-	(el) => {
-		// Uses $effect internally: callbacks update reactively,
-		// observer only recreates when options change (deep equality check)
-	};
-```
-
-```svelte
-<script>
-	import {intersect} from '@fuzdev/fuz_ui/intersect.svelte.ts';
-</script>
-
-<!-- Simple callback (receives IntersectState: intersecting, intersections, el, observer, disconnect) -->
-<div {@attach intersect(() => ({intersecting}) => { ... })}>
-
-<!-- Full params with options -->
-<div {@attach intersect(() => ({
-	onintersect: ({intersecting, el}) => {
-		el.classList.toggle('visible', intersecting);
-	},
-	ondisconnect: ({intersecting, intersections}) => { ... },
-	count: 1,
-	options: {threshold: 0.5},
-}))}>
-```
-
-#### `contextmenu_attachment` -- Context Menu Data
-
-Caches context menu params on an element via dataset. Direct params (no lazy
-function). Returns cleanup that removes the cache entry.
-
-```typescript
-// contextmenu_state.svelte.ts (exported alongside Contextmenu state class)
-export const contextmenu_attachment =
-	(
-		params: ContextmenuParams | Array<ContextmenuParams> | null | undefined
-	): Attachment<HTMLElement | SVGElement> =>
-	(el): undefined | (() => void) => {
-		if (params == null) return;
-		// cache params in dataset, return cleanup
-	};
-```
+Reach for the lazy form whenever the attachment builds an expensive observer
+out of reactive values; direct params are for static config read back later.
 
 ### Class Method Attachments (zzz)
 
-Attachments as class properties, sharing reactive state with the instance:
+An attachment can be a class property sharing reactive state with the instance.
+**Attachments run in an effect context**, so one that reads reactive state
+reruns when that state changes — which is the whole reason to reach for this
+shape:
 
 ```typescript
 // scrollable.svelte.ts (simplified — see source for flex-direction handling)
 export class Scrollable {
-	scroll_y: number = $state.raw(0);
+	scroll_y: number = $state(0);
 	readonly scrolled: boolean = $derived(this.scroll_y > this.threshold);
 
-	// Listens to scroll events, updates class state
 	container: Attachment = (element) => {
-		const cleanup = on(element, 'scroll', () => {
+		const onscroll = () => {
 			this.scroll_y = element.scrollTop;
-		});
-		return () => cleanup();
+		};
+		const cleanup = on(element, 'scroll', onscroll);
+		onscroll(); // sync the initial value — the event won't fire on mount
+		return cleanup;
 	};
 
-	// Attachments run in an effect context — reruns when `this.scrolled` changes
+	// reruns whenever `this.scrolled` flips
 	target: Attachment = (element) => {
-		if (this.scrolled) {
-			element.classList.add(this.target_class);
-		} else {
-			element.classList.remove(this.target_class);
-		}
+		element.classList.toggle(this.target_class, this.scrolled);
 		return () => element.classList.remove(this.target_class);
 	};
 }
@@ -901,8 +779,8 @@ later need one.
 
 ```typescript
 // Anti-pattern: module-level runes exposed through a singleton
-let show_map = $state.raw(false);
-let show_sidebar = $state.raw(true);
+let show_map = $state(false);
+let show_sidebar = $state(true);
 
 export const world_ui = {
 	get show_map() {
@@ -930,8 +808,8 @@ import { create_context } from '@fuzdev/fuz_ui/context_helpers.ts';
 export const world_ui_context = create_context<WorldUiState>();
 
 export class WorldUiState {
-	show_map: boolean = $state.raw(false);
-	show_sidebar: boolean = $state.raw(true);
+	show_map: boolean = $state(false);
+	show_sidebar: boolean = $state(true);
 }
 ```
 
@@ -959,7 +837,7 @@ below) — the state is scoped to the returned object, not the module.
 ```typescript
 // api_search.svelte.ts
 export const create_api_search = (library: Library): ApiSearchState => {
-	let query = $state.raw(''); // raw — primitive replaced wholesale (the default)
+	let query = $state('');
 
 	const all_modules = $derived(library.modules_sorted);
 	const filtered_modules = $derived.by(() => {
@@ -1013,8 +891,8 @@ The most common pattern for shared state:
 ```typescript
 // dimensions.svelte.ts
 export class Dimensions {
-	width: number = $state.raw(0);
-	height: number = $state.raw(0);
+	width: number = $state(0);
+	height: number = $state(0);
 }
 ```
 
@@ -1046,17 +924,11 @@ $effect(() => {
 
 **Goal: minimal `<style>` blocks.** Components delegate styling to fuz_css
 utility classes and design tokens; many well-designed components have no
-`<style>` block at all. See `css-patterns.md` §Default styling is the baseline
-and §Component Styling In Practice for the full rationale, anti-patterns, and
-examples.
-
-When a `<style>` block is needed, keep it focused on component-specific
-layout logic (positioning, complex pseudo-states, responsive breakpoints),
-with all values referencing design tokens, not hardcoded pixels or colors.
-
-**Class naming**: fuz_css utilities use `snake_case` (`p_md`, `gap_lg`);
-component-local classes use `kebab-case` (`site-header`, `nav-links`) to
-distinguish them visually.
+`<style>` block at all. When one is needed, keep it focused on
+component-specific layout logic (positioning, complex pseudo-states,
+responsive breakpoints), with all values referencing design tokens. Full
+rationale, class naming, anti-patterns, and examples: ./css-patterns.md
+§Default styling is the baseline and §Component Styling In Practice.
 
 ### JS Variables in CSS
 
@@ -1136,9 +1008,10 @@ Always use runes mode. Deprecated patterns and their replacements:
 
 The decision-fraught choices, summarized:
 
-- **`$state.raw()` vs `$state()`** — `$state.raw()` for primitives and values
-  replaced wholesale; `$state()` when you want in-place mutation (`push`,
-  property writes, `bind:` on object properties) to trigger reactivity.
+- **`$state()` vs `$state.raw()`** — `$state()` always, unless profiling shows
+  proxying a large wholesale-replaced value costs measurably. `raw` tracks only
+  reassignment, so it silently breaks in-place mutation (`push`, property
+  writes, `bind:` on object properties).
 - **`$derived` vs `$derived.by()`** — `$derived` takes an expression;
   `$derived.by()` takes a function for loops/conditionals/multi-step logic.
   Mark class-level deriveds `readonly`.

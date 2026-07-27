@@ -16,25 +16,6 @@ Lifecycle type for tracking async operations in UI:
 type AsyncStatus = 'initial' | 'pending' | 'success' | 'failure';
 ```
 
-## Basic Utilities
-
-### wait
-
-```typescript
-await wait(500); // wait 500ms
-await wait(); // wait 0ms (next macrotask via setTimeout)
-```
-
-### is_promise
-
-Type guard for Promise/thenable detection:
-
-```typescript
-if (is_promise(value)) {
-	const result = await value;
-}
-```
-
 ## Deferred Pattern
 
 Separates promise creation from resolution — external control over when and

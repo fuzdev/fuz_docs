@@ -73,20 +73,6 @@ import { create_app_backend } from '@fuzdev/fuz_app/server/app_backend.ts';
 
 ## Tests Mirror the Subdirectory Structure
 
-Tests live in `src/test/` (NOT co-located) and mirror `src/lib/` subdirectories:
-
-```
-src/test/
-├── env/
-│   ├── load.test.ts
-│   ├── resolve.test.ts
-│   ├── dotenv.test.ts
-│   └── mask.test.ts
-├── auth/
-│   ├── keyring.test.ts
-│   └── account_queries.db.test.ts  # .db.test.ts suffix for PGlite tests
-└── server/
-    └── env.test.ts     # server-specific env (BaseServerEnv, validate_server_env)
-```
-
+Tests live in `src/test/` (NOT co-located) and mirror `src/lib/`
+subdirectories — `src/lib/auth/keyring.ts` → `src/test/auth/keyring.test.ts`.
 See ./testing-patterns.md for the full test file layout, naming, and fixtures.

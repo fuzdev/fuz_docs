@@ -217,20 +217,10 @@ nominal typing and strict utility types.
 
 ### `swallow`
 
-Claims an event by preventing its default action and stopping propagation:
-
-```typescript
-import { swallow } from '@fuzdev/fuz_util/dom.ts';
-
-swallow(event); // preventDefault + stopImmediatePropagation
-swallow(event, false); // preventDefault + stopPropagation (non-immediate)
-swallow(event, true, false); // stopImmediatePropagation only (no preventDefault)
-```
-
-Design principle: if you `preventDefault`, you're claiming the event — use
-`swallow` to also stop propagation. Parents needing to observe before children
-claim should use the `capture` phase. See ./svelte-patterns.md
-§Event Handling for full guidance.
+Claims an event by preventing its default action and stopping propagation —
+`swallow(event, immediate?, preventDefault?)`. The design principle (handling
+an event = claiming it) and usage guidance: ./svelte-patterns.md §Event
+Handling.
 
 ### `handle_target_value`
 

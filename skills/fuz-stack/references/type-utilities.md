@@ -9,8 +9,7 @@ stricter standard utilities, and selective partial types.
 
 ## Nominal Typing
 
-TypeScript uses structural typing — two types with the same shape are
-interchangeable. Nominal typing adds invisible brands to distinguish them.
+Invisible brands that distinguish otherwise structurally-identical types.
 
 ### Flavored (loose)
 
@@ -93,32 +92,13 @@ compile-time nominal typing and Zod `.brand()` for runtime-validated types.
 
 ### Zod `.brand()` — runtime-validated nominal types
 
-For types needing runtime validation, use Zod `.brand()` (distinct from
-fuz_util's `Branded`):
-
-```typescript
-// fuz_util/id.ts
-export const Uuid = z.uuid().brand('Uuid');
-export type Uuid = z.infer<typeof Uuid>;
-
-// fuz_util/datetime.ts
-export const Datetime = z.iso.datetime().brand('Datetime');
-export type Datetime = z.infer<typeof Datetime>;
-
-// zzz/diskfile_types.ts
-export const DiskfilePath = z
-	.string()
-	.refine((p) => is_path_absolute(p), { message: 'path must be absolute' })
-	.brand('DiskfilePath');
-export type DiskfilePath = z.infer<typeof DiskfilePath>;
-```
-
 `Flavored`/`Branded` are compile-time only (no runtime check); Zod `.brand()`
-brands a schema that _also_ validates — `Uuid` rejects non-UUID strings at parse
-time — so reach for `.brand()` when the value crosses a runtime boundary. (zzz
-re-imports fuz_util's `Uuid` rather than defining its own.)
+(distinct from fuz_util's `Branded`) brands a schema that _also_ validates —
+`Uuid` rejects non-UUID strings at parse time — so reach for `.brand()` when the
+value crosses a runtime boundary. (zzz re-imports fuz_util's `Uuid` rather than
+defining its own.)
 
-See ./zod-schemas.md for full Zod schema conventions including branded types.
+See ./zod-schemas.md §Branded Types for the `.brand()` conventions and examples.
 
 ## Strict Utility Types
 

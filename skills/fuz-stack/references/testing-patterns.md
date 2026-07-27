@@ -15,7 +15,7 @@ Testing conventions for the Fuz stack: vitest usage, fixtures, mocks, helpers.
 - [Fixture-Based Testing](#fixture-based-testing)
 - [Mock Patterns](#mock-patterns)
 - [Environment Flags](#environment-flags)
-- [Test Structure](#test-structure) (basic, organization, parameterized)
+- [Test Structure](#test-structure) (organization, parameterized)
 - [Serde Boundary Conformance](#serde-boundary-conformance) (Rust ↔ hand-written TS: round-trip + coverage guard)
 
 ## File Organization
@@ -61,22 +61,13 @@ Split large suites with dot-separated aspects:
 
 Module name matches source file. `.svelte.` preserves the source extension.
 
-Real examples:
-
-- fuz_util: `deep_equal.arrays.test.ts`, `log.core.test.ts`, `log.caching.test.ts`
-- gro: `build_cache.creation.test.ts`, `deploy_task.errors.test.ts`
-- fuz_ui: `ContextmenuRoot.core.test.ts`, `csp.security.test.ts`
-- fuz_css: `css_class_extractor.elements.test.ts`, `css_ruleset_parser.modifiers.test.ts`
-- zzz: `cell.svelte.base.test.ts`, `indexed_collection.svelte.queries.test.ts`
-- fuz_app: `rate_limiter.bootstrap.db.test.ts`, `request_context.ws.db.test.ts`
-
 ### Assertions
 
 Use `assert` from vitest. Choose methods for TypeScript type narrowing, not
 semantic precision. `assert.ok` is the standard guard for narrowing
-`T | undefined` to `T` — don't replace it with `assert.isDefined` or other
-methods unless the replacement improves failure diagnostics without losing
-narrowing.
+`T | undefined` to `T` — don't replace it with `assert.isDefined` (which
+narrows to `NonNullable<T>`, also removing the need for `!`) or other methods
+unless the replacement improves failure diagnostics without losing narrowing.
 
 ```typescript
 import { test, assert } from 'vitest';
@@ -103,13 +94,6 @@ result.message; // TypeScript knows this is Error
 // expect doesn't narrow — type error on .message
 expect(result).toBeInstanceOf(Error);
 result.message; // Property 'message' does not exist on type 'string | Error'
-```
-
-After `assert.isDefined(x)`, the type is `NonNullable<T>` — no `!` needed:
-
-```typescript
-assert.isDefined(result);
-assert.strictEqual(result.id, expected_id); // no result! needed
 ```
 
 Name custom assertion helpers `assert_*`, not `expect_*` — e.g.
@@ -407,26 +391,10 @@ mdz's `test_helpers.ts` also provides generic fixture infrastructure
 
 ### Domain-Specific Helpers
 
-`{domain}_test_helpers.ts` pattern:
-
-| File                                  | Repo     | Purpose                                             |
-| ------------------------------------- | -------- | --------------------------------------------------- |
-| `csp_test_helpers.ts`                 | fuz_ui   | CSP test constants and source factories             |
-| `contextmenu_test_helpers.ts`         | fuz_ui   | Contextmenu mounting and attachment setup           |
-| `deep_equal_test_helpers.ts`          | fuz_util | Bidirectional equality assertions and batch helpers |
-| `log_test_helpers.ts`                 | fuz_util | Logger mock console with captured args              |
-| `random_test_helpers.ts`              | fuz_util | Custom PRNG factories for distribution testing      |
-| `build_cache_test_helpers.ts`         | gro      | Build cache mock factories                          |
-| `build_task_test_helpers.ts`          | gro      | Build task context and mock plugins                 |
-| `deploy_task_test_helpers.ts`         | gro      | Deploy task context and git mock setup              |
-| `css_class_extractor_test_helpers.ts` | fuz_css  | Extractor assertion helpers                         |
-
-Fixture-specific helpers live inside the fixture directory:
-
-| File                                                                   | Repo | Purpose                      |
-| ---------------------------------------------------------------------- | ---- | ---------------------------- |
-| `fixtures/mdz/mdz_test_helpers.ts`                                     | mdz  | mdz fixture loading          |
-| `fixtures/svelte_preprocess_mdz/svelte_preprocess_mdz_test_helpers.ts` | mdz  | Preprocessor fixture loading |
+Helpers for one domain go in `{domain}_test_helpers.ts` beside the tests
+(`csp_test_helpers.ts`, `build_cache_test_helpers.ts`, …). Helpers for one
+fixture category go **inside** that fixture directory
+(`fixtures/mdz/mdz_test_helpers.ts`), not at `src/test/` root.
 
 (svelte-docinfo keeps its `ts`/`tsdoc`/`svelte` fixture helpers in its own
 `src/test/test-helpers.ts` — a pre-existing-style repo with camelCase
@@ -627,65 +595,14 @@ regenerate with `gro src/test/fixtures/generate_repos`.
 
 ### Dependency Injection (Preferred)
 
-DI via small `*Deps` interfaces (fuz_gitops still spells them
-`*Operations` — legacy naming, migrating). Functions accept a deps parameter
-with a default; tests inject controlled implementations.
-See ./dependency-injection.md for the full pattern.
-
-**fuz_gitops operations pattern (legacy `*Operations` naming):**
-
-```typescript
-// src/lib/operations.ts — interfaces for all side effects
-// each method uses options objects and returns Result
-export interface GitOperations {
-	current_branch_name: (options?: {
-		cwd?: string;
-	}) => Promise<Result<{ value: string }, { message: string }>>;
-	add_and_commit: (options: {
-		files: string | Array<string>;
-		message: string;
-		cwd?: string;
-	}) => Promise<Result<object, { message: string }>>;
-	// ... ~15 more methods
-}
-export interface GitopsOperations {
-	git: GitOperations;
-	npm: NpmOperations;
-	fs: FsOperations;
-	// ...
-}
-
-// Production: multi_repo_publisher(repos, options, default_gitops_operations)
-// Tests: multi_repo_publisher(repos, options, mock_operations)
-```
-
-```typescript
-// src/test/test_helpers.ts — from fuz_gitops
-// Granular factories per operations interface:
-export const create_mock_git_ops = (): GitOperations => ({...});
-export const create_mock_repo = (options: MockRepoOptions): LocalRepo => ({...});
-export const create_mock_gitops_ops = (overrides?): GitopsOperations => ({...});
-
-// src/test/fixtures/mock_operations.ts — configurable mocks for fixture tests
-export const create_mock_git_ops = (): GitOperations => ({
-	current_branch_name: async () => ({ok: true, value: 'main'}),
-	// ... plain objects implementing interfaces, no vi.fn()
-});
-```
+Functions accept a deps parameter; tests inject plain-object implementations —
+no mocking library. The interfaces, factory naming, stub tiers, and the
+tracking/in-memory/throwing mock shapes are all ./dependency-injection.md's;
+this section covers only what's specific to writing the tests.
 
 fuz_gitops injects mock operations via DI nearly everywhere — its one
 `vi.mock()` exception is `npm_registry.test.ts`, which module-mocks fuz_util's
 `spawn_out`/`wait` because that module shells out to npm with no DI seam.
-
-**fuz_app deps pattern:**
-
-```typescript
-import { stub_app_deps } from '#lib/testing/stubs.ts';
-import { create_mock_runtime } from '#lib/runtime/mock.ts';
-
-const deps = stub_app_deps; // throwing stubs for auth deps
-const runtime = create_mock_runtime(); // MockRuntime for CLI tests
-```
 
 ### vi.mock() Usage
 
@@ -760,29 +677,6 @@ SKIP_EXAMPLE_TESTS=1 gro test
 | `FUZ_TESTING_RUST_SPINE_STUB_BIN` | fuz_app | Path to the Rust spine stub binary for cross runs |
 
 ## Test Structure
-
-### Basic Test Pattern
-
-```typescript
-import { describe, test, assert } from 'vitest';
-import { query_create_account } from '#lib/auth/account_queries.ts';
-
-describe('account queries', () => {
-	test('create returns an account with generated uuid', async () => {
-		const db = get_db();
-		const account = await query_create_account(
-			{ db },
-			{
-				username: 'alice',
-				password_hash: 'hash123'
-			}
-		);
-
-		assert.ok(account.id);
-		assert.strictEqual(account.username, 'alice');
-	});
-});
-```
 
 ### Test Organization
 
@@ -869,74 +763,28 @@ Tests with dynamic expected values or extra assertions should stay standalone.
 
 ### Composable Test Suites (fuz_app)
 
-| Suite                                       | Groups | Purpose                                                       |
-| ------------------------------------------- | ------ | ------------------------------------------------------------- |
-| `describe_standard_attack_surface_tests`    | 5      | Snapshot, structure, adversarial auth/input/404               |
-| `describe_standard_integration_tests`       | 10     | Login, cookies, sessions, bearer, passwords                   |
-| `describe_standard_admin_integration_tests` | 7      | Accounts, permits, sessions, audit log                        |
-| `describe_audit_completeness_tests`         | varies | End-to-end audit emit → persist → query                       |
-| `describe_bootstrap_success_tests`          | 3      | Bootstrap success path (empty DB, real flow)                  |
-| `describe_rate_limiting_tests`              | 3      | IP, per-account, bearer rate limiting                         |
-| `describe_round_trip_validation`            | varies | Schema-driven positive-path validation                        |
-| `describe_rpc_round_trip_tests`             | varies | RPC schema-driven positive-path validation                    |
-| `describe_data_exposure_tests`              | 6      | Schema-level + runtime field blocklists                       |
-| `describe_standard_adversarial_headers`     | 7      | Header injection cases                                        |
-| `describe_rpc_attack_surface_tests`         | 3      | RPC adversarial auth/envelope/params                          |
-| `describe_standard_tests`                   | 8      | Bundle: 8 DB-backed suites, relevant-config silent-skip gates |
-
-Live in `fuz_app/src/lib/testing/` (library exports, not test files). Accept
-configuration via `session_options`, `create_route_specs`, and `rpc_endpoints`.
-The `describe_standard_tests` bundle reads a top-level `bootstrap?:
-BootstrapServerOptions` (`{mode: 'disabled' | 'surface_only' | 'live'}`) that
-gates the bootstrap-success suite (`bootstrap.mode === 'live'`) and flows to
-the surface + live app.
+fuz_app ships `describe_*` suite factories in `src/lib/testing/` (library
+exports, not test files) that a consumer calls to inherit whole categories of
+coverage — attack surface, integration, admin, audit completeness, rate
+limiting, round-trip validation, data exposure — plus a `describe_standard_tests`
+bundle. They take configuration (`session_options`, `create_route_specs`,
+`rpc_endpoints`, `bootstrap`) and silently skip groups whose config is absent.
+The suite roster and each one's options are fuz_app inventory — see its
+`src/lib/testing/CLAUDE.md`.
 
 ### WebSocket Round-Trip Tests
 
-WebSocket JSON-RPC endpoints are tested in-process via
-`@fuzdev/fuz_app/testing/ws_round_trip.ts` — no HTTP server, no Deno. The
-harness drives the real `register_action_ws` dispatcher and
-`BackendWebsocketTransport` against `WsClient` connections, so per-action
-auth, input validation, `ctx.notify`, and broadcast fan-out all run through
-real code paths. The consumers are fuz_app's own `src/test/actions/*` suites
-(`register_action_ws`, `broadcast_api`, `cancel`, `heartbeat`,
-`transports_ws_backend.peer`, …) following the usual
+WebSocket JSON-RPC endpoints are tested **in-process** — no HTTP server, no
+Deno. The harness drives the real dispatcher and backend transport against
+client connections, so per-action auth, input validation, `ctx.notify`, and
+broadcast fan-out all run through real code paths. Test files follow the usual
 `{module}.{aspect}.test.ts` naming.
 
-The pieces (split across two fuz_app testing modules — don't conflate with
-`testing/cross_backend/ws_round_trip.ts`, a separate cross-process helper):
-
-1. **`testing/ws_round_trip.ts`** — the harness:
-   - `create_ws_test_harness({actions, ...})` → `{transport, connect}`.
-     `connect(identity?)` is async, resolving after `on_socket_open`
-     completes, and returns a `WsClient`. Options pass through
-     `register_action_ws` (`on_socket_open`, `on_socket_close`,
-     `on_request`, `heartbeat`, `transport`, `log`); share a
-     `BackendWebsocketTransport` via the `transport` option to test
-     cross-harness broadcast fan-out.
-   - `build_broadcast_api<TApi>({harness, specs})` — wires peer +
-     transport + typed broadcast API, mirroring real backend assembly.
-   - `keeper_identity()` — default identity for keeper-authed connections.
-2. **`testing/transports/ws_client.ts`** — the client and its narrowing
-   helpers (imported from there, not re-exported by `ws_round_trip.ts`):
-   - `WsClient.request<R>(id, method, params, timeout_ms?)` — the
-     default for request/response. Returns `result` on success; throws
-     `rpc #id failed: [code] message data=...` on error frames.
-   - `client.send(message)` + `client.wait_for(predicate)` — raw
-     primitives for asserting on an error frame directly (e.g. `-32602`
-     - zod issues) or when the request never resolves (`ctx.signal`
-       abort tests).
-   - Predicates: `is_notification(method)`, `is_response_for(id)`, and
-     `is_notification_with<P>(method, (params) => boolean)` — a type
-     guard narrowing `wait_for` / `messages.filter` results without an
-     explicit `<T>` at the call site.
-   - Wire-frame types for narrowing: `JsonrpcNotificationFrame<P>`,
-     `JsonrpcSuccessResponseFrame<R>`, `JsonrpcErrorResponseFrame<D>`.
-3. **DB-backed WS tests** use the `.db.test.ts` suffix and memoize the
-   harness per worker, since `isolate: false` + `fileParallelism: false`
-   would otherwise double-init module-level state. Non-DB WS tests build
-   a fresh harness per test — setup is cheap and each test can supply
-   its own ad-hoc action specs.
+The one convention that isn't API detail: **DB-backed WS tests** use the
+`.db.test.ts` suffix and memoize the harness per worker, since `isolate: false`
++ `fileParallelism: false` would otherwise double-init module-level state.
+Non-DB WS tests build a fresh harness per test — setup is cheap and each test
+can supply its own ad-hoc action specs.
 
 ## Serde Boundary Conformance
 

@@ -115,7 +115,7 @@ wit-bindgen.workspace = true
 
 # Cannot use `lints.workspace = true`: wit-bindgen generates #[export_name]
 # and unsafe ABI stubs. Re-declare the ENTIRE workspace lint block (rust and
-# clippy tables — see rust-patterns.md §Lints; overriding only unsafe_code
+# clippy tables — see ./rust-patterns.md §Lints; overriding only unsafe_code
 # silently drops the restriction-lint floor), changing only:
 [lints.rust]
 unsafe_code = "allow"
@@ -212,7 +212,7 @@ handles borrowing, no `RefCell`); `JsError` string messages, not typed enums;
 Complex return types (ASTs) cross the boundary as a single JSON string,
 parsed with the engine's native `JSON.parse` via `js-sys` — building the JS
 object graph node-by-node with `serde-wasm-bindgen` was measurably slower and
-was dropped. Parsers are arena-based (rust-perf.md §Arena allocation): the
+was dropped. Parsers are arena-based (./rust-perf.md §Arena allocation): the
 binding runs inside `with_ast_arena` / `with_doc_arena` so per-call
 allocation amortizes to zero.
 
@@ -244,46 +244,21 @@ serialization via `std::hint::black_box`. Goal-aware exports
 (`parse_typescript_json_with_goal`, `format_typescript_with_goal`) sit
 outside the macro.
 
-tsv_wasm runs wasm-opt with explicit feature flags — bulk-memory +
-nontrapping-float are required for Rust 2024 output, and simd + multivalue
-mirror the `-Ctarget-feature=+simd128,+multivalue` rustflags in tsv's
-`.cargo/config.toml` (wasm-opt rejects those instructions unless enabled by
-name):
-
-```toml
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = [
-    '-O3',
-    '--enable-bulk-memory',
-    '--enable-nontrapping-float-to-int',
-    '--enable-simd',
-    '--enable-multivalue',
-]
-```
+**wasm-opt needs every non-baseline feature enabled by name** or it rejects the
+instructions: `--enable-bulk-memory` and `--enable-nontrapping-float-to-int`
+are required for any Rust 2024 output, and each `-Ctarget-feature` in
+`.cargo/config.toml` needs its matching `--enable-*` (e.g. `+simd128` →
+`--enable-simd`). Set them in
+`[package.metadata.wasm-pack.profile.release] wasm-opt = [...]`.
 
 ### TypeScript entry points
 
-Re-export from wasm-pack's `pkg/` output and add stream functions:
-
-```typescript
-import { Blake3Hasher, derive_key, hash, keyed_hash } from './pkg/deno/blake3_wasm.js';
-export { Blake3Hasher, derive_key, hash, keyed_hash };
-
-import { make_stream_functions } from './stream.ts';
-export const { hash_stream, keyed_hash_stream, derive_key_stream } =
-	make_stream_functions(Blake3Hasher);
-```
-
-Node entry uses synchronous initialization (`readFileSync` + `initSync`).
-The generated packages bridge wasm-bindgen's camelCase to the ecosystem
-convention: `initSync` is re-exported as `init_sync`.
-
-### npm package structure
-
-`scripts/patch_npm_package.ts` generates: `index.js` (Node auto-init),
-`browser.js` (async `init()`, exports guarded with `_check()`), `stream.js`,
-`index.d.ts`. Package exports map `.` → `{ types, node, default }`
-conditions plus a `./package.json` self-reference.
+A hand-written TS entry re-exports wasm-pack's `pkg/` output and layers on the
+stream helpers. Per-runtime entries differ in init strategy — Node uses
+synchronous init (`readFileSync` + `initSync`), browsers async `init()` with
+exports guarded against uninitialized WASM. The generated packages bridge
+wasm-bindgen's camelCase to the ecosystem convention: `initSync` is re-exported
+as `init_sync`.
 
 ### Streaming, disposal, consumer API
 
@@ -321,11 +296,11 @@ all exporting identical macro-generated signatures (`parse` /
 
 All three share the `tsv_arena` per-thread arenas. `tsv_ffi` and `tsv_napi`
 override `unsafe_code = "allow"` and re-declare the full workspace lint block
-(rust-patterns.md §Lints). `tsv_ffi` uses raw pointers with
+(./rust-patterns.md §Lints). `tsv_ffi` uses raw pointers with
 `tsv_free(ptr, len)` for memory management and wraps every entry point in
 `panic::catch_unwind`, rendering payloads as `{"error": "panic: …"}` — which
 requires the `panic = "unwind"` corpus profile to be effective
-(rust-patterns.md §Release Profile).
+(./rust-patterns.md §Release Profile).
 
 ## Package naming: `_wasm` suffix
 
@@ -354,50 +329,21 @@ agree.
 
 ## Two Packages, Not Two Profiles (blake3)
 
-blake3 ships two npm packages from different crates. Both are size-optimized
-end-to-end (`opt-level=s` + wasm-opt `-Os`); the only differentiator is SIMD:
+When two builds differ only in codegen flags, **ship two packages from two
+thin crates over one shared core, not two cargo profiles**. blake3's SIMD and
+no-SIMD packages are the worked case: both size-optimized end-to-end
+(`opt-level=s` + wasm-opt `-Os`), differing only in `+simd128` and the core's
+`simd` feature. A size regression test pins the byte counts.
 
-| Package                     | Crate               | RUSTFLAGS                                   | wasm-opt              | Size   |
-| --------------------------- | ------------------- | ------------------------------------------- | --------------------- | ------ |
-| `@fuzdev/blake3_wasm`       | `blake3_wasm`       | `-C opt-level=s -C target-feature=+simd128` | `-Os --enable-simd …` | ~45 KB |
-| `@fuzdev/blake3_wasm_small` | `blake3_wasm_small` | `-C opt-level=s`                            | `-Os …`               | ~32 KB |
+**Why not profiles**: `wasm-pack` doesn't support `--profile` (it conflicts
+with `--release`), so per-build codegen differences have to ride on `RUSTFLAGS`
+at the invocation — which makes the crate, not the profile, the natural unit.
 
-SIMD build: ~2.6x faster at large inputs (Deno/Node), slower on Bun (WASM
-SIMD regression) — use the small build for Bun and bundle-size-sensitive
-contexts. A size regression test pins the byte counts. The wasmtime component
-is the exception — `opt-level=3`, since the host can absorb bytes for speed.
-
-```toml
-# blake3_wasm (SIMD)
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-Os", "--enable-simd", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals", "--enable-sign-ext", "--strip-producers"]
-
-[dependencies]
-blake3_wasm_core = { path = "../blake3_wasm_core", features = ["simd"] }
-```
-
-blake3_wasm_small is the same minus `--enable-simd` and without the `simd`
-feature. Rust 2024 enables bulk memory for `wasm32-unknown-unknown`, so
-wasm-opt needs `--enable-bulk-memory` (and friends) or it fails.
-`--strip-producers` removes compiler metadata.
-
-### Build commands
-
-```bash
-RUSTFLAGS='-C opt-level=s -C target-feature=+simd128' \
-    wasm-pack build crates/blake3_wasm --scope fuzdev --target deno --release --out-dir pkg/deno
-
-RUSTFLAGS='-C opt-level=s' \
-    wasm-pack build crates/blake3_wasm_small --scope fuzdev --target deno --release --out-dir pkg/deno
-```
-
-**Why RUSTFLAGS**: `wasm-pack` doesn't support `--profile` (conflicts with
-`--release`), so RUSTFLAGS overrides at the compiler level. The base
-`[profile.release]` keeps `opt-level = "s"` plus the canonical
-lto/codegen-units/panic/strip block.
-
-The build pipeline runs the two packages in parallel; deno and web targets
-run sequentially within each (shared cargo intermediate artifacts).
+Pick by measurement, not by default: blake3's SIMD build is ~2.6x faster at
+large inputs on Deno/Node but *slower* on Bun (a WASM SIMD regression), so the
+small build is right for Bun and bundle-size-sensitive contexts. The wasmtime
+component is the exception to size-optimization — `opt-level=3`, since a host
+can absorb bytes for speed.
 
 ## Testing
 
@@ -405,7 +351,7 @@ blake3 keeps **zero Rust unit tests by design**: correctness is asserted in
 TypeScript (WASM vs native test vectors) and via a Wasmtime compare binary
 for the component; `cargo test --workspace` serves as a compile gate. tsv's
 binding tests run per runtime (Deno, N-API, npm) plus in-crate FFI/N-API
-round-trip tests — see rust-patterns.md §Testing.
+round-trip tests — see ./rust-patterns.md §Testing.
 
 ## Cross-References
 

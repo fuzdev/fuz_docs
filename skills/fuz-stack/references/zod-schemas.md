@@ -256,19 +256,14 @@ export const DiskfileDirectoryPath =
 
 ## Zod 4 Primitives
 
+Where this stack reaches for them:
+
 ```typescript
-z.uuid()               // UUID validation (used with .brand('Uuid'))
-z.iso.datetime()       // ISO 8601 datetime (used with .brand('Datetime'))
-z.email()              // email validation
-z.url()                // URL validation
-z.coerce.number()      // string-to-number coercion (env vars)
-z.looseObject({...})   // accepts unknown keys (external data)
-z.toJSONSchema(schema) // export schema as JSON Schema
-z.prettifyError(error) // format ZodError for display (CLI args)
-z.instanceof(MyClass)  // runtime class instance check (Cell class schemas in zzz)
-z.void()               // no value — action specs with no input/output
-z.record(K, V)         // key-value maps (env vars, resource maps)
-z.custom<T>(check?)    // escape hatch for complex types without full Zod validation
+z.uuid() / z.iso.datetime()  // paired with .brand('Uuid') / .brand('Datetime')
+z.coerce.number()            // string-to-number coercion (env vars)
+z.toJSONSchema(schema)       // API surface snapshots
+z.prettifyError(error)       // format ZodError for display (CLI args)
+z.record(K, V)               // key-value maps (env vars, resource maps)
 ```
 
 - `z.null()` vs `z.void()` — `z.null()` for HTTP input (JSON `null`, e.g.

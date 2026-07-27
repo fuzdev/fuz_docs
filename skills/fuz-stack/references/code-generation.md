@@ -213,15 +213,9 @@ gro gen src/lib/foo.gen.ts  # run a specific gen file
 gro gen --check      # verify no drift (used by gro check and CI)
 ```
 
-| Arg           | Default           | Description                                      |
-| ------------- | ----------------- | ------------------------------------------------ |
-| `_`           | `['src']`         | input paths (files or directories to scan)       |
-| `--root_dirs` | `[process.cwd()]` | root directories to resolve input paths against  |
-| `--check`     | `false`           | exit nonzero if any generated files have changed |
-
-`gro gen --check` compares generated output against existing files; if any is
-new or changed, it fails with a message to run `gro gen`. Called by `gro check`
-as part of CI.
+Positional args default to `['src']`; `--root_dirs` (default `[process.cwd()]`)
+resolves them. `gro gen --check` compares generated output against existing
+files and fails if any is new or changed — called by `gro check` as part of CI.
 
 ## Common Patterns
 

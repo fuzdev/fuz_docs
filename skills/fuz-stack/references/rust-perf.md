@@ -116,26 +116,24 @@ Beyond generic hygiene:
 
 ## Open questions / not-yet-used
 
-None of these are in any workspace crate today; noted tersely so the choice is
-in-context if the workload arrives.
+Unused in every workspace today; noted so the choice is in-context if the
+workload arrives. All three need approval before adoption
+(./rust-dependencies.md).
 
-- **Zero-copy archives (`rkyv`)** — candidate for content-addressed bodies and
-  snapshot manifests read repeatedly without mutation (the on-disk bytes _are_
-  the in-memory layout, no parse); not for mutation-heavy or read-once paths.
-  Wire surfaces (HTTP/SSE/JSON-RPC) stay on `serde_json`. Pair untrusted reads
-  with `bytecheck`; treat the archived schema as a wire format (a field rename =
-  re-archive every file). Don't derive both archived and `serde` shapes on one
-  type — pick one per type so the canonical representation is unambiguous.
+- **Zero-copy archives (`rkyv`)** — for bytes read repeatedly without mutation
+  (content-addressed bodies, snapshot manifests), not mutation-heavy or
+  read-once paths; wire surfaces stay on `serde_json`. Treat the archived
+  schema as a wire format (a field rename = re-archive every file), pair
+  untrusted reads with `bytecheck`, and don't derive both archived and `serde`
+  shapes on one type.
 - **Global allocator (jemalloc/mimalloc)** — for long-running daemons whose RSS
-  climbs under glibc fragmentation (`zzz_server`), not CLIs. jemalloc: stable RSS
-  under chaotic load + good profiling; mimalloc: best throughput/CPU but RSS can
-  spike in bursts. Bench per service. Gotcha: a C dep calling raw `malloc` (LMDB)
-  bypasses the Rust allocator — use mimalloc symbol-override or `LD_PRELOAD`.
-- **SIMD on stable** — `target-cpu=native` / `target-feature` via `RUSTFLAGS`
-  drives LLVM auto-vectorization (no source changes); crate `simd` features gate
-  `std::arch` paths (blake3's `wasm32_simd`, ./wasm-patterns.md). Don't ship
-  AVX-512 to general consumers — it crashes instantly on older CPUs. `std::simd`
-  is nightly, out of scope.
+  climbs under glibc fragmentation, not CLIs. Bench per service. Gotcha: a C
+  dep calling raw `malloc` bypasses the Rust allocator.
+- **SIMD on stable** — `target-feature` via `RUSTFLAGS` drives LLVM
+  auto-vectorization with no source changes; crate `simd` features gate
+  `std::arch` paths (./wasm-patterns.md). Don't ship AVX-512 to general
+  consumers — it crashes instantly on older CPUs. `std::simd` is nightly, out
+  of scope.
 
 ## Unsafe escape hatch
 

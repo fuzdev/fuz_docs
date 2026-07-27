@@ -53,7 +53,7 @@ deps and belong here.
 | `url`                                                      | URL parsing                                                                                            |
 | `tempfile`                                                 | Temp files/dirs (`NamedTempFile`)                                                                      |
 | `smallvec`                                                 | Stack-allocated small vectors                                                                          |
-| `bumpalo`                                                  | Arena allocation (`collections` feature) — tsv's core AST strategy; see rust-perf.md §Arena allocation |
+| `bumpalo`                                                  | Arena allocation (`collections` feature) — tsv's core AST strategy; see ./rust-perf.md §Arena allocation |
 | `string-interner`                                          | String interning                                                                                       |
 | `phf`                                                      | Compile-time perfect-hash maps/sets (keyword tables)                                                   |
 | `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling                                                                                  |
@@ -75,7 +75,7 @@ deps and belong here.
 
 | Crate         | Purpose                                                                                                                                                     |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `parking_lot` | `Mutex`/`RwLock` for sync-only critical sections (no poisoning). See rust-perf.md §Async lock hygiene for when to use `tokio::sync` or `std::sync` instead. |
+| `parking_lot` | `Mutex`/`RwLock` for sync-only critical sections (no poisoning). See ./rust-perf.md §Async lock hygiene for when to use `tokio::sync` or `std::sync` instead. |
 | `lru`         | Bounded LRU cache backing the `RateLimiter` — caps tracked keys so a key-enumeration attacker can't grow the map unboundedly (twin of fuz_app's `LruMap`).  |
 
 ## Database
@@ -112,7 +112,7 @@ deps and belong here.
 
 | Crate  | Purpose                                                                                             |
 | ------ | --------------------------------------------------------------------------------------------------- |
-| `argh` | Derive arg parser, size-optimized. See rust-patterns.md §CLI Patterns for the parser-tier guidance. |
+| `argh` | Derive arg parser, size-optimized. See ./rust-patterns.md §CLI Patterns for the parser-tier guidance. |
 
 ## Logging
 
@@ -133,7 +133,7 @@ deps and belong here.
 | `wit-bindgen`                         | Component-model bindings                                                                                                                                                                                                                                                                      |
 | `wasmtime` / `wasmtime-wasi`          | WASM host (tests, benches)                                                                                                                                                                                                                                                                    |
 
-See wasm-patterns.md for the binding-layer conventions these support.
+See ./wasm-patterns.md for the binding-layer conventions these support.
 
 ## Image processing
 
@@ -157,31 +157,22 @@ dependency graph or it is not, and that is auditable.
 - Enforcement is the `cargo xtask check-release` dep-graph audit (`fuz_audit`),
   which fails if any non-`testing_`-prefixed binary transitively links a
   forbidden crate; workspaces add extra forbids via `AuditRules`. See
-  rust-spine.md §xtask & check-release for the entry points and the
+  ./rust-spine.md §xtask & check-release for the entry points and the
   built-in layering rules.
 
-## Shared low-level leaves (consolidation candidates)
+## Shared low-level leaves
 
-The pattern is proven: the sandboxed config-eval harness was extracted from
-zap into the spine's `fuz_eval` — a spine-free leaf (no tokio-server/HTTP/DB
-surface) consumable even by spine-free repos — and is now shared across
-consumers, including the JS wrapper ingredients themselves
-(`DETERMINISM_STUBS_JS`, `CONSOLE_TO_STDERR_JS`,
-`build_extract_export_wrapper`). Remaining candidates, still independently
-reimplemented:
+**When a utility gets reimplemented a third time, extract it as a spine-free
+leaf** — no tokio-server/HTTP/DB surface, so spine-free repos can link it too.
+`fuz_eval` (the sandboxed config-eval harness, lifted out of zap) is the proven
+case, now shared down to its JS wrapper ingredients.
 
-- a minimal dotenv (`KEY=VALUE`) parser — three copies today (`zap_core`,
-  plus two inside zzz: the CLI's daemon-env loader and its xtask),
-- an env-isolating subprocess harness with a capped output drain —
-  prototyped in `fuz_forge_server`, promotion deferred until a second
-  consumer,
-- the atomic-write/flock transactional-file dance for spine-free consumers —
-  `fuz_sys::fs::write_atomic` is canonical but zap can't link it and
-  hand-rolls both authority calibrations (rust-patterns.md §Transactional
-  state files),
-- an exponential-backoff retry combinator — no generic one exists;
-  `fuz_sidecar`'s crash-recovery respawn loop is the only backoff
-  implementation, and it's supervision-shaped, not request-retry.
+Known-duplicated, not yet extracted: a minimal dotenv (`KEY=VALUE`) parser
+(three copies), an env-isolating subprocess harness with a capped output drain
+(one, awaiting a second consumer), the atomic-write/flock dance for consumers
+that can't link `fuz_sys::fs::write_atomic` (./rust-patterns.md §Transactional
+state files), and an exponential-backoff retry combinator (none generic today —
+the only backoff is supervision-shaped, not request-retry).
 
 Signal-crate convention: prefer `nix` for syscall wrappers; reserve `libc` for
 types/constants `nix` doesn't expose (PTY). Avoid pulling both into one
@@ -192,7 +183,7 @@ workspace for the same job.
 - **`default-features = false` + explicit feature lists** for deps with heavy
   optional trees — `reqwest`, `nix`, `notify`, `futures-util` all do. Opt into
   exactly what the workspace uses; don't inherit a crate's default surface.
-- **`multiple_crate_versions = "allow"`** (rust-patterns.md §Lints) tolerates
+- **`multiple_crate_versions = "allow"`** (./rust-patterns.md §Lints) tolerates
   _forced_ duplicate majors from the dep graph — e.g. `tsv` carries hashbrown
   0.16 (via `string-interner`) and 0.17 (via `serde_json` → `indexmap`),
   unresolvable until `string-interner` bumps upstream. Not a license to ignore

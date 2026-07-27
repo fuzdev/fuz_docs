@@ -367,22 +367,11 @@ consumers unchanged (see [Cross-Project Pattern](#cross-project-pattern)).
 
 ## Cross-Project Pattern
 
-fuz_ui **defines** all documentation components and the analysis pipeline.
-Other projects **import** them:
-
-```typescript
-// In fuz_ui (defines the components)
-import Docs from './Docs.svelte';
-import { library_context } from './library.svelte.ts';
-
-// In fuz_css or any consumer project
-import Docs from '@fuzdev/fuz_ui/Docs.svelte';
-import { library_context } from '@fuzdev/fuz_ui/library.svelte.ts';
-```
-
-Layout structure is identical — only tomes, categories, and breadcrumb
-branding differ. The `svelte-docinfo` Vite plugin and `virtual:svelte-docinfo`
-are the shared analysis engine across projects.
+fuz_ui **defines** all documentation components and the analysis pipeline;
+other projects import them unchanged from `@fuzdev/fuz_ui/*`. Layout structure
+is identical — only tomes, categories, and breadcrumb branding differ. The
+`svelte-docinfo` Vite plugin and `virtual:svelte-docinfo` are the shared
+analysis engine across projects.
 
 ## See Also
 

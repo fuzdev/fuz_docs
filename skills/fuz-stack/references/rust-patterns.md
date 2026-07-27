@@ -430,7 +430,7 @@ struct — `Keyring` deliberately has no trait.)
 trait": a one-shot injection point that must be generic over the consumer's
 type gets a boxed-`FnOnce` type alias, not a trait —
 `ExtraActionSpecsFactory<App>` / `PreMigrationHook<E>`
-(`fuz_actions::consumer_lifecycle`; see rust-spine.md §Server lifecycle).
+(`fuz_actions::consumer_lifecycle`; see ./rust-spine.md §Server lifecycle).
 The caller supplies it once at startup; test binaries hook through it; no
 trait ceremony accrues. A trait earns the slot only when the seam has
 multiple methods or long-lived polymorphic state.
@@ -701,20 +701,13 @@ key can capture.
 
 ### Sidecar controller
 
-The pattern for a long-running subprocess multiplexing many concurrent
-requests: a spawn config of function pointers (statically-known runtimes),
-JSON-lines framing over stdin/stdout, an mpsc command channel into a
-serializer task that owns stdin, per-request `oneshot` responses parked in a
-map keyed by request id, and the script embedded via `include_str!` + written
-to a `NamedTempFile` at spawn. Skip it for one-shot invocations (plain
-`tokio::process::Command`) or pure in-process work.
-
-**Currently dormant** — the sidecar _runtimes_ (`fuz_deno`/`fuz_python`
-factories, behind `fuzd`'s off-by-default `sidecar` feature) are gated off, so
-the shipped daemon wires no runtime into the pool; `fuz_sidecar` itself always
-links into `fuzd`/`fuzd_server` for the empty pool and dispatch (tsv replaced
-the Deno sidecar's parsing role). The controller and its crash-recovery
-respawn loop (exponential backoff, capped) remain the reference if a
+For a long-running subprocess multiplexing many concurrent requests: a spawn
+config of function pointers (statically-known runtimes), JSON-lines framing
+over stdin/stdout, an mpsc command channel into a serializer task that owns
+stdin, per-request `oneshot` responses parked in a map keyed by request id, and
+the script embedded via `include_str!`. Skip it for one-shot invocations (plain
+`tokio::process::Command`) or pure in-process work. **Dormant** — no shipped
+binary wires a runtime into the pool today; `fuz_sidecar` is the reference if a
 runtime-hosting workload returns.
 
 ### Security

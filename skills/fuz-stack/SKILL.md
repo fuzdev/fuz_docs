@@ -268,8 +268,10 @@ patterns, and drift-detection guidance.
   period; multi-sentence: capitalize, end with period
 - `@returns` (not `@return`): same single/multi-sentence rule as `@param`
 - `@module`: complex modules get a module-level doc comment with `@module` at end
-- `@mutates target - description`: document parameter/state mutations
-  (also `` @mutates `target` `` for self-evident mutations)
+- `@mutates target - description`: document parameter/state mutations. The
+  description carries the tag — name the columns, cascades, or side channels a
+  reader wouldn't guess. When the method name already says it, omit the tag
+  rather than writing a bare `` @mutates `target` ``
 - `@nodocs`: exclude from docs and flat namespace validation
 - Wrap identifier references in backticks for auto-linking via `mdz`
 
@@ -334,16 +336,18 @@ caveat, anti-patterns, and formatter cautions.
 
 ## Svelte 5 Patterns
 
-See ./references/svelte-patterns.md for `$state.raw()`, `$derived.by()`,
-reactive collections (SvelteMap/SvelteSet), schema-driven reactive classes,
-snippets, effects, attachments, props, event handling, component composition,
-and legacy features to avoid.
+See ./references/svelte-patterns.md for `$derived.by()`, reactive collections
+(SvelteMap/SvelteSet), schema-driven reactive classes, snippets, effects,
+attachments, props, event handling, component composition, and legacy features
+to avoid.
 
 ### Runes API
 
-`$state.raw()` by default for all reactive state. `$state()` only for
-arrays/objects mutated in place (push, splice, index assignment). `$derived`
-for computed values, `$effect` for side effects.
+`$state()` for all reactive state — it proxies objects and arrays so in-place
+mutation (push, splice, property writes, `bind:` on object properties) triggers
+updates. `$state.raw()` is a performance opt-out for large wholesale-replaced
+values, not a default. `$derived` for computed values, `$effect` for side
+effects.
 
 ### Context Pattern
 
@@ -392,11 +396,10 @@ no `<style>` block at all.
 5. Literal classes (`display:flex`, `width:100%`, `hover:opacity:80%`)
 6. `<style>` block with design tokens
 
-Rungs 3–5 are one tier in practice — mix freely (a composite when one exactly
-matches, else tokens/literals); literal flex classes are common, not a rare last
-resort. The real cut points are semantic-vs-class and classes-vs-`<style>`. Don't
-churn existing `<style>` blocks into long class strings (4–6 classes is the
-comfortable ceiling). See css-patterns.md §Default styling is the baseline.
+Rungs 3–5 are one tier in practice — mix freely; the real cut points are
+semantic-vs-class and classes-vs-`<style>`. Don't churn existing `<style>`
+blocks into long class strings. See ./references/css-patterns.md §The Styling
+Ladder.
 
 **Class naming**: fuz_css tokens use `snake_case` (`p_md`, `gap_lg`);
 component-local classes use `kebab-case` (`site-header`) — the target convention,
@@ -404,8 +407,8 @@ adopted in zzz and fuz_ui.
 
 Architecture — the three layers (semantic defaults, design tokens, utility
 classes), the class families, and the classes-vs-`<style>` matrix: see
-css-patterns.md §Style Variables (Design Tokens), §Utility Classes, and
-§When to Use Classes vs Styles.
+./references/css-patterns.md §Style Variables (Design Tokens), §Utility
+Classes, and §When to Use Classes vs Styles.
 
 ## Dependency Injection
 
@@ -463,7 +466,9 @@ metadata, CLI help text, and serialization. Schema changes cascade through the
 stack; treat them as critical review points.
 
 - **`z.strictObject()`** — default for all object schemas. `z.looseObject()`
-  or `z.object()` for external/third-party data with a comment explaining why.
+  or `z.object()` for external/third-party data, client-consumed
+  response/error schemas, and protocol shapes the other side may extend —
+  with a comment explaining why.
 - **PascalCase naming** — schema and type share the same name, no suffix:
   `const Foo = z.strictObject({...}); type Foo = z.infer<typeof Foo>;`
 - **`.meta({description: '...'})`** — not `.describe()`. Both work in Zod 4
