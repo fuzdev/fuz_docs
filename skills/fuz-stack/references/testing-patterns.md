@@ -597,7 +597,7 @@ regenerate with `gro src/test/fixtures/generate_repos`.
 
 Functions accept a deps parameter; tests inject plain-object implementations —
 no mocking library. The interfaces, factory naming, stub tiers, and the
-tracking/in-memory/throwing mock shapes are all ./dependency-injection.md's;
+tracking/in-memory/throwing mock shapes all live in ./dependency-injection.md;
 this section covers only what's specific to writing the tests.
 
 fuz_gitops injects mock operations via DI nearly everywhere — its one

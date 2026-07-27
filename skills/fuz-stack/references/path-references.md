@@ -20,6 +20,10 @@ location rather than by code identity:
 - `setup/foo` — bare workspace-root anchor (no `~/dev/` prefix); preferred over
   deep `../../setup/foo` from nested files
 
+> **Don't attach a possessive to a bare path.** mdz's autolink treats `'` as a
+> valid path character, so `./foo.md's` links to a 404 href ending in `'s`.
+> Reword ("all live in ./foo.md") or backtick the path.
+
 > **A bare path is a promise it resolves on disk.** An unbackticked `./`, `../`,
 > or `~/dev/` path is a real, navigable link — it must point at a file or
 > directory that exists, resolved relative to the file it appears in (`~/dev/`
