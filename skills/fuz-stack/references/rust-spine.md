@@ -72,10 +72,24 @@ definition, not a re-export shim.
 (strictly more expressive than a bare port; loopback-only consumers default
 `127.0.0.1:<port>` and override only the port) + `drain_timeout: Duration`,
 passed `fuz_http::DEFAULT_DRAIN_TIMEOUT` (10 s) rather than a per-crate
-const. Remaining fields are legitimately per-consumer (zzz adds
-`force_test_actions` and `disable_login_rate_limit`; the forge has neither) —
-don't force one struct across consumers. Bind env-var _names_ are also
-per-consumer (`PORT`/`HOST` for the forge, `ZZZ_PORT` for zzz).
+const, plus `rate_limiters: fuz_auth::RateLimiterMode` (below). Remaining
+fields are legitimately per-consumer (zzz adds `force_test_actions`; the forge
+has none of its own) — don't force one struct across consumers. Bind env-var
+_names_ are also per-consumer (`PORT`/`HOST` for the forge, `ZZZ_PORT` for
+zzz).
+
+**Every spine rate limiter is built through `RateLimiterMode`** —
+`mode.limiter(fuz_auth::DEFAULT_LOGIN_IP_RATE_LIMIT)`, never
+`Some(Arc::new(RateLimiter::new(…)))` followed by a conditional null. The
+production `main.rs` passes `Enforced`; the `testing_*` binary passes
+`DisabledForTesting`, the twin of `fuz_app`'s testing wiring nulling the same
+set (a cross-process suite's failed-login cases would otherwise exhaust the
+monotone per-IP budget and refuse every later login). Building through the
+mode is what keeps a newly wired surface from staying enforced while the rest
+of the process is disabled, and any process that nulls a limiter prints a
+startup banner — the same fail-loud shape as
+`TestingArgon2idHasher`'s. Consumer-owned limiters that aren't spine surfaces
+(visiones's upload burst/daily caps) stay live in both modes.
 
 The daemon-token keeper wiring (`BootstrapKeeperResolved` adapter + boot-time
 `query_keeper_account_id`) is spine-owned in `fuz_auth` — don't re-implement
