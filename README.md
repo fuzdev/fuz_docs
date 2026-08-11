@@ -48,6 +48,10 @@ You may also try pointing your agent to:
 - [github.com/fuzdev/fuz_docs/blob/main/skills/fuz-stack/SKILL.md](https://github.com/fuzdev/fuz_docs/blob/main/skills/fuz-stack/SKILL.md)
 - [github.com/fuzdev/fuz_docs/blob/main/skills/grimoire/SKILL.md](https://github.com/fuzdev/fuz_docs/blob/main/skills/grimoire/SKILL.md)
 
+## Contributing
+
+[fuz.dev/contributing](https://www.fuz.dev/contributing)
+
 ## License
 
 [MIT](LICENSE)
