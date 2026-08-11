@@ -421,6 +421,26 @@ to the top and grows downward. * @default 'center' */ align?: DialogAlign;
 
 See [Svelte components](#svelte-components) for a full `$props()` block.
 
+### `@internal`
+
+Marks a symbol as not stable public API (standard TSDoc semantics). A
+marker, not an exclusion — `svelte-docinfo` extracts it as `internalMessage`
+and the declaration stays fully documented, so consumers can render a badge
+or filter. Trailing prose is kept as the field's value: say who uses the
+symbol or why it's internal.
+
+```typescript
+/**
+ * Shared host decoration for `createAnalysisProgram`.
+ *
+ * @internal Used by `analyzeCore` and the test harnesses — not stable API.
+ */
+```
+
+Use for power-user-importable internals that should stay documented (deep
+extractor modules, orchestration seams). To remove a symbol from docs
+entirely, use `@nodocs` instead.
+
 ### `@nodocs` (non-standard)
 
 Excludes from docs generation and flat namespace validation. Implemented by
@@ -541,7 +561,8 @@ Marks a module-level doc comment. Place at end of comment block. Works in
 8. `@see`
 9. `@since`
 10. `@default`
-11. `@nodocs`
+11. `@internal`
+12. `@nodocs`
 
 `@mutates` goes after `@returns` (or after `@param` if no return).
 
@@ -674,9 +695,9 @@ cross-references.
  *
  * ## Tag support
  *
- * Supports a subset of standard TSDoc tags:
- * `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@see`,
- * `@since`, `@default`, `@nodocs`.
+ * Supports the common JSDoc/TSDoc doc tags:
+ * `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@internal`,
+ * `@see`, `@since`, `@default`, `@nodocs`.
  *
  * ## Behavioral notes
  *
