@@ -126,6 +126,54 @@ Rust CLI and `fuz_app` TS, the `lru`-backed `RateLimiter` twinning
 find its twin first; diverging semantics under a shared name is the same
 defect class as a name mismatch.
 
+## Serde boundary conformance
+
+_Rust ↔ hand-written TS — round-trip + coverage guard, no codegen dependency._
+
+When a Rust crate owns a serde JSON boundary (`#[serde(deny_unknown_fields)]`)
+that a hand-written TypeScript layer authors against — e.g. a typed config
+builder whose calls serialize to JSON that the Rust engine parses — keep the TS
+types **hand-written** (best ergonomics, no codegen dependency) and guard them
+against drift with a round-trip test, not `schemars`/`ts-rs`.
+
+Why not codegen: a generated schema/types layer is a _second_ encoding of the
+boundary that can itself drift from serde's tagging/rename. A round-trip test
+validates against the **real serde parser** — the code that runs in production —
+so it tests reality, not a model. Reserve codegen for when you need field-level
+coverage enforcement or a published JSON Schema for external consumers.
+
+**Two-layer guard** (used in zap's TS config library):
+
+1. **Round-trip conformance.** One typed "kitchen-sink" fixture exercising every
+   type/field/variant, `import type`'d against the TS types and `export
+default`ing a builder function. One source, gated twice:
+   - `gro typecheck` includes it → catches **types-too-strict** (a valid shape
+     the TS types wrongly reject).
+   - A Rust integration test evaluates it and parses the emitted JSON with the
+     real config type → catches **types-too-loose / false-green** (a shape TS
+     accepts that serde rejects).
+
+   The `import type` is erased at runtime, so the evaluator needs no module
+   resolution — the same file is both typechecked and executed.
+
+2. **Coverage guard.** Iterate the Rust canonical variant list (e.g. a
+   `ResourceType::ALL` const) and assert the fixture exercises **every** variant:
+   `for v in ALL { assert!(seen.contains(&v), "kitchen-sink missing {v}") }`.
+   This catches a whole type/variant added in Rust but absent from the TS surface
+   — which the round-trip alone can't see. Pair with a loud floor
+   (`assert!(items.len() >= N)`) so a vanished fixture fails instead of silently
+   passing.
+
+Optionally add a thin **e2e smoke** through the shipped path (built binary → real
+parse → exit code), skipping cleanly when the runtime (e.g. Deno) or binary is
+absent — the same skip discipline as DB/Deno-gated tests
+(./testing-patterns.md §Environment Flags).
+
+Gotchas: if the evaluator stubs nondeterministic globals (clock/RNG) to throw,
+the fixture must use pure literals only. Gate the round-trip test on the
+evaluator runtime being present (skip-with-notice), matching the repo's
+Deno-gating posture.
+
 ## Tool twins: molt
 
 fuz_template's ejector ships as symmetric twins — `src/lib/molt.ts`

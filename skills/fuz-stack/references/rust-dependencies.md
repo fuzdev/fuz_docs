@@ -28,8 +28,9 @@ deps onto the fuz spine crates.
 A few approved crates are pinned at the **member-crate** level rather than in
 a root `[workspace.dependencies]`: `js-sys` (optional, feature-gated),
 `wasm-bindgen`, and `talc` (wasm32-only target dep) in `tsv_wasm`, `similar`
-and `tempfile` in `tsv_debug`, `libc` in `zzz_server`. They're real external
-deps and belong here.
+and `tempfile` in `tsv_debug`, `libc` in `zzz_server` (also a workspace dep
+in the fuz workspace), and `http-body-util` as a dev-dependency of
+`fuz_http`. They're real external deps and belong here.
 
 ## Serialization & encoding
 
@@ -54,7 +55,6 @@ deps and belong here.
 | `tempfile`                                                 | Temp files/dirs (`NamedTempFile`)                                                                      |
 | `smallvec`                                                 | Stack-allocated small vectors                                                                          |
 | `bumpalo`                                                  | Arena allocation (`collections` feature) — tsv's core AST strategy; see ./rust-perf.md §Arena allocation |
-| `string-interner`                                          | String interning                                                                                       |
 | `phf`                                                      | Compile-time perfect-hash maps/sets (keyword tables)                                                   |
 | `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling                                                                                  |
 | `similar`                                                  | Text diffing (tsv's debug/compare tooling)                                                             |
@@ -137,9 +137,19 @@ See ./wasm-patterns.md for the binding-layer conventions these support.
 
 ## Image processing
 
-| Crate     | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `libvips` | Rust bindings to the system **libvips** image library — the same engine `sharp` wraps — for decode/resize/encode (JPEG/PNG/WebP/AVIF), EXIF-orientation baking, metadata stripping, and thumbnailing. For spine-consumer servers with an image-upload pipeline (e.g. `visiones_server`). Dynamically links system libvips: `libvips42` (Debian) at runtime + `libvips-dev` at build time — not a static-musl crate; on a Debian host `zap` installs it via apt. The `unsafe` FFI lives inside the binding — consumer crates keep `unsafe_code = "forbid"`. Chosen over the pure-Rust `image`/`ravif`/`image-webp` stack because matching `sharp`'s formats there pulls in `libwebp` + `dav1d` C deps anyway, across more crates and with worse parity. |
+**`libvips`** — Rust bindings to the system **libvips** image library (the
+same engine `sharp` wraps) for decode/resize/encode (JPEG/PNG/WebP/AVIF),
+EXIF-orientation baking, metadata stripping, and thumbnailing. For
+spine-consumer servers with an image-upload pipeline (e.g. `visiones_server`).
+
+- Dynamically links system libvips: `libvips42t64` (Debian 13) at runtime +
+  `libvips-dev` at build time — not a static-musl crate; on a Debian host
+  `zap` installs it via apt.
+- The `unsafe` FFI lives inside the binding — consumer crates keep
+  `unsafe_code = "forbid"`.
+- Chosen over the pure-Rust `image`/`ravif`/`image-webp` stack because
+  matching `sharp`'s formats there pulls in `libwebp` + `dav1d` C deps
+  anyway, across more crates and with worse parity.
 
 ## Crate-vs-feature isolation (supply-chain)
 
@@ -184,10 +194,9 @@ workspace for the same job.
   optional trees — `reqwest`, `nix`, `notify`, `futures-util` all do. Opt into
   exactly what the workspace uses; don't inherit a crate's default surface.
 - **`multiple_crate_versions = "allow"`** (./rust-patterns.md §Lints) tolerates
-  _forced_ duplicate majors from the dep graph — e.g. `tsv` carries hashbrown
-  0.16 (via `string-interner`) and 0.17 (via `serde_json` → `indexmap`),
-  unresolvable until `string-interner` bumps upstream. Not a license to ignore
-  version drift you control.
+  _forced_ duplicate majors from the dep graph — transitive constraints two
+  upstream crates disagree on, unresolvable until one bumps. Not a license to
+  ignore version drift you control.
 
 ## Adding a dependency
 

@@ -122,21 +122,25 @@ module ships**:
   spawns the file. (`$lib`/`$routes` are retired — Vite-only, so a raw `deno run`
   fails `Import "$lib/…" not a dependency`.)
 - **Cross-package** `@fuzdev/<pkg>/sub.ts` → resolves via the target's `exports`
-  `.js`/`.ts` mirror to its `dist`. (Non-mirror packages like `@fuzdev/blake3_wasm`
-  keep `.js`.)
+  `.js`/`.ts` mirror to its `dist`. (Packages without subpath exports, like
+  `@fuzdev/blake3_wasm`, are imported by bare package name only.)
 
 `$app`/`$env` stay (virtual modules, not file paths). `@ryanatkn/eslint-config`
 warns on all four aliases (`$lib`/`$routes`/`#lib`/`#routes`) inside `src/lib`
-— library code imports relative; the rule covers type-position imports too
-(`import('#lib/db/db.ts').Db`). Outside `src/lib`, `$lib` remains widespread in
+— library code imports relative. The rule covers `import`/`export`
+declarations including `import type`, but **not** inline `import('#lib/…')`
+type positions (base `no-restricted-imports` doesn't visit `TSImportType`) —
+catch those in review. Outside `src/lib`, `$lib` remains widespread in
 existing code while the `#lib` migration is in progress.
 
 ## Web-rendered caveat
 
-In files published via mdz on a website (this skill renders on fuz_docs), `./foo`
-and `../foo` examples must be backticked to prevent mdz from rendering them as
-broken `<a>` tags. `~/dev/foo` and bare workspace-root paths (`setup/foo`) are
-safe bare in web context — mdz doesn't auto-linkify those prefixes.
+In files published via mdz on a website (this skill renders on fuz_docs),
+non-`.md` `./foo` and `../foo` examples must be backticked to prevent mdz from
+rendering them as broken `<a>` tags. Bare relative `.md` links are fine —
+fuz_docs' `skill_docs.gen.ts` rewrites them to routes outside code spans.
+`~/dev/foo` and bare workspace-root paths (`setup/foo`) are safe bare in web
+context — mdz doesn't auto-linkify those prefixes.
 
 ## Anti-patterns
 

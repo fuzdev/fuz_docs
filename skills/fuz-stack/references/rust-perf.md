@@ -37,11 +37,13 @@ tsv keeps a `[profile.profiling]` (`inherits = "release"`, `debug = true`,
 | `cargo-instruments` | macOS Instruments                        | allocations on Apple HW                          |
 | Cachegrind          | Instruction counts, I-cache, branch miss | verifying inline/cold heuristics                 |
 
-| Bench         | Metric             | Notes                                                            |
-| ------------- | ------------------ | ---------------------------------------------------------------- |
-| Criterion     | Wall-clock + stats | default; CI regression integrations                              |
-| Divan         | Wall-clock + stats | lighter macros, native multithreaded benches                     |
-| Iai-Callgrind | Instruction counts | deterministic, no OS jitter; ideal for CI/micro (weaker non-x86) |
+No Rust bench framework is adopted — no workspace has `[[bench]]` targets.
+Benches are driven from the consumer language (tsv: JS/Deno harnesses in
+`benches/js`; blake3: Deno/Node), measuring the shipped boundary rather than
+an in-crate microcosm; tsv's in-Rust measurement surface is `tsv_debug`'s
+audit harness plus the `parse_internal_*` exports over
+`std::hint::black_box`. If an in-crate microbench ever earns its place,
+Criterion/Divan/Iai-Callgrind go through the dependency-approval gate first.
 
 ## Arena allocation (`bumpalo`) — in use in tsv
 
@@ -50,16 +52,18 @@ tsv's core allocation strategy: every parser is
 the **caller owns the `Bump`**, ASTs borrow it, and formatting takes a
 separate doc arena. Conventions proven there:
 
-- **Per-thread reusable arenas for binding hot loops** (`tsv_arena`):
-  `with_ast_arena` / `with_doc_arena` hold one `thread_local!`
-  `RefCell<Bump>` per thread and `reset()` at the **start** of each call, so
-  the high-water chunk is retained and per-call malloc/free amortizes to
-  zero. Soundness contract: the callback must fully consume arena-borrowed
-  work into an owned return before the next reset. Non-reentrant (the
-  `RefCell` borrow spans the callback) — a nested parse inside formatting
-  uses a local `Bump`. Recovers cleanly after `catch_unwind` (the FFI path
-  relies on this). Under WASM the thread-local is effectively a module
-  static.
+- **Per-thread parked arenas for binding hot loops** (`tsv_arena`):
+  `with_ast_arena` / `with_doc_arena` park one arena per thread in a
+  `Cell<Option<T>>` slot — each call **takes** the arena out, resets it at
+  the start, and parks it back after, so the high-water chunk is retained
+  and per-call malloc/free amortizes to zero. Re-entrant with
+  fresh-fallback: a nested call finds the slot empty and pays one fresh
+  allocation instead of panicking (a nested parse inside formatting still
+  prefers a local `Bump`). `with_doc_arena` parks a boxed doc arena and is
+  gated behind the `format` feature. Soundness contract: the callback must
+  fully consume arena-borrowed work into an owned return before the next
+  reset. Recovers cleanly after `catch_unwind` (the FFI path relies on
+  this). Under WASM the thread-local is effectively a module static.
 - **Trap**: `bumpalo` collections don't run `Drop` for contents — arenas hold
   POD (`Copy`, `&'arena str`). For types with destructors use `typed-arena`
   (not currently used anywhere). Never round-trip global-heap collections
@@ -98,10 +102,15 @@ Beyond generic hygiene:
   `codegen-units = 1` (./rust-patterns.md §Release Profile) inlines across crates
   without per-fn `#[inline]`. Reserve `#[cold]` + `#[inline(never)]` for rare
   error/panic formatters to keep the hot I-cache dense.
-- **Box the error, keep `Ok` pointer-sized**: tsv's lexer returns
-  `Result<_, Box<ParseError>>` so the hot `next_token` Ok path stays small; a
-  `From<Box<ParseError>>` unboxes at the parser boundary. Apply when the error
-  type is fat and the fallible call is hot.
+- **Newtype over a boxed payload — never `Box<Error>` at call sites**: tsv's
+  `ParseError` is `struct ParseError(Box<ParseErrorKind>)` — pointer-sized,
+  enum private, so no signature anywhere mentions a `Box`. The win is
+  `Result` sizing (`Result<T, E>` is sized by `max(T, E)`; the payload enum
+  is 96 B, so an inline error moves 96 bytes through memory on every hot
+  `Ok` path) plus code size (measured −7.0% native `.text`, −16.7% on the
+  parse WASM bundle). Do **not** re-box at a call site
+  (`Result<T, Box<ParseError>>`) — that's a double indirection, measured to
+  buy nothing over the newtype.
 - **Don't round-trip a closed set through serde on a hot path**: zzz's
   `ProviderName::parse(&str)` matches literals directly instead of allocating
   a `Value::String` per request, with `as_str`/`Display`/serde-rename

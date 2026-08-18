@@ -37,9 +37,10 @@ guessing markup. Do not assume a markdown feature works because GFM supports it
 
 **Whitespace**: text nodes preserve literal `\n`, but the default rendering
 applies no `white-space` style, so single newlines collapse to spaces. The
-`whitespace` prop on `Mdz`/`MdzStream`/`MdzPrecompiled` opts into `pre-line`
-(every newline breaks — chat-style input) or `pre-wrap` (spaces/tabs preserved
-too).
+`whitespace` prop on `Mdz`/`MdzStream`/`MdzPrecompiled` accepts any
+`MdzWhitespace` value (`normal`/`nowrap`/`pre`/`pre-wrap`/`pre-line`/
+`break-spaces`) — most commonly `pre-line` (every newline breaks —
+chat-style input) or `pre-wrap` (spaces/tabs preserved too).
 
 ## Deliberately unsupported (scope notes)
 
@@ -50,17 +51,26 @@ them:
   literal. Intraword `_` is literal by design so `snake_case` identifiers render
   verbatim (a core reason the dialect exists).
 - **Attribute values: strings + bare booleans only** — `<Alert status="warning">`
-  and `<input disabled />` parse (attributes **are** supported), but brace-literal
-  values (`count={5}`) are **reserved** and stay literal for now, and malformed
-  forms bail the whole tag back to literal text: unquoted (`a=b`), spaces around
-  `=` (`a = "b"`), a duplicate name, or a newline inside the open tag. Directives /
+  and `<input disabled />` parse (attributes **are** supported); empty values
+  (`title=""`) are valid, a `>` inside a quoted value is content, values have
+  no escape sequences, and attribute order is preserved. Malformed forms bail
+  the **whole tag** back to literal text: unquoted values (`a=b`), brace
+  values (`a={5}` — reserved for a future literal form, not evaluated),
+  spaces around `=`, a duplicate name, a newline or tab inside the open tag,
+  a missing space between attributes (`x="1"y="2"`), an unterminated quote, a
+  dangling `=`, or a name not starting with an ASCII letter (names are
+  `letter (letter|digit|-|_)*`, the tag-name charset). Directives /
   namespaced / spread / `{shorthand}` can never parse (`:` and `{` aren't
-  attribute-name/value chars). Enforcement is at render time: **elements** filter
-  attributes to a closed inert allowlist (`class`, `title`, `lang`, `dir`, `role`,
-  `aria-{label,hidden,describedby,labelledby}` — anything else is dropped);
-  **components** pass all attributes through as props (registering a component is
-  the trust decision). `MdzComponents` stays `Map<string, Component>` — props pass
-  through untyped.
+  attribute-name/value chars). Enforcement runs at render **and** build time
+  through one shared helper (`mdz_filter_element_attributes`, used by
+  `MdzNodeView`, `MdzStreamNodeView`, and `mdz_to_svelte`, so the
+  preprocessor applies the identical allowlist): **elements** filter to a
+  closed inert allowlist (`class`, `title`, `lang`, `dir`, `role`,
+  `aria-{label,hidden,describedby,labelledby}`) — anything else is silently
+  dropped in prod and DEV-warned by name, with the element still rendering;
+  **components** pass all attributes through as props (registering a
+  component is the trust decision) — the registry type is unchanged, props
+  pass through untyped (`string | true`).
 - **No CommonMark/GFM compatibility** — no setext headings, no reference links,
   no `*`-bullets or `+`-bullets (only `-`), no task lists.
 - **No syntax highlighting, no themed components, no HTML sanitization** — only
@@ -127,9 +137,7 @@ input as it arrives; otherwise `mdz_parse` is simpler.
 
 ## Testing
 
-Fixture-based, in `src/test/` (not co-located): `fixtures/mdz/` drives the
-parser (`input.mdz` → `expected.json`), `fixtures/svelte_preprocess_mdz/` drives
-the preprocessor (`input.svelte`). **Never hand-edit `expected.json`** —
-regenerate via `gro src/test/fixtures/mdz/update` (or the
-`svelte_preprocess_mdz` equivalent). The fixtures are the ground truth for what
-the dialect parses.
+Fixture-based (`fixtures/mdz/`, `fixtures/svelte_preprocess_mdz/`) — the
+fixtures are the ground truth for what the dialect parses; regenerate via
+`gro src/test/fixtures/mdz/update`, never hand-edit `expected.json`
+(full workflow: ./testing-patterns.md §Fixture-Based Testing).

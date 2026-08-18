@@ -402,8 +402,8 @@ example in Input vs Output Types above). Cell schema conventions:
 - Every Cell exports both `FooJson` (output, fully validated) and
   `FooJsonInput` (input, defaults omittable for constructors and `set_json()`)
 - The Cell base class is generic over the schema:
-  `abstract class Cell<TSchema extends z.ZodType>` — validates internally
-  with `this.schema.parse()`
+  `abstract class Cell<TSchema extends z.ZodType = z.ZodType>` — validates
+  internally with `this.schema.parse()`
 
 ## Metadata
 

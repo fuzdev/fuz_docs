@@ -103,12 +103,16 @@ unwrap_used = "warn"
 ```
 
 **Workspaces may diverge deliberately** — a domain can earn extra allows
-(tsv carries a parser-shaped superset: u32-position cast allows, relaxed
-`missing_debug_implementations` for interner-holding types, plus restriction
-`unreachable = "warn"`; blake3's workspace also omits
+(tsv carries a large parser-shaped superset — ~35 extra clippy allows plus
+restriction `unreachable = "warn"`; blake3's workspace omits
 `missing_debug_implementations`). Superset-by-design is not drift; the repo's
 `CLAUDE.md` documents it — diff the override against that repo's workspace
-block, not the generic one above.
+block, not the generic one above. Two tsv extras worth adopting: a
+`[workspace.lints.rustdoc]` block denying `broken_intra_doc_links` (plus
+`invalid_html_tags`/`bare_urls`/`redundant_explicit_links`) — a doc link is
+the only machine-checkable claim a doc comment makes, and re-declared
+crate-level lint blocks must re-carry it too — and a `rust-toolchain.toml`
+pin, since floating stable breaks on new nursery lints.
 
 ### Crate-level overrides — re-declare the whole block
 
@@ -146,10 +150,13 @@ Deliberate exceptions show the escape hatch:
 - **WASM-first repos** set `opt-level = "s"` as the base (blake3), overridden
   per-build via `RUSTFLAGS` (./wasm-patterns.md).
 - **Derived profiles for a driving need**: tsv's `[profile.corpus]`
-  (`inherits = "release"`, `panic = "unwind"`) exists because its FFI wraps
-  entry points in `catch_unwind` — dead under `panic = "abort"` — for the
-  Prettier differential-corpus run; its `[profile.profiling]` keeps
-  `debug = true`, `strip = false` for symbolicated profiles.
+  (`inherits = "release"`, `panic = "unwind"`, plus `lto = false` /
+  `codegen-units = 16` for iteration speed) exists because `catch_unwind` is
+  dead under `panic = "abort"` — it powers the Prettier differential-corpus
+  run. Its `[profile.napi]` (`inherits = "release"`, `panic = "unwind"`)
+  exists because `#[napi(catch_unwind)]` is inert under abort and a panic
+  would kill the *host* process (dev server, editor). `[profile.profiling]`
+  keeps `debug = true`, `strip = false` for symbolicated profiles.
 
 ## Error Handling
 
@@ -355,9 +362,6 @@ The same shape serializes closed sets to primitive wire values:
 - **Function pointers over trait objects** for statically-known dispatch:
   a spawn config holds `build_command: fn(&Path, Option<&Path>) -> Command`,
   not `Box<dyn Fn(…)>`.
-- **Callback resolution over allocating accessors** in hot paths: tsv's
-  `SymbolResolver` trait pairs allocating `resolve_symbol(sym) -> String`
-  with zero-alloc `with_resolved_symbol(sym, |s| …)`.
 - **`Cow`-shaped wrappers** when some returns are constants and others need
   interpolation: `HintMessage` (`Static | Owned`).
 
@@ -650,7 +654,9 @@ than useful codes.
   `73`, integrity → `65`). Two dialects max — pick by audience.
 - **Extend via a structured `kind`, not new exit integers.** A code is coarse;
   when a consumer needs finer signal, add `error.kind` to `--json` — strictly
-  more expressive.
+  more expressive. Status signals are the carve-out: a reserved code for a
+  non-failure the caller branches on (fuz's `10` = update available) is a
+  distinct category from error codes, minted deliberately.
 - **argh gotcha**: `argh::from_env()` hard-exits `1` on a parse error — the
   commonest usage error — violating "usage = 2". zap implements the fix:
   parse with `T::from_args(&[cmd], &args)` and map the `EarlyExit` (`Ok` →
@@ -706,9 +712,12 @@ config of function pointers (statically-known runtimes), JSON-lines framing
 over stdin/stdout, an mpsc command channel into a serializer task that owns
 stdin, per-request `oneshot` responses parked in a map keyed by request id, and
 the script embedded via `include_str!`. Skip it for one-shot invocations (plain
-`tokio::process::Command`) or pure in-process work. **Dormant** — no shipped
-binary wires a runtime into the pool today; `fuz_sidecar` is the reference if a
-runtime-hosting workload returns.
+`tokio::process::Command`) or pure in-process work. The pool + dispatch ship
+in `fuzd` (`fuz_sidecar` is a non-optional dep; the `sidecar.*` actions are
+live); what's dormant is the runtime factories — `fuz_deno`/`fuz_python` sit
+behind a default-off `sidecar` feature, so the default build runs an empty
+pool. Also a live example of optional-dep-crate isolation
+(./rust-dependencies.md §Crate-vs-feature isolation).
 
 ### Security
 

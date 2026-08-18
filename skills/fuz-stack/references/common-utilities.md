@@ -47,15 +47,6 @@ const config = unwrap(parse_config(text));
 | `unwrap_error()` | Returns the type-narrowed `{ok: false} & TError` result, throws if ok                     |
 | `ResultError`    | Custom `Error` subclass thrown by `unwrap`, carries `.result` and supports `ErrorOptions` |
 
-`unwrap` signature:
-
-```typescript
-const unwrap: <TValue extends { value?: unknown }, TError extends { message?: string }>(
-	result: Result<TValue, TError>,
-	message?: string
-) => TValue['value'];
-```
-
 `unwrap_error` returns the entire failed result (not just a value) — the
 opposite of `unwrap` returning just `.value`.
 
@@ -67,6 +58,19 @@ opposite of `unwrap` returning just `.value`.
   `ResultError`)
 - Prefer Result over throwing for expected errors (parsing, validation); use
   exceptions for unexpected errors (programmer mistakes, system failures)
+
+## Error Helpers
+
+`@fuzdev/fuz_util/error.ts`:
+
+- **`to_error_message(value, fallback?)`** — normalizes an unknown caught
+  value to a string (`value.message` for `Error`, else
+  `fallback ?? String(value)`). The standard `catch (err)` normalizer.
+- **`unreachable(value: never)`** — exhaustive-match guard; throws
+  `UnreachableError`. Because `throw` isn't an expression, `unreachable(x)`
+  also works where an expression is required (ternaries, Svelte markup).
+- **`UnreachableError`** — the class `unreachable` throws; catchable
+  separately when a default case must be distinguishable.
 
 ## Logger
 
@@ -84,18 +88,6 @@ const child_log = log.child('submodule'); // label: 'my_module:submodule'
 child_log.info('connected'); // [my_module:submodule] connected
 ```
 
-### Constructor
-
-```typescript
-new Logger(label?: string, options?: LoggerOptions)
-```
-
-| Option    | Type         | Default                     | Purpose                      |
-| --------- | ------------ | --------------------------- | ---------------------------- |
-| `level`   | `LogLevel`   | Inherited or env-detected   | Log level for this instance  |
-| `colors`  | `boolean`    | Inherited or env-detected   | Whether to use ANSI colors   |
-| `console` | `LogConsole` | Inherited or global console | Console interface for output |
-
 ### Log Levels
 
 Override via `PUBLIC_LOG_LEVEL` env var. Default detection order:
@@ -106,14 +98,6 @@ Override via `PUBLIC_LOG_LEVEL` env var. Default detection order:
 4. `'info'` in production
 
 Levels ascending: `off` (0), `error` (1), `warn` (2), `info` (3), `debug` (4).
-
-### Logger Methods
-
-`log.error()`/`log.warn()` map to `console.error`/`console.warn`; `log.info()`
-and `log.debug()` to `console.log`; `log.raw()` is `console.log` with no level
-check or prefix. Each method except `raw` checks `this.level` before outputting. Prefixes
-include the bracketed label plus a level indicator for error, warn, and debug;
-info has no level prefix — just the label.
 
 ### Inheritance
 
@@ -137,13 +121,6 @@ The `root` getter walks the parent chain to find the root logger, useful for
 setting global configuration.
 
 Colors automatically disabled when `NO_COLOR` or `CLAUDECODE` env vars are set.
-
-### Additional Logger Exports
-
-| Export                | Purpose                                          |
-| --------------------- | ------------------------------------------------ |
-| `log_level_to_number` | Converts a `LogLevel` to its numeric value (0-4) |
-| `log_level_parse`     | Validates a log level string, throws on invalid  |
 
 ## Timings
 
@@ -169,39 +146,11 @@ await more_work();
 stop_outer();
 ```
 
-### API
-
-| Method/Property | Signature                                                   | Purpose                                     |
-| --------------- | ----------------------------------------------------------- | ------------------------------------------- |
-| `constructor`   | `new Timings(decimals?: number)`                            | Optional decimal precision for rounding     |
-| `start()`       | `(key: TimingsKey, decimals?) => () => number`              | Start a timing, returns stop function       |
-| `get()`         | `(key: TimingsKey) => number`                               | Recorded duration (0 if missing/unfinished) |
-| `entries()`     | `() => IterableIterator<[TimingsKey, number \| undefined]>` | Iterate all timings                         |
-| `merge()`       | `(timings: Timings) => void`                                | Merge other timings, summing shared keys    |
-
-`TimingsKey` is `string | number`. Duplicate keys are auto-suffixed
-(`operation`, `operation_2`, `operation_3`, etc.).
-
-### Integration with Logger
-
-`print_timings(timings, log)` from `@fuzdev/fuz_util/print.ts` outputs timing
-data at debug level after task execution. `Timings` itself does not log.
-
-### Stopwatch
-
-`create_stopwatch(decimals?)` — lower-level primitive returning a `Stopwatch`
-function that tracks elapsed time from creation. Call with `true` to reset;
-default `decimals` is 2.
-
-```typescript
-import { create_stopwatch, type Stopwatch } from '@fuzdev/fuz_util/timings.ts';
-
-const elapsed: Stopwatch = create_stopwatch();
-await work();
-console.log(elapsed()); // e.g., 142.37 — ms since creation
-console.log(elapsed(true)); // ms since creation, then resets start time
-console.log(elapsed()); // ms since reset
-```
+Duplicate keys are auto-suffixed (`operation`, `operation_2`, …). `Timings`
+itself does not log — `print_timings(timings, log)` from
+`@fuzdev/fuz_util/print.ts` outputs the data at debug level.
+`create_stopwatch(decimals?)` is the lower-level single-timer primitive
+(call the returned function for elapsed ms; pass `true` to reset).
 
 ## DAG Execution
 

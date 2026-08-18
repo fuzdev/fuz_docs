@@ -53,7 +53,7 @@ Split large suites with dot-separated aspects:
 | Pattern                            | Example                                       |
 | ---------------------------------- | --------------------------------------------- |
 | `{module}.test.ts`                 | `mdz.test.ts`, `ts_helpers.test.ts`           |
-| `{module}.{aspect}.test.ts`        | `csp.core.test.ts`, `csp.security.test.ts`    |
+| `{module}.{aspect}.test.ts`        | `csp.base.test.ts`, `csp.security.test.ts`    |
 | `{module}.svelte.{aspect}.test.ts` | `contextmenu_state.svelte.activation.test.ts` |
 | `{module}.fixtures.test.ts`        | `svelte_preprocess_mdz.fixtures.test.ts`      |
 | `{module}.db.test.ts`              | `account_queries.db.test.ts`                  |
@@ -82,19 +82,9 @@ exact expected values, `assert.include`/`assert.notInclude` for array
 membership (shows actual contents on failure). Leave `assert.ok` for guards
 where the goal is narrowing, not value checking.
 
-**Why `assert` over `expect`:** `assert` methods narrow types for TypeScript;
-`expect` chains don't:
-
-```typescript
-// assert narrows — no type error
-const result: string | Error = await get_result();
-assert(result instanceof Error);
-result.message; // TypeScript knows this is Error
-
-// expect doesn't narrow — type error on .message
-expect(result).toBeInstanceOf(Error);
-result.message; // Property 'message' does not exist on type 'string | Error'
-```
+**Why `assert` over `expect`:** `assert(x instanceof Error)` narrows `x` for
+TypeScript; `expect(x).toBeInstanceOf(Error)` doesn't, so member access after
+it is a type error.
 
 Name custom assertion helpers `assert_*`, not `expect_*` — e.g.
 `assert_css_contains()`.
@@ -211,8 +201,9 @@ vi.stubGlobal('ResizeObserver', ResizeObserverMock);
 
 ## Database Testing
 
-fuz_app provides database testing infrastructure. Only fuz_app uses this
-pattern currently.
+fuz_app owns the database testing infrastructure (`testing/db.ts`); fuz_app
+and zzz both run the vitest projects split below (zzz's config is committed
+with the same `unit`/`db` shape and cross-backend gating).
 
 ### The `.db.test.ts` Convention
 
@@ -367,8 +358,12 @@ do_thing(log);
 assert.deepEqual(log.info_calls, ['expected message']);
 ```
 
-For `Result` assertions, use `assert.ok(result.ok)` directly — `assert`
-narrows discriminated unions, so no wrapper is needed.
+For `Result` assertions, `assert.ok(result.ok)` narrows the union directly.
+The general discriminated-union form is `assert_property(obj, key, value)`
+(also in `@fuzdev/fuz_util/testing.ts`) — `assert_property(r, 'ok', true)`,
+or any discriminator (`kind`, `type`). Its `const V` type param is
+load-bearing: without it `Extract` collapses to the full union and the
+narrowing silently vanishes — keep the signature intact if you copy it.
 
 ### Repo-Local Helpers
 
@@ -608,11 +603,12 @@ fuz_gitops injects mock operations via DI nearly everywhere — its one
 
 Legacy escape hatch, not a pattern — it exists where code predates the DI
 convention (gro's build/deploy/cache tests are the big cluster) or where a
-call site has no injectable seam (fuz_app's bearer-auth middleware calls
-`query_*` functions by name; the module mocks live in
-`testing/middleware.ts`, which wraps them in table-driven
-`describe_bearer_auth_cases` / `create_bearer_auth_test_app` helpers as a
-documented carve-out). Treat any _new_ `vi.mock` as a signal to add a deps seam
+call site has no injectable seam. fuz_app module-mocks its auth `query_*`
+cluster from several middleware tests (bearer auth, daemon token, rate
+limiter, audit log, request context); the bearer-auth subset is factored into
+`testing/middleware.ts` as table-driven `describe_bearer_auth_cases` /
+`create_bearer_auth_test_app` helpers — a documented carve-out. Treat any
+_new_ `vi.mock` as a signal to add a deps seam
 instead. Avoid entirely in `.db.test.ts` where `isolate: false` shares
 module state. When unavoidable:
 
@@ -672,8 +668,8 @@ SKIP_EXAMPLE_TESTS=1 gro test
 | Flag                              | Repo    | Purpose                                           |
 | --------------------------------- | ------- | ------------------------------------------------- |
 | `SKIP_EXAMPLE_TESTS`              | fuz_css | Skip slow Vite plugin integration tests           |
-| `TEST_DATABASE_URL`               | fuz_app | Enable PostgreSQL tests (PGlite always runs)      |
-| `FUZ_TEST_CROSS_BACKEND`          | fuz_app | Enable the `cross_backend_*` vitest projects      |
+| `TEST_DATABASE_URL`               | fuz_app      | Enable PostgreSQL tests (PGlite always runs) |
+| `FUZ_TEST_CROSS_BACKEND`          | fuz_app, zzz | Enable the `cross_backend_*` vitest projects |
 | `FUZ_TESTING_RUST_SPINE_STUB_BIN` | fuz_app | Path to the Rust spine stub binary for cross runs |
 
 ## Test Structure
@@ -736,27 +732,8 @@ const cases: Array<[label: string, initial: string | null, key: string, expected
 test.each(cases)('%s', async (_label, initial, key, expected) => {
 	const fs = create_mock_fs(initial !== null ? { '.env': initial } : {});
 	await update(key, 'new', fs);
-	assert.strictEqual(fs.get('.env'), expected);
+	assert.strictEqual(fs.get_file('.env'), expected);
 });
-```
-
-Object array form with `$prop` interpolation:
-
-```typescript
-const POSITION_CASES = [
-	{ position: 'left', align: 'start', expected: { right: '100%', top: '0px' } },
-	{ position: 'right', align: 'center', expected: { left: '100%', top: '50%' } }
-];
-
-test.each(POSITION_CASES)(
-	'$position/$align applies correct styles',
-	({ position, align, expected }) => {
-		const styles = generate_position_styles(position, align);
-		for (const [prop, value] of Object.entries(expected)) {
-			assert.strictEqual(styles[prop], value, `style '${prop}'`);
-		}
-	}
-);
 ```
 
 Tests with dynamic expected values or extra assertions should stay standalone.
@@ -781,54 +758,12 @@ broadcast fan-out all run through real code paths. Test files follow the usual
 `{module}.{aspect}.test.ts` naming.
 
 The one convention that isn't API detail: **DB-backed WS tests** use the
-`.db.test.ts` suffix and memoize the harness per worker, since `isolate: false`
-+ `fileParallelism: false` would otherwise double-init module-level state.
-Non-DB WS tests build a fresh harness per test — setup is cheap and each test
-can supply its own ad-hoc action specs.
+`.db.test.ts` suffix and ride the same shared-PGlite factory as other DB
+tests. Non-DB WS tests build a fresh harness per test — setup is cheap and
+each test can supply its own ad-hoc action specs.
 
 ## Serde Boundary Conformance
 
-_Rust ↔ hand-written TS — round-trip + coverage guard, no codegen dependency._
-
-When a Rust crate owns a serde JSON boundary (`#[serde(deny_unknown_fields)]`)
-that a hand-written TypeScript layer authors against — e.g. a typed config
-builder whose calls serialize to JSON that the Rust engine parses — keep the TS
-types **hand-written** (best ergonomics, no codegen dependency) and guard them
-against drift with a round-trip test, not `schemars`/`ts-rs`.
-
-Why not codegen: a generated schema/types layer is a _second_ encoding of the
-boundary that can itself drift from serde's tagging/rename. A round-trip test
-validates against the **real serde parser** — the code that runs in production —
-so it tests reality, not a model. Reserve codegen for when you need field-level
-coverage enforcement or a published JSON Schema for external consumers.
-
-**Two-layer guard** (used in zap's TS config library):
-
-1. **Round-trip conformance.** One typed "kitchen-sink" fixture exercising every
-   type/field/variant, `import type`'d against the TS types and `export
-default`ing a builder function. One source, gated twice:
-   - `gro typecheck` includes it → catches **types-too-strict** (a valid shape
-     the TS types wrongly reject).
-   - A Rust integration test evaluates it and parses the emitted JSON with the
-     real config type → catches **types-too-loose / false-green** (a shape TS
-     accepts that serde rejects).
-
-   The `import type` is erased at runtime, so the evaluator needs no module
-   resolution — the same file is both typechecked and executed.
-
-2. **Coverage guard.** Iterate the Rust canonical variant list (e.g. a
-   `ResourceType::ALL` const) and assert the fixture exercises **every** variant:
-   `for v in ALL { assert!(seen.contains(&v), "kitchen-sink missing {v}") }`.
-   This catches a whole type/variant added in Rust but absent from the TS surface
-   — which the round-trip alone can't see. Pair with a loud floor
-   (`assert!(items.len() >= N)`) so a vanished fixture fails instead of silently
-   passing.
-
-Optionally add a thin **e2e smoke** through the shipped path (built binary → real
-parse → exit code), skipping cleanly when the runtime (e.g. Deno) or binary is
-absent — the same skip discipline as the DB/Deno-gated tests above.
-
-Gotchas: if the evaluator stubs nondeterministic globals (clock/RNG) to throw,
-the fixture must use pure literals only. Gate the round-trip test on the
-evaluator runtime being present (skip-with-notice), matching the repo's
-Deno-gating posture.
+Rust ↔ hand-written TS serde boundaries are guarded with a round-trip +
+coverage-guard pattern rather than codegen — the full treatment lives in
+./twin-impl.md §Serde boundary conformance.

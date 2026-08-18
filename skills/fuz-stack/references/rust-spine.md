@@ -34,6 +34,9 @@ full ~35-crate inventory is its own repo's concern):
 - **Tooling** — `fuz_audit` (dep-graph audit), `fuz_testing` (test-only
   impls, e.g. `TestingArgon2idHasher` — never shippable).
 
+Consumers also directly name `fuz_db_admin`, `fuz_release`, and `fuz_sign`
+(the forge) and `fuz_pty` (zzz).
+
 The `fuz_fact`/`fuz_cell` storage-vs-serving splits and the
 `fuz_sys`/`fuz_home` leaf split are enforced by layering rules
 (§xtask & check-release), not just convention.
@@ -54,6 +57,8 @@ Shared swap points:
 - `extra_action_specs_factory` — the test binary registers `_testing_*`
   actions without `fuz_testing` entering the production dep graph
 - `pre_migration_hook` — test-only DB setup
+- `daemon_token_state` — production `None` in both consumers; the producer is
+  confined to `fuz_testing` by the dep graph
 
 The `run_app` _body_ is consumer-specific (domain App, migration set,
 action-spec composition) and is not a shared helper. The boxed-closure
@@ -141,9 +146,12 @@ Option<String>)` so tests inject a map instead of mutating process env —
   builders capture `Arc<App>` into handler closures, so the compiled registry
   can't exist until the App does — it lives in `App.action_registry:
 OnceLock<Arc<ActionRegistry>>`, `set()` after construction.
-- **`ActionContext<'a>` is the borrowed per-request seam**: `notify: &dyn
-Fn(&str, &Value)`, `connection_id: Option<…>` (set on WS, `None` on HTTP),
-  `signal: &CancellationToken` (threaded into providers), `request_id`.
+- **`ActionContext<'a>` is the borrowed per-request seam** — notably:
+  `notify: &dyn Fn(&str, &Value)`, `connection_id: Option<…>` (set on WS,
+  `None` on HTTP), `signal: &fuz_realtime::SignalToken` (an alias of
+  `CancellationToken`, threaded into providers), `request_id`; it also
+  carries `db`, `auth`, `audit`, `log`, `client_ip`, `credential_type`, and
+  `post_commit_effects`.
 - **Streaming needs an owned sender**: the borrowed `notify` can't be
   captured into a `'static` closure, so zzz's provider streaming builds a
   per-request `ProgressSender = Box<dyn Fn(Value) + Send + Sync>` — only when
@@ -196,9 +204,10 @@ rfc3339_now}`, `fuz_sys::fs::write_atomic`) but **not** `fuz_home` —
      `pid_alive`/`healthy` boolean pairs handled differently per command.
      Don't build a transport-generic lifecycle crate for a single HTTP
      consumer; extract only when a second HTTP CLI daemon-manager appears.
-   - The HTTP lifecycle must never enter the `fuz`/`fuzd` dependency graph
-     (`reqwest`; `check-release` already forbids `fuz_daemon`/`fuz_client`
-     from `fuz`).
+   - The HTTP lifecycle (and `reqwest` with it) must never enter the
+     `fuz`/`fuzd` dependency graph. This is a convention, not an enforced
+     `check-release` rule — `fuz` legitimately links `fuz_daemon`/`fuz_client`
+     for its own UDS lifecycle; the line is against the HTTP/port variant.
 
 ## xtask & check-release
 

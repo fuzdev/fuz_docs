@@ -76,7 +76,7 @@ from the Zod schema.
 interface TaskContext<TArgs = object> {
 	args: TArgs;
 	config: GroConfig;
-	svelte_config: ParsedSvelteConfig;
+	svelte_config: Promise<ParsedSvelteConfig>;
 	filer: Filer;
 	log: Logger;
 	timings: Timings;
@@ -84,15 +84,9 @@ interface TaskContext<TArgs = object> {
 }
 ```
 
-| Field           | Type                 | Purpose                                          |
-| --------------- | -------------------- | ------------------------------------------------ |
-| `args`          | `TArgs`              | Parsed CLI arguments (validated by Zod if set)   |
-| `config`        | `GroConfig`          | Gro configuration (plugins, task_root_dirs, etc) |
-| `svelte_config` | `ParsedSvelteConfig` | Parsed SvelteKit config (aliases, paths)         |
-| `filer`         | `Filer`              | Filesystem tracker (watches files in dev mode)   |
-| `log`           | `Logger`             | Logger instance scoped to the task               |
-| `timings`       | `Timings`            | Performance measurement (start/stop timers)      |
-| `invoke_task`   | `InvokeTask`         | Call other tasks programmatically                |
+`svelte_config` is lazy — a promise resolved on first access, so tasks that
+never touch it don't pay to read the SvelteKit config. `filer` tracks the
+filesystem (watches in dev mode); `log` and `timings` are scoped to the task.
 
 ### invoke_task
 
@@ -254,12 +248,5 @@ gro check -- gro test --coverage
 Forwards `--coverage` to `test` when `check` invokes it. Multiple `--`
 sections can target different sub-tasks.
 
-## Quick Reference
-
-| Export        | Type      | Import from           | Purpose                                        |
-| ------------- | --------- | --------------------- | ---------------------------------------------- |
-| `Task`        | Interface | `@fuzdev/gro`         | Task definition (run, summary, Args)           |
-| `TaskContext` | Interface | `@fuzdev/gro`         | Context passed to task.run                     |
-| `TaskError`   | Class     | `@fuzdev/gro`         | Known failure (no stack trace)                 |
-| `SilentError` | Class     | `@fuzdev/gro/task.ts` | Exit silently (error already logged)           |
-| `InvokeTask`  | Type      | `@fuzdev/gro/task.ts` | `(task_name, args?, config?) => Promise<void>` |
+Import sources: `Task`, `TaskContext`, and `TaskError` from `@fuzdev/gro`;
+`SilentError` and `InvokeTask` from `@fuzdev/gro/task.ts`.

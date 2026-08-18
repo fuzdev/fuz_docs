@@ -46,7 +46,7 @@ suffices:
    styles already recognize.
 3. **Composite classes** — `box`, `row`, `column`, `panel`, `chip`, `ellipsis`
    — one class for a whole layout pattern.
-4. **Token classes** — `p_md`, `gap_lg`, `palette_a_50` — map to design tokens;
+4. **Token classes** — `p_md`, `gap_lg`, `color_a_50` — map to design tokens;
    never hardcode spacing or color.
 5. **Literal classes** — `display:flex`, `width:100%`, `hover:opacity:80%` —
    arbitrary `property:value`, including responsive/state modifiers.
@@ -148,12 +148,12 @@ as needed:
 ```typescript
 import 'virtual:fuz.css'; // generated bundled CSS (all projects)
 import '@fuzdev/fuz_code/theme.css'; // package-specific themes (if any)
-import '#routes/style.css'; // project-specific global styles (app projects)
+import './style.css'; // project-specific global styles (app projects)
 ```
 
-`#routes` resolves to `src/routes` in SvelteKit. Library/tool repos (fuz_css,
-fuz_ui, `gro`) often import only `virtual:fuz.css`; application repos
-(fuz_template, fuz_blog, zzz) typically use all three.
+The layout already lives in `src/routes`, so the project `style.css` import
+is relative. Library/tool repos (fuz_css, fuz_ui, `gro`) omit the project
+`style.css`; application repos (fuz_template, fuz_blog, zzz) use all three.
 
 ### CSS Generation
 
@@ -179,9 +179,11 @@ declare module 'virtual:fuz.css' {
 }
 ```
 
-The plugin supports HMR; tree-shaken bundled mode needs no options. fuz_css
-itself passes `{additional_variables: 'all'}` to include all variables for its
-docs demos.
+The plugin supports HMR; tree-shaken bundled mode needs no options (a
+dev-only `prescan` option eagerly scans sources at server start so the first
+served CSS is complete). fuz_css itself passes `additional_elements: 'all'`,
+`additional_variables: 'all'`, and a computed `additional_classes` list for
+its docs demos.
 
 **Gro generator alternative**: a `src/routes/fuz.gen.css.ts` exporting
 `gen_fuz_css()` writes a committed `fuz.css` genfile (regenerated via `gro
@@ -196,7 +198,7 @@ layout (sidebar widths, nav heights). Keep minimal — most apps have near-empty
 
 ## Style Variables (Design Tokens)
 
-Defined in TypeScript, rendered to CSS. 600+ tokens; each can have `light`
+Defined in TypeScript, rendered to CSS. ~560 tokens; each can have `light`
 and/or `dark` values.
 
 ### Colors
@@ -213,11 +215,17 @@ Semantic intent knobs alias meaning over the letters — `--hue_accent`,
 `--hue_neutral`/`--neutral_chroma` for every surface/text/border tint. Each
 intent derives a full 13-stop scale (`--accent_00`–`--accent_100`) with
 text/background token classes (`positive_50`, `bg_caution_10`) — prefer
-intent tokens over palette letters when the color carries meaning.
+intent tokens over palette letters when the color carries meaning. Caveat:
+intent naming covers text/background token classes only — the button/chip
+variant rung stays `.palette_a`–`.palette_j` (there is no `.negative` button
+class), and the neutral has no `neutral_00`–`neutral_100` family (its scales
+are `shade_*`/`text_*`).
 
-**Intensity scale**: 13 stops from `palette_a_00` (nearest the background) →
-`palette_a_50` (base) → `palette_a_100` (highest contrast), scheme-adaptive:
-`00`, `05`, `10`, `20`, `30`, `40`, `50`, `60`, `70`, `80`, `90`, `95`, `100`.
+**Intensity scale**: 13 stops, scheme-adaptive: `00`, `05`, `10`, `20`,
+`30`, `40`, `50`, `60`, `70`, `80`, `90`, `95`, `100`. Variables are
+`--palette_a_00` (nearest the background) → `--palette_a_50` (base) →
+`--palette_a_100` (highest contrast); the matching token classes are
+`color_a_00`–`color_a_100` — property-first, the letter implies the palette.
 
 ### Color-Scheme Variants
 
@@ -230,10 +238,14 @@ intent tokens over palette letters when the color carries meaning.
 | `darken_*`  | Always darkens (agnostic, alpha-based)         | Shadows, backdrops             |
 | `lighten_*` | Always lightens (agnostic, alpha-based)        | Highlights                     |
 
-`text_*` and `shade_*` are the everyday opaque, scheme-aware color tokens —
-reach for them first. `fg_*`/`bg_*` overlays use alpha and accumulate when
-nested. Both `shade_*` and `text_*` have `_min`/`_max` for untinted extremes
-(pure black/white). For a color that
+These are **variable** families. `text_*`, `shade_*`, `darken_*`, and
+`lighten_*` also exist as classes, but `fg_*`/`bg_*` have no bare token
+classes — the `bg_` class prefix means the *opaque* backgrounds (`bg_a_50`,
+`bg_positive_50`), so reach the adaptive overlays via literals
+(`background-color:var(--fg_10)`). `text_*` and `shade_*` are the everyday
+opaque, scheme-aware tokens — reach for them first; `fg_*`/`bg_*` overlays
+use alpha and accumulate when nested. Both `shade_*` and `text_*` have
+`_min`/`_max` for untinted extremes (pure black/white). For a color that
 doesn't adapt to the scheme, write the literal value or define one custom
 property (the old `_light`/`_dark` absolute variants were removed).
 
@@ -250,7 +262,9 @@ spacing). Other families use subsets:
 
 ### Additional Variable Families
 
-- **`border_color_*`**, **`outline_color_*`**: alpha-based tinted borders/outlines (00–100)
+- **`border_color_*`**: alpha-based tinted borders (00–100). `outline_color_*`
+  is a class family over the opaque shade scale — there is no
+  `--outline_color_NN` variable family
 - **`shadow_alpha_*`**: shadow opacity scale (00–100)
 - **`border_width_*`**: numbered 1–9 (px)
 - **`duration_*`**: numbered 1–6 (0.08s to 3s)
@@ -259,6 +273,8 @@ spacing). Other families use subsets:
 ### Cascade Layers
 
 All shipped CSS is layered: `fuz.base` (default variables + element styles) <
+`fuz.preferences` (OS user-preference mappings — `prefers-reduced-motion`
+zeroing durations, `prefers-contrast: more` bending lightness curves) <
 `fuz.theme` (theme overrides, where `render_theme_style()` renders) <
 `fuz.utilities` (generated classes). Consumers' unlayered styles beat
 everything. Colors are derived OKLCH (curve knobs → ramp stops → color stops,
@@ -270,7 +286,7 @@ Many token classes set both a CSS property **and** a cascading custom property,
 so children inherit the value:
 
 - `font_size_lg` → `font-size` + `--font_size`
-- `palette_a_50` → `color` + `--text_color`
+- `color_a_50` → `color` + `--text_color`
 - `border_color_30` → `border-color` + `--border_color`
 - `outline_a_50` → `outline-color` + `--outline_color` (focus rings key off it)
 - `shadow_color_umbra` → `--shadow_color`
@@ -284,7 +300,7 @@ Three types, generated on-demand:
 
 | Type                  | Example                               | Purpose                      |
 | --------------------- | ------------------------------------- | ---------------------------- |
-| **Token classes**     | `.p_md`, `.palette_a_50`, `.gap_lg`   | Map to style variables       |
+| **Token classes**     | `.p_md`, `.color_a_50`, `.gap_lg`     | Map to style variables       |
 | **Composite classes** | `.box`, `.row`, `.ellipsis`           | Multi-property shortcuts     |
 | **Literal classes**   | `.display:flex`, `.hover:opacity:80%` | Arbitrary CSS property:value |
 
@@ -292,8 +308,10 @@ Three types, generated on-demand:
 
 - **Spacing**: `p_md`, `px_lg`, `mt_xl`, `gap_sm`, `mx_auto`, `m_0` — by far the
   most-used family
-- **Text colors**: `text_70`, `text_min`, `palette_a_50`
-- **Background colors**: `shade_00`, `bg_10`, `fg_20`, `darken_30`, `bg_a_50`
+- **Text colors**: `text_70`, `text_min`, `color_a_50`
+- **Background colors**: `shade_00`, `darken_30`, `bg_a_50` (opaque `bg_`
+  prefix — the adaptive `--fg_*`/`--bg_*` overlays are variables-only:
+  `background-color:var(--fg_10)`)
 - **Typography**: `font_size_lg`, `font_family_mono`, `line_height_md`, `icon_size_sm`
 - **Layout**: `width_md` (space scale), `top_sm`, `inset_md`, and the
   **distance-scale** sizers `width_atmost_lg`/`width_atleast_sm`/`height_atmost_md`
@@ -302,7 +320,8 @@ Three types, generated on-demand:
 - **Borders**: `border_radius_xs`, `border_width_2`, `border_color_30`
 - **Shadows**: `shadow_md`, `shadow_top_md`, `shadow_inset_xs`, `shadow_alpha_50`,
   `shadow_color_umbra` (also `_highlight`, `_glow`, `_shroud`)
-- **Hue**: `hue_a` through `hue_j` (sets `--hue`)
+- **Hue**: `hue_a` through `hue_j` (sets `--hue`; currently an unconsumed
+  consumer hook — nothing in shipped CSS reads `--hue` yet)
 
 ### Composite Classes
 
@@ -329,7 +348,9 @@ Three types, generated on-demand:
 five-member family at fixed step offsets from the `md` default. Put one on any
 **container** and it rescales that subtree's `--font_size`, `--input_height`,
 `--icon_size`, padding, **and `--flow_margin`** in lockstep — so a `sm` panel
-gets tighter text, controls, icons, and vertical rhythm together. `md` resets to
+gets tighter controls, chips, icons, and vertical rhythm together (headings
+and prose keep their font sizes — each `hN` re-sets `--font_size` on itself
+and body text never reads it). `md` resets to
 default within an already-sized parent. This is the idiomatic way to make a
 whole region denser or roomier without touching individual elements.
 
@@ -355,6 +376,10 @@ redundant. Several composites see near-zero real use (`circular`, `pixelated`,
 ```
 
 If you need more than 2–3 `~` characters, use a `<style>` block instead.
+
+Custom-property literals work too — `--flow_margin:0`, `--button_shadow:none`
+— the general escape hatch onto any theme/base variable hook without a token
+class.
 
 ## Modifiers
 
@@ -422,13 +447,13 @@ almost everything and `@fuz-*` hints are rarely needed.
 
 ### Runtime Variable Overrides
 
-Use Svelte's `style:` directive for runtime CSS variable overrides — components
-expose CSS variables as their theming API, consumers override inline:
+Components expose CSS variables as their theming API. On DOM elements, use
+Svelte's `style:` directive; on components, the custom-property shorthand —
+`style:` is invalid on component tags:
 
 ```svelte
 <div style:--docs_menu_width={width}>
-<Alert style:--text_color={color}>
-<HueInput style:--hue={value}>
+<PendingAnimation --font_size="var(--font_size_xl5)" />
 ```
 
 ### Color Scheme
@@ -440,17 +465,22 @@ light; }`. Persistence and system-preference handling live in fuz_ui's
 
 ### Theme Switching
 
-Three registered themes (`base`, `low contrast`, `high contrast`), plus
-unregistered shipped exemplars; custom themes are arrays of `StyleVariable`
-overrides. Theme CSS is rendered via `render_theme_style()` into the
-`fuz.theme` cascade layer, which beats `fuz.base` by layer order — overriding
-bundled theme variables regardless of insertion order or specificity.
+One registered theme (`base`); low/high contrast are `contrast_modifiers`
+composed over any theme via `compose_themes`, and shipped-but-unregistered
+exemplars (`necromancer`, `sunset_ember`, `brutalish`, `terminalien` — some
+dark-only via `scheme`) show the range. Custom themes are arrays of
+`StyleVariable` overrides. Theme CSS is rendered via `render_theme_style()`
+into the `fuz.theme` cascade layer, which beats `fuz.base` by layer order —
+overriding bundled theme variables regardless of insertion order or
+specificity. The generators also take a build-time `theme` option that bakes
+a theme into the bundled CSS with no JS shipped; the runtime `ThemeRoot` path
+composes on top (runtime wins by layer order).
 
 ## Component Styling In Practice
 
 Everything above lands as one principle for component authors: **components
-should have minimal custom CSS, delegating to fuz_css.** Across fuz_ui's 64
-components, ~28 (44%) have no `<style>` block at all — and fuz_ui is a component
+should have minimal custom CSS, delegating to fuz_css.** Across fuz_ui's 67
+components, 28 (~42%) have no `<style>` block at all — and fuz_ui is a component
 library, the styling-heaviest code in the ecosystem. Application code skews far
 more classless (zzz's library ~82% style-free, mdz's 100%). Where a `<style>`
 block exists it's usually
@@ -518,7 +548,8 @@ utility classes — not repeated per component.
 - **Animations/transitions** — `@keyframes`, `transition`
 - **Rendering contexts** — canvas, 3D, custom-layout surfaces
 - **Theming APIs for children** — declaring CSS custom properties consumers
-  override via `style:` (e.g. `Alert.svelte` exposes `--text_color`)
+  override via `style:` on elements or `--prop={v}` on the component
+  (e.g. `Alert.svelte` exposes `--text_color`)
 
 Even justified custom CSS uses design tokens (`var(--space_md)`), not hardcoded
 values.
@@ -535,7 +566,7 @@ component `<style>` blocks focused and avoids premature generalization.
 
 Two naming systems coexist:
 
-- **fuz_css design tokens**: `snake_case` — `p_md`, `palette_a_50`, `gap_lg`. The
+- **fuz_css design tokens**: `snake_case` — `p_md`, `color_a_50`, `gap_lg`. The
   global vocabulary.
 - **Component-local classes**: `kebab-case` — `site-header`, `nav-links`,
   `character-entry`. Distinguishes component-scoped styles from design-system

@@ -39,12 +39,6 @@ some_async_consumer(deferred.promise);
 deferred.resolve('done');
 ```
 
-### When to use Deferred
-
-- Coordinating between independent async flows (e.g., DAG node dependencies)
-- Bridging callback-based APIs with promise-based code
-- Signaling completion from one context to waiters in another
-
 Used internally by `run_dag()` and `throttle`.
 
 ## Concurrent Operations
@@ -61,34 +55,9 @@ index to `fn` (which may return synchronously).
 | `map_concurrent`         | Yes (ordered)   | Fail-fast               | Transform + collect    |
 | `map_concurrent_settled` | Yes (settled)   | Collects all (no throw) | Best-effort collection |
 
-### each_concurrent
-
-Side effects only, no result collection:
-
-```typescript
-const each_concurrent: <T>(
-	items: Iterable<T>,
-	concurrency: number,
-	fn: (item: T, index: number) => Promise<void> | void,
-	signal?: AbortSignal
-) => Promise<void>;
-```
-
-**Fail-fast**: On first rejection, stops spawning new workers and rejects;
-with `signal`, aborts immediately.
-
-### map_concurrent
-
-Like `each_concurrent`, collecting results in input order:
-
-```typescript
-const map_concurrent: <T, R>(
-	items: Iterable<T>,
-	concurrency: number,
-	fn: (item: T, index: number) => Promise<R> | R,
-	signal?: AbortSignal
-) => Promise<Array<R>>;
-```
+**Fail-fast** (`each_concurrent`, `map_concurrent`): on first rejection,
+stops spawning new workers and rejects — partial results are lost; with
+`signal`, aborts immediately.
 
 ```typescript
 const results = await map_concurrent(
@@ -99,36 +68,11 @@ const results = await map_concurrent(
 // results[i] corresponds to file_paths[i]
 ```
 
-**Fail-fast**: On first rejection, stops spawning and rejects. Partial results
-are lost.
-
-### map_concurrent_settled
-
-Follows `Promise.allSettled` pattern — never rejects the outer promise:
-
-```typescript
-const map_concurrent_settled: <T, R>(
-	items: Iterable<T>,
-	concurrency: number,
-	fn: (item: T, index: number) => Promise<R> | R,
-	signal?: AbortSignal
-) => Promise<Array<PromiseSettledResult<R>>>;
-```
-
-```typescript
-const results = await map_concurrent_settled(urls, 5, fetch);
-for (const [i, result] of results.entries()) {
-	if (result.status === 'fulfilled') {
-		console.log(`${urls[i]}: ${result.value.status}`);
-	} else {
-		console.error(`${urls[i]}: ${result.reason}`);
-	}
-}
-```
-
-**Abort behavior**: On abort, resolves with partial results — completed items
-keep their real settlements, in-flight items are rejected with abort reason.
-Items never pulled from the iterator are absent from the results array.
+**Settled** (`map_concurrent_settled`): follows `Promise.allSettled` — the
+outer promise never rejects. On abort it resolves with partial results:
+completed items keep their real settlements, in-flight items reject with the
+abort reason, and items never pulled from the iterator are absent from the
+results array.
 
 All three cap in-flight work at `concurrency`, spawning the next item as each
 settles. Empty iterables resolve immediately.
@@ -187,75 +131,12 @@ if (!result.success) {
 }
 ```
 
-### DagNode interface
-
-`Sortable` is from `@fuzdev/fuz_util/sort.ts` (topological sort validation).
-
-```typescript
-interface DagNode extends Sortable {
-	id: string;
-	depends_on?: Array<string>;
-}
-```
-
-### DagOptions
-
-```typescript
-interface DagOptions<T extends DagNode> {
-	nodes: Array<T>;
-	execute: (node: T) => Promise<void>;
-	on_error?: (node: T, error: Error) => Promise<void>;
-	on_skip?: (node: T, reason: string) => Promise<void>;
-	should_skip?: (node: T) => boolean;
-	max_concurrency?: number; // default: Infinity
-	stop_on_failure?: boolean; // default: true
-	skip_validation?: boolean; // default: false
-}
-```
-
-### DagResult
-
-```typescript
-interface DagResult {
-	success: boolean;
-	results: Map<string, DagNodeResult>;
-	completed: number;
-	failed: number;
-	skipped: number;
-	duration_ms: number;
-	error?: string;
-}
-```
-
-### DagNodeResult
-
-```typescript
-interface DagNodeResult {
-	id: string;
-	status: 'completed' | 'failed' | 'skipped';
-	error?: string;
-	duration_ms: number;
-}
-```
-
+`DagNode` is `{id, depends_on?}` extending `Sortable`
+(`@fuzdev/fuz_util/sort.ts`, topological-sort validation). `DagOptions` adds
+`on_error`/`on_skip`/`should_skip` hooks, `max_concurrency` (default
+`Infinity`), `stop_on_failure` (default `true`), and `skip_validation`;
+`DagResult` aggregates per-node results with counts and `duration_ms`.
 Failed dependency nodes cascade — dependents are skipped with reason
 `'dependency failed'`.
 
-## Quick Reference
-
-| Export                   | Module     | Type      | Purpose                                        |
-| ------------------------ | ---------- | --------- | ---------------------------------------------- |
-| `AsyncStatus`            | `async.ts` | Type      | Lifecycle status for async operations          |
-| `wait`                   | `async.ts` | Function  | Promise-based delay                            |
-| `is_promise`             | `async.ts` | Function  | Type guard for Promise/thenable                |
-| `Deferred<T>`            | `async.ts` | Interface | Promise with external resolve/reject           |
-| `create_deferred`        | `async.ts` | Function  | Creates a Deferred                             |
-| `each_concurrent`        | `async.ts` | Function  | Concurrent side effects, fail-fast             |
-| `map_concurrent`         | `async.ts` | Function  | Concurrent map with ordered results, fail-fast |
-| `map_concurrent_settled` | `async.ts` | Function  | Concurrent map, allSettled pattern             |
-| `AsyncSemaphore`         | `async.ts` | Class     | Concurrency limiter with acquire/release       |
-| `run_dag`                | `dag.ts`   | Function  | Concurrent DAG executor                        |
-| `DagNode`                | `dag.ts`   | Interface | Minimum shape for a DAG node                   |
-| `DagOptions`             | `dag.ts`   | Interface | Options for `run_dag`                          |
-| `DagResult`              | `dag.ts`   | Interface | Aggregated DAG execution result                |
-| `DagNodeResult`          | `dag.ts`   | Interface | Per-node execution result                      |
+Also in `async.ts`: `wait` (promise delay), `is_promise` (thenable guard).

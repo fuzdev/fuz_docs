@@ -4,241 +4,58 @@ description: Nominal typing (Flavored/Branded), strict utility types
 
 # Type Utilities
 
-TypeScript type helpers in `@fuzdev/fuz_util/types.ts` — nominal typing,
-stricter standard utilities, and selective partial types.
+TypeScript type helpers in `@fuzdev/fuz_util/types.ts` — which to reach for
+and the conventions around them; full signatures live in the source and on
+the generated API docs.
 
 ## Nominal Typing
 
-Invisible brands that distinguish otherwise structurally-identical types.
+### Flavored (loose) — the primary approach
 
-### Flavored (loose)
-
-`Flavored<TValue, TName>` adds an optional invisible brand. Unflavored base
-types are assignable without casting, but different flavors are incompatible.
-Primary nominal typing approach:
-
-```typescript
-// Implementation:
-declare const FlavoredSymbol: unique symbol;
-interface Flavor<T> {
-	readonly [FlavoredSymbol]?: T; // optional — base types still assignable
-}
-type Flavored<TValue, TName> = TValue & Flavor<TName>;
-```
+`Flavored<TValue, TName>` adds an _optional_ invisible brand: unflavored base
+values assign without casting, but different flavors are incompatible.
 
 ```typescript
 type Email = Flavored<string, 'Email'>;
 type Address = Flavored<string, 'Address'>;
 
-const email1: Email = 'foo@bar.com'; // ok — plain string is fine
+const email1: Email = 'foo@bar.com'; // ok — plain string assigns
 const email2: Email = 'foo' as Address; // error — Address !== Email
 ```
 
-Real uses in fuz_util:
+Real uses: `PathId` (`path.ts`), `GitOrigin`/`GitBranch` (`git.ts`), the
+color channel types (`Hue`, `Saturation`, `Red`, …, `colors.ts`), `Url`
+(`url.ts` — paired with a Zod schema of the same name), `BlogPostId`
+(fuz_blog), `InputPath` (gro), `ReorderableId` (zzz).
 
-```typescript
-// fuz_util/path.ts
-export type PathId = Flavored<string, 'PathId'>;
+### Branded (strict) — exported but unused
 
-// fuz_util/git.ts
-export type GitOrigin = Flavored<string, 'GitOrigin'>;
-export type GitBranch = Flavored<string, 'GitBranch'>;
+`Branded<TValue, TName>` requires a cast from the base type. Nothing in the
+ecosystem uses it: in practice, use `Flavored` for compile-time-only nominal
+typing, and Zod `.brand()` when the value crosses a runtime boundary and
+should also validate (`Uuid`, `Datetime` — see ./zod-schemas.md §Branded
+Types).
 
-// fuz_util/colors.ts
-export type Hue = Flavored<number, 'Hue'>; // [0, 1]
-export type Saturation = Flavored<number, 'Saturation'>; // [0, 1]
-export type Lightness = Flavored<number, 'Lightness'>; // [0, 1]
-export type Red = Flavored<number, 'Red'>; // [0, 255]
-export type Green = Flavored<number, 'Green'>; // [0, 255]
-export type Blue = Flavored<number, 'Blue'>; // [0, 255]
+## Strict & Distributive Utilities
 
-// fuz_util/url.ts — paired with a Zod schema of the same name
-export const Url = z.url();
-export type Url = Flavored<z.infer<typeof Url>, 'Url'>;
-```
+- **`OmitStrict<T, K extends keyof T>`** — `Omit` that rejects non-keys
+  (standard `Omit` accepts any string, so typos compile silently). Widely
+  used in fuz_ui, fuz_app, zzz.
+- **`PickUnion<T, K>` / `KeyofUnion<T>`** — `Pick`/`keyof` that distribute
+  over unions (the standard ones don't).
 
-Also: `BlogPostId` (fuz_blog), `InputPath` (gro), `ReorderableId` (zzz).
+## Class & Element Helpers
 
-### Branded (strict)
+- **`Assignable<T, K>`** — removes `readonly`; zzz uses it for
+  self-referential init:
+  `(this as Assignable<typeof this, 'app'>).app = this;`
+- **`ClassConstructor<TInstance>`** — constructor type; zzz's Cell registry
+  is `Map<string, ClassConstructor<Cell>>`.
+- **`ArrayElement<T>`** — element type of a readonly array.
 
-`Branded<TValue, TName>` adds a required brand. Plain base types NOT
-assignable — must cast:
+## Exported but currently unused
 
-```typescript
-// Implementation:
-declare const BrandedSymbol: unique symbol;
-interface Brand<T> {
-	readonly [BrandedSymbol]: T; // required — base types NOT assignable
-}
-type Branded<TValue, TName> = TValue & Brand<TName>;
-```
-
-```typescript
-type PhoneNumber = Branded<string, 'PhoneNumber'>;
-
-const phone1: PhoneNumber = '555-1234'; // error — must cast
-const phone2: PhoneNumber = '555-1234' as PhoneNumber; // ok
-```
-
-Exported but unused in the ecosystem: in practice, use `Flavored` for
-compile-time nominal typing and Zod `.brand()` for runtime-validated types.
-
-### Choosing between them
-
-| Type     | Base assignable? | Safety | Use when                           |
-| -------- | ---------------- | ------ | ---------------------------------- |
-| Flavored | Yes (no cast)    | Loose  | IDs, paths, ergonomic APIs         |
-| Branded  | No (cast needed) | Strict | Validated data, security-sensitive |
-
-### Zod `.brand()` — runtime-validated nominal types
-
-`Flavored`/`Branded` are compile-time only (no runtime check); Zod `.brand()`
-(distinct from fuz_util's `Branded`) brands a schema that _also_ validates —
-`Uuid` rejects non-UUID strings at parse time — so reach for `.brand()` when the
-value crosses a runtime boundary. (zzz re-imports fuz_util's `Uuid` rather than
-defining its own.)
-
-See ./zod-schemas.md §Branded Types for the `.brand()` conventions and examples.
-
-## Strict Utility Types
-
-### OmitStrict
-
-Stricter `Omit` — `K` must be an actual key of `T`:
-
-```typescript
-type OmitStrict<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-```
-
-Standard `Omit` accepts any string for `K` (typos compile silently);
-`OmitStrict` catches them. Widely used in fuz_ui, fuz_app, zzz.
-
-### PickUnion and KeyofUnion
-
-Standard `Pick` and `keyof` don't distribute over unions. These do:
-
-```typescript
-type KeyofUnion<T> = T extends unknown ? keyof T : never;
-type PickUnion<T, K extends KeyofUnion<T>> = T extends unknown
-	? K & keyof T extends never
-		? never
-		: Pick<T, K & keyof T>
-	: never;
-```
-
-```typescript
-type A = { x: number; y: string };
-type B = { x: number; z: boolean };
-
-type Keys = KeyofUnion<A | B>; // 'x' | 'y' | 'z'
-type Picked = PickUnion<A | B, 'x'>; // {x: number} | {x: number}
-```
-
-## Partial Variants
-
-### PartialExcept
-
-Everything optional EXCEPT specified keys:
-
-```typescript
-type PartialExcept<T, K extends keyof T> = { [P in K]: T[P] } & {
-	[P in Exclude<keyof T, K>]?: T[P];
-};
-```
-
-```typescript
-interface User {
-	id: string;
-	name: string;
-	email: string;
-}
-type UserUpdate = PartialExcept<User, 'id'>;
-// { id: string; name?: string; email?: string; }
-```
-
-### PartialOnly
-
-Only specified keys optional:
-
-```typescript
-type PartialOnly<T, K extends keyof T> = { [P in K]?: T[P] } & {
-	[P in Exclude<keyof T, K>]: T[P];
-};
-```
-
-### PartialValues
-
-Values of `T` become partial (not the keys):
-
-```typescript
-type PartialValues<T> = { [P in keyof T]: Partial<T[P]> };
-```
-
-## Modifier Types
-
-### Assignable
-
-Removes `readonly`:
-
-```typescript
-type Assignable<T, K extends keyof T = keyof T> = { -readonly [P in K]: T[P] };
-```
-
-Used in zzz for self-referential initialization:
-
-```typescript
-// zzz/frontend.svelte.ts
-(this as Assignable<typeof this, 'app'>).app = this;
-```
-
-## Extraction Types
-
-### ClassConstructor
-
-```typescript
-type ClassConstructor<TInstance, TArgs extends Array<any> = Array<any>> = new (
-	...args: TArgs
-) => TInstance;
-```
-
-Used in zzz Cell registry:
-
-```typescript
-// zzz/cell_registry.svelte.ts
-readonly #constructors: Map<string, ClassConstructor<Cell>> = new Map();
-```
-
-### ArrayElement
-
-```typescript
-type ArrayElement<T> = T extends ReadonlyArray<infer U> ? U : never;
-```
-
-```typescript
-type Item = ArrayElement<Array<{ id: string }>>; // {id: string}
-```
-
-### Defined and NotNull
-
-```typescript
-type Defined<T> = T extends undefined ? never : T;
-type NotNull<T> = T extends null ? never : T;
-```
-
-## Quick Reference
-
-| Type                      | Purpose                                                                      |
-| ------------------------- | ---------------------------------------------------------------------------- |
-| `Flavored<TValue, TName>` | Loose nominal typing (no cast from base)                                     |
-| `Branded<TValue, TName>`  | Strict nominal typing (cast required, ecosystem uses Zod `.brand()` instead) |
-| `OmitStrict<T, K>`        | Omit with key validation                                                     |
-| `PickUnion<T, K>`         | Pick that distributes over unions                                            |
-| `KeyofUnion<T>`           | keyof that distributes over unions                                           |
-| `PartialExcept`           | All optional except specified keys                                           |
-| `PartialOnly`             | Only specified keys optional                                                 |
-| `PartialValues`           | Values of T become partial                                                   |
-| `Assignable`              | Remove readonly                                                              |
-| `ClassConstructor`        | Match constructor functions                                                  |
-| `ArrayElement`            | Extract element type from array                                              |
-| `Defined`                 | Exclude undefined                                                            |
-| `NotNull`                 | Exclude null                                                                 |
+`PartialExcept`, `PartialOnly`, `PartialValues`, and `NotNull` have no
+references outside `types.ts`; `Defined` has one (fuz_ui's `csp.ts`). Don't
+model new code on them — reach for an inline mapped type until a recurring
+need appears.

@@ -4,30 +4,16 @@ description: src/ tree, domain subdirectories, full-path imports, test mirroring
 
 # File Organization
 
-Source layout, domain subdirectories, full-path imports, and test mirroring for
-`@fuzdev` TypeScript/Svelte projects.
-
-## Source Tree
-
-```
-src/
-├── lib/              # exportable library code
-│   ├── *.svelte      # UI components (PascalCase.svelte)
-│   ├── *.ts          # TypeScript utilities
-│   ├── *.svelte.ts   # Svelte 5 runes and reactive code
-│   ├── *.gen.ts      # generated files (by Gro gen tasks)
-│   └── domain/       # domain subdirectories (see below)
-│       └── *.ts
-├── test/             # tests (NOT co-located with source)
-│   └── *.test.ts     # mirrors lib/ structure
-└── routes/           # SvelteKit routes (if applicable)
-```
+The core rules live in SKILL.md §File Organization: `src/lib/` exportable
+code + `src/test/` (not co-located) + `src/routes/`; no barrels; wildcard
+package `exports`; tests mirror `lib/` subdirectories. This reference adds
+the worked example.
 
 ## Domain Subdirectories
 
 When a domain grows beyond a single file, group related modules in a
 subdirectory under `lib/`. Each file is a distinct concern — no barrel/index
-files.
+files. fuz_app's `lib/` shows the shape:
 
 ```
 src/lib/
@@ -36,7 +22,7 @@ src/lib/
 │   ├── resolve.ts    # $$VAR$$ reference resolution
 │   ├── dotenv.ts     # .env file parsing
 │   └── mask.ts       # secret value display masking
-├── auth/             # authentication domain (~80 files)
+├── auth/             # authentication domain (the largest — dozens of files)
 │   ├── keyring.ts    # crypto: HMAC-SHA256 cookie signing
 │   ├── password.ts   # crypto: password hashing interface
 │   ├── account_schema.ts  # types + Zod schemas
@@ -47,32 +33,17 @@ src/lib/
 ├── db/               # database infrastructure
 ├── server/           # backend lifecycle + assembly
 ├── runtime/          # composable runtime deps + implementations
-├── cli/              # CLI infrastructure
 ├── actions/          # action spec system
 ├── realtime/         # SSE and pub/sub
 ├── testing/          # test utilities (shared across consumers)
-├── ui/               # frontend components and state
-└── dev/              # dev workflow helpers
+└── ui/               # frontend components and state
 ```
 
 **When to create a subdirectory**: 3+ closely related files sharing a domain
 concept. A single file stays at `lib/` root. Don't create subdirectories
 preemptively.
 
-## Import by Full Path
-
-**Consumers import individual modules by full path** — the subdirectory is part
-of the import path, not hidden behind re-exports. No barrel/`index.ts`; package
-`exports` use wildcard patterns (`"./*.js"`) so every module is importable.
-
-```typescript
-import { load_env } from '@fuzdev/fuz_app/env/load.ts';
-import { resolve_env_vars } from '@fuzdev/fuz_app/env/resolve.ts';
-import { create_app_backend } from '@fuzdev/fuz_app/server/app_backend.ts';
-```
-
-## Tests Mirror the Subdirectory Structure
-
-Tests live in `src/test/` (NOT co-located) and mirror `src/lib/`
-subdirectories — `src/lib/auth/keyring.ts` → `src/test/auth/keyring.test.ts`.
-See ./testing-patterns.md for the full test file layout, naming, and fixtures.
+**Consumers import individual modules by full path** — the subdirectory is
+part of the import path (`@fuzdev/fuz_app/env/load.ts`), never hidden behind
+re-exports. Tests mirror the structure: `src/lib/auth/keyring.ts` →
+`src/test/auth/keyring.test.ts` (see ./testing-patterns.md).

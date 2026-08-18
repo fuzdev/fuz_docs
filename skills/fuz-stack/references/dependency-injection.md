@@ -147,7 +147,8 @@ side.)
 | Stub factory      | `stub_{scope}_deps`         | `stub_app_deps`                      |
 
 File naming: `deps.ts` (interfaces) + `deps_defaults.ts` (production
-defaults) + a test-side `mock_deps.ts` — fuz_css is the cleanest exemplar
+defaults) + a test-side mock module (fuz_css keeps it at
+`src/test/fixtures/mock_deps.ts`) — fuz_css is the cleanest exemplar
 (`CacheDeps` / `default_cache_deps` / `create_mock_cache_deps`).
 
 **Legacy `*Operations` naming (fuz_gitops)**: an older spelling of the same
@@ -361,9 +362,10 @@ Failure modes seen in real code — each with the rule that avoids it:
   (`query_account_by_id(...)` imported directly) leave `vi.mock` as the only
   test seam — this is how module-mocking creeps back in. Where a module's
   callers need to substitute behavior in tests, thread the function through
-  a deps param. fuz_app documents its remaining bearer-auth query cluster as
-  an explicit carve-out (module mocks with `vi.restoreAllMocks()` hygiene);
-  treat any new instance as a smell, not a precedent.
+  a deps param. fuz_app documents its remaining auth `query_*` module-mock
+  cluster (bearer auth plus several other middleware tests) as an explicit
+  carve-out with `vi.restoreAllMocks()` hygiene; treat any new instance as a
+  smell, not a precedent.
 - **God-type coupling.** `Pick<Composite, ...>` at leaf functions, or
   passing the app composite down more than one level. Composites exist for
   the wiring layer.

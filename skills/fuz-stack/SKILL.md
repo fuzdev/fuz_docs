@@ -272,11 +272,14 @@ patterns, and drift-detection guidance.
   description carries the tag — name the columns, cascades, or side channels a
   reader wouldn't guess. When the method name already says it, omit the tag
   rather than writing a bare `` @mutates `target` ``
+- `@internal`: marks a symbol as not-stable API — stays fully documented
+  (consumers can badge or filter); use `@nodocs` to remove from docs entirely
 - `@nodocs`: exclude from docs and flat namespace validation
 - Wrap identifier references in backticks for auto-linking via `mdz`
 
 **Tag order**: description → `@param` → `@returns` → `@mutates` → `@throws` →
-`@example` → `@deprecated` → `@see` → `@since` → `@default` → `@nodocs`
+`@example` → `@deprecated` → `@see` → `@since` → `@default` → `@internal` →
+`@nodocs`
 
 ## Documentation System
 
@@ -343,11 +346,11 @@ to avoid.
 
 ### Runes API
 
-`$state()` for all reactive state — it proxies objects and arrays so in-place
-mutation (push, splice, property writes, `bind:` on object properties) triggers
-updates. `$state.raw()` is a performance opt-out for large wholesale-replaced
-values, not a default. `$derived` for computed values, `$effect` for side
-effects.
+`$state.raw()` is the default for reactive state — it tracks reassignment
+only, making the update contract explicit (replace, don't mutate). Proxied
+`$state()` is for values mutated in place (push, splice, property writes,
+`bind:` on object properties) — those need the proxy to trigger updates.
+`$derived` for computed values, `$effect` for side effects.
 
 ### Context Pattern
 
@@ -392,7 +395,7 @@ no `<style>` block at all.
 1. Semantic HTML (right element, no class)
 2. Built-in conventions (`.selected`, `.palette_a`–`.palette_j`, `.inline`, `.unstyled`)
 3. Composite classes (`row`, `column`, `box`, `panel`, `chip`, `ellipsis`)
-4. Token classes (`p_md`, `gap_lg`, `palette_a_50`) — spacing tokens are the most-used family
+4. Token classes (`p_md`, `gap_lg`, `color_a_50`) — spacing tokens are the most-used family
 5. Literal classes (`display:flex`, `width:100%`, `hover:opacity:80%`)
 6. `<style>` block with design tokens
 
@@ -493,7 +496,7 @@ Use `describe` blocks to organize tests — one or two levels deep is typical.
 Use `test()` (not `it()`).
 
 Split large suites with dot-separated aspects: `{module}.{aspect}.test.ts`
-(e.g., `csp.core.test.ts`, `csp.security.test.ts`). Database tests use
+(e.g., `csp.base.test.ts`, `csp.security.test.ts`). Database tests use
 `.db.test.ts` suffix to opt into shared PGlite WASM via vitest `projects`
 (see ./references/testing-patterns.md).
 

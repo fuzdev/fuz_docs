@@ -31,9 +31,12 @@ files, dispatches per file type (`.ts`/`.js` vs `.svelte`), parses TSDoc/JSDoc
 `@module`, `@default`, `@nodocs`, `@mutates`), merges re-exports into
 `alsoExportedFrom` (svelte-docinfo's API is camelCase — it targets the broad
 Svelte ecosystem, not fuz conventions), sorts
-modules, and checks for duplicate names in the flat namespace. It ships a CLI,
-a Vite plugin (`svelte-docinfo/vite.js`), and a build-tool-agnostic API. fuz_ui
-depends on it as a dev dependency — importing its types and a few runtime
+modules, and checks for duplicate names in the flat namespace. Besides
+`modules`, `virtual:svelte-docinfo` also exports `diagnostics`
+(author-facing tag problems like `misplaced_tag` and `unknown_param`) — no
+repo consumes it yet, but it's the answer to "did my tags land?". It ships a
+CLI, a Vite plugin (`svelte-docinfo/vite.js`), and a build-tool-agnostic API.
+fuz_ui depends on it as a dev dependency — importing its types and a few runtime
 helpers — while the heavy per-project module analysis runs in each _consumer's_
 build via the Vite plugin, not at fuz_ui's runtime.
 
@@ -73,7 +76,9 @@ Categories group tomes in sidebar navigation; project-specific:
 ### Registry
 
 Every project with docs has `src/routes/docs/tomes.ts` (examples here use the
-`#routes`/`#lib` subpath aliases — a new repo must declare them in
+`#routes`/`#lib` subpath aliases — the target convention, but only fuz_app
+declares them today; the reference implementations fuz_ui and fuz_css still
+use `$lib`/`$routes`. A new repo must declare `#lib/*`/`#routes/*` in
 `package.json` `imports`, or adapt to its existing aliases):
 
 ```typescript
@@ -227,9 +232,10 @@ and that only surfaces at SSR/prerender (`gro build`) — not in `gro typecheck`
 or `gro test`. So it must be set by a layout that is a common ancestor of
 every component that reads it (`DeclarationLink`, `ModuleLink`, `TypeLink`,
 `DocsTertiaryNav`, and `Mdz` with an injected `DocsLink`). Components that
-take a `library` prop (`LibraryDetail`, `ApiIndex`, `ApiModule`) project it
-into the context for their own subtree, so an aggregator can render a foreign
-library without touching the site-level context. Any consumer **outside**
+take a `library` prop project it into the context for their own subtree —
+`LibraryDetail` sets it directly; `ApiIndex`/`ApiModule` resolve
+prop-or-ancestor via `set_library_context_with_fallback` — so an aggregator
+can render a foreign library without touching the site-level context. Any consumer **outside**
 `/docs` provides its own from the same `library.ts` — e.g. an `/about` page or
 a `/skills` subtree:
 

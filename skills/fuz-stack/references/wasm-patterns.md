@@ -247,8 +247,8 @@ outside the macro.
 **wasm-opt needs every non-baseline feature enabled by name** or it rejects the
 instructions: `--enable-bulk-memory` and `--enable-nontrapping-float-to-int`
 are required for any Rust 2024 output, and each `-Ctarget-feature` in
-`.cargo/config.toml` needs its matching `--enable-*` (e.g. `+simd128` →
-`--enable-simd`). Set them in
+`.cargo/config.toml` needs its matching `--enable-*` (`+simd128` →
+`--enable-simd`, `+multivalue` → `--enable-multivalue`). Set them in
 `[package.metadata.wasm-pack.profile.release] wasm-opt = [...]`.
 
 ### TypeScript entry points
@@ -298,8 +298,10 @@ All three share the `tsv_arena` per-thread arenas. `tsv_ffi` and `tsv_napi`
 override `unsafe_code = "allow"` and re-declare the full workspace lint block
 (./rust-patterns.md §Lints). `tsv_ffi` uses raw pointers with
 `tsv_free(ptr, len)` for memory management and wraps every entry point in
-`panic::catch_unwind`, rendering payloads as `{"error": "panic: …"}` — which
-requires the `panic = "unwind"` corpus profile to be effective
+`panic::catch_unwind`, rendering payloads as `{"error": "panic: …"}` —
+effective only under a `panic = "unwind"` profile: `[profile.corpus]` covers
+the differential/fuzz runs and `[profile.napi]` covers the shipped N-API
+artifact; a plain-release build aborts, where the wrapper is inert
 (./rust-patterns.md §Release Profile).
 
 ## Package naming: `_wasm` suffix
@@ -317,8 +319,10 @@ agree.
 - **The three tsv WASM packages come from one crate.** `tsv_wasm` has
   `format`/`parse` cargo features (default = both); the subset packages are
   `--no-default-features --features format|parse` builds. `parse` pulls the
-  language crates' `convert` feature (the AST→JSON layer) + `js-sys`. The
-  umbrella `@fuzdev/tsv_wasm` is the flagship (it ships the JS `tsv` CLI).
+  language crates' `convert` feature (the AST→JSON layer); both features
+  pull `js-sys` (one shared options-bag reader so the two families can't
+  drift — ~0.2% on the format-only package). The umbrella `@fuzdev/tsv_wasm`
+  is the flagship (it ships the JS `tsv` CLI).
 - **Native stays bare, and "tsv" is deliberately overloaded**: the native CLI
   binary (`tsv_cli` crate), the C-FFI lib, and the JS CLI inside
   `@fuzdev/tsv_wasm` are all invoked as `tsv` — same tool, per-runtime

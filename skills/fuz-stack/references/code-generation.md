@@ -83,7 +83,7 @@ export const gen: Gen = {
 | `origin_id`       | `PathId`              | absolute path of the gen file                                   |
 | `origin_path`     | `string`              | `origin_id` relative to the project root                        |
 | `config`          | `GroConfig`           | the project's Gro configuration                                 |
-| `svelte_config`   | `ParsedSvelteConfig`  | parsed svelte.config.js                                         |
+| `svelte_config`   | `Promise<ParsedSvelteConfig>` | parsed svelte.config.js (lazy — resolved on first access)  |
 | `filer`           | `Filer`               | filesystem tracker (file contents, dependency graph)            |
 | `log`             | `Logger`              | scoped logger                                                   |
 | `timings`         | `Timings`             | performance measurement                                         |
@@ -344,18 +344,5 @@ export const gen: Gen = ({ origin_path }) => {
 };
 ```
 
-## Quick Reference
-
-| Export                  | Type      | Source               | Purpose                                    |
-| ----------------------- | --------- | -------------------- | ------------------------------------------ |
-| `Gen`                   | Type      | `@fuzdev/gro/gen.ts` | GenFunction or GenConfig                   |
-| `GenFunction`           | Type      | `@fuzdev/gro/gen.ts` | `(ctx: GenContext) => RawGenResult`        |
-| `GenConfig`             | Interface | `@fuzdev/gro/gen.ts` | generate + optional dependencies           |
-| `GenContext`            | Interface | `@fuzdev/gro/gen.ts` | context passed to gen functions            |
-| `RawGenResult`          | Type      | `@fuzdev/gro/gen.ts` | string, RawGenFile, null, or nested array  |
-| `RawGenFile`            | Interface | `@fuzdev/gro/gen.ts` | output file with content, filename, format |
-| `GenDependencies`       | Type      | `@fuzdev/gro/gen.ts` | 'all', config object, or resolver function |
-| `GenDependenciesConfig` | Interface | `@fuzdev/gro/gen.ts` | patterns? (RegExp[]) and files? (PathId[]) |
-
-`Gen` and `GenContext` are also re-exported from `@fuzdev/gro` (the package
-index).
+All gen types import from `@fuzdev/gro/gen.ts`; `Gen` and `GenContext` are
+also re-exported from `@fuzdev/gro` (the package index).

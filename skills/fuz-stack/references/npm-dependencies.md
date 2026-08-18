@@ -52,6 +52,11 @@ third-party deps, and never appear here.
 | `@eslint/js`           | ESLint's built-in JS rule presets (used only inside the shared eslint-config package)         |
 | `globals`              | Global-identifier sets for ESLint configs (used only inside the shared eslint-config package) |
 
+**Being retired**: `prettier` + `prettier-plugin-svelte` remain in many
+repos' devDependencies but are mid-removal as tsv (`gro format`) takes over —
+don't add them to new repos; removing a repo's last usage is pre-authorized
+cleanup.
+
 ## Release tooling
 
 | Package                     | Purpose                                      |
@@ -80,9 +85,10 @@ third-party deps, and never appear here.
 | `magic-string`              | Source-string edits with sourcemaps   |
 | `@webref/css`               | W3C CSS reference data                |
 | `@jridgewell/trace-mapping` | Sourcemap decoding                    |
-| `dequal`                    | Deep equality                         |
-| `fast-deep-equal`           | Deep equality (fast path)             |
 | `date-fns`                  | Date utilities                        |
+
+(`dequal` and `fast-deep-equal` appear only as benchmark baselines in
+fuz_util — not stack utilities; don't add them to app code.)
 
 ## Backend & server
 
