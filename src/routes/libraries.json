@@ -31311,78 +31311,115 @@
 					"path": "api_search.svelte.ts",
 					"declarations": [
 						{
-							"name": "DeclarationSearchState",
-							"kind": "interface",
-							"typeSignature": "DeclarationSearchState",
-							"sourceLine": 5,
-							"members": [
-								{
-									"name": "query",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "all",
-									"kind": "variable",
-									"typeSignature": "Array<Declaration>"
-								},
-								{
-									"name": "filtered",
-									"kind": "variable",
-									"typeSignature": "Array<Declaration>"
-								}
-							]
-						},
-						{
 							"name": "ApiSearchState",
-							"kind": "interface",
-							"typeSignature": "ApiSearchState",
-							"sourceLine": 11,
+							"kind": "class",
+							"docComment": "Unified search state for the API index page (modules and declarations).",
+							"sourceLine": 8,
 							"members": [
+								{
+									"name": "library",
+									"kind": "variable",
+									"typeSignature": "Library",
+									"modifiers": [
+										"readonly"
+									]
+								},
 								{
 									"name": "query",
 									"kind": "variable",
-									"typeSignature": "string"
+									"typeSignature": "string",
+									"reactivity": "$state"
 								},
 								{
 									"name": "modules",
 									"kind": "variable",
-									"typeSignature": "{\n\t\tall: Array<Module>;\n\t\tfiltered: Array<Module>;\n\t}"
+									"typeSignature": "Array<Module>",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by"
+								},
+								{
+									"name": "modules_filtered",
+									"kind": "variable",
+									"typeSignature": "Array<Module>",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by"
 								},
 								{
 									"name": "declarations",
 									"kind": "variable",
-									"typeSignature": "{\n\t\tall: Array<Declaration>;\n\t\tfiltered: Array<Declaration>;\n\t}"
+									"typeSignature": "Array<Declaration>",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by"
+								},
+								{
+									"name": "declarations_filtered",
+									"kind": "variable",
+									"typeSignature": "Array<Declaration>",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"typeSignature": "(library: Library): ApiSearchState",
+									"parameters": [
+										{
+											"name": "library",
+											"type": "Library"
+										}
+									]
 								}
 							]
 						},
 						{
-							"name": "create_api_search",
-							"kind": "function",
-							"docComment": "Creates unified search state for the API index page (modules and declarations).",
-							"typeSignature": "(library: Library): ApiSearchState",
-							"sourceLine": 26,
-							"parameters": [
-								{
-									"name": "library",
-									"type": "Library"
-								}
-							],
-							"returnType": "ApiSearchState"
-						},
-						{
-							"name": "create_module_declaration_search",
-							"kind": "function",
-							"docComment": "Creates search state for module-specific declaration lists.",
-							"typeSignature": "(declarations: Declaration[]): DeclarationSearchState",
-							"sourceLine": 78,
-							"parameters": [
+							"name": "DeclarationSearchState",
+							"kind": "class",
+							"docComment": "Search state for a module-specific declaration list.",
+							"sourceLine": 43,
+							"members": [
 								{
 									"name": "declarations",
-									"type": "Declaration[]"
+									"kind": "variable",
+									"typeSignature": "Array<Declaration>",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "query",
+									"kind": "variable",
+									"typeSignature": "string",
+									"reactivity": "$state"
+								},
+								{
+									"name": "filtered",
+									"kind": "variable",
+									"typeSignature": "Array<Declaration>",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"typeSignature": "(declarations: Declaration[]): DeclarationSearchState",
+									"parameters": [
+										{
+											"name": "declarations",
+											"type": "Declaration[]"
+										}
+									]
 								}
-							],
-							"returnType": "DeclarationSearchState"
+							]
 						}
 					],
 					"dependencies": [
@@ -37930,9 +37967,9 @@
 						{
 							"name": "effect_with_count",
 							"kind": "function",
-							"docComment": "Runs `fn` in an `$effect`, passing a call count that starts at `initial + 1`.\nCallers branch on the count to skip early runs (`count === 1` is the initial\nrun); `fn` is called on every run so dependent signals are always read.",
+							"docComment": "Runs `fn` in an `$effect`, passing `true` as the `skip` argument for the first `count` runs.\nCalls `fn` even when skipping so callers can read any dependent signals.",
 							"typeSignature": "(fn: (count: number) => void, initial?: number): void",
-							"sourceLine": 6,
+							"sourceLine": 5,
 							"parameters": [
 								{
 									"name": "fn",
@@ -88351,7 +88388,7 @@
 						{
 							"name": "RangeHighlightingOptions",
 							"kind": "interface",
-							"docComment": "Reactive inputs for `create_range_highlighting`. All values are getters so the\nhelper can track the consuming component's reactive state across the call\nboundary (the Svelte 5 getter-injection pattern).",
+							"docComment": "Reactive inputs for `RangeHighlighting`. All values are getters so the\nclass can track the consuming component's reactive state across the call\nboundary (the Svelte 5 getter-injection pattern).",
 							"typeSignature": "RangeHighlightingOptions",
 							"sourceLine": 12,
 							"members": [
@@ -88396,10 +88433,9 @@
 						},
 						{
 							"name": "RangeHighlighting",
-							"kind": "interface",
-							"docComment": "Reactive outputs from `create_range_highlighting`.",
-							"typeSignature": "RangeHighlighting",
-							"sourceLine": 31,
+							"kind": "class",
+							"docComment": "Wires up CSS Custom Highlight API range highlighting for a single element's\ntext node, shared by `CodeHighlight` and `CodeTextarea`. Creates a\n`HighlightManager`, memoizes tokenization, applies/clears ranges in an effect,\nemits DEV warnings for unsupported languages, and tears down on destroy.\n\nMust be constructed during component initialization (it uses `$effect`/`onDestroy`).",
+							"sourceLine": 38,
 							"members": [
 								{
 									"name": "highlighting_disabled",
@@ -88407,23 +88443,21 @@
 									"typeSignature": "boolean",
 									"modifiers": [
 										"readonly"
+									],
+									"reactivity": "$derived.by"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"typeSignature": "(options: RangeHighlightingOptions): RangeHighlighting",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "RangeHighlightingOptions"
+										}
 									]
 								}
 							]
-						},
-						{
-							"name": "create_range_highlighting",
-							"kind": "function",
-							"docComment": "Wires up CSS Custom Highlight API range highlighting for a single element's\ntext node, shared by `CodeHighlight` and `CodeTextarea`. Creates a\n`HighlightManager`, memoizes tokenization, applies/clears ranges in an effect,\nemits DEV warnings for unsupported languages, and tears down on destroy.\n\nMust be called during component initialization (it uses `$effect`/`onDestroy`).",
-							"typeSignature": "(options: RangeHighlightingOptions): RangeHighlighting",
-							"sourceLine": 43,
-							"parameters": [
-								{
-									"name": "options",
-									"type": "RangeHighlightingOptions"
-								}
-							],
-							"returnType": "RangeHighlighting"
 						}
 					],
 					"dependencies": [

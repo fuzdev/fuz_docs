@@ -6,7 +6,8 @@ description: Svelte 5 runes, contexts, snippets, attachments
 
 Svelte 5 runes and patterns used across the Fuz ecosystem — the stack's
 deltas over Svelte's own docs, not a runes tutorial. Always runes mode; no
-legacy syntax (`$:`, `export let`, `on:click`, slots, stores, `use:` actions,
+legacy syntax (`$:`, `export let`, `on:click`, slots, stores — replaced by
+classes with `$state` fields — `use:` actions,
 `<svelte:component this={...}>` — components are dynamic by default — or
 `<svelte:self>` — import the component and reference it by name). Await
 expressions in components (`experimental.async`, Svelte 5.36+) are not
@@ -14,23 +15,19 @@ enabled in any stack repo — don't reach for them.
 
 ## State Runes
 
-### `$state()` is the default
+### `$state()` vs `$state.raw()`
 
 Only make a variable reactive when something reads it reactively — an
 `$effect`, `$derived`, or template expression. Everything else is a normal
 variable.
 
-`$state()` for reactive state — it makes objects and arrays deeply reactive
-via proxies, so in-place mutation (`push`, `splice`, `sort`, index assignment,
-property writes, `bind:value={obj.field}`) triggers updates.
-
-`$state.raw()` is a performance opt-out, not a default: the proxy has
-overhead, so use `raw` for large objects/arrays that are only ever reassigned
-wholesale, never mutated — API responses are the classic case. Mutating a
-`raw` value silently does nothing (no proxy, no update), so `raw` also makes
-the replace-don't-mutate contract explicit — but pick it by update pattern
-and size, not taste. For primitives the two behave identically; use
-`$state()`.
+Reactive state is `$state()`, including objects and arrays mutated in place.
+`$state.raw()` is a performance opt-out: the deep proxy has overhead, so use
+`raw` for large objects/arrays that are only ever reassigned wholesale, never
+mutated — API responses are the classic case. Mutating a `raw` value silently
+does nothing (no proxy, no update), so `raw` also makes the
+replace-don't-mutate contract explicit — but pick it by update pattern and
+size, not taste. For primitives the two behave identically; use `$state()`.
 
 > Migration note: the stack's earlier house style was `raw`-by-default, so
 > existing fields across fuz_ui, fuz_app, and zzz are still `$state.raw()`.
@@ -40,18 +37,6 @@ and size, not taste. For primitives the two behave identically; use
 `structuredClone`, `JSON.stringify`, and `postMessage` all walk through
 `$state()` proxies cleanly — proxy traps return the target's own keys.
 `JSON.stringify` also calls `toJSON()` through the proxy.
-
-```typescript
-let name = $state('');
-let items = $state<string[]>([]);
-items.push('new'); // triggers reactivity through the proxy
-let form_data = $state({ name: '', email: '' });
-form_data.name = 'Alice'; // property write through the proxy
-// bind:value={form_data.name} also works
-
-let results: SearchResults | null = $state.raw(null); // large API response,
-// replaced wholesale — in-place mutation would silently not update
-```
 
 ### The `$state()!` Non-null Assertion Pattern
 
@@ -87,23 +72,11 @@ work correctly.
 
 ## Derived Values
 
-Use `$derived` to compute from state — never `$effect` with assignment.
-Deriveds are writable (assign to override, but the expression re-evaluates on
-dependency change). Derived objects/arrays are not deeply reactive — in the
-rare case you need that, create `$state` inside `$derived.by`.
-
-### `$derived` vs `$derived.by()`
-
-`$derived` takes an expression; `$derived.by()` takes a function for loops,
-conditionals, or multi-step logic:
-
-```typescript
-let doubled = $derived(count * 2);
-let filtered_items = $derived.by(() => {
-	if (!filter) return items;
-	return items.filter((item) => item.name.includes(filter));
-});
-```
+Use `$derived` to compute from state — never `$effect` with assignment —
+with `$derived.by(() => ...)` for multi-step logic. Deriveds are writable
+(assign to override; the expression re-evaluates on dependency change).
+Derived objects/arrays are not deeply reactive — in the rare case you need
+that, create `$state` inside `$derived.by`.
 
 ### `$derived` in Classes
 
@@ -201,37 +174,14 @@ array scans.
 
 ## Schema-Driven Reactive Classes
 
-Zod schemas paired with Svelte 5 runes classes — the schema defines the JSON
-shape, the class adds reactivity and behavior. See ./zod-schemas.md.
-
-### Simple Pattern (fuz_ui)
-
-```typescript
-// theme_state.svelte.ts
-export class ThemeState {
-	theme: Theme = $state()!;
-	color_scheme: ColorScheme = $state()!;
-
-	constructor(options?: ThemeStateOptions) {
-		this.theme = options?.theme ?? default_themes[0]!;
-		this.color_scheme = options?.color_scheme ?? 'auto';
-	}
-
-	toJSON(): ThemeStateJson {
-		return {
-			theme: this.theme,
-			color_scheme: this.color_scheme
-		};
-	}
-}
-```
-
-### Cell Pattern (zzz)
-
-Advanced version with a `Cell` base class that automates JSON hydration from
-Zod schemas. Same rune conventions (`$state()!` for schema fields,
-`readonly $derived` for computed values). See ./zod-schemas.md for the full
-pattern.
+A serializable reactive class pairs three names — `Foo`, `FooJson` (the
+serialized shape), and `FooOptions` (usually `Partial<FooJson>`) — with
+`toJSON(): FooJson` closing the loop. fuz_ui's `ThemeState` (the `$state()!`
+example above) is the simple exemplar; its `ThemeStateJson` is a plain
+interface. zzz's Cell pattern upgrades the shape to a Zod schema and
+automates JSON hydration in a `Cell` base class — same rune conventions
+(`$state()!` for schema fields, `readonly $derived` for computed values).
+See ./zod-schemas.md for the full pattern.
 
 ## Context Patterns
 
@@ -530,21 +480,10 @@ let color = $derived(type === 'danger' ? 'red' : 'green'); // updates with `type
 
 ### Bindable Props
 
-Use `let` (not `const`) for `$bindable()` props:
+Use `let` (not `const`) when destructuring `$bindable()` props:
 
-```svelte
-<script lang="ts">
-	let {
-		value = $bindable(180),
-		children
-	}: {
-		value?: number;
-		children?: Snippet;
-	} = $props();
-</script>
-
-<!-- Usage -->
-<HueInput bind:value={hue} />
+```typescript
+let { value = $bindable(180) }: { value?: number } = $props();
 ```
 
 ### Rest Props with SvelteHTMLElements
@@ -633,26 +572,6 @@ For handlers that only need `stopPropagation` without `preventDefault` (e.g.,
 preventing game input from seeing keystrokes in a chat input), use
 `e.stopPropagation()` directly.
 
-```svelte
-<!-- Claiming an event in a handler -->
-<script lang="ts">
-	import { swallow } from '@fuzdev/fuz_util/dom.ts';
-
-	const on_keydown = (e: KeyboardEvent): void => {
-		if (e.key === 'Enter') {
-			swallow(e);
-			send();
-		} else if (e.key === 'Escape') {
-			swallow(e);
-			close();
-		} else {
-			// only stop propagation, don't prevent default (e.g., typing characters)
-			e.stopPropagation();
-		}
-	};
-</script>
-```
-
 ## Component Composition
 
 ### Module Script Block
@@ -695,7 +614,7 @@ sets it once (`world_ui_context.set(new WorldUiState())` in a layout), and
 descendants `get()` it:
 
 ```typescript
-// world_ui_state.svelte.ts
+// illustrative sketch
 import { create_context } from '@fuzdev/fuz_ui/context_helpers.ts';
 
 export const world_ui_context = create_context<WorldUiState>();
@@ -706,37 +625,16 @@ export class WorldUiState {
 }
 ```
 
-**When module-level runes are fine:** inside a factory function body (see
-below) — the state is scoped to the returned object, not the module.
+Real precedent: fuz_app's `SidebarState` (`ui/sidebar_state.svelte.ts`) —
+same shape plus an options-injected `enabled` getter override, provisioned
+by `AppShell.svelte` via the getter context `sidebar_state_context`.
 
-### Factory Functions with Getter/Setter Proxies
-
-```typescript
-// api_search.svelte.ts (abridged)
-export const create_api_search = (library: Library): ApiSearchState => {
-	let query = $state('');
-
-	const filtered_declarations = $derived.by(() => {
-		const items = query.trim() ? library.search_declarations(query) : library.declarations;
-		// spread before sort — `items` may be the shared source array
-		return [...items].sort((a, b) => a.name.localeCompare(b.name));
-	});
-
-	return {
-		get query() {
-			return query;
-		},
-		set query(v: string) {
-			query = v;
-		},
-		declarations: {
-			get filtered() {
-				return filtered_declarations;
-			}
-		}
-	};
-};
-```
+The same goes for factory functions that close over `$state` and return
+getter/setter proxy objects (`create_foo()` returning
+`{get query() {...}, set query(v) {...}}`) — a common community pattern the
+stack doesn't use. A class expresses the same reactivity with a named type
+and no per-field accessor boilerplate; treat any existing factory of this
+shape as legacy and rewrite it as a class when touching it.
 
 ### Reactive State Classes
 
@@ -749,6 +647,11 @@ export class Dimensions {
 	height: number = $state(0);
 }
 ```
+
+For derived-heavy state, pair writable `$state` fields with `readonly`
+deriveds — fuz_ui's `ApiSearchState` (`api_search.svelte.ts`) is the worked
+example: a writable `query` plus `readonly` filtered/sorted `$derived.by`
+fields.
 
 ### Plain Classes for Imperative Loops
 
@@ -783,5 +686,3 @@ Use clsx-style arrays and objects in `class` attributes instead of the
 
 Theming and child-styling mechanics (`style:` on elements, `--prop={v}` on
 components, `:global` as last resort): ./css-patterns.md §Dynamic Theming.
-Stores (`writable`/`readable`) are legacy — classes with `$state` fields
-replace them.
