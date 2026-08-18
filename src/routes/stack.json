@@ -390,7 +390,7 @@
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.6.0",
+			"version": "0.7.0",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",

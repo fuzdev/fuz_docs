@@ -6,48 +6,61 @@ description: Svelte 5 runes, contexts, snippets, attachments
 
 Svelte 5 runes and patterns used across the Fuz ecosystem — the stack's
 deltas over Svelte's own docs, not a runes tutorial. Always runes mode; no
-legacy syntax (`$:`, `export let`, `on:click`, slots, stores, `use:` actions).
+legacy syntax (`$:`, `export let`, `on:click`, slots, stores, `use:` actions,
+`<svelte:component this={...}>` — components are dynamic by default — or
+`<svelte:self>` — import the component and reference it by name). Await
+expressions in components (`experimental.async`, Svelte 5.36+) are not
+enabled in any stack repo — don't reach for them.
 
 ## State Runes
 
-### `$state.raw()` is the default
+### `$state()` is the default
 
-`$state.raw()` for reactive state; proxied `$state()` only where in-place
-mutation is the point. `raw` stores the value directly and tracks only
-reassignment — for primitives the two behave the same, and for objects/arrays
-`raw` makes the update contract explicit: replace, don't mutate. This is the
-house style across fuz_ui, fuz_app, and zzz (fuz_app's `ui/CLAUDE.md`
-documents it; zzz Cell schema fields are `$state.raw()!`), so most fields you
-encounter are `raw`.
+Only make a variable reactive when something reads it reactively — an
+`$effect`, `$derived`, or template expression. Everything else is a normal
+variable.
 
-Reach for proxied `$state()` when mutation drives the updates: `push`,
-`splice`, `sort`, index assignment, property writes, and
-`bind:value={obj.field}` all need the proxy. An accidental `raw` on such a
-value silently breaks reactivity the moment something mutates it in place —
-pick by how the value is updated, not by size or taste.
+`$state()` for reactive state — it makes objects and arrays deeply reactive
+via proxies, so in-place mutation (`push`, `splice`, `sort`, index assignment,
+property writes, `bind:value={obj.field}`) triggers updates.
+
+`$state.raw()` is a performance opt-out, not a default: the proxy has
+overhead, so use `raw` for large objects/arrays that are only ever reassigned
+wholesale, never mutated — API responses are the classic case. Mutating a
+`raw` value silently does nothing (no proxy, no update), so `raw` also makes
+the replace-don't-mutate contract explicit — but pick it by update pattern
+and size, not taste. For primitives the two behave identically; use
+`$state()`.
+
+> Migration note: the stack's earlier house style was `raw`-by-default, so
+> existing fields across fuz_ui, fuz_app, and zzz are still `$state.raw()`.
+> Write new code with `$state()`; migrate opportunistically when touching old
+> fields (checking nothing depends on the raw non-reactivity).
 
 `structuredClone`, `JSON.stringify`, and `postMessage` all walk through
 `$state()` proxies cleanly — proxy traps return the target's own keys.
 `JSON.stringify` also calls `toJSON()` through the proxy.
 
 ```typescript
-let name = $state.raw(''); // primitives: raw is the default
-let selected_id = $state.raw<string | null>(null); // replaced wholesale: raw
-let items = $state<string[]>([]); // proxied on purpose — mutated in place
-items.push('new'); // triggers reactivity
+let name = $state('');
+let items = $state<string[]>([]);
+items.push('new'); // triggers reactivity through the proxy
 let form_data = $state({ name: '', email: '' });
 form_data.name = 'Alice'; // property write through the proxy
-// bind:value={form_data.name} also needs the proxy
+// bind:value={form_data.name} also works
+
+let results: SearchResults | null = $state.raw(null); // large API response,
+// replaced wholesale — in-place mutation would silently not update
 ```
 
-### The `$state.raw()!` Non-null Assertion Pattern
+### The `$state()!` Non-null Assertion Pattern
 
-Class properties initialized by a constructor or `init()` use `$state.raw()!`:
+Class properties initialized by a constructor or `init()` use `$state()!`:
 
 ```typescript
 export class ThemeState {
-	theme: Theme = $state.raw()!;
-	color_scheme: ColorScheme = $state.raw()!;
+	theme: Theme = $state()!;
+	color_scheme: ColorScheme = $state()!;
 
 	constructor(options?: ThemeStateOptions) {
 		this.theme = options?.theme ?? default_themes[0]!;
@@ -56,7 +69,8 @@ export class ThemeState {
 }
 ```
 
-Used across fuz_ui state classes and zzz Cell subclasses.
+Used across fuz_ui state classes and zzz Cell subclasses (older code spells
+it `$state.raw()!` — see the migration note above).
 
 ### `$state.snapshot()`
 
@@ -75,7 +89,8 @@ work correctly.
 
 Use `$derived` to compute from state — never `$effect` with assignment.
 Deriveds are writable (assign to override, but the expression re-evaluates on
-dependency change). Derived objects/arrays are not deeply reactive.
+dependency change). Derived objects/arrays are not deeply reactive — in the
+rare case you need that, create `$state` inside `$derived.by`.
 
 ### `$derived` vs `$derived.by()`
 
@@ -93,7 +108,7 @@ let filtered_items = $derived.by(() => {
 ### `$derived` in Classes
 
 Always mark `$derived` class properties `readonly` unless you explicitly need
-reassignment (which Svelte 5 does allow):
+reassignment (which Svelte 5 does allow).
 
 **Immutable data-wrapper classes use getters + memoization, not `$derived`.**
 fuz_ui's `Library`/`Module`/`Declaration` were rewritten from
@@ -194,8 +209,8 @@ shape, the class adds reactivity and behavior. See ./zod-schemas.md.
 ```typescript
 // theme_state.svelte.ts
 export class ThemeState {
-	theme: Theme = $state.raw()!;
-	color_scheme: ColorScheme = $state.raw()!;
+	theme: Theme = $state()!;
+	color_scheme: ColorScheme = $state()!;
 
 	constructor(options?: ThemeStateOptions) {
 		this.theme = options?.theme ?? default_themes[0]!;
@@ -214,7 +229,7 @@ export class ThemeState {
 ### Cell Pattern (zzz)
 
 Advanced version with a `Cell` base class that automates JSON hydration from
-Zod schemas. Same rune conventions (`$state.raw()!` for schema fields,
+Zod schemas. Same rune conventions (`$state()!` for schema fields,
 `readonly $derived` for computed values). See ./zod-schemas.md for the full
 pattern.
 
@@ -222,7 +237,10 @@ pattern.
 
 ### Creating Context
 
-`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.ts`. Two overloads:
+`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.ts` — the stack's
+standard; it predates Svelte's own `createContext` and serves the same
+type-safety role over raw `setContext`/`getContext`, so don't "upgrade" it.
+Two overloads:
 without a fallback, `get()` throws if unset and `get_maybe()` returns `undefined`;
 with a fallback, `get()` uses it and the `set()` value is optional:
 
@@ -297,6 +315,11 @@ For an inventory of contexts in fuz_ui and zzz, grep for `create_context<`.
 
 ## Snippet Patterns
 
+Snippets declared at a component's top level (not inside elements or blocks)
+can be referenced from `<script>`; one that doesn't touch component state can
+also be referenced from `<script module>` and exported for use by other
+components.
+
 ### Children with Parameters
 
 Children can be parameterized — `Dialog` passes a `DialogContext` object back to
@@ -336,18 +359,37 @@ For props accepting a string or a snippet (e.g. `icon?: string | Snippet`),
 branch on `typeof` at render. fuz_ui's `Card` and `Alert` use this; `Alert` further
 parameterizes with `Snippet<[icon: string]>` to pass the resolved icon back.
 
+## Each Blocks
+
+Prefer keyed each blocks — `{#each items as item (item.id)}` — so Svelte
+inserts/removes items surgically instead of rewriting existing items' DOM.
+The key must uniquely identify the item; never use the index. Don't
+destructure the item when something mutates it
+(`bind:value={item.count}` needs the object reference).
+
 ## Effect Patterns
 
 Effects are an escape hatch — avoid when possible. Prefer:
 
 - `$derived` / `$derived.by()` for computing from state
 - `{@attach}` for syncing with external libraries or DOM
-- Event handlers / function bindings for responding to user interaction
-- `untrack()` for reads that shouldn't create a dependency (config reads,
-  breaking bidirectional-sync loops)
+- Event handlers for responding to user interaction, or function bindings
+  (`bind:value={get, set}`) to validate/transform a bound value
+- `$inspect` for logging values while debugging (dev-only, reruns on change)
+- `createSubscriber` from `svelte/reactivity` for observing something
+  external to Svelte
+- `untrack()` from `svelte` for reads that shouldn't create a dependency
+  (config reads, breaking bidirectional-sync loops)
 
 Don't wrap effect contents in `if (browser) {...}` — effects don't run on the
 server. Avoid updating `$state` inside effects.
+
+### Debugging Reactivity
+
+`$inspect.trace(label)` as the first line of an `$effect` or `$derived.by`
+(or any function they call) traces its dependencies and reports which one
+triggered a rerun — the first tool when something updates too often or not
+at all.
 
 ### Effect Cleanup
 
@@ -442,7 +484,7 @@ shape:
 ```typescript
 // scrollable.svelte.ts (simplified — see source for flex-direction handling)
 export class Scrollable {
-	scroll_y: number = $state.raw(0);
+	scroll_y: number = $state(0);
 	readonly scrolled: boolean = $derived(this.scroll_y > this.threshold);
 
 	container: Attachment = (element) => {
@@ -476,6 +518,15 @@ export class Scrollable {
 | **Class method**              | Attachment shares state with a class      | `Scrollable`  |
 
 ## Props Patterns
+
+Treat props as though they will change: a value computed from a prop uses
+`$derived`, not a one-time assignment at init.
+
+```typescript
+const { type } = $props();
+let color = $derived(type === 'danger' ? 'red' : 'green'); // updates with `type`
+// not: let color = type === 'danger' ? ... — frozen at first render
+```
 
 ### Bindable Props
 
@@ -527,6 +578,12 @@ shared rest props as the common denominator (`HTMLAttributes<HTMLElement>`)
 and take branch-specific attrs as separate props
 (`a_attrs?: SvelteHTMLElements['a']`). `Card`, `Alert`, and `Details` all use
 this `*_attrs` shape.
+
+### `$props.id()`
+
+SSR-safe unique id per component instance — use it for `id`/`for` pairs and
+SVG `<defs>` references instead of hand-rolled counters or `crypto` ids.
+Precedent: fuz_ui's `Sparkline` (gradient id) and `ProjectActivityChart`.
 
 ## Event Handling
 
@@ -629,8 +686,9 @@ instantiate once at the appropriate root, share it via context.
 Don't declare `$state` variables at module scope and expose them through
 getter/setter objects. A module-level rune is a hidden global: it can't be
 reset per test, per realm, or per session; it ties state lifetime to the
-module rather than a component; and a second instance is impossible if you
-later need one.
+module rather than a component; a second instance is impossible if you later
+need one; and during SSR it leaks between requests — one user's state can
+bleed into another's render.
 
 Use a class + context instead — the class owns its state, a root component
 sets it once (`world_ui_context.set(new WorldUiState())` in a layout), and
@@ -643,8 +701,8 @@ import { create_context } from '@fuzdev/fuz_ui/context_helpers.ts';
 export const world_ui_context = create_context<WorldUiState>();
 
 export class WorldUiState {
-	show_map: boolean = $state.raw(false);
-	show_sidebar: boolean = $state.raw(true);
+	show_map: boolean = $state(false);
+	show_sidebar: boolean = $state(true);
 }
 ```
 
@@ -656,7 +714,7 @@ below) — the state is scoped to the returned object, not the module.
 ```typescript
 // api_search.svelte.ts (abridged)
 export const create_api_search = (library: Library): ApiSearchState => {
-	let query = $state.raw('');
+	let query = $state('');
 
 	const filtered_declarations = $derived.by(() => {
 		const items = query.trim() ? library.search_declarations(query) : library.declarations;
@@ -687,8 +745,8 @@ The most common pattern for shared state:
 ```typescript
 // dimensions.svelte.ts
 export class Dimensions {
-	width: number = $state.raw(0);
-	height: number = $state.raw(0);
+	width: number = $state(0);
+	height: number = $state(0);
 }
 ```
 

@@ -115589,7 +115589,7 @@
 	"svelte-docinfo": {
 		"pkg_json": {
 			"name": "svelte-docinfo",
-			"version": "0.6.0",
+			"version": "0.7.0",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
 			"logo": "logo.svg",
@@ -120166,7 +120166,7 @@
 							"kind": "interface",
 							"docComment": "Parsed JSDoc/TSDoc comment with structured metadata.\n\nReturned by `parseComment` — consumers typically pass this to `applyToDeclaration`\nto populate `DeclarationJsonBuild` fields.",
 							"typeSignature": "TsdocParsedComment",
-							"sourceLine": 71,
+							"sourceLine": 73,
 							"members": [
 								{
 									"name": "text",
@@ -120239,7 +120239,7 @@
 								{
 									"name": "mutates",
 									"kind": "variable",
-									"docComment": "Mutation documentation from `@mutates` (non-standard), mapped by parameter name.",
+									"docComment": "Mutation documentation from `@mutates` (non-standard), mapped by target —\ntypically a parameter name, possibly a compound path (`this.foo`) or a\nmulti-word external reference. Empty string for a bare tag with no description.",
 									"typeSignature": "Record<string, string>",
 									"optional": true
 								},
@@ -120257,7 +120257,7 @@
 							"kind": "function",
 							"docComment": "Parse JSDoc comment from a TypeScript node.\n\nExtracts and parses all JSDoc tags including:\n\n- `@param` - parameter descriptions\n- `@returns` - return value description (`@return` accepted as a synonym)\n- `@throws` - error documentation\n- `@example` - code examples\n- `@deprecated` - deprecation warnings\n- `@internal` - internal-API marker (trailing prose kept)\n- `@see` - related references\n- `@since` - version information\n- `@default` - default value (`@defaultValue`/`@defaultvalue` accepted as synonyms)\n- `@mutates` - mutation documentation (non-standard)\n- `@nodocs` - exclusion flag (non-standard)\n\nJSDoc blocks tagged `@module` are excluded entirely (text and tags): a module\ncomment attaches to the file's first statement in the AST, and without the\nfilter it would read as that statement's own docs. `extractModuleComment`\n(`typescript-exports.ts`) owns module comments.",
 							"typeSignature": "(node: Node, sourceFile?: SourceFile): TsdocParsedComment | undefined",
-							"sourceLine": 168,
+							"sourceLine": 205,
 							"examples": [
 								"```ts\nconst tsdoc = parseComment(declarationNode, sourceFile);\nif (tsdoc) {\n  console.log(tsdoc.text); // main comment text\n  console.log(tsdoc.params); // {paramName: 'description'}\n}\n```"
 							],
@@ -120282,7 +120282,7 @@
 							"kind": "function",
 							"docComment": "Whether a parsed comment carries any documentation — description text or an\nextracted tag.\n\nType machinery parses to an empty result (`@type`/`@typedef`/`@template`\ntags populate no fields), so doc-hunting walks (component `docComment`) use\nthis to keep lower-precedence sources like the HTML `@component` comment\nreachable instead of letting an annotation claim the doc slot with empty\ntext. Structural over the parsed result — any field beyond `text`/`params`\ncounts when present — so it can't drift from `parseComment`'s extraction or\nfrom `TsdocParsedComment` gaining fields.",
 							"typeSignature": "({ text, params, ...tags }: TsdocParsedComment): boolean",
-							"sourceLine": 315,
+							"sourceLine": 355,
 							"parameters": [
 								{
 									"name": "__0",
@@ -120296,7 +120296,7 @@
 							"kind": "function",
 							"docComment": "Apply parsed TSDoc metadata to a declaration.\n\nConsolidates the common pattern of assigning TSDoc fields to declarations,\nwith conditional assignment for array fields (only if non-empty).",
 							"typeSignature": "(declaration: MemberJsonBuild | DeclarationJsonBuild, tsdoc: TsdocParsedComment | undefined, isMember?: boolean): void",
-							"sourceLine": 333,
+							"sourceLine": 373,
 							"mutates": {
 								"declaration": "adds docComment, deprecatedMessage, internalMessage, examples, seeAlso, throws, since, mutates, defaultValue fields"
 							},
@@ -120325,7 +120325,7 @@
 							"kind": "function",
 							"docComment": "Clean raw JSDoc comment text by removing comment markers and leading asterisks.\n\nTransforms `/** ... *\\/` style comments into clean text.",
 							"typeSignature": "(commentText: string): string | undefined",
-							"sourceLine": 393,
+							"sourceLine": 433,
 							"examples": [
 								"```ts\ncleanComment('/** Hello world *\\/') // => 'Hello world'\ncleanComment('/**\\n * Line 1\\n * Line 2\\n *\\/') // => 'Line 1\\nLine 2'\n```"
 							],
@@ -120340,7 +120340,7 @@
 							"returnDescription": "cleaned comment text, or undefined if empty after cleaning"
 						}
 					],
-					"moduleComment": "TSDoc/JSDoc parsing helpers using the TypeScript compiler API.\n\nProvides `parseComment` for extracting JSDoc/TSDoc from TypeScript nodes.\nPrimarily designed for build-time code generation but can be used at runtime.\n\n## Design\n\nPure extraction approach: extracts documentation as-is with minimal transformation,\npreserving source intent. Works around TypeScript compiler API quirks where needed.\n\nSupports both regular TypeScript and Svelte components (via svelte2tsx output).\n\n## Tag support\n\nSupports the common JSDoc/TSDoc doc tags as used across the TypeScript ecosystem:\n`@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@internal`, `@see`,\n`@since`, `@default`, `@nodocs`.\nWhere the two standards spell a tag differently, both spellings are accepted:\n`@return` (JSDoc synonym) parses like `@returns`, and `@defaultValue` (the TSDoc\nspelling, plus JSDoc's lowercase `@defaultvalue` synonym) parses like `@default`.\n\n`@internal` is a marker, not an exclusion: it means \"not stable public API\"\nand lands as `internalMessage` (with any trailing prose; empty string for a\nbare tag) while the declaration stays documented. Use `@nodocs` to exclude\na declaration from output entirely.\n\nThe `@nodocs` tag excludes exports from documentation and flat namespace validation.\nThe declaration is still exported and usable, just not documented.\n\nAlso supports `@mutates` (non-standard) for documenting mutations to parameters or external state.\nFormat: `@mutates target - description of mutation` — the target is everything before the\nfirst ` - ` separator. It is unvalidated: typically a parameter name, but compound paths\n(`this.foo`, `obj.field`) and multi-word external references are accepted; backticks are\nstripped from the target. A separator-less tag is a bare target with an empty description.\n\nThe `@see` tag supports multiple formats: plain URLs (`https://...`), `{@link}` syntax, and module names.\nRelative/absolute path support in `@see` is TBD.\n\n## Behavioral notes\n\nJSDoc blocks tagged `@module` are excluded from `parseComment` entirely (text\nand tags) — module comments attach to the file's first statement in the AST\nand are owned by `extractModuleComment` instead.\n\n`JSDocPropertyLikeTag` nodes (`@property`/`@param` declaring a symbol in a\ntypedef or callback) parse to their own tag description — the only doc such\na declaration can carry.\n\nDue to TS Compiler API limitations:\n- TS API includes dash separator in `@param` tag text; we strip the leading `- ` as it's syntax, not content\n- `@throws` tags have `{Type}` stripped by TS API; fallback regex extracts first word as error type\n- TS API strips URL protocols from `@see` tag text; we use `getText()` to preserve original format including `{@link}` syntax\n\n@see `declaration-build.ts` for `DeclarationJsonBuild`\n@see `typescript-exports.ts` and `svelte.ts` as primary consumers",
+					"moduleComment": "TSDoc/JSDoc parsing helpers using the TypeScript compiler API.\n\nProvides `parseComment` for extracting JSDoc/TSDoc from TypeScript nodes.\nPrimarily designed for build-time code generation but can be used at runtime.\n\n## Design\n\nPure extraction approach: extracts documentation as-is with minimal transformation,\npreserving source intent. Works around TypeScript compiler API quirks where needed.\n\nSupports both regular TypeScript and Svelte components (via svelte2tsx output).\n\n## Tag support\n\nSupports the common JSDoc/TSDoc doc tags as used across the TypeScript ecosystem:\n`@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@internal`, `@see`,\n`@since`, `@default`, `@nodocs`.\nWhere the two standards spell a tag differently, both spellings are accepted:\n`@return` (JSDoc synonym) parses like `@returns`, and `@defaultValue` (the TSDoc\nspelling, plus JSDoc's lowercase `@defaultvalue` synonym) parses like `@default`.\n\n`@internal` is a marker, not an exclusion: it means \"not stable public API\"\nand lands as `internalMessage` (with any trailing prose; empty string for a\nbare tag) while the declaration stays documented. Use `@nodocs` to exclude\na declaration from output entirely.\n\nThe `@nodocs` tag excludes exports from documentation and flat namespace validation.\nThe declaration is still exported and usable, just not documented.\n\nAlso supports `@mutates` (non-standard) for documenting mutations to parameters or external state.\nFormat: `@mutates target - description of mutation` — the target is everything before the\nfirst ` - ` separator. It is unvalidated: typically a parameter name, but compound paths\n(`this.foo`, `obj.field`) and multi-word external references are accepted; backticks are\nstripped from the target so `` `a` `` and `a` are one key. Without a separator the first\nline is a bare target (empty description) and any continuation lines are the description.\n\nThe `@see` tag supports multiple formats: plain URLs (`https://...`), `{@link}` syntax, and module names.\nRelative/absolute path support in `@see` is TBD.\n\n## Behavioral notes\n\nJSDoc blocks tagged `@module` are excluded from `parseComment` entirely (text\nand tags) — module comments attach to the file's first statement in the AST\nand are owned by `extractModuleComment` instead.\n\n`JSDocPropertyLikeTag` nodes (`@property`/`@param` declaring a symbol in a\ntypedef or callback) parse to their own tag description — the only doc such\na declaration can carry.\n\nDue to TS Compiler API limitations:\n- TS API includes dash separator in `@param` tag text; we strip the leading `- ` as it's syntax, not content\n- `@throws` braced types (`{TypeError}`) parse into the tag's typeExpression, not its text —\n  the type is read from there; unbraced text falls back to a first-word-as-type regex\n- TS API strips URL protocols from `@see` tag text; we use `getText()` to preserve original format including `{@link}` syntax\n\n@see `declaration-build.ts` for `DeclarationJsonBuild`\n@see `typescript-exports.ts` and `svelte.ts` as primary consumers",
 					"dependencies": [
 						"declaration-build.ts"
 					],
@@ -120676,7 +120676,7 @@
 							"kind": "type",
 							"docComment": "A function member (method, call signature, method signature).\nHas `parameters`, `returnType`, `returnDescription`, `overloads`.\n\n`optional` reflects a `?` token on the declaration (e.g., `foo?(): void`\non an interface or type literal). Always `false` for index/call/construct\nsignatures and for class methods (TypeScript disallows optional methods on\nclasses).\n\n`name` is the user-chosen method/property identifier, except for call\nsignatures on interfaces and type aliases where it is the literal sentinel\n`'(call)'`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"function\">; name: ZodString; optional: ZodDefault<ZodBoolean>; defaultValue: ZodOptional<ZodString>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 614,
+							"sourceLine": 616,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120686,7 +120686,7 @@
 							"kind": "type",
 							"docComment": "A variable member (property, accessor, index signature, enum value).\nShared fields plus optional `reactivity` for class fields initialized with\na Svelte rune (`$state`, `$state.raw`, `$derived`, `$derived.by`).\n\n`optional` reflects a `?` token on the declaration (e.g., `x?: string`).\nAlways `false` for index signatures and enum values.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"variable\">; optional: ZodDefault<ZodBoolean>; reactivity: ZodOptional<ZodEnum<{ $state: \"$state\"; \"$state.raw\": \"$state.raw\"; $derived: \"$derived\"; \"$derived.by\": \"$derived.by\"; }>>; ... 15 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 643,
+							"sourceLine": 645,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120696,7 +120696,7 @@
 							"kind": "type",
 							"docComment": "A constructor member (class constructor, construct signature).\nHas `parameters`, `overloads` — but not `returnType`/`returnDescription`\n(constructors always return their class).\n\n`name` is narrowed to two literal sentinels: `'constructor'` for class\nconstructors and `'(construct)'` for interface/type-alias construct\nsignatures (which share `kind: 'constructor'` but originate from\n`getConstructSignatures()` on a non-class type — no user-chosen identifier\nexists). The literal is preserved (rather than omitted) so `getDisplayName`\nand consumer renderers reading `member.name` keep working without a\nconstructor-specific branch.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"constructor\">; name: ZodUnion<readonly [ZodLiteral<\"constructor\">, ZodLiteral<\"(construct)\">]>; parameters: ZodDefault<ZodArray<ZodObject<...>>>; ... 13 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 676,
+							"sourceLine": 678,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120706,7 +120706,7 @@
 							"kind": "type",
 							"docComment": "Metadata for a nested declaration within a class, interface, type, or enum.\n\nDiscriminated union on `kind` with 3 variants: `FunctionMemberJson`,\n`VariableMemberJson`, `ConstructorMemberJson`. Use `isKind` (in\n`declaration-helpers.ts`) to narrow, or check `member.kind` directly.\n\nDoes not include fields that exist on declarations but not on members\n(`extends`, `externalTypes`, `implements`, `props`, `alsoExportedFrom`, `aliasOf`).\n\nNesting is exactly one level deep — members never contain their own members.",
 							"typeSignature": "ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; name: ZodString; optional: ZodDefault<ZodBoolean>; defaultValue: ZodOptional<ZodString>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>, ZodObject<...>, ZodObject<...>], \"kind\">",
-							"sourceLine": 696,
+							"sourceLine": 698,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120715,14 +120715,14 @@
 							"name": "MemberJsonInput",
 							"kind": "type",
 							"typeSignature": "{ kind: \"function\"; name: string; optional?: boolean | undefined; defaultValue?: string | undefined; returnType?: string | undefined; returnTypeInfo?: TypeJson | undefined; ... 15 more ...; genericParams?: { ...; }[] | undefined; } | { ...; } | { ...; }",
-							"sourceLine": 701
+							"sourceLine": 703
 						},
 						{
 							"name": "FunctionDeclarationJson",
 							"kind": "type",
 							"docComment": "A function declaration. Has `parameters`, `returnType`, `returnDescription`, `overloads`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnTypeInfo: ZodOptional<ZodType<TypeJson, TypeJson, $ZodTypeInternals<TypeJson, TypeJson>>>; ... 18 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 756,
+							"sourceLine": 758,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120732,7 +120732,7 @@
 							"kind": "type",
 							"docComment": "A class declaration. Has `members`, `extends`, `implements`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"class\">; extends: ZodDefault<ZodArray<ZodString>>; externalTypes: ZodDefault<ZodArray<ZodString>>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 765,
+							"sourceLine": 767,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120742,7 +120742,7 @@
 							"kind": "type",
 							"docComment": "An interface declaration. Has `members`, `extends`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"interface\">; extends: ZodDefault<ZodArray<ZodString>>; externalTypes: ZodDefault<ZodArray<ZodString>>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 807,
+							"sourceLine": 809,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120752,7 +120752,7 @@
 							"kind": "type",
 							"docComment": "A type alias declaration. Has `members`, `externalTypes`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"type\">; externalTypes: ZodDefault<ZodArray<ZodString>>; typeInfo: ZodOptional<ZodType<TypeJson, TypeJson, $ZodTypeInternals<...>>>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 864,
+							"sourceLine": 866,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120762,7 +120762,7 @@
 							"kind": "type",
 							"docComment": "A variable declaration. Has optional `reactivity` for top-level rune-module\nexports (e.g., `export let count = $state(0)` in `.svelte.ts` or `<script module>`).",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"variable\">; reactivity: ZodOptional<ZodEnum<{ $state: \"$state\"; \"$state.raw\": \"$state.raw\"; $derived: \"$derived\"; \"$derived.by\": \"$derived.by\"; }>>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 937,
+							"sourceLine": 939,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120772,7 +120772,7 @@
 							"kind": "type",
 							"docComment": "An enum declaration. Has `members` for enum values.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"enum\">; members: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; name: ZodString; optional: ZodDefault<ZodBoolean>; ... 18 more ...; genericParams: ZodDefault<...>; }, $strict>, ZodObject<...>, ZodObject<...>], \"kind\">>>; ... 15 more ...; genericPara...",
-							"sourceLine": 951,
+							"sourceLine": 953,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120782,7 +120782,7 @@
 							"kind": "type",
 							"docComment": "A Svelte component declaration. Has `props`, `externalTypes`, `acceptsChildren`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"component\">; externalTypes: ZodDefault<ZodArray<ZodString>>; props: ZodDefault<ZodArray<ZodObject<{ examples: ZodDefault<ZodArray<ZodString>>; ... 11 more ...; parameters: ZodOptional<...>; }, $strict>>>; ... 17 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 961,
+							"sourceLine": 963,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120792,7 +120792,7 @@
 							"kind": "type",
 							"docComment": "A Svelte snippet declaration exported from `<script module>`. Has `parameters`.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"snippet\">; parameters: ZodDefault<ZodArray<ZodObject<{ name: ZodString; type: ZodString; typeInfo: ZodOptional<ZodType<TypeJson, TypeJson, $ZodTypeInternals<TypeJson, TypeJson>>>; ... 4 more ...; propertyDescriptions: ZodOptional<...>; }, $strict>>>; ... 15 more ...; genericParams: ZodD...",
-							"sourceLine": 1000,
+							"sourceLine": 1002,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120802,7 +120802,7 @@
 							"kind": "type",
 							"docComment": "A namespace re-export binding: `export * as ns from './x'`.\n\nCarries no inline members — `module` points to the source module whose\ndeclarations are projected under this name. Consumers that want to render\n`ns.a` can deref by reading the source module's `declarations` array.",
 							"typeSignature": "ZodObject<{ kind: ZodLiteral<\"namespace\">; module: ZodString; alsoExportedFrom: ZodDefault<ZodArray<ZodString>>; aliasOf: ZodOptional<ZodObject<{ ...; }, $strict>>; ... 13 more ...; genericParams: ZodDefault<...>; }, $strict>",
-							"sourceLine": 1016,
+							"sourceLine": 1018,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120812,7 +120812,7 @@
 							"kind": "type",
 							"docComment": "Metadata for an exported declaration (function, type, class, component, etc.).\n\nDiscriminated union on `kind` — each variant has only the fields relevant to that kind.\nUse `isKind` (in `declaration-helpers.ts`) to narrow, or check `declaration.kind` directly.",
 							"typeSignature": "ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnTypeInfo: ZodOptional<ZodType<TypeJson, TypeJson, $ZodTypeInternals<...>>>; ... 18 more ...; genericParams: ZodDefault<...>; }, $strict>, ... 7 more ..., ZodObject<...>], \"kind\">",
-							"sourceLine": 1031,
+							"sourceLine": 1033,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120821,14 +120821,14 @@
 							"name": "DeclarationJsonInput",
 							"kind": "type",
 							"typeSignature": "{ kind: \"function\"; name: string; returnType?: string | undefined; returnTypeInfo?: TypeJson | undefined; returnDescription?: string | undefined; parameters?: { name: string; ... 6 more ...; propertyDescriptions?: Record<...> | undefined; }[] | undefined; ... 15 more ...; genericParams?: { ...; }[] | undefined; } | ...",
-							"sourceLine": 1056
+							"sourceLine": 1058
 						},
 						{
 							"name": "ReExportJson",
 							"kind": "type",
 							"docComment": "A same-name re-export edge, from the re-exporting module's side.\n\nEach entry on `ModuleJson.reExports` records that the module's source\ncontains `export {name} from ...` where the canonical declaration lives in\n`module`. This is the forward view of the same fact that\n`alsoExportedFrom` records on the canonical declaration — consumers\nresolve the canonical by `(module, name)`, the same lookup contract as\n`aliasOf`.\n\nSame-name re-exports of analyzed source only. Renamed re-exports appear as\ndeclarations with `aliasOf` in the re-exporting module; star exports live\nin `ModuleJson.starExports`; external re-exports in\n`ModuleJson.externalReExports` / `externalStarExports`. Use\n`resolveExportSurface` (in `postprocess.ts`) to combine all of these into\na module's full export surface — it handles the name dedup (a documented\nsame-name re-export appears both here and as a synthesized alias\ndeclaration) and the ES star semantics (explicit exports shadow\nstar-projected ones, names ambiguous between stars are excluded,\n`default` doesn't project).\n\n`module` points at the *canonical* module (multi-hop chains are resolved),\nnot the immediate specifier in the export statement. For Svelte default-slot\nre-exports (`export {default} from './X.svelte'`), `name` is the component\nname derived from the filename (`'X'`), matching the canonical declaration's\nname — the same exception documented on `aliasOf`. Because of that\nre-keying, two entries in one module can share a `name` (a re-keyed\ncomponent colliding with a same-name re-export from another module);\n`(module, name)` pairs remain unique (exact duplicates are deduped at\nconstruction).\n\n`@nodocs` on the export statement suppresses the entry (and the\n`alsoExportedFrom` back-link). When the canonical declaration itself is\n`@nodocs`, or the canonical module isn't part of the analyzed set, the\nentry still exists but has no matching back-link — the same presence\ncaveat as `aliasOf.module` and `starExports`.",
 							"typeSignature": "ZodObject<{ name: ZodString; module: ZodString; typeOnly: ZodDefault<ZodBoolean>; sourceLine: ZodOptional<ZodNumber>; }, $strict>",
-							"sourceLine": 1095,
+							"sourceLine": 1097,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120837,7 +120837,7 @@
 							"name": "ReExportJsonInput",
 							"kind": "type",
 							"typeSignature": "{ name: string; module: string; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }",
-							"sourceLine": 1114,
+							"sourceLine": 1116,
 							"members": [
 								{
 									"name": "name",
@@ -120872,7 +120872,7 @@
 							"kind": "type",
 							"docComment": "A re-export whose immediate target is outside the analyzed source set —\n`export {x} from 'pkg'`, `export {x as y} from 'pkg'`, or\n`export * as ns from 'pkg'`.\n\n`specifier` is the module specifier as written (usually a package name);\nthere is no canonical declaration to resolve, so these entries are flat\nfacts about the statement rather than edges into the module graph.\n\nOnly statements that *directly* reference the external specifier are\ncaptured. Forms that stay silent: `import {x} from 'pkg'; export {x};`\n(import-then-export), re-export chains that reach a package through\nanother source module (that module owns the entry), and specifiers the\nchecker can't resolve. Statement-level `@nodocs` suppresses the entry.",
 							"typeSignature": "ZodObject<{ name: ZodString; specifier: ZodString; originalName: ZodOptional<ZodString>; typeOnly: ZodDefault<ZodBoolean>; sourceLine: ZodOptional<...>; }, $strict>",
-							"sourceLine": 1131,
+							"sourceLine": 1133,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120881,7 +120881,7 @@
 							"name": "ExternalReExportJsonInput",
 							"kind": "type",
 							"typeSignature": "{ name: string; specifier: string; originalName?: string | undefined; typeOnly?: boolean | undefined; sourceLine?: number | undefined; }",
-							"sourceLine": 1148,
+							"sourceLine": 1150,
 							"members": [
 								{
 									"name": "name",
@@ -120923,7 +120923,7 @@
 							"kind": "type",
 							"docComment": "Metadata for a source module — the top-level container in the data model.\n\n`analyze` and `analyzeFromFiles` return `Array<ModuleJson>` sorted alphabetically by `path`.\nEach module contains its exported `declarations`, dependency graph, and optional `moduleComment`.",
 							"typeSignature": "ZodObject<{ path: ZodString; declarations: ZodDefault<ZodArray<ZodDiscriminatedUnion<[ZodObject<{ kind: ZodLiteral<\"function\">; returnType: ZodOptional<ZodString>; returnTypeInfo: ZodOptional<...>; ... 18 more ...; genericParams: ZodDefault<...>; }, $strict>, ... 7 more ..., ZodObject<...>], \"kind\">>>; ... 7 more .....",
-							"sourceLine": 1156,
+							"sourceLine": 1158,
 							"alsoExportedFrom": [
 								"index.ts"
 							]
@@ -120932,7 +120932,7 @@
 							"name": "ModuleJsonInput",
 							"kind": "type",
 							"typeSignature": "{ path: string; declarations?: ({ kind: \"function\"; name: string; returnType?: string | undefined; returnTypeInfo?: TypeJson | undefined; returnDescription?: string | undefined; ... 16 more ...; genericParams?: { ...; }[] | undefined; } | ... 7 more ... | { ...; })[] | undefined; ... 7 more ...; partial?: boolean | ...",
-							"sourceLine": 1212,
+							"sourceLine": 1214,
 							"members": [
 								{
 									"name": "path",

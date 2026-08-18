@@ -340,17 +340,17 @@ caveat, anti-patterns, and formatter cautions.
 ## Svelte 5 Patterns
 
 See ./references/svelte-patterns.md for `$derived.by()`, reactive collections
-(SvelteMap/SvelteSet), schema-driven reactive classes, snippets, effects,
-attachments, props, event handling, component composition, and legacy features
-to avoid.
+(SvelteMap/SvelteSet), schema-driven reactive classes, snippets, keyed each
+blocks, effects, attachments, props, event handling, component composition,
+debugging reactivity, and legacy features to avoid.
 
 ### Runes API
 
-`$state.raw()` is the default for reactive state — it tracks reassignment
-only, making the update contract explicit (replace, don't mutate). Proxied
-`$state()` is for values mutated in place (push, splice, property writes,
-`bind:` on object properties) — those need the proxy to trigger updates.
-`$derived` for computed values, `$effect` for side effects.
+`$state()` for all reactive state — it proxies objects and arrays so in-place
+mutation (push, splice, property writes, `bind:` on object properties) triggers
+updates. `$state.raw()` is a performance opt-out for large wholesale-replaced
+values, not a default. `$derived` for computed values, `$effect` for side
+effects.
 
 ### Context Pattern
 
