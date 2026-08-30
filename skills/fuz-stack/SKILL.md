@@ -484,6 +484,16 @@ See ./references/zod-schemas.md for branded types, transform pipelines,
 discriminated unions, route specs, schemas as runtime data, instance schemas
 (zzz Cell), and introspection.
 
+## Query Modules (DB)
+
+One query module per table (`query_<table>_<verb>`, `deps: QueryDeps` first,
+`assert_row` on `INSERT … RETURNING`). Every read projects through the
+table's exported `*_COLUMNS` const — never `SELECT *` — rendered at the
+site via `columns_sql` / `qualify_columns` / `omit_columns`, and each const
+is drift-guarded against the live schema (`assert_columns_match_live`).
+The Rust twin uses the same identifiers with positional decode in const
+order. See ./references/db-patterns.md.
+
 ## Testing
 
 Tests live in `src/test/` (NOT co-located). Use `assert` from vitest —
@@ -528,7 +538,7 @@ Rust solves with the type system + crate graph what TS solves with `*Deps`
 injection. These references own _conventions and patterns_ — adoptable by any
 Rust workspace, including new/external ones, with ecosystem repos as
 exemplars; each repo's `CLAUDE.md` owns its inventory (crates, commands, env
-vars). Five references, loaded on demand:
+vars). Six references, loaded on demand:
 
 - **./references/rust-patterns.md** — the new-workspace checklist, strict
   lints (`unsafe_code = "forbid"`, pedantic + nursery + restriction lints;
@@ -539,6 +549,10 @@ vars). Five references, loaded on demand:
   make-impossible-states-unrepresentable idiom (zap_types is the reference),
   CLI/exit-code patterns, and shared patterns (sandboxed eval, transactional
   state files, CAS, bounded reads, type state, secret masking).
+- **./references/db-patterns.md** — query-module shape, the per-table
+  `*_COLUMNS` const + `fuz_db::qualify_columns` projection, positional
+  decode with compile-time name→index (`fuz_db::col!`), and the
+  `tests/columns.rs` drift guard (TS twin in the same doc).
 - **./references/rust-spine.md** — the spine crate map, consumer-server
   contracts (`run_app`, `RunAppOptions`, the `testing_*` sibling binary),
   the `fuz_http` JSON-RPC envelope, env loading, daemon lifecycle by
