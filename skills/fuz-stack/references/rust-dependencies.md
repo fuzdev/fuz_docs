@@ -54,6 +54,7 @@ in the fuz workspace), and `http-body-util` as a dev-dependency of
 | `url`                                                      | URL parsing                                                                                            |
 | `tempfile`                                                 | Temp files/dirs (`NamedTempFile`)                                                                      |
 | `smallvec`                                                 | Stack-allocated small vectors                                                                          |
+| `bytes`                                                    | Cheaply-cloneable byte buffers (Postgres wire params in `fuz_db`)                                      |
 | `bumpalo`                                                  | Arena allocation (`collections` feature) — tsv's core AST strategy; see ./rust-perf.md §Arena allocation |
 | `phf`                                                      | Compile-time perfect-hash maps/sets (keyword tables)                                                   |
 | `unicode-ident` / `unicode-segmentation` / `unicode-width` | Unicode text handling                                                                                  |
