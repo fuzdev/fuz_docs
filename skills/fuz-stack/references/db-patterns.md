@@ -78,6 +78,7 @@ from `db/sql_columns.ts`:
 | `columns_sql(COLS)`                | single-table reads + `RETURNING` → `a, b, c`                                                                                                  |
 | `qualify_columns(COLS, 'i')`       | reads that alias the table (JOINs) → `i.a, i.b, i.c`                                                                                          |
 | `omit_columns(COLS, 'token_hash')` | a client-safe subset — throws on an unknown name so a typo can't keep the secret column on the wire (`as const` makes it a compile error too) |
+| `iso8601_timestamp_expr(COLS, ['created_at'])` | the `expr` override projecting the named timestamp columns through `iso8601_timestamp_column`; curried by alias, throws on a name outside `COLS` |
 
 Derived columns that aren't table columns (a correlated `COUNT(*) AS
 grant_count`) are **appended as expressions** next to the rendered const,
@@ -125,10 +126,11 @@ pub const CELL_GRANT_COLUMNS: [&str; 8] = [
 ];
 
 fn grant_columns(alias: &str) -> String {
-    qualify_columns(&CELL_GRANT_COLUMNS, alias, |col| match col {
-        "created_at" => Some(iso8601_timestamp_column(alias, col)),
-        _ => None,
-    })
+    qualify_columns(
+        &CELL_GRANT_COLUMNS,
+        alias,
+        iso8601_timestamp_expr(&CELL_GRANT_COLUMNS, &["created_at"], alias),
+    )
 }
 
 fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError> {
@@ -149,6 +151,24 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
   client-safe or payload-free read — derived, so the base const's guard
   still covers it, and it panics on an unknown name so a typo can't keep
   the column it meant to hide.
+- **Timestamps project through one call, not a hand-written `match`** —
+  `fuz_db::iso8601_timestamp_expr(&COLS, &["created_at"], alias)` builds the
+  `expr` override for every timestamp the wire shape needs, and panics on a
+  name outside `COLS` (the same hazard `omit_columns` guards: a misspelled
+  timestamp would silently ship a raw Postgres timestamp). The TS twin is
+  `iso8601_timestamp_expr(COLS, ['created_at'])`, curried by alias because TS
+  reads rows by name. A projection that *also* overrides a non-timestamp
+  column keeps its `match` and falls through — bind the closure to a local
+  outside the `match`: the returned closure borrows the `&["…"]` slice
+  literal, and a temporary built inside an arm dies at the end of that arm:
+
+  ```rust
+  let timestamps = iso8601_timestamp_expr(&CELL_COLUMNS, &["created_at"], alias);
+  qualify_columns(&CELL_COLUMNS, alias, |col| match col {
+      "data" => Some(format!("{alias}.data::text")),
+      _ => timestamps(col),
+  })
+  ```
 - **Decode is positional on the wire, name-checked at compile time** —
   through **one decoder per row shape**, each index resolved by
   `fuz_db::col!` against the const:

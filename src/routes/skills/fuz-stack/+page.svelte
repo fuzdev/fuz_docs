@@ -5,7 +5,7 @@
 	import MdzRoot from '@fuzdev/mdz/MdzRoot.svelte';
 	import Code from '@fuzdev/fuz_code/Code.svelte';
 
-	import {skill_main} from './skill_data.ts';
+	import { skill_main } from './skill_data.ts';
 </script>
 
 <MdzRoot codeblock={Code}>
