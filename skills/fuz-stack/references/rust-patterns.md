@@ -107,12 +107,43 @@ unwrap_used = "warn"
 restriction `unreachable = "warn"`; blake3's workspace omits
 `missing_debug_implementations`). Superset-by-design is not drift; the repo's
 `CLAUDE.md` documents it — diff the override against that repo's workspace
-block, not the generic one above. Two tsv extras worth adopting: a
+block, not the generic one above. Two extras worth adopting: a
 `[workspace.lints.rustdoc]` block denying `broken_intra_doc_links` (plus
 `invalid_html_tags`/`bare_urls`/`redundant_explicit_links`) — a doc link is
 the only machine-checkable claim a doc comment makes, and re-declared
 crate-level lint blocks must re-carry it too — and a `rust-toolchain.toml`
-pin, since floating stable breaks on new nursery lints.
+pin, since floating stable breaks on new nursery lints. tsv and fuz_forge both
+carry the rustdoc block; `private_intra_doc_links` stays at its default warn
+where module headers deliberately link private members.
+
+#### Running the doc-link gate
+
+```bash
+cargo doc --no-deps --workspace --document-private-items
+```
+
+Three things about this gate are easy to get wrong, and all three have bitten:
+
+- **rustdoc lints fire under `cargo doc` alone** — never under `cargo build`,
+  `cargo test`, or `cargo clippy`. A workspace that runs only those three has
+  the lint configured and ungated.
+- **The pass condition is the exit code, not a warning grep.** Under `deny` an
+  unresolved link is an `error:`, so a check like
+  `grep -c '^warning: unresolved link'` returns `0` on a *broken* doc exactly as
+  it does on a clean one. Gate on the command's exit status.
+- **`--document-private-items` is part of the gate, not a nicety.** Rustdoc
+  resolves links only inside the items it documents, so without the flag the
+  reach is each crate's public surface (plus whatever a `pub use` pulls into it)
+  and every doc comment on a private or `pub(crate)` item goes unchecked. The
+  silence hides real breakage: a link like ``[`crate::a::b`]`` whose `b` is a
+  **private module** is *unresolvable* — an error under the `deny`, not a
+  `private_intra_doc_links` warning — and the plain run never reads the comment
+  to say so. The flag costs nothing in noise: both forms emit the same warnings.
+
+A companion trap from clippy's nursery: `doc_link_code` rejects the natural
+`` [`Arc`]`<`[`T`]`>` `` spelling for a generic-shaped intra-doc link. Use
+clippy's own suggested fix — wrap the whole thing in `<code>` — so both halves
+link inside one code span.
 
 ### Crate-level overrides — re-declare the whole block
 
