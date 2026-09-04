@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.DDkWXPvu.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Ds3RgOTj.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.ebepYbgb.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DRX6BIUW.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/B9W4jn5g.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CteNWj7O.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/C-ApBkLR.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BBu7QnBZ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BfAsLhIK.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.BB1MWkWx.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/PPVm8Dsz.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/FR76bLpQ.js" rel="modulepreload">
@@ -36,24 +36,24 @@
 		<link href="/_app/immutable/chunks/C0j2Cue3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/52FsPi6x.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.RKTEJ_1h.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.BCTs5efn.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DYgfqs8Q.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BtiVO2d2.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DwsTf0FO.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CCdnR-TD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CAtQ86t9.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DhVF6tJT.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CSidprIU.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CMtWTZNi.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CnerlKnm.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DJgbxEPV.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CThjJFXF.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DPAcOs89.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/o-hD4zp6.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/lEoJ8KJQ.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/30.BRx1LoBQ.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/E9ny6qZv.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/30._Hii-3l9.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B-ZzAhWK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D5jM5t8d.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/C9EdD3PD.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Dzbi1vxm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CnqG4hB2.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BwXi4MNk.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/nIFTN2w5.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -131,12 +131,29 @@ unwrap_used = "warn"<!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><
 restriction <!--]--><!--[3--><!--[-1--><code>unreachable = "warn"</code><!--]--><!--]--><!--[2-->; blake3's workspace omits
 <!--]--><!--[3--><!--[-1--><code>missing_debug_implementations</code><!--]--><!--]--><!--[2-->). Superset-by-design is not drift; the repo's
 <!--]--><!--[3--><!--[-1--><code>CLAUDE.md</code><!--]--><!--]--><!--[2--> documents it — diff the override against that repo's workspace
-block, not the generic one above. Two tsv extras worth adopting: a
+block, not the generic one above. Two extras worth adopting: a
 <!--]--><!--[3--><!--[-1--><code>[workspace.lints.rustdoc]</code><!--]--><!--]--><!--[2--> block denying <!--]--><!--[3--><!--[-1--><code>broken_intra_doc_links</code><!--]--><!--]--><!--[2--> (plus
 <!--]--><!--[3--><!--[-1--><code>invalid_html_tags</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>bare_urls</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>redundant_explicit_links</code><!--]--><!--]--><!--[2-->) — a doc link is
 the only machine-checkable claim a doc comment makes, and re-declared
 crate-level lint blocks must re-carry it too — and a <!--]--><!--[3--><!--[-1--><code>rust-toolchain.toml</code><!--]--><!--]--><!--[2-->
-pin, since floating stable breaks on new nursery lints.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="crate-level-overrides-re-declare-the-whole-block"><!--[--><!--[2-->Crate-level overrides — re-declare the whole block<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->A crate that needs <!--]--><!--[3--><!--[-1--><code>unsafe_code</code><!--]--><!--]--><!--[2--> (C-FFI/N-API ABI layers, wit-bindgen
+pin, since floating stable breaks on new nursery lints. tsv and fuz_forge both
+carry the rustdoc block; <!--]--><!--[3--><!--[-1--><code>private_intra_doc_links</code><!--]--><!--]--><!--[2--> stays at its default warn
+where module headers deliberately link private members.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h4 id="running-the-doc-link-gate"><!--[--><!--[2-->Running the doc-link gate<!--]--><!--]--><!----></h4><!----><!--]--><!--[15--><!--[0--><!--[--><code data-lang="bash" class="svelte-jqsy8a"><!--[-1--><!---->cargo doc --no-deps --workspace --document-private-items<!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Three things about this gate are easy to get wrong, and all three have bitten:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->rustdoc lints fire under <!--]--><!--[3--><!--[-1--><code>cargo doc</code><!--]--><!--]--><!--[2--> alone<!--]--><!--]--><!----></strong><!--]--><!--[2--> — never under <!--]--><!--[3--><!--[-1--><code>cargo build</code><!--]--><!--]--><!--[2-->,
+<!--]--><!--[3--><!--[-1--><code>cargo test</code><!--]--><!--]--><!--[2-->, or <!--]--><!--[3--><!--[-1--><code>cargo clippy</code><!--]--><!--]--><!--[2-->. A workspace that runs only those three has
+the lint configured and ungated.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->The pass condition is the exit code, not a warning grep.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Under <!--]--><!--[3--><!--[-1--><code>deny</code><!--]--><!--]--><!--[2--> an
+unresolved link is an <!--]--><!--[3--><!--[-1--><code>error:</code><!--]--><!--]--><!--[2-->, so a check like
+<!--]--><!--[3--><!--[-1--><code>grep -c '^warning: unresolved link'</code><!--]--><!--]--><!--[2--> returns <!--]--><!--[3--><!--[-1--><code>0</code><!--]--><!--]--><!--[2--> on a *broken* doc exactly as
+it does on a clean one. Gate on the command's exit status.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>--document-private-items</code><!--]--><!--]--><!--[2--> is part of the gate, not a nicety.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Rustdoc
+resolves links only inside the items it documents, so without the flag the
+reach is each crate's public surface (plus whatever a <!--]--><!--[3--><!--[-1--><code>pub use</code><!--]--><!--]--><!--[2--> pulls into it)
+and every doc comment on a private or <!--]--><!--[3--><!--[-1--><code>pub(crate)</code><!--]--><!--]--><!--[2--> item goes unchecked. The
+silence hides real breakage: a link like ``[<!--]--><!--[3--><!--[-1--><code>crate::a::b</code><!--]--><!--]--><!--[2-->]`` whose <!--]--><!--[3--><!--[-1--><code>b</code><!--]--><!--]--><!--[2--> is a
+<!--]--><!--[4--><strong><!--[--><!--[2-->private module<!--]--><!--]--><!----></strong><!--]--><!--[2--> is *unresolvable* — an error under the <!--]--><!--[3--><!--[-1--><code>deny</code><!--]--><!--]--><!--[2-->, not a
+<!--]--><!--[3--><!--[-1--><code>private_intra_doc_links</code><!--]--><!--]--><!--[2--> warning — and the plain run never reads the comment
+to say so. The flag costs nothing in noise: both forms emit the same warnings.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->A companion trap from clippy's nursery: <!--]--><!--[3--><!--[-1--><code>doc_link_code</code><!--]--><!--]--><!--[2--> rejects the natural
+`` [<!--]--><!--[3--><!--[-1--><code>Arc</code><!--]--><!--]--><!--[2-->]<!--]--><!--[3--><!--[-1--><code>&lt;</code><!--]--><!--]--><!--[2-->[<!--]--><!--[3--><!--[-1--><code>T</code><!--]--><!--]--><!--[2-->]<!--]--><!--[3--><!--[-1--><code>></code><!--]--><!--]--><!--[2--> `` spelling for a generic-shaped intra-doc link. Use
+clippy's own suggested fix — wrap the whole thing in <!--]--><!--[3--><!--[-1--><code>&lt;code></code><!--]--><!--]--><!--[2--> — so both halves
+link inside one code span.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="crate-level-overrides-re-declare-the-whole-block"><!--[--><!--[2-->Crate-level overrides — re-declare the whole block<!--]--><!--]--><!----></h3><!----><!--]--><!--[8--><p><!--[--><!--[2-->A crate that needs <!--]--><!--[3--><!--[-1--><code>unsafe_code</code><!--]--><!--]--><!--[2--> (C-FFI/N-API ABI layers, wit-bindgen
 components, PTY wrappers) can't <!--]--><!--[5--><em><!--[--><!--[2-->partially<!--]--><!--]--><!----></em><!--]--><!--[2--> override the workspace <!--]--><!--[3--><!--[-1--><code>forbid</code><!--]--><!--]--><!--[2-->:
 Cargo replaces the entire <!--]--><!--[3--><!--[-1--><code>[lints]</code><!--]--><!--]--><!--[2--> table, so relaxing one lint means
 re-declaring <!--]--><!--[4--><strong><!--[--><!--[2-->all<!--]--><!--]--><!----></strong><!--]--><!--[2--> the others in the crate's own <!--]--><!--[3--><!--[-1--><code>[lints]</code><!--]--><!--]--><!--[2-->. Re-paste the
@@ -525,15 +542,15 @@ logging for performance; <!--]--><!--[3--><!--[-1--><code>--json</code><!--]--><
 			
 			<script>
 				{
-					__sveltekit_phjr1g = {
+					__sveltekit_owrkq3 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.DDkWXPvu.js"),
-						import("/_app/immutable/entry/app.BBu7QnBZ.js")
+						import("/_app/immutable/entry/start.ebepYbgb.js"),
+						import("/_app/immutable/entry/app.BB1MWkWx.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 30],
