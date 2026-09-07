@@ -4,12 +4,10 @@ description: Query modules, named-column projections, and the schema drift guard
 
 # Database Query Patterns
 
-**Applies to**: any module that reads or writes Postgres rows — `fuz_app`'s
-`auth/*_queries.ts` / `db/*_queries.ts`, the spine crates' `*_queries.rs`
-(`fuz_auth`, `fuz_cell`, …), and a consumer's own tables on either spine.
-Hand-written SQL by design: no query builder, no ORM — the strings stay
-planner-visible, pglet-compatible, and readable across the TS ↔ Rust twin
-(./twin-impl.md).
+**Applies to**: any module reading or writing Postgres rows — `fuz_app`'s
+`*_queries.ts`, the spine crates' `*_queries.rs`, and a consumer's own tables
+on either spine. Hand-written SQL by design: no query builder, no ORM — strings
+stay planner-visible, pglet-compatible, and readable across the TS ↔ Rust twin.
 
 ## Query module shape
 
@@ -64,11 +62,10 @@ export const INVITE_COLUMNS = [
 ] as const;
 ```
 
-Why: `SELECT *` silently omits a dropped column, the hydrated row reads it
-as `undefined`, and a `deleted_at === null` filter then rejects every row —
-a silent total outage instead of an error. A named projection turns the
-same drift into a loud Postgres `column "…" does not exist` at the first
-read. It also keeps a leftover column from riding a strict wire schema.
+Why: with `SELECT *` a dropped column hydrates as `undefined`, and a
+`deleted_at === null` filter then rejects every row — a silent outage. A named
+projection turns the same drift into a loud `column "…" does not exist` at
+first read, and keeps a leftover column off a strict wire schema.
 
 The const is a column-name array; SQL text is rendered **at the read site**
 from `db/sql_columns.ts`:
@@ -80,8 +77,7 @@ from `db/sql_columns.ts`:
 | `omit_columns(COLS, 'token_hash')` | a client-safe subset — throws on an unknown name so a typo can't keep the secret column on the wire (`as const` makes it a compile error too) |
 | `iso8601_timestamp_expr(COLS, ['created_at'])` | the `expr` override projecting the named timestamp columns through `iso8601_timestamp_column`; curried by alias, throws on a name outside `COLS` |
 
-Derived columns that aren't table columns (a correlated `COUNT(*) AS
-grant_count`) are **appended as expressions** next to the rendered const,
+Derived columns that aren't table columns (a correlated `COUNT(*) AS grant_count`) are **appended as expressions** next to the rendered const,
 never added to it — the const must be exactly the table's column set so
 the drift guard below can compare it to the schema.
 
@@ -104,16 +100,12 @@ describe_db('InviteQueries', (get_db) => {
 });
 ```
 
-`assert_columns_match_live` (from `testing/db.ts`) reads
-`information_schema` via `query_public_columns` and `deepEqual`s the sorted
-const — a live DB is the only truth for the migration chain's end state
-(the base DDL string isn't, once migrations append `ALTER TABLE`s). The
-`/ready` deploy gate covers the same drift at deploy time by column
-presence; this guard covers it at development time, per table, in both
-directions.
-
-A consumer adding its own tables follows the identical shape: one const,
-render at the site, one guard test — no registration step.
+`assert_columns_match_live` (`testing/db.ts`) reads `information_schema` via
+`query_public_columns` and `deepEqual`s the sorted const — a live DB is the
+only truth for the migration chain's end state once migrations append `ALTER TABLE`s. The `/ready` deploy gate covers the same drift at deploy time; this
+guard covers it at development time, per table, both directions. A consumer's
+own tables follow the identical shape — one const, render at the site, one
+guard test, no registration.
 
 ## Rust twin
 
@@ -184,8 +176,7 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
 - **Derived (narrowed) projections** — a client-safe listing that omits
   `token_hash`, a metadata read that skips the payload — are *literal*
   consts the decoder `col!`s into, pinned to their derivation by a unit
-  test: `assert_eq!(API_TOKEN_CLIENT_COLUMNS.to_vec(),
-  omit_columns(&API_TOKEN_COLUMNS, &["token_hash"]))`. The base const's
+  test: `assert_eq!(API_TOKEN_CLIENT_COLUMNS.to_vec(), omit_columns(&API_TOKEN_COLUMNS, &["token_hash"]))`. The base const's
   drift guard covers them through the pin.
 - **Purpose rows.** Rust reads deliberately narrow rows the TS twin
   doesn't (`AccountRow` is an identity pair, not the table). Give each
@@ -204,8 +195,7 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
   `CELL_HISTORY_COLUMN_PROJECTIONS`, `FACT_COLUMN_PROJECTIONS`; `fuz_db`'s
   `DB_COLUMN_PROJECTIONS` covers `schema_version`), and the test composes
   the sets for the chains it migrates plus its own tables:
-  `column_projection_mismatches_merged(&live, &[DB_COLUMN_PROJECTIONS,
-  AUTH_COLUMN_PROJECTIONS, …, OWN])`. Never copy a spine chain's
+  `column_projection_mismatches_merged(&live, &[DB_COLUMN_PROJECTIONS, AUTH_COLUMN_PROJECTIONS, …, OWN])`. Never copy a spine chain's
   table→const list into a consumer — compose the exported set, so a spine
   table addition reaches every registry through one edit.
 - Identifiers match the TS side exactly (`CELL_GRANT_COLUMNS`,
@@ -222,8 +212,5 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
 - Hand-editing a projection to "fix" a failing drift test — the test is
   telling you the DDL and the const disagree; decide which is right.
 
-## Related
-
-- ./testing-patterns.md — `describe_db`, database factories, `.db.test.ts`.
-- ./rust-spine.md — the spine crate map the Rust query modules live in.
-- ./twin-impl.md — identifier parity and convergence between the two spines.
+Related: ./testing-patterns.md (`describe_db`, `.db.test.ts`), ./rust-spine.md
+(the spine crate map), ./twin-impl.md (identifier parity).

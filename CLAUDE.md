@@ -126,13 +126,11 @@ skills/
 ├── fuz-stack/
 │   ├── SKILL.md                       # Main skill file (YAML frontmatter + instructions)
 │   ├── references/                    # Detailed documentation loaded as needed
-│   │   ├── async-patterns.md          # Concurrency utilities (semaphore, deferred, concurrent map/each)
 │   │   ├── code-generation.md         # Gro gen system (.gen.* files, dependencies, common patterns)
-│   │   ├── common-utilities.md        # Result type, Logger, Timings, DAG execution, async overview
 │   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
 │   │   ├── dependency-injection.md    # Injectable *Deps interfaces, mock factories, composition patterns
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
-│   │   ├── file-organization.md       # src/ tree, domain subdirectories, full-path imports, test mirroring
+│   │   ├── fuz-util.md                # fuz_util: Result, error helpers, Logger, Timings, concurrency, DAG, type utilities
 │   │   ├── mdz.md                     # mdz dialect: grammar surface, component/element registration, rendering seam, autolink, preprocessor
 │   │   ├── npm-dependencies.md        # Approved external npm package allowlist for TS/Svelte repos
 │   │   ├── path-references.md         # Path typography in docs (navigational vs src/lib module vs code-shaped)
@@ -145,7 +143,6 @@ skills/
 │   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions
 │   │   ├── tsdoc-comments.md          # TSDoc style guide: tags, conventions, drift detection
 │   │   ├── twin-impl.md               # TS ↔ Rust twin implementations: convergence, naming parity, wire crates
-│   │   ├── type-utilities.md          # Nominal typing (Flavored/Branded), strict utility types
 │   │   ├── wasm-patterns.md           # WASM/N-API build targets, WIT, wasm-bindgen, component model (blake3, tsv)
 │   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
 └── grimoire/

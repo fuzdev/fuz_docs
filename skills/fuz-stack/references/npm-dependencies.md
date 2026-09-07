@@ -4,25 +4,17 @@ description: Approved external npm package allowlist for TS/Svelte repos
 
 # Approved npm Dependencies
 
-The canonical allowlist of external npm packages approved for the
-TypeScript/Svelte repos across the ecosystem. Prefer these; reach outside
-the list only with explicit approval (see [§Adding a dependency](#adding-a-dependency)).
+The allowlist of external npm packages for the canonical TS/Svelte repos —
+libraries, apps, sites, tooling (different-paradigm or pre-canonical repos
+carry their own deps). Prefer these; reach outside only with explicit
+approval (§Adding a dependency).
 
-**Scope**: the canonical (non-experimental) TS/Svelte repos — libraries,
-apps, sites, and tooling. Different-paradigm or pre-canonical repos carry
-their own deps and are out of scope here.
-
-**Source of truth**: each repo's `package.json` (`dependencies`,
-`devDependencies`, `peerDependencies`, `optionalDependencies`). This doc is a
-curated, hand-maintained reference to the stack-wide third-party deps — not
-generated, and deliberately **not exhaustive**: narrowly repo-specific deps (one
-app's domain library, an editor extension's typings, a benchmark-only reference
-impl) are left out so the list stays focused on what generalizes across the
-stack. Verify it against the repos periodically.
-
-Packages published by the workspace itself — the `@fuzdev` / `@ryanatkn`
-scopes and unscoped siblings like `svelte-docinfo` — are internal, not
-third-party deps, and never appear here.
+Source of truth is each repo's `package.json`; this hand-maintained list is
+deliberately **not exhaustive** — narrowly repo-specific deps (one app's domain
+library, an editor extension's typings, a benchmark-only reference impl) are
+left out. Workspace-published packages (`@fuzdev` / `@ryanatkn` scopes,
+`svelte-docinfo`) are internal and never appear here. Verify against the repos
+periodically.
 
 ## Language & build toolchain
 
@@ -118,57 +110,43 @@ fuz_util — not stack utilities; don't add them to app code.)
 
 ## Adding a dependency
 
-New packages are added deliberately, not incidentally:
-
-- Prefer `node:` built-ins, then this list, before anything new.
-- A new dependency needs explicit approval — name it, its purpose, what it
-  replaces or enables, and its transitive footprint.
-- Removing an unused dependency is pre-authorized — no approval needed. Verify
-  nothing references it, then drop the entry. Removing the last user of a
-  package? Drop it from this list in the same change.
+Prefer `node:` built-ins, then this list. A new package needs explicit
+approval — name, purpose, what it replaces or enables, transitive footprint.
+Removing an unused dependency is pre-authorized: verify nothing references it,
+drop it, and if it was the last user, drop it from this list in the same
+change.
 
 ## Dependency classification (peer vs dependency vs dev)
 
-For a **published library**, which `package.json` field a package lands in is a
-correctness decision, not bookkeeping.
+For a **published library**, the `package.json` field is a correctness
+decision. Litmus test: _if a consumer ended up with a second copy of this
+package, would anything break?_ Yes → peer. No, but published code imports it →
+`dependencies`. Only the build sees it → `devDependencies`.
 
-- **`peerDependencies`** — a package that must resolve to a **single instance**
-  in the consumer's tree: a framework host (`svelte`, `@sveltejs/kit`) or
-  anything whose instances/types cross the library's API boundary (`zod`
-  schemas, `esm-env` flags). Two copies break `instanceof`, Zod `.brand()`
-  identity, Svelte context keys, and the dev/prod env gate. Required when the
-  public API always reaches it; **optional** (via `peerDependenciesMeta`) when
-  it's an opt-in / à-la-carte path (a preprocessor, a deep-import module many
-  consumers skip). Mirror the version in `devDependencies` so the library's own
-  build/test resolves it. **An optional peer is only safe to leave optional
-  when a _required_ peer guarantees it transitively** — `svelte` and
-  `@sveltejs/kit` both depend on `esm-env`, so a lib that requires either can
-  leave `esm-env` optional. A runtime import of a singleton on a path with
-  **no** required framework peer (e.g. `esm-env` in a node-only utility like
-  `fuz_util/log.ts`) must be a **required** peer instead — npm auto-installs
-  required peers, so the consumer never hits a missing-module crash, where an
-  optional one would.
-- **`dependencies`** — published code imports it, but it's a self-contained
-  internal detail never handed across the API boundary (no singleton hazard) —
-  pin a known-good version.
-- **`devDependencies`** — only used by the library's build/test, never shipped
-  in `dist` (the toolchain: `typescript`, `vite`, `eslint`, `svelte-check`, …).
+- **`peerDependencies`** — must resolve to a **single instance** in the
+  consumer's tree: a framework host (`svelte`, `@sveltejs/kit`) or anything
+  whose instances/types cross the library's API boundary (`zod` schemas,
+  `esm-env` flags). Two copies break `instanceof`, Zod `.brand()` identity,
+  Svelte context keys, and the dev/prod env gate. Mirror the version in
+  `devDependencies` so the library's own build resolves it. Required when the
+  public API always reaches it; **optional** (via `peerDependenciesMeta`) for
+  an opt-in path (a preprocessor, a deep-import module many consumers skip) —
+  but **only when a _required_ peer guarantees it transitively**: `svelte` and
+  `@sveltejs/kit` both depend on `esm-env`, so a lib requiring either can leave
+  `esm-env` optional. A singleton on a path with **no** required framework peer
+  (`esm-env` in a node-only utility like `fuz_util/log.ts`) must be a
+  **required** peer — npm auto-installs those, so the consumer never hits a
+  missing-module crash.
+- **`dependencies`** — published code imports it as a self-contained detail
+  never handed across the API boundary; pin a known-good version. Build-time
+  helpers a consumer never touches (`magic-string`, `zimmerframe` in a Svelte
+  preprocessor) belong here so the library ships its own copy. An optional peer
+  is acceptable for such a helper only when a required framework peer already
+  guarantees it (type-only `@types/estree` via `svelte`, erased at build).
+  Never a `devDependency`-only import — that breaks any consumer who reaches
+  the path.
+- **`devDependencies`** — build/test only, never shipped in `dist`.
 
-Build-time helpers that published code imports but a consumer never interacts
-with (`magic-string`, `zimmerframe` for a Svelte preprocessor) carry no
-singleton hazard — classify them as **`dependencies`** so the library ships its
-own self-contained copy and never leans on a consumer (or a transitive
-framework dep) to supply them. An **optional peer** is acceptable only when the
-helper is already guaranteed by a _required_ framework peer — e.g. a type-only
-`@types/estree` reached through `svelte`, which depends on it, and is erased at
-build anyway. Never a `devDependency`-only import: that breaks any consumer who
-reaches the path. Either `dependencies` or a peer is correct for these; only a
-`devDependency`-only or undeclared import is wrong.
-
-**Apps, sites, and templates are not libraries** — they're leaf deploy targets
-with no installing consumers, so they classify everything as `dependencies` /
-`devDependencies` and never declare peers.
-
-The litmus test: _if a consumer ended up with a second copy of this package,
-would anything break?_ Yes → peer (optional if the path is opt-in). No, but
-published code imports it → dependency. Only the build sees it → devDependency.
+**Apps, sites, and templates are not libraries** — leaf deploy targets with no
+installing consumers; everything is `dependencies`/`devDependencies`, never
+peers.

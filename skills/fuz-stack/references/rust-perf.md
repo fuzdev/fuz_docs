@@ -37,13 +37,12 @@ tsv keeps a `[profile.profiling]` (`inherits = "release"`, `debug = true`,
 | `cargo-instruments` | macOS Instruments                        | allocations on Apple HW                          |
 | Cachegrind          | Instruction counts, I-cache, branch miss | verifying inline/cold heuristics                 |
 
-No Rust bench framework is adopted — no workspace has `[[bench]]` targets.
-Benches are driven from the consumer language (tsv: JS/Deno harnesses in
-`benches/js`; blake3: Deno/Node), measuring the shipped boundary rather than
-an in-crate microcosm; tsv's in-Rust measurement surface is `tsv_debug`'s
-audit harness plus the `parse_internal_*` exports over
-`std::hint::black_box`. If an in-crate microbench ever earns its place,
-Criterion/Divan/Iai-Callgrind go through the dependency-approval gate first.
+No Rust bench framework is adopted — no `[[bench]]` targets. Benches run from
+the consumer language (tsv: JS/Deno harnesses in `benches/js`; blake3:
+Deno/Node), measuring the shipped boundary; tsv's in-Rust surface is
+`tsv_debug`'s audit harness plus the `parse_internal_*` exports over
+`std::hint::black_box`. Criterion/Divan/Iai-Callgrind would go through the
+dependency-approval gate first.
 
 ## Arena allocation (`bumpalo`) — in use in tsv
 

@@ -4,198 +4,153 @@ description: TS ↔ Rust twin implementations — convergence, naming parity, wi
 
 # Twin Implementations (TS ↔ Rust)
 
-**Twin-impl spine** names the architecture: the same backend spine — auth,
-db, http, realtime, actions — ships in two implementations, TypeScript in
-`fuz_app` and Rust in the fuz spine crates (./rust-spine.md), held observably
-equivalent on the wire. Consumers pick one or both. This is a user-facing
-capability, not just a development practice: a project can ignore Rust,
-ignore TS, or run both for robustness and measurement.
+**Twin-impl spine**: the same backend spine — auth, db, http, realtime,
+actions — ships in two implementations, TypeScript in `fuz_app` and Rust in the
+spine crates (./rust-spine.md), held observably equivalent on the wire.
+Consumers pick one or both — a user-facing capability, not just a dev practice.
 
-**Twin-impl convergence** names the discipline: whichever implementation
-lands the better shape — security, correctness, abstraction design, forensic
-detail — becomes the canonical reference, and the other ports to converge.
-Bidirectional: TS decisions flow to Rust, Rust improvements flow back.
+**Twin-impl convergence**: whichever implementation lands the better shape —
+security, correctness, abstraction, forensic detail — becomes canonical and
+the other ports to converge. Bidirectional.
 
-fuz_forge is the canonical twin consumer: its TS (Hono) server and Rust
-(`fuzfd`, axum) server are co-maintained at full wire parity.
+fuz_forge is the canonical twin consumer: its TS (Hono) and Rust (`fuzfd`,
+axum) servers are co-maintained at full wire parity.
 
 ## Roles
 
-- **Reference impl = run, not compiled.** The TS server is never
-  shipped/deployed; it runs directly (`deno run`) as the parity twin for
-  tests, benches, and local dev. The Rust binary is the production deploy.
-  Compiling a never-shipped TS server is dead weight.
-- **The CLI is not a twin.** A CLI is a _client_ of the server, not a second
-  spine implementation — two CLIs prove nothing about the wire. A CLI has two
-  coherent states: **shipping** (compiled; a single-file binary is the point)
-  or **retired** (deleted). No "run-directly TS CLI reference" middle state.
+- **Reference impl = run, not compiled.** The TS server is never shipped; it
+  runs directly (`deno run`) as the parity twin for tests, benches, and local
+  dev. The Rust binary is the production deploy; compiling a never-shipped TS
+  server is dead weight.
+- **The CLI is not a twin.** A CLI is a _client_ of the server — two CLIs prove
+  nothing about the wire. A CLI is either **shipping** (compiled single-file
+  binary) or **retired** (deleted); no "run-directly TS CLI reference" middle
+  state.
 
 ## Naming parity
 
-Shared spine concepts — types, fields, error-reason literals, the named steps
-of a shared algorithm — carry **parallel identifiers** across both spines,
-modulo each language's case convention (`post_commit_effects` ↔
-`PostCommitEffects`). A cross-impl name mismatch for the _same_ concept is a
-convergence defect, tracked and closed like a bug; when one side renames, the
-other follows. Two subtleties:
-
-- **Distinct concepts keep distinct names on both sides.** If TS has an eager
-  `pending_effects` queue and a deferred `post_commit_effects` queue, the
-  Rust side that carries only the deferred one must not name it
-  `PendingEffects` — same-name-same-concept cuts both ways.
-- **Parity is at the identifier level, not the file level.** Module/file
-  names may differ where a module's scope genuinely differs.
-
-Identifier parity is what lets an agent learn a concept once and find it in
-either spine — snake_case alignment across TS/Rust/SQL is what makes it
-cheap.
+Shared spine concepts — types, fields, error-reason literals, named steps of a
+shared algorithm — carry **parallel identifiers** modulo case convention
+(`post_commit_effects` ↔ `PostCommitEffects`). A cross-impl mismatch for the
+_same_ concept is a convergence defect, closed like a bug; when one side
+renames, the other follows. Two subtleties: **distinct concepts keep distinct
+names on both sides** (if TS has eager `pending_effects` and deferred
+`post_commit_effects`, Rust carrying only the deferred one must not call it
+`PendingEffects`); and parity is at the **identifier** level, not the file
+level — module names may differ where scope differs. Identifier parity lets an
+agent learn a concept once and find it in either spine; snake_case alignment
+makes it cheap.
 
 ## Enforcement
 
-- **The cross-backend harness** (in `fuz_app`) drives both backends with the
-  same requests and asserts responses **byte-for-byte** — status, body,
-  headers. Consumers inherit shared _conformance principals_ (credential
-  type × context combinations, e.g. daemon-token-with-Origin, invalid-token
-  variants) so a new auth edge case added upstream tests every consumer.
-- **`testing_spine_stub`** is the domain-free third consumer: it exercises
-  the Rust spine surface without any consumer's business logic, so
-  spine-level parity is tested independently of zzz/fuz_forge.
-- **Strict-schema parsing of read bodies**: the strongest cheap assertion is
-  parsing every populated read-RPC response with the strict TS Zod schema —
-  it catches missing/extra/renamed fields wholesale.
-- **Schema parity**: DB schema introspection compared across backends with
-  zero excluded tables as the target.
-- **Env contract tests** that actively _reject retired variable names_ — the
-  strongest anti-drift guard, since env handling is hand-written on both
-  sides.
-- **When the cross harness can't reach a path**, Rust unit serialization
-  tests (`serde_json::to_value(dto) == json!(…)`) stand in as the parity
-  guard.
+- **The cross-backend harness** (`fuz_app`) drives both backends with the same
+  requests and asserts responses **byte-for-byte** — status, body, headers.
+  Consumers inherit shared _conformance principals_ (credential type × context
+  combinations — daemon-token-with-Origin, invalid-token variants) so a new
+  upstream auth edge case tests every consumer.
+- **`testing_spine_stub`** is the domain-free third consumer exercising the
+  Rust spine without any business logic, so spine parity is tested
+  independently of zzz/fuz_forge.
+- **Strict-schema parsing of read bodies** — parsing every populated read-RPC
+  response with the strict TS Zod schema catches missing/extra/renamed fields
+  wholesale.
+- **Schema parity** — DB introspection compared across backends, zero excluded
+  tables as the target.
+- **Env contract tests that _reject retired variable names_** — env handling is
+  hand-written on both sides, so this is the strongest anti-drift guard.
+- **Where the harness can't reach**, Rust unit serialization tests
+  (`serde_json::to_value(dto) == json!(…)`) stand in.
 
-**Where twins silently diverge**: paths tested on one backend only —
-especially auth/error negatives (401 anti-enumeration, malformed input,
-browser-context guards). Two hand-written stacks agree on the happy path and
-drift on the edges; port single-backend tests to cross tests. A live behavior
-difference is either converged or explicitly documented as intentional (e.g.
-a version _value_ differs while the parity test asserts the shape).
+**Twins silently diverge on paths tested on one backend only** — especially
+auth/error negatives (401 anti-enumeration, malformed input, browser-context
+guards). Two hand-written stacks agree on the happy path and drift on the
+edges; port single-backend tests to cross tests. A live behavior difference is
+either converged or documented as intentional (a version _value_ differs while
+the parity test asserts the shape).
 
-## Scoping the parity burden
-
-Parity is largely self-policing where the substrate bottoms out in **shared
-upstream code** — `fuz_app` on TS, the spine crates on Rust. A consumer's
-real parity surface is only what it hand-writes twice: RPC handlers, domain
-parsing, auth glue, env loading, subprocess use. Keep that surface small and
-the twins stay cheap.
+**Scope the burden**: parity is self-policing where the substrate bottoms out
+in shared upstream code (`fuz_app`, the spine crates). A consumer's real
+parity surface is only what it hand-writes twice — RPC handlers, domain
+parsing, auth glue, env loading, subprocess use. Keep that small.
 
 ## The wire crate
 
-Hand-written wire shapes that both the Rust client and Rust server need —
-input validators (slug/segment grammars) and typed output DTOs — live in a
-dedicated `*_wire` crate (`fuz_forge_wire`), single-sourced instead of
-implemented per binary. Pure logic, no spine dep. Boundaries:
+Hand-written wire shapes both Rust client and server need — input validators
+(slug/segment grammars), typed output DTOs — live in a dedicated `*_wire`
+crate (`fuz_forge_wire`): pure logic, no spine dep. Boundaries:
 
-- **Stack-wide constants stay spine-canonical.** JSON-RPC error codes belong
-  to `fuz_http::JsonrpcErrorCode` (TS twin: `fuz_app`'s `jsonrpc_errors`),
-  not copied into a consumer's wire crate. A consumer references the enum,
-  never a magic number.
-- **Serialization parity rules for DTO twins**: no `skip_serializing_if` — a
-  nullable field emits `null` like the TS side; `#[serde(rename = "ref")]` /
-  `"type"` for keyword fields; discriminated unions as
-  `#[serde(tag = "kind", rename_all = "snake_case")]` enums; DTOs carry the
-  **full** field set (never a client's duck-typed subset); field declaration
-  order matches the wire; booleans are real `bool` fields.
+- **Stack-wide constants stay spine-canonical.** JSON-RPC error codes belong to
+  `fuz_http::JsonrpcErrorCode` (TS: `fuz_app`'s `jsonrpc_errors`), referenced
+  by enum, never copied or spelled as magic numbers.
+- **DTO serialization parity**: no `skip_serializing_if` (nullable fields emit
+  `null` like TS); `#[serde(rename = "ref")]`/`"type"` for keyword fields;
+  discriminated unions as `#[serde(tag = "kind", rename_all = "snake_case")]`;
+  DTOs carry the **full** field set (never a client's duck-typed subset); field
+  order matches the wire; booleans are real `bool`.
 
 ## Structure mirroring
 
-- **Module boundaries mirror the twin's seams.** If TS keeps git subprocess
-  and record-parsing in `git/read.ts` + `git/parse.ts`, the Rust side splits
-  the same way — byte-format contracts (`%H%x00…` format strings, RS/NUL
-  framing) become diffable module-to-module instead of buried in a
-  monolith.
-- **Canonicalize internal identifiers on the cleaner idiom** (often the Rust
-  name; the TS reference tends wordier). Wire- and schema-visible forms must
-  already match — internal renames are cleanup, not correctness.
+Module boundaries mirror the twin's seams — if TS splits git subprocess and
+record-parsing into `git/read.ts` + `git/parse.ts`, Rust splits the same way,
+so byte-format contracts (`%H%x00…` format strings, RS/NUL framing) are
+diffable module-to-module. Canonicalize internal identifiers on the cleaner
+idiom (often the Rust name; TS tends wordier) — wire- and schema-visible forms
+must already match, so internal renames are cleanup.
 
-## Utility twins
-
-The same discipline at micro scale — a Rust utility mirroring a TS one keeps
-the twin's semantics and (case-adjusted) name: `fuz_sys::env::parse_stringbool`
-↔ `z.stringbool()`, the `DaemonInfo` daemon-file schema shared between zzz's
-Rust CLI and `fuz_app` TS, the `lru`-backed `RateLimiter` twinning
-`fuz_app`'s `LruMap`. When porting a utility across the language boundary,
-find its twin first; diverging semantics under a shared name is the same
-defect class as a name mismatch.
+**Utility twins** follow the same discipline at micro scale —
+`fuz_sys::env::parse_stringbool` ↔ `z.stringbool()`, the `DaemonInfo` schema
+shared between zzz's Rust CLI and `fuz_app`, the `lru`-backed `RateLimiter`
+twinning `fuz_app`'s `LruMap`. When porting a utility, find its twin first;
+diverging semantics under a shared name is the same defect class as a name
+mismatch.
 
 ## Serde boundary conformance
 
-_Rust ↔ hand-written TS — round-trip + coverage guard, no codegen dependency._
-
 When a Rust crate owns a serde JSON boundary (`#[serde(deny_unknown_fields)]`)
-that a hand-written TypeScript layer authors against — e.g. a typed config
-builder whose calls serialize to JSON that the Rust engine parses — keep the TS
-types **hand-written** (best ergonomics, no codegen dependency) and guard them
-against drift with a round-trip test, not `schemars`/`ts-rs`.
+that hand-written TypeScript authors against (a typed config builder whose
+output the Rust engine parses), keep the TS types **hand-written** and guard
+them with a round-trip test, not `schemars`/`ts-rs`. Codegen is a _second_
+encoding of the boundary that can itself drift from serde's tagging/rename; a
+round-trip validates against the **real serde parser**. Reserve codegen for
+field-level coverage enforcement or a published JSON Schema.
 
-Why not codegen: a generated schema/types layer is a _second_ encoding of the
-boundary that can itself drift from serde's tagging/rename. A round-trip test
-validates against the **real serde parser** — the code that runs in production —
-so it tests reality, not a model. Reserve codegen for when you need field-level
-coverage enforcement or a published JSON Schema for external consumers.
+Two-layer guard (zap's TS config library):
 
-**Two-layer guard** (used in zap's TS config library):
+1. **Round-trip conformance.** One typed "kitchen-sink" fixture exercising
+   every type/field/variant, `import type`'d against the TS types and
+   `export default`ing a builder. Gated twice: `gro typecheck` catches
+   **types-too-strict** (a valid shape TS rejects); a Rust integration test
+   evaluates it and parses the emitted JSON with the real config type,
+   catching **types-too-loose** (TS accepts, serde rejects). `import type` is
+   erased at runtime, so the evaluator needs no module resolution.
+2. **Coverage guard.** Iterate the Rust canonical variant list
+   (`ResourceType::ALL`) and assert the fixture exercises **every** variant —
+   catches a variant added in Rust but absent from TS, which round-trip alone
+   can't see. Pair with a loud floor (`assert!(items.len() >= N)`) so a vanished
+   fixture fails instead of passing.
 
-1. **Round-trip conformance.** One typed "kitchen-sink" fixture exercising every
-   type/field/variant, `import type`'d against the TS types and `export
-default`ing a builder function. One source, gated twice:
-   - `gro typecheck` includes it → catches **types-too-strict** (a valid shape
-     the TS types wrongly reject).
-   - A Rust integration test evaluates it and parses the emitted JSON with the
-     real config type → catches **types-too-loose / false-green** (a shape TS
-     accepts that serde rejects).
-
-   The `import type` is erased at runtime, so the evaluator needs no module
-   resolution — the same file is both typechecked and executed.
-
-2. **Coverage guard.** Iterate the Rust canonical variant list (e.g. a
-   `ResourceType::ALL` const) and assert the fixture exercises **every** variant:
-   `for v in ALL { assert!(seen.contains(&v), "kitchen-sink missing {v}") }`.
-   This catches a whole type/variant added in Rust but absent from the TS surface
-   — which the round-trip alone can't see. Pair with a loud floor
-   (`assert!(items.len() >= N)`) so a vanished fixture fails instead of silently
-   passing.
-
-Optionally add a thin **e2e smoke** through the shipped path (built binary → real
-parse → exit code), skipping cleanly when the runtime (e.g. Deno) or binary is
-absent — the same skip discipline as DB/Deno-gated tests
-(./testing-patterns.md §Environment Flags).
-
-Gotchas: if the evaluator stubs nondeterministic globals (clock/RNG) to throw,
-the fixture must use pure literals only. Gate the round-trip test on the
-evaluator runtime being present (skip-with-notice), matching the repo's
-Deno-gating posture.
+Optionally a thin e2e smoke through the shipped binary. Both it and the
+round-trip test skip-with-notice when their runtime or binary is absent, the
+same discipline as DB/Deno-gated tests (./testing-patterns.md §Environment
+Flags). Gotcha: an evaluator that stubs clock/RNG to throw requires
+pure-literal fixtures.
 
 ## Tool twins: molt
 
-fuz_template's ejector ships as symmetric twins — `src/lib/molt.ts`
-(`npm run molt`) and the `molt` crate (`cargo molt`) — at full behavior
-parity: same flags, same wizard, same plan, byte-identical output trees.
-Unlike the spine there is no reference/production asymmetry: both are
-shipping paths, chosen by which toolchain the user has (the TS twin exists
-so ejecting never requires installing Rust; the Rust twin dogfoods the
-ecosystem's CLI conventions). Its parity mechanics differ instructively
-from the wire twins:
+fuz_template's ejector ships as symmetric twins — `src/lib/molt.ts` (`npm run molt`) and the `molt` crate (`cargo molt`) — at full behavior parity: same
+flags, wizard, plan, byte-identical output trees. No reference/production
+asymmetry: both ship, chosen by which toolchain the user has (TS so ejecting
+never requires Rust; Rust to dogfood the CLI conventions). Its mechanics differ
+instructively:
 
-- **Parity is enforced against the tree, not across the twins.** The parity
-  surface is filesystem effects, not a wire. Each side embeds its own copy
-  of the exact-content anchors and self-verifies against the working tree
-  (`cargo test` / `gro test`, both in CI) — an anchored template edit breaks
-  both checks at the same commit, so cross-twin drift surfaces without a
-  cross-backend harness. What can be single-sourced is: the output templates
-  live once in `crates/molt/templates/` (compiled into the Rust binary via
-  `include_str!`, read at runtime by the TS twin).
+- **Parity is enforced against the tree, not across the twins.** Each side
+  embeds its own exact-content anchors and self-verifies against the working
+  tree (`cargo test` / `gro test`, both in CI) — an anchored template edit
+  breaks both at the same commit, no cross-backend harness needed. Templates
+  are single-sourced in `crates/molt/templates/` (`include_str!` in Rust, read
+  at runtime by TS).
 - **Mutual deletion bounds the burden.** Each twin's plan deletes both
-  implementations (crate, TS module, tests, npm script entry) — self-deleting
-  tooling leaves zero post-eject parity surface.
-- **Identifier parity end to end** (`build_plan`/`verify`/`apply`/
-  `apply_gate`/`FEATURES`…), with the TS module's sections mirroring the
-  crate's module seams, so each concept's twin is greppable by name.
+  implementations (crate, TS module, tests, npm script) — zero post-eject
+  parity surface.
+- **Identifier parity end to end** (`build_plan`/`verify`/`apply`/`apply_gate`/
+  `FEATURES`), TS sections mirroring the crate's module seams.

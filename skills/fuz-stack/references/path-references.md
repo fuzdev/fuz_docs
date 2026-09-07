@@ -4,168 +4,128 @@ description: Path typography — navigational vs src/lib module vs code-shaped
 
 # Path References in Documentation
 
-Three forms, each with its own typography. The distinction is whether the target
-is a **navigable file** (bare path) or a **code-tree identifier** (backticked,
-no leading `./`).
+The typography says whether a target is a **navigable file** (bare path) or a
+**code-tree identifier** (backticked, no leading `./`). mdz auto-linkifies bare
+`./`/`../` paths after whitespace, so getting this wrong produces broken links
+or unlinked paths.
 
 ## 1. Navigational paths (bare, no backticks)
 
-For docs, READMEs, external repos, and any reference that points to a file by
-location rather than by code identity:
+For docs, READMEs, and any reference that points to a file by location:
 
-- `./foo` and `../foo` — relative to the file's directory; mdz auto-linkifies
-  these when preceded by whitespace
-- `~/dev/foo` — anchored at the workspace root; reads cleanly at any nesting
-  depth
-- `setup/foo` — bare workspace-root anchor (no `~/dev/` prefix); preferred over
-  deep `../../setup/foo` from nested files
+- `./foo`, `../foo` — relative to the file's directory
+- `~/dev/foo` — workspace-root anchored; reads cleanly at any depth
+- `setup/foo` — bare workspace-root anchor; preferred over deep
+  `../../setup/foo` from nested files
 
-> **Don't attach a possessive to a bare path.** mdz's autolink treats `'` as a
-> valid path character, so `./foo.md's` links to a 404 href ending in `'s`.
-> Reword ("all live in `./foo.md`") or backtick the path.
+**A bare path is a promise it resolves on disk**, relative to the file it
+appears in. An illustrative path — a conceptual location (`./build/`), an
+example (`./foo/bar`), an import in prose (`import './fuz.css'`) — goes in
+**backticks**, the escape hatch meaning "literal, don't follow."
 
-> **A bare path is a promise it resolves on disk.** An unbackticked `./`, `../`,
-> or `~/dev/` path is a real, navigable link — it must point at a file or
-> directory that exists, resolved relative to the file it appears in (`~/dev/`
-> from the workspace root). If you mean a path _illustratively_ — a conceptual
-> location (`./build/`), an example (`./foo/bar`), an import shown in prose
-> (`import './fuz.css'`) — **wrap it in backticks**; that's the escape hatch
-> that says "literal, don't follow." Source TSDoc additionally must not point
-> outside its own repo (see §4).
+**No possessives on bare paths**: mdz treats `'` as a path character, so
+`./foo.md's` links to a 404 ending in `'s`. Reword or backtick.
 
-## 2. src/lib module references (backticked, src/lib-relative, no leading `./`)
+## 2. src/lib module references (backticked, src/lib-relative)
 
-Marks the target as a code-like identifier — a module name, not a navigable
-filesystem path.
+A backticked reference to a **same-repo** src/lib module is the bare
+src/lib-relative form — never `../foo.ts`, `./foo.ts`, `src/lib/foo.ts`, or
+`./src/lib/foo.ts`. The backticks frame a module identifier; traversal or a
+`src/lib/` prefix contradicts that framing.
 
-> **Rule**: a backticked reference to a **same-repo** src/lib module MUST be the
-> bare src/lib-relative form — never `../foo.ts`, never `./foo.ts`, never
-> `src/lib/foo.ts` (the redundant prefix), never `./src/lib/foo.ts`. The
-> backticks frame the token as a module identifier; a `src/lib/` prefix or `./`
-> `../` traversal contradicts that framing. Bare paths are the only place `./`
-> and `../` belong.
+- From inside src/lib: "`auth/account_schema.ts`" means
+  `src/lib/auth/account_schema.ts`
+- From outside src/lib (root CLAUDE.md, docs/, src/test/): include the prefix
+  — "`src/lib/auth/CLAUDE.md`" — unambiguous at any depth (the
+  src/lib-relative form is also acceptable from src/test/)
+- Applies to subsystem CLAUDE.mds ("`auth/CLAUDE.md`"); section refs put
+  `§Heading` outside the backticks
 
-> **Backticks are an escape hatch.** This rule applies only to references that
-> resolve to a same-repo module. A backticked path that _isn't_ one — a
-> cross-repo path, a deliberately-literal example, explanatory prose — is left
-> exactly as written. Don't rewrite `` `../some-other-repo/x.ts` `` or a
-> non-module path into the module form; the backticks mean "treat this
-> literally."
+```
+✅ `server/upload_route.ts`
+❌ `src/lib/server/upload_route.ts`   redundant prefix
+❌ `./src/lib/server/upload_route.ts` prefix plus ./
+❌ `../server/upload_route.ts`        traversal inside backticks
+❌ `./classroom_service.ts`           self-relative inside backticks
+```
 
-- From any file inside src/lib: "`auth/account_schema.ts`" refers to
-  `src/lib/auth/account_schema.ts`. Prefer this over both
-  "`../auth/account_schema.ts`" (backticked with prefix — defeats the identifier
-  framing) and `../auth/account_schema.ts` (bare — reads as filesystem path)
-- From files outside src/lib (root CLAUDE.md, docs/, src/test/): include the
-  `src/lib/` prefix — "`src/lib/auth/CLAUDE.md`". The path-relative-to-src/lib
-  form ("`auth/CLAUDE.md`") is also acceptable from src/test/, but the
-  full-prefix form is unambiguous at any depth
-- Applies to any file under src/lib, including subsystem CLAUDE.mds:
-  "`auth/CLAUDE.md`", "`http/CLAUDE.md`"
-- Section refs follow: "`auth/CLAUDE.md`" §Middleware (backticks wrap the
-  module, `§Heading` follows outside the backticks)
-- Examples (all referring to a same-repo module):
-  - ✅ "`server/upload_route.ts`" — the bare src/lib-relative form
-  - ❌ "`src/lib/server/upload_route.ts`" — redundant `src/lib/` prefix
-  - ❌ "`./src/lib/server/upload_route.ts`" — prefix plus a `./`
-  - ❌ "`../server/upload_route.ts`" — backticked but traversal-relative
-  - ❌ "`./classroom_service.ts`" — backticked but self-relative
+**Backticks remain an escape hatch.** This rule applies only to references
+that resolve to a same-repo module. A backticked cross-repo path,
+deliberately-literal example, or explanatory path is left exactly as written —
+don't rewrite `` `../some-other-repo/x.ts` `` into module form.
 
-## 3. Code-shaped things outside src/lib (backticks for code, not paths)
+## 3. Code-shaped non-paths (backticks)
 
-- CLI commands: `gro check`, `deno task scry`
-- Top-level project files: `package.json`, `gitops.config.ts`, `tsconfig.json`
-- System/config identifiers: `~/.fuz/`, `~/.mg/config.json`
+CLI commands (`gro check`, `deno task scry`), top-level project files
+(`package.json`, `gitops.config.ts`), system/config identifiers (`~/.fuz/`,
+`~/.mg/config.json`).
 
 ## 4. Cross-repo references
 
-To point at a file in _another_ workspace repo, use a **bare** navigational
-path (form 1) — `../other-repo/src/lib/foo.ts` or `~/dev/other-repo/...`. The
-backticked module form (form 2) is **same-repo only**: it resolves against the
-current repo's module index, so it can't name another package's module. For a
-published package's module, the import-specifier form is the right code
-reference (`@scope/pkg/foo.ts`); a bare relative path is for navigation.
+Point at another workspace repo with a **bare** navigational path
+(`../other-repo/src/lib/foo.ts`, `~/dev/other-repo/...`). The backticked
+module form is same-repo only — it resolves against the current repo's module
+index. For a published package's module, the import specifier
+(`@scope/pkg/foo.ts`) is the code reference.
 
-Two constraints follow:
+- A bare cross-repo path must resolve — a stale `../old-name/...` after a
+  repo rename is a broken link
+- **TSDoc must not `../` out of the repo** — source comments render into
+  published API docs where the package has no siblings. Attribute external
+  inspiration in prose or link a URL. Backticked explanatory paths remain the
+  escape hatch.
 
-- **A bare cross-repo path must resolve to a real file.** It's a navigable
-  link; a stale `../old-name/...` left behind after a repo is renamed or moved
-  is a broken reference. Keep these accurate as the workspace changes.
-- **TSDoc must not use `../` to leave the repo.** Source comments render into
-  the published API docs, where the shipped package has no sibling repos — an
-  out-of-repo `../` becomes a dead link. Keep TSDoc references repo-local;
-  attribute external inspiration in prose without a navigable path, or link a
-  URL. (Backticked explanatory paths remain the escape hatch — see §2.)
+## 5. Import specifiers (source code, not prose)
 
-Each file's relative paths assume the reader is in the file's parent directory.
-From `~/dev/CLAUDE.md`, project paths are `./project/`. From a deeply nested
-file, prefer a workspace-root-anchored path (`setup/scripts/foo.md`) over deep
-`../../../scripts/foo.md`.
+Imports use the real source extension (`.ts` / `.svelte.ts` / `.svelte`),
+never `.js`-for-a-`.ts`-file, and pick the alias by **whether the module
+ships**:
 
-## 5. Import specifiers (code imports, not doc prose)
-
-The forms above govern paths _written in docs/prose_. Import specifiers in
-**source** use the real source extension (`.ts` / `.svelte.ts` / `.svelte`),
-never the old `.js`-for-a-`.ts`-file form, and pick the alias by **whether the
-module ships**:
-
-- **`src/lib` (ships as `dist`) → relative only** (`./`, `../`):
-  `import {x} from './sibling.ts'` — the build rewrites these to `.js` into
-  `dist`. Aliases break here: both `$lib`/`$routes` (Vite-only) and
-  `#lib`/`#routes` (resolve to `./src/lib/*`, absent from the tarball —
-  `"files": ["dist"]`) give consumers `ERR_MODULE_NOT_FOUND`.
+- **`src/lib` (ships as `dist`) → relative only** (`./sibling.ts`). The build
+  rewrites `.ts`→`.js` into `dist`. Aliases break here: `$lib`/`$routes`
+  (Vite-only) and `#lib`/`#routes` (resolve to `./src/lib/*`, absent from the
+  tarball since `"files": ["dist"]`) give consumers `ERR_MODULE_NOT_FOUND`.
 - **Everything else → `#lib/*` / `#routes/*`** package.json subpath imports
-  (`"imports": {"#lib/*": "./src/lib/*"}`): routes, components, vitest tests, and
-  spawn-outside-Vite entries (Deno/Node servers, benchmarks, `deno` / `bun` /
-  `gro run` scripts) — none of it shipped. One mechanism resolves across Vite,
-  Node, Bun, Deno, and Gro's loader, so the alias never depends on which runtime
-  spawns the file. (`$lib`/`$routes` are retired — Vite-only, so a raw `deno run`
-  fails `Import "$lib/…" not a dependency`.)
-- **Cross-package** `@fuzdev/<pkg>/sub.ts` → resolves via the target's `exports`
-  `.js`/`.ts` mirror to its `dist`. (Packages without subpath exports, like
-  `@fuzdev/blake3_wasm`, are imported by bare package name only.)
+  (`"imports": {"#lib/*": "./src/lib/*"}`): routes, tests, and
+  spawn-outside-Vite entries (Deno/Node servers, benchmarks, `gro run`
+  scripts). One mechanism resolves across Vite, Node, Bun, Deno, and Gro's
+  loader. `$lib`/`$routes` are retired (Vite-only: a raw `deno run` fails
+  `Import "$lib/…" not a dependency`); outside `src/lib`, `$lib` remains common
+  in existing code while `#lib` rolls out.
+- **Cross-package** `@fuzdev/<pkg>/sub.ts` resolves via the target's `exports`
+  `.js`/`.ts` mirror to its `dist`. Packages without subpath exports
+  (`@fuzdev/blake3_wasm`) are imported by bare name.
 
-`$app`/`$env` stay (virtual modules, not file paths). `@ryanatkn/eslint-config`
-warns on all four aliases (`$lib`/`$routes`/`#lib`/`#routes`) inside `src/lib`
-— library code imports relative. The rule covers `import`/`export`
-declarations including `import type`, but **not** inline `import('#lib/…')`
-type positions (base `no-restricted-imports` doesn't visit `TSImportType`) —
-catch those in review. Outside `src/lib`, `$lib` remains widespread in
-existing code while the `#lib` migration is in progress.
+`$app`/`$env` stay (virtual modules). `@ryanatkn/eslint-config` warns on
+`$lib`/`$routes`/`#lib`/`#routes` inside `src/lib`, covering `import`/`export`
+declarations and `import type` but **not** inline `import('#lib/…')` type
+positions (base `no-restricted-imports` doesn't visit `TSImportType`) — catch
+those in review.
 
 ## Web-rendered caveat
 
 In files published via mdz on a website (this skill renders on fuz_docs),
-non-`.md` `./foo` and `../foo` examples must be backticked to prevent mdz from
-rendering them as broken `<a>` tags. Bare relative `.md` links are fine —
-fuz_docs' `skill_docs.gen.ts` rewrites them to routes outside code spans.
-`~/dev/foo` and bare workspace-root paths (`setup/foo`) are safe bare in web
-context — mdz doesn't auto-linkify those prefixes.
+non-`.md` `./foo` and `../foo` examples must be backticked or mdz renders them
+as broken `<a>` tags. Bare relative `.md` links are fine — fuz_docs's
+`skill_docs.gen.ts` rewrites them to routes. `~/dev/foo` and bare
+workspace-root paths are safe bare (mdz doesn't linkify those prefixes).
 
 ## Anti-patterns
 
 The linkifier won't fire on these, costing tokens and navigability:
 
-- **Mixing the two forms**: backticks + a leading `./` or `../` is the
-  wrong-of-both-worlds case. Pick a form. "`./foo.md`" should be either bare
-  (`./foo.md`, navigational) or — for src/lib — "`subsystem/foo.ts`"
-  (module-form, drop the relative prefix).
-- **Backticking a navigable target**: "`~/dev/fuz_util`" reads as a code
-  identifier when it's actually a path. Use bare `~/dev/fuz_util`.
-- **Redundant markdown-link syntax** when target equals visible text:
-  `[../README.md](../README.md)` is redundant; bare `../README.md` already
-  auto-links. Same for `[~/dev/foo](~/dev/foo)` — collapse to bare `~/dev/foo`.
-  Reserve `[text](url)` for cases where the visible token _isn't_ the path —
-  e.g. a package-name-as-link: `[@fuzdev/fuz_app](../../fuz_app)`.
+- **Mixing forms**: backticks + `./` or `../` is the wrong-of-both-worlds.
+  Pick bare (navigational) or module form.
+- **Backticking a navigable target**: "`~/dev/fuz_util`" reads as an
+  identifier; write bare `~/dev/fuz_util`.
+- **Redundant link syntax when text equals target**: `[../README.md](../README.md)`
+  → bare `../README.md`. Reserve `[text](url)` for a visible token that isn't
+  the path (`[@fuzdev/fuz_app](../../fuz_app)`).
 
-## Formatter cautions (these have bitten real docs)
+## Formatter cautions
 
-- A line wrapping after `+` becomes a sublist. `cell + fact` followed by a formatter
-  wrapping to `+ cell_history` reflows as a bullet. Rephrase
-  (`cell, fact, and cell_history`) or keep the `+` mid-line.
-- Bare `_` in inline prose mixed with backticked identifiers can be parsed as
-  italic delimiters and mangle text — eating spaces and swapping characters.
-  Backtick identifiers like `scope_id` or `cell_*` even when the surrounding
-  sentence isn't otherwise code-heavy. When several `_`-bearing identifiers
-  appear in one sentence, restructure as a bullet list so each lands at
-  end-of-line away from prose interactions.
+- A line wrapping after `+` becomes a sublist (`cell + fact` → `+ cell_history`
+  reflows as a bullet). Rephrase or keep the `+` mid-line.
+- Bare `_` in prose mixed with backticked identifiers can parse as italic
+  delimiters and mangle text. Backtick `_`-bearing identifiers even in light
+  prose; when several appear in one sentence, restructure as a bullet list.

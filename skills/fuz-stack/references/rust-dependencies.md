@@ -4,33 +4,22 @@ description: Approved external crate allowlist for Rust workspaces
 
 # Approved Rust Dependencies
 
-The canonical allowlist of external crates approved for Rust workspaces
-across the ecosystem. Prefer these; reach outside the list only with
-explicit approval (see [§Adding a dependency](#adding-a-dependency)).
+The allowlist of external crates for the canonical Rust workspaces — CLIs and
+daemons, WASM/FFI/N-API bindings, web servers and spine crates
+(different-paradigm repos like games and protocol research carry their own).
+Prefer these; reach outside only with explicit approval (§Adding a
+dependency). For an external project adopting fuz-stack the list is advisory;
+the approval process applies inside the ecosystem.
 
-**Scope**: the canonical (non-experimental) Rust workspaces — CLIs and
-daemons, the WASM/FFI/N-API bindings, the web servers and their spine crates.
-Different-paradigm or pre-canonical repos (games, protocol research) carry
-their own deps and are out of scope here. For an external project adopting
-fuz-stack, the list is advisory — a vetted starting set, not a gate; the
-approval _process_ below applies only inside the ecosystem workspaces.
-
-**Source of truth**: each repo's root `[workspace.dependencies]`. This doc
-mirrors the **union** of those for human and agent audit; it is not
-generated. Any single workspace carries a small subset (zap's direct
-external set is ~11 crates; the forge's ~24 — everything else arrives
-transitively via the spine). Verify against the workspaces periodically.
-
-Crates internal to a workspace (declared with `path = ...`) are not
-dependencies in this sense and never appear here — including cross-repo path
-deps onto the fuz spine crates.
-
-A few approved crates are pinned at the **member-crate** level rather than in
-a root `[workspace.dependencies]`: `js-sys` (optional, feature-gated),
-`wasm-bindgen`, and `talc` (wasm32-only target dep) in `tsv_wasm`, `similar`
-and `tempfile` in `tsv_debug`, `libc` in `zzz_server` (also a workspace dep
-in the fuz workspace), and `http-body-util` as a dev-dependency of
-`fuz_http`. They're real external deps and belong here.
+Source of truth is each repo's root `[workspace.dependencies]`; this doc
+mirrors their **union** (any one workspace carries a small subset — zap ~11
+direct external crates, the forge ~24, the rest transitive via the spine).
+Path-dep crates (including cross-repo deps onto the spine) aren't dependencies
+in this sense. A few approved crates are pinned at the member-crate level
+rather than the root: `js-sys`, `wasm-bindgen`, `talc` (wasm32-only) in
+`tsv_wasm`; `similar`, `tempfile` in `tsv_debug`; `libc` in `zzz_server`;
+`http-body-util` as a `fuz_http` dev-dependency. Verify against the workspaces
+periodically.
 
 ## Serialization & encoding
 
@@ -201,20 +190,11 @@ workspace for the same job.
 
 ## Adding a dependency
 
-New crates — whether a third-party dependency or a first-party workspace
-member — are added deliberately, not incidentally:
-
-- Prefer the standard library, then this list, before anything new.
-- A new dependency needs explicit approval — name it, its purpose, what it
-  replaces or enables, and its transitive footprint.
-- Creating a new first-party crate (a new `crates/<name>/` workspace member)
-  likewise needs explicit approval — minting a new crate boundary is a
-  build-graph and release-surface decision. Adding a module, file, or
-  directory inside an existing crate doesn't; the gate is only on the new
-  crate itself.
-- Add it at the workspace level (`[workspace.dependencies]`) so member
-  crates share one version, then record it here.
-- Removing an unused dependency is pre-authorized — no approval needed. Verify
-  nothing references it (including features and build scripts), then drop the
-  entry. Removing the last user of a crate? Drop it from the workspace and
-  this list in the same change.
+Prefer std, then this list. A new crate — third-party **or** a new first-party
+workspace member — needs explicit approval: name, purpose, what it replaces or
+enables, transitive footprint (a new `crates/<name>/` is a build-graph and
+release-surface decision; a module inside an existing crate isn't). Add at
+`[workspace.dependencies]` so members share one version, then record it here.
+Removing an unused dep is pre-authorized: verify nothing references it
+(features and build scripts included), drop it from the workspace and this
+list in the same change.

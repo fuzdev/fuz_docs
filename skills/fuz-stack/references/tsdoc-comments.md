@@ -4,37 +4,23 @@ description: TSDoc style guide — tags, conventions, drift detection
 
 # TSDoc Comment Style Guide
 
-JSDoc/TSDoc conventions for `@fuzdev` packages.
-
-## Overview
-
-Doc comments flow through a three-stage pipeline:
-
-1. **`svelte-docinfo` analysis** — extracts JSDoc/TSDoc from the TypeScript AST
-   into per-declaration metadata
-2. **`svelte-docinfo` Vite plugin** — exposes module/declaration metadata
-   through the `virtual:svelte-docinfo` module at build/dev time
-3. **`mdz`** renders docs with auto-linking — backticked identifiers become
-   clickable API-doc links
-
-**Write standard JSDoc with the tags below, wrap identifier references in
-backticks, and the system handles the rest.**
+Doc comments are extracted by `svelte-docinfo` (TypeScript AST → per-declaration
+metadata, exposed via `virtual:svelte-docinfo`) and rendered by `mdz`, which
+autolinks backticked identifiers to API docs. **Write standard JSDoc with the
+tags below, backtick identifier references, and the system handles the rest.**
 
 ## Writing Good Documentation
 
 ### Prioritize "why" over "what"
 
 Don't restate the function name. Explain why this exists, what problem it
-solves, and its role in the system — what depends on it, what it enables.
+solves, what depends on it.
 
 ```typescript
-// Weak — restates the function name and types
+// Weak — restates the name and types
 /** Creates a new session. */
-export const create_session = (deps: QueryDeps, account_id: AccountId): Session => {
-	/* ... */
-};
 
-// Strong — explains purpose and rationale
+// Strong — purpose and rationale
 /**
  * Predicts the next version by analyzing all changesets in a repo.
  *
@@ -45,677 +31,306 @@ export const create_session = (deps: QueryDeps, account_id: AccountId): Session 
  */
 ```
 
+Name algorithms so readers can look them up ("Uses Kahn's algorithm with
+alphabetical ordering within tiers for deterministic results") and give
+rationale for non-obvious parameter choices. Multi-step workflows get a
+numbered list (`1. **Sort** — …`), usually in a `@module` comment paired with a
+`@see` cluster for pipeline stages.
+
 ### Conciseness — anti-patterns
 
-A wrong or filler comment costs more than it adds. Four patterns recur
-in real audits.
+A wrong or filler comment costs more than it adds. Four patterns recur in
+audits:
 
-**1. Helper-contract `@throws` at every callsite.** When a function
-delegates a failure to an internal helper or external engine, document
-the contract on the helper — not on every caller.
+**1. Helper-contract `@throws` at every callsite.** Document the contract on
+the helper, not on every caller that delegates to it.
 
 ```typescript
 // Weak — same internal invariant repeated on every create_* query
 /** @throws Error if the INSERT does not return a row (failed `assert_row` invariant) */
-
 // Weak — generic driver error true of every SQL call
-/** @throws Error propagated from the underlying driver on syntax errors, constraint violations, or connection failures */
-
-// Strong — contract lives on the helper
-// (in assert_row.ts)
+/** @throws Error propagated from the underlying driver on syntax errors, ... */
+// Strong — lives on assert_row itself
 /** @throws Error if `row` is undefined */
 ```
 
-**2. `@mutates X - <verb that mirrors the function name>`.** A tag that
-adds no scope beyond the name + description is filler. A `@mutates` earns its
-line when it surfaces _what would surprise a reader_: specific tables/columns,
-cross-table cascades, fire-and-forget effects, context keys consumed by
-downstream middleware, counter or rate-limiter state.
+**2. `@mutates X - <verb that mirrors the function name>`.** The tag earns its
+line only when it surfaces _what would surprise a reader_: specific
+tables/columns, cross-table cascades, fire-and-forget effects, context keys
+consumed downstream, counter or rate-limiter state.
 
 ```typescript
 // Weak — set_session_cookie already says it
-/**
- * Set the session cookie on a response.
- * @mutates `c` - writes the `Set-Cookie` header
- */
+/** @mutates `c` - writes the `Set-Cookie` header */
 
-// Useful — names columns / scopes / cross-table cascade / non-obvious side channel
+// Useful — names columns / cascades / side channels
 /** @mutates `app_settings` row - sets `open_signup`, `updated_at`, `updated_by` */
 /** @mutates `permit_offer` siblings - stamps `superseded_at` on every other pending offer for the tuple */
 /** @mutates Hono context - sets REQUEST_CONTEXT_KEY, CREDENTIAL_TYPE_KEY, AUTH_API_TOKEN_ID_KEY */
-/** @mutates drift counters - bumps `audit_unknown_event_type_failures` on mismatch */
 ```
 
-**3. Duplicate sentence — `@returns` + prose saying the same thing.**
+**3. Duplicate sentence** — a `@returns` and a prose sentence saying the same
+thing. Pick one.
+
+**4. Filler.** `@param X - the X` (drop it, but keep a qualifier: format,
+constraint, edge case); step-by-step narration of self-evident
+behavior; hedges ("simply", "just", "essentially", "should never happen");
+"useful for" bullet lists that repeat the description.
 
 ```typescript
-// Weak — two sentences, one fact
-/**
- * @returns cleanup function that deactivates and hides the sidebar
- *
- * The returned disposer hides and disables on cleanup.
- */
-```
-
-Pick one phrasing.
-
-**4. Verbose prose / useless detail.** Filler that pads without signal.
-Recurring shapes:
-
-- **Filler `@param X - the X`** — description adds nothing beyond the
-  parameter name and type. Drop the line; the signature is enough. A
-  qualifier ("the X to <verb>", a format hint, an edge-case note) is
-  usually worth keeping.
-- **Step-by-step narration of self-evident behavior** — the function name
-  and signature already tell the story.
-- **Hedging filler** — "simply", "just", "essentially", "basically", and
-  "should never happen" almost always indicate filler. Cut the sentence
-  or rewrite without the hedge.
-- **Marketing "useful for" bullet lists** that repeat the main
-  description in different words.
-
-```typescript
-// Weak — every line restates the parameter name + type
+// Weak — every line restates name + type
 /**
  * @param specs - route specs to register
  * @param method - HTTP method
- * @param path - request path
  * @returns matching route spec, or `undefined`
  */
-
-// Strong — keep `@param`/`@returns` only when they add a qualifier
-//   beyond the signature (constraint, format, edge-case behavior)
-/**
- * @param path - request path (exact or with concrete param values)
- */
+// Strong — only the line that adds a qualifier
+/** @param path - request path (exact or with concrete param values) */
 ```
 
 ### Voice
 
-`@mutates` and `@throws` are terse fragments — `@mutates <target> -
-<verb> <scope>`, not full sentences. Backticks on every
-table/column/symbol/constant name are house style.
-
-Multi-paragraph descriptions are _earned_ by security or invariant
-rationale (TOCTOU, fail-closed, sibling-supersede, ordering, init order);
-long prose without that payoff is the pattern to flag.
-
-### Document workflows with numbered steps
-
-```typescript
-/**
- * Multi-repo publishing pipeline.
- *
- * Steps:
- * 1. **Sort** — `compute_topological_order` determines publish order
- * 2. **Changeset** — `predict_next_version` simulates version bumps
- * 3. **Publish** — `publish_package` publishes and waits for propagation
- * 4. **Update** — `update_dependents` bumps downstream version ranges
- *
- * @module
- */
-```
-
-### Name algorithms and explain rationale
-
-Name the algorithm so readers can look it up; note rationale for
-non-obvious parameter choices.
-
-```typescript
-/**
- * Computes topological sort order for dependency graph.
- *
- * Uses Kahn's algorithm with alphabetical ordering within tiers for
- * deterministic results.
- *
- * @param exclude_dev - If true, excludes dev dependencies to break cycles.
- *   Publishing uses exclude_dev=true to handle circular dev deps.
- */
-```
+`@mutates` and `@throws` are terse fragments — `@mutates <target> - <verb> <scope>`. Backticks on every table/column/symbol/constant name are house style.
+Multi-paragraph descriptions are _earned_ by security or invariant rationale
+(TOCTOU, fail-closed, sibling-supersede, ordering, init order). A union type
+alias documents its members as a bullet list of backticked literals with
+` - description`.
 
 ### CLAUDE.md is a map; TSDoc is the detail
 
-When a symbol has non-obvious semantics — wire shape, invariants, ordering
-constraints, failure modes — the explanation belongs on the symbol's TSDoc
-(or its return type's), not in downstream CLAUDE.md or architecture docs.
-mdz renders TSDoc through the `virtual:svelte-docinfo` pipeline, so the detail
-stays one hop from the code and moves when the code moves.
-
-CLAUDE.md entries should read as one-line pointers: symbol name plus a
-short hook. Three sentences about what a function returns or how it
-interacts with sibling symbols belong in source TSDoc. The failure mode is
-drift: CLAUDE.md prose goes stale living far from the code it describes,
-while TSDoc on the same symbol stays current because it's visible during
-the edit.
+Non-obvious semantics — wire shape, invariants, ordering, failure modes —
+belong on the symbol's TSDoc, not in a downstream CLAUDE.md. CLAUDE.md entries
+are one-line pointers: symbol name plus a hook. CLAUDE.md prose drifts because
+it lives far from the code; TSDoc on the symbol is visible during the edit.
 
 ## Tag Reference
 
 ### Main description
 
-Complete sentences ending in a period. Separate summary from details with a
-blank line:
-
-```typescript
-/**
- * Formats a person's name in display order.
- *
- * Combines first and last names, handling edge cases like hyphenated or
- * compound surnames. See `format_person_parts` for splitting.
- */
-```
+Complete sentences ending in a period; blank line between summary and detail.
 
 ### `@param`
 
-**Format:** `@param name - description`
+`@param name - description` — hyphen separator, source parameter order,
+identifiers backticked. Single-sentence descriptions are lowercase fragments
+with no period (`@param foo - the value to clamp`); multi-sentence
+descriptions are capitalized sentences with periods, continuation lines
+indented (`@param exclude_dev - If true, excludes dev dependencies to break cycles.` then ` *   Publishing uses exclude_dev=true …`). Acronyms and proper names (CSS, Zod, Fisher-Yates) stay
+capitalized. A legacy sentence-style file may stay internally consistent until
+touched.
 
-- Hyphen separator (per TSDoc spec)
-- Wrap type/identifier references in backticks
-- Must be in source parameter order
-- Single-sentence descriptions are lowercase fragments with no trailing
-  period — the house style (`@param foo - the value to clamp`); multi-sentence
-  descriptions read as sentences: capitalized, with periods. Acronyms (CSS,
-  HTML, URL) and proper names (Zod, Fisher-Yates) stay capitalized
-  regardless. A legacy sentence-style file may stay internally consistent
-  until touched.
-
-```typescript
-/**
- * Parses a semantic version string.
- * @param version_string - version to parse (format: "major.minor.patch")
- * @param allow_prerelease - allow versions with prerelease suffixes like "1.0.0-alpha"
- */
-```
-
-`@param options.field - description` documents a sub-property (collected into
-per-path property descriptions keyed by parameter name). Because matching is
-by parameter name, destructured params (`fn({a, b}: T)` — TS names the
-parameter `__0`) can't be documented — name the parameter if it needs docs.
-
-Multi-sentence descriptions read as sentences and wrap with continuation
-indentation — see the `exclude_dev` example under
-[Name algorithms](#name-algorithms-and-explain-rationale).
+`@param options.field - description` documents a sub-property. Matching is by
+parameter name, so destructured params (`fn({a, b}: T)` — TS names it `__0`)
+can't be documented; name the parameter if it needs docs.
 
 ### `@returns`
 
-Use `@returns` (not `@return`). Same capitalization rules as `@param`.
-
-```typescript
-/**
- * Gets the current time.
- * @returns milliseconds since the Unix epoch
- */
-```
-
-For async functions, describe what the `Promise` resolves to, not the `Promise` itself.
+`@returns` (not `@return`); same capitalization rules as `@param`. For async
+functions describe what the `Promise` resolves to, not the `Promise`.
 
 ### `@throws`
 
-Preferred: `@throws ErrorType description` — error type as first word, description follows. Pick a class even if it's just `Error`.
-
-```typescript
-/**
- * @throws Error if task with given name doesn't exist
- * @throws TaskError if production cycles detected
- */
-```
-
-The bare form (`@throws description`) and curly-brace form (`@throws {ErrorType} description`) also parse but are not preferred.
+`@throws ErrorType description` — type as first word, even if just `Error`
+(`@throws TaskError if production cycles detected`). The bare and
+`{ErrorType}` forms parse but aren't preferred.
 
 ### `@example`
 
-Code must be in fenced code blocks for syntax highlighting — `mdz` renders
-examples as markdown.
+Fenced code blocks (mdz renders examples as markdown); show the common case
+first, additional `@example` tags for variants; `// =>` or `// →` comments for
+return values — a bare call with no visible output teaches nothing. Constants
+and simple predicates don't need examples. Interface fields can carry inline
+`@example` tags too.
 
 ````typescript
 /**
- * Convert raw TSDoc `@see` content to mdz format for rendering.
- *
- * @param content - raw `@see` tag content in TSDoc format
- * @returns mdz-formatted string ready for `Mdz` component
- *
  * @example
  * ```typescript
- * mdz_from_tsdoc('{@link https://fuz.dev|API Docs}')
- * // → '[API Docs](https://fuz.dev)'
- *
  * mdz_from_tsdoc('{@link SomeType}')
  * // → '`SomeType`'
  * ```
  */
 ````
 
-Interface fields can have inline `@example` tags:
-
-````typescript
-export interface ModuleSourceOptions {
-	/**
-	 * Source directory paths to include, relative to `project_root`.
-	 *
-	 * @example
-	 * ```typescript
-	 * ['src/lib'] // single source directory
-	 * ```
-	 * @example
-	 * ```typescript
-	 * ['src/lib', 'src/routes'] // multiple directories
-	 * ```
-	 */
-	source_paths: Array<string>;
-}
-````
-
-#### Writing effective examples
-
-- Show the most common use case first — additional `@example` tags for variants
-- Use `// =>` or `// →` comments to show return values inline; a bare call
-  with no visible input/output (`process_data(input);`) teaches nothing
-- Constants and simple predicates don't need examples unless usage is
-  non-obvious
-
 ### `@deprecated`
 
-Include migration guidance with backtick-linked replacement. Rarely used —
-the "no backwards compatibility" policy means deprecated code is usually
-deleted.
-
-```typescript
-/**
- * Legacy way to process data.
- * @deprecated Use `process_data_v2` instead for better performance.
- */
-```
+Rarely used — the no-backwards-compatibility policy means deprecated code is
+deleted. When used, include the backticked replacement.
 
 ### `@see`
 
-Three patterns:
-
-**External URLs** — `{@link}` for display text, bare URL when self-explanatory:
-
-```typescript
-/** @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event} */
-/** @see {@link https://tools.ietf.org/html/rfc5322|RFC 5322} */
-/** @see https://github.com/colinhacks/zod#brand */
-```
-
-**Sibling modules** — module path relative to `src/lib/` for cross-references
-within a package. See [Module path format](#module-path-format) for the exact
-shape.
-
-```typescript
-// src/lib/actions/action_spec.ts — from fuz_app
-/**
- * Action spec types — the canonical source of truth for action contracts.
- *
- * Action specs define method, kind, auth, side effects, and input/output
- * schemas. Bridge functions in `actions/action_bridge.ts` derive `RouteSpec`
- * and `EventSpec` from them.
- *
- * @see `actions/action_rpc.ts` for the JSON-RPC dispatcher
- * @see `actions/register_action_ws.ts` for the WebSocket dispatcher
- *
- * @module
- */
-```
-
-Note the nested modules use the full lib-relative path
-(`actions/action_rpc.ts`, not `action_rpc.ts`).
-
-**Identifiers** — wrap in backticks (not `{@link}`):
-
-```typescript
-/** @see `each_concurrent` for the side-effect variant that skips result collection */
-/** @see `format_number` in `maths.ts` for the underlying implementation. */
-```
+- **External URLs** — `{@link url|text}` for display text, bare URL when
+  self-explanatory
+- **Sibling modules** — the lib-relative module path, backticked
+  (`` @see `actions/action_rpc.ts` for the JSON-RPC dispatcher ``); see
+  [Module path format](#module-path-format)
+- **Identifiers** — backticked, not `{@link}`
+  (`` @see `each_concurrent` for the side-effect variant ``)
 
 ### `@since`
 
-Supported by the parser but not currently used (`@since 1.5.0`). Use when
-versioning matters.
+Parsed, not currently used.
 
 ### `@default`
 
-Documents default values for interface fields and component props — place it
-on the field's doc comment:
+Documents defaults for interface fields and component props; place it on the
+field's own doc comment:
 
 ```ts
 /**
- * How the content is aligned in the viewport. `center` vertically centers it;
- * `top` aligns it to the top and grows downward.
+ * How the content is aligned in the viewport.
  * @default 'center'
  */
 align?: DialogAlign;
 ```
 
-See [Svelte components](#svelte-components) for a full `$props()` block.
-
 ### `@internal`
 
-Marks a symbol as not stable public API (standard TSDoc semantics). A
-marker, not an exclusion — `svelte-docinfo` extracts it as `internalMessage`
-and the declaration stays fully documented, so consumers *can* render a badge
-or filter (no fuz_ui surface does yet). Trailing prose is kept as the field's
-value: say who uses the symbol or why it's internal.
+Not-stable public API (standard TSDoc semantics). A marker, not an exclusion —
+extracted as `internalMessage`, the declaration stays fully documented so
+consumers _can_ badge or filter (no fuz_ui surface does yet). Trailing prose is
+kept: say who uses it or why it's internal. Use it for power-user-importable
+internals that should stay documented (deep extractor modules, orchestration
+seams); to remove a symbol from docs entirely, use `@nodocs`.
 
 ```typescript
-/**
- * Shared host decoration for `createAnalysisProgram`.
- *
- * @internal Used by `analyzeCore` and the test harnesses — not stable API.
- */
+/** @internal Used by `analyzeCore` and the test harnesses — not stable API. */
 ```
-
-Use for power-user-importable internals that should stay documented (deep
-extractor modules, orchestration seams). To remove a symbol from docs
-entirely, use `@nodocs` instead.
 
 ### `@nodocs` (non-standard)
 
-Excludes from docs generation and flat namespace validation. Implemented by
-`svelte-docinfo` — a tagged declaration is dropped from the analysis output
-and skipped by duplicate checking. The dominant use is exported-but-internal
-plumbing forced by the no-barrels convention (cross-module parser internals —
-mdz tags ~160 exports this way); also build-system internals (Gro
-`Args`/`task`, generated `gen` exports) and flat-namespace collisions.
+Drops the declaration from analysis output and duplicate checking. Dominant
+use: exported-but-internal plumbing forced by the no-barrels convention (mdz
+tags ~160 exports); also build-system internals (Gro `Args`/`task`, `gen`
+exports) and flat-namespace collisions.
 
 ```typescript
 /** @nodocs */
-export const Args = z.object({...});
-
-/** @nodocs */
-export const task: Task<typeof Args> = {...};
+export const Args = z.strictObject({...});
 ```
 
-**Never `@nodocs` a symbol that external consumers import and use directly.**
-If it's part of the public API, rename one side of the collision instead —
-hiding the primary surface from the flat namespace also hides it from
-generated docs and tomes, silently breaking downstream documentation.
-See SKILL.md §Flat Namespace - Fail Fast for which side to rename.
+**Never `@nodocs` a symbol external consumers import.** Rename one side of the
+collision instead (SKILL.md §Flat Namespace) — hiding the primary surface also
+hides it from generated docs and tomes.
 
 ### `@mutates` (non-standard)
 
-Documents mutations to parameters or external state. Parsed by
-svelte-docinfo's TSDoc parser and surfaced in fuz_ui's API docs.
+`@mutates target - description`. Everything before the first ` - ` is the
+target — a parameter, a path (`this.field`), or a multi-word reference
+(`` `permit_offer` siblings ``); backticks in the target are stripped by the
+parser. Same capitalization as `@param`. Document mutations visible outside the
+function; locals, closure state, and pull-based caches are out of scope. A
+bare `` @mutates `target` `` with no description parses but is discouraged —
+if the mutation needs no description, the tag adds little.
 
-**Form**: `@mutates target - description` — everything before the first
-` - ` is the target: a parameter name, a compound path (`this.field`), or a
-multi-word reference (`` `permit_offer` siblings ``). Backticks in the
-target are stripped by the parser, so renderers apply their own code
-styling. The description is the value-add — it tells the reader _what_
-changes and, when non-obvious, _why or when_.
+**On class methods**, stateful classes mutate by design; tagging every
+`add`/`remove`/`clear`/`set` is noise. `@mutates this[.field] - description`
+earns its line when the mutation isn't obvious from the name:
 
-A bare form with no description (`` @mutates `target` ``) parses to an
-empty description but is discouraged: if the mutation needs no description,
-the tag adds little too. When you write `@mutates`, make the description
-carry weight.
+- **Cross-field invalidation** — `Logger.clear_colors_override` also
+  invalidates four cached prefix strings
+- **Cross-resource side effects** — `attach_error_handler` also subscribes to
+  `process.uncaughtException`
+- **Implicit tracking** — `ProcessRegistry.spawn` also records the child for
+  `despawn_all`
+- **Mutation behind a query-shaped name** — `LruMap.get` reorders the recency list
 
-Same capitalization rules as `@param`. Document mutations visible outside
-the function; internal locals, closure state, and pull-based lazy caches
-that consumers don't observe are out of scope.
-
-#### When `@mutates this` is warranted on class methods
-
-Stateful classes mutate by design — that's the point. Tagging _every_
-state-changing method (`add`, `remove`, `clear`, `set`, `release`,
-`acquire`, …) is noise: the method name already names the mutation.
-
-`@mutates this[.field] - description` earns its line on a class method
-**when the mutation isn't obvious from the method name**. Recurring shapes:
-
-- **Cross-field invalidation** — clearing one field also resets caches or
-  derived state. Example: `Logger.clear_colors_override` resets the
-  override AND invalidates four cached prefix strings.
-- **Cross-resource side effects** — the method registers/unregisters
-  external listeners, file watchers, timers, or process handlers beyond
-  mutating local state. Example: `attach_error_handler` sets
-  `#error_handler` AND subscribes to `process.uncaughtException`.
-- **Implicit tracking** — the method name describes one action but the
-  class also records it for lifecycle/cleanup. Example:
-  `ProcessRegistry.spawn` is named after spawning, but also adds the
-  child to `this.processes` for later `despawn_all`.
-- **Surprising mutation on a query-shaped name** — the method looks like
-  a getter or pure query but mutates. Example: `LruMap.get` reorders the
-  recency list.
-
-A method whose name fully communicates the mutation (`set foo`,
-`clear_console_override`, `Counter.increment`, `LruMap.delete`) does NOT
-need the tag.
-
-Ranking when the tag _is_ warranted: `@mutates this.specific_field -
-description` (best, names the field) > `@mutates this - description`
-(generic but at least carries reasoning) > `` @mutates `this` `` (bare,
-discouraged) > omit (correct when the name says it all).
+Ranking when warranted: `@mutates this.field - description` > `@mutates this - description` > bare > omit (correct when the name says it all).
 
 ```typescript
 /**
  * Shuffles an array in place using the Fisher-Yates algorithm.
- * @param array - the array to shuffle
  * @mutates array - randomly reorders elements in place
- */
-export function shuffle<T>(array: T[]): T[] {
-	// ...
-}
-```
-
-```typescript
-/**
- * Apply named middleware specs to a Hono app.
- *
- * @param specs - middleware specs to apply
- * @mutates app - registers each spec's middleware on the app
  */
 ```
 
 ### `@module`
 
-Marks a module-level doc comment. Place at end of comment block. Works in
-`.ts` files and `.svelte` components.
-
-```svelte
-<script lang="ts">
-	/**
-	 * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/alert/}
-	 *
-	 * @module
-	 */
-</script>
-```
+Module-level doc comment, tag at the end of the block; works in `.ts` and in a
+`.svelte` component's `<script>`. Prioritize it for modules with design
+rationale, pipeline stages, or cross-references; `##` headings (`## Design`,
+`## Behavioral notes`) for complex modules.
 
 ### Tag order
 
-1. Main description
-2. `@param` (in source parameter order)
-3. `@returns`
-4. `@mutates`
-5. `@throws`
-6. `@example`
-7. `@deprecated`
-8. `@see`
-9. `@since`
-10. `@default`
-11. `@internal`
-12. `@nodocs`
-
-`@mutates` goes after `@returns` (or after `@param` if no return).
+description → `@param` (source order) → `@returns` → `@mutates` → `@throws` →
+`@example` → `@deprecated` → `@see` → `@since` → `@default` → `@internal` →
+`@nodocs`
 
 ### Where a tag has no effect
 
-Placements the parser silently discards (svelte-docinfo emits a
-`misplaced_tag` diagnostic, but no consumer imports `diagnostics` today):
+The parser silently discards these (svelte-docinfo emits a `misplaced_tag`
+diagnostic, but no consumer imports `diagnostics` today):
 
-- Symbol-scope tags (`@example`, `@deprecated`, `@internal`, `@since`,
-  `@see`, `@throws`, `@mutates`, `@default`, `@nodocs`) on a **non-primary
-  overload signature** — put them on the primary signature.
-- `@nodocs` inside a `@module` comment — it has no module-level meaning; use
-  the analyzer's `exclude` patterns to skip a whole module.
-- `@default` on a top-level function — it applies only to variables,
-  interface members, and component props.
-- `@defaultValue`/`@defaultvalue` and `@return` parse as synonyms but are not
-  house style — write `@default` and `@returns`.
+- Symbol-scope tags (`@example`, `@deprecated`, `@internal`, `@since`, `@see`,
+  `@throws`, `@mutates`, `@default`, `@nodocs`) on a **non-primary overload
+  signature** — put them on the primary (`@param`/`@returns` are per-signature)
+- `@nodocs` inside a `@module` comment — use the analyzer's `exclude` patterns
+  to skip a module
+- `@default` on a top-level function — variables, interface members, and props only
+- `@defaultValue` / `@return` parse as synonyms but aren't house style
 
 ## Inter-linking with mdz
 
-Backtick-wrapped identifiers auto-link to API docs. Unmatched references
-fall through to plain `<code>`.
-
-Autolinking applies where fuz_ui renders through `<Mdz>`: main descriptions,
-`@param` descriptions, `@returns`, `@example`, and `@see`. `@throws` and
-`@mutates` descriptions render as plain text on the API pages — backticks
-there display literally.
-
-### Always link
+Backticked identifiers autolink; unmatched references fall through to plain
+`<code>`. Autolinking applies in main descriptions, `@param`, `@returns`,
+`@example`, and `@see`; `@throws` and `@mutates` render as plain text, so
+backticks there display literally (still house style — consistency wins).
+References are case-sensitive (`` `library` `` won't match `Library`).
 
 **Wrap every mention of an exported identifier, module filename, or type name
-in backticks.**
-
-```typescript
-/**
- * Wraps `LibraryJson` with computed properties and provides the root
- * of the API documentation hierarchy: `Library` → `Module` → `Declaration`.
- *
- * @see `module.svelte.ts` for `Module` class
- * @see `declaration.svelte.ts` for `Declaration` class
- */
-```
-
-What to wrap:
-
-- exported function names: "`tsdoc_parse`", "`shuffle`"
-- type and interface names: "`ModuleJson`", "`SourceFileInfo`"
-- class names: "`Library`", "`Declaration`"
-- module paths: "`module_helpers.ts`", "`actions/composables.ts`",
-  "`DocsLink.svelte`" — see [Module path format](#module-path-format)
-- tag names in prose: "`@param`", "`@returns`"
-- enum and constant names
+in backticks** — functions, types, classes, module paths (`module_helpers.ts`,
+`actions/composables.ts`, `DocsLink.svelte`), tag names in prose (`@param`),
+enums and constants.
 
 ### Module path format
 
-Module references must use the **canonical path** that `Library.module_by_path`
-indexes — the `src/lib/`-relative path with the source extension. Anything
-else falls through to plain `<code>` and the auto-link silently breaks.
+Module references must use the path `Library.module_by_path` indexes: the
+`src/lib/`-relative path with the source extension. Anything else silently
+falls through.
 
 ```typescript
-// GOOD — lib-relative path with source extension
+// GOOD
 /** @see `actions/action_rpc.ts` for the JSON-RPC dispatcher */
-/** Wraps `LibraryJson`. @see `module.svelte.ts` for the `Module` class */
-
-// BAD — relative `./` prefix doesn't match canonical paths
-/** Dispatch through `action_rpc` from `./action_rpc.js` here */
-
-// BAD — `.js` runtime extension doesn't match the indexed `.ts` source path
-/** @see `action_rpc.js` for the JSON-RPC dispatcher */
-
-// BAD — bare filename of a nested module ambiguous and won't resolve
-/** @see `action_rpc.ts` */ // breaks if the file is at actions/action_rpc.ts
-
-// BAD — redundant `src/lib/` prefix; collapse to the bare lib-relative form
-/** @see `src/lib/actions/action_rpc.ts` */ // should be `actions/action_rpc.ts`
+// BAD — `./` prefix
+/** … from `./action_rpc.js` … */
+// BAD — `.js` runtime extension
+/** @see `action_rpc.js` */
+// BAD — bare filename of a nested module (breaks when the file is at actions/action_rpc.ts)
+/** @see `action_rpc.ts` */
+// BAD — redundant `src/lib/`
+/** @see `src/lib/actions/action_rpc.ts` */
 ```
 
-Top-level files (e.g., `src/lib/tome.ts`) match by bare filename
-("`tome.ts`"). Nested files (e.g., `src/lib/actions/action_rpc.ts`)
-require the full sub-path ("`actions/action_rpc.ts`"). When in doubt,
-include the directory — the longer form always works.
+Top-level files match by bare filename (`tome.ts`); nested files need the
+sub-path. When in doubt, include the directory. The canonical format is
+documented on `Module.path` in fuz_ui's `module.svelte.ts`.
 
-**Never reference outside the repo from TSDoc** — source comments render into
-published API docs where the shipped package stands alone, so an out-of-repo
-path is a dead link. Full rules and escape hatches: ./path-references.md §4.
-
-The canonical format is documented on `Module.path` in `module.svelte.ts`
-(fuz_ui).
+**Never reference outside the repo from TSDoc** — the published API docs stand
+alone, so an out-of-repo path is a dead link (./path-references.md §4).
 
 ### Internal paths
 
-Paths starting with `/` after whitespace auto-link as internal navigation.
-
-**Gotcha — API route lists**: `/word` patterns auto-link, including HTTP
-routes. Bare paths create broken links that fail SvelteKit prerender:
+`/word` after whitespace autolinks as internal navigation — including HTTP
+routes, which then break prerender. Backtick them:
 
 ```typescript
-// BAD — mdz auto-links /login as internal route, breaks prerender
-/**
- * - POST /login
- * - GET /session
- */
-
-// GOOD — backtick-wrapped renders as <code>, not <a>
-/**
- * - `POST /login`
- * - `GET /session`
- */
+/** BAD — mdz autolinks /login and breaks prerender: - POST /login */
+/** GOOD — renders as <code>: - `POST /login` */
 ```
 
-### Case sensitivity
+## Svelte components
 
-References are case-sensitive. "`library`" will NOT match `Library`.
-
-## Documentation Patterns
-
-### Module-level documentation
-
-Prioritize `@module` for modules with design rationale, pipeline stages, or
-cross-references.
-
-**Basic:**
-
-```typescript
-/**
- * Module path and metadata helpers.
- *
- * Provides utilities for working with source module paths, file types,
- * and import relationships in the package generation system.
- *
- * @module
- */
-```
-
-**Design sections** with `##` headings for complex modules:
-
-```typescript
-/**
- * TSDoc/JSDoc parsing helpers using the TypeScript Compiler API.
- *
- * ## Design
- *
- * Pure extraction approach: extracts documentation as-is with minimal
- * transformation, preserving source intent. Works around TypeScript
- * Compiler API quirks where needed.
- *
- * ## Tag support
- *
- * Supports the common JSDoc/TSDoc doc tags:
- * `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@internal`,
- * `@see`, `@since`, `@default`, `@nodocs`.
- *
- * ## Behavioral notes
- *
- * Due to TS Compiler API limitations:
- * - `@throws` tags have `{Type}` stripped by TS API; fallback regex
- *   extracts first word as error type
- * - TS API strips URL protocols from `@see` tag text; we use
- *   `getText()` to preserve original format
- *
- * @module
- */
-```
-
-**Pipeline stages** — combine the numbered-steps form
-([Document workflows](#document-workflows-with-numbered-steps)) with a `@see`
-cluster in a single `@module` comment.
-
-### Svelte components
-
-Document props inline in the `$props()` type annotation. For obvious props
-with no default, a comment is optional — focus on behavior, constraints,
-and non-obvious defaults.
+Document props inline in the `$props()` type annotation. Obvious props with no
+default need no comment; focus on behavior, constraints, and non-obvious
+defaults.
 
 ```svelte
 <script lang="ts">
-	// from fuz_ui Dialog.svelte (abridged)
+	// fuz_ui Dialog.svelte (abridged)
 	const {
 		show = true,
-		align = 'center',
 		dismissable = true,
-		content_selector = '.pane',
 		onbeforeclose,
 		children,
 		...rest
@@ -727,68 +342,32 @@ and non-obvious defaults.
 		 */
 		show?: boolean;
 		/**
-		 * How the content is aligned in the viewport. `center` vertically centers
-		 * it; `top` aligns it to the top and grows downward, which avoids jank
-		 * when the content's height changes.
-		 * @default 'center'
-		 */
-		align?: DialogAlign;
-		/**
-		 * Whether clicking outside the content (see `content_selector`) closes
-		 * the dialog. `Escape` closes it regardless of this.
+		 * Whether clicking outside the content closes the dialog. `Escape`
+		 * closes it regardless of this.
 		 * @default true
 		 */
 		dismissable?: boolean;
 		/**
-		 * Fallback selector for a content surface you render in `children`
-		 * yourself (rather than via `DialogContent`, which self-registers).
-		 * @default '.pane'
-		 */
-		content_selector?: string;
-		/**
-		 * Called before a user-initiated close (`Escape`, click-outside, or
-		 * `close`). Return `false` to veto and keep the dialog open.
+		 * Called before a user-initiated close. Return `false` to veto.
 		 */
 		onbeforeclose?: () => boolean | void;
-		/**
-		 * Rendered inside the dialog overlay. Receives the `DialogContext` (e.g.
-		 * `{close}`); pair with `DialogContent` or render your own surface.
-		 */
+		/** Rendered inside the overlay. Receives the `DialogContext` (e.g. `{close}`). */
 		children: Snippet<[dialog: DialogContext]>;
 	} = $props();
 </script>
 ```
 
-### Type aliases
-
-```typescript
-/**
- * Analyzer type for source files.
- *
- * - `'typescript'` - TypeScript/JS files analyzed via TypeScript Compiler API
- * - `'svelte'` - Svelte components analyzed via svelte2tsx + TypeScript Compiler API
- * - `'css'` - CSS files
- * - `'json'` - JSON files
- */
-export type AnalyzerType = 'typescript' | 'svelte' | 'css' | 'json';
-```
-
 ## Drift — Correctness Over Coverage
 
-**A wrong doc comment is worse than a missing one** — it looks authoritative,
-so readers trust it and propagate the mistake. When refactoring a public API,
-re-read the TSDoc on every touched symbol before shipping.
+**A wrong doc comment is worse than a missing one** — readers trust it and
+propagate the mistake. When refactoring a public API, re-read the TSDoc on
+every touched symbol. Common drift:
 
-Common drift patterns to watch for:
-
-- **`@throws` vs return shape** — function declares `@throws` but the body
-  returns `null`/`undefined` on the same failure path (or vice versa). The
-  highest-value contradiction because callers branch on it
-- **Signature changed** — `@param` list no longer matches parameter order, or
-  names refer to renamed arguments
-- **Return shape widened** — new fields on a returned type go undocumented on
-  the function that produces them
-- **Error semantics tightened** — a thrown error class was replaced or a
-  distinct `error.data.reason` was added, but `@throws` still names the old one
-- **Cross-refs rotted** — `@see some_helper.ts` points at a file that was
-  moved, merged, or deleted
+- **`@throws` vs return shape** — declares `@throws` but the body returns
+  `null`/`undefined` on that path (or vice versa); highest-value because
+  callers branch on it
+- **Signature changed** — `@param` order or names no longer match
+- **Return shape widened** — new fields on a returned type go undocumented
+- **Error semantics tightened** — a thrown class was replaced or an
+  `error.data.reason` added, but `@throws` names the old one
+- **Cross-refs rotted** — `@see some_helper.ts` points at a moved or deleted file
