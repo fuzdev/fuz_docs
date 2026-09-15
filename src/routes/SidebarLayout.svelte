@@ -49,7 +49,7 @@
 												{
 													selected:
 														pathname ===
-															resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)
+														resolve(('/skills/' + skill.name + '/references/' + ref.slug) as any)
 												}
 											]}
 											style:padding-left="calc(2 * var(--space_lg))"

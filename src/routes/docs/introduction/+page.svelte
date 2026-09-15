@@ -17,14 +17,13 @@
 			fuz_docs is an experimental website with AI-generated documentation and agent skills for
 			<a href="https://www.fuz.dev/">Fuz</a>, a zippy stack for human agency. It's a poorly-reviewed
 			actively-evolving dumping ground of conventions, patterns, and reference material for
-			<GithubLink path="fuzdev"><code>@fuzdev</code></GithubLink>
-			projects. Everything is in flux, not all patterns are endorsed, and some content is plain
-			slop.
+			<GithubLink path="fuzdev"><code>@fuzdev</code></GithubLink> projects. Everything is in flux,
+			not all patterns are endorsed, and some content is plain slop.
 		</p>
 		<p>
 			This website is designed for both human and machine consumption. Humans are welcome to browse
-			<a href={resolve('/docs' as any)}>docs</a> and
-			<a href={resolve('/skills' as any)}>skills</a>, but expect rough edges.
+			<a href={resolve('/docs' as any)}>docs</a> and <a href={resolve('/skills' as any)}>skills</a>,
+			but expect rough edges.
 		</p>
 	</TomeSection>
 
@@ -37,18 +36,19 @@
 		</p>
 		<table>
 			<thead>
-				<tr><th>Skill</th><th>Purpose</th></tr>
+				<tr>
+					<th>Skill</th>
+					<th>Purpose</th>
+				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td><TomeLink slug="fuz-stack" /></td><td>
-						Coding conventions and patterns for TypeScript, Svelte 5, and Rust projects
-					</td>
+					<td><TomeLink slug="fuz-stack" /></td>
+					<td>Coding conventions and patterns for TypeScript, Svelte 5, and Rust projects</td>
 				</tr>
 				<tr>
-					<td><TomeLink slug="grimoire" /></td><td>
-						Cross-repo coordination with lore, quests, and skills
-					</td>
+					<td><TomeLink slug="grimoire" /></td>
+					<td>Cross-repo coordination with lore, quests, and skills</td>
 				</tr>
 			</tbody>
 		</table>
@@ -62,20 +62,24 @@
 		<p>Auto-generated documentation from the <code>@fuzdev</code> ecosystem.</p>
 		<table>
 			<thead>
-				<tr><th>Docs</th><th>Contents</th></tr>
+				<tr>
+					<th>Docs</th>
+					<th>Contents</th>
+				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td><TomeLink slug="stack" /></td><td>
-						Toolchain versions, all packages, dependency graph
-					</td>
+					<td><TomeLink slug="stack" /></td>
+					<td>Toolchain versions, all packages, dependency graph</td>
 				</tr>
 				<tr>
-					<td><TomeLink slug="api" /></td><td>
-						Auto-generated TypeScript and Svelte API documentation
-					</td>
+					<td><TomeLink slug="api" /></td>
+					<td>Auto-generated TypeScript and Svelte API documentation</td>
 				</tr>
-				<tr><td><TomeLink slug="library" /></td><td>Package metadata and exports</td></tr>
+				<tr>
+					<td><TomeLink slug="library" /></td>
+					<td>Package metadata and exports</td>
+				</tr>
 			</tbody>
 		</table>
 	</TomeSection>

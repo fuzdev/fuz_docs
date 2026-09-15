@@ -36,39 +36,51 @@
 		<TomeSectionHeader text="Conventions" />
 		<table>
 			<thead>
-				<tr><th>Area</th><th>Convention</th></tr>
+				<tr>
+					<th>Area</th>
+					<th>Convention</th>
+				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>Naming</td><td>
+					<td>Naming</td>
+					<td>
 						snake_case functions/variables, PascalCase types/components, SCREAMING_SNAKE_CASE
 						constants
 					</td>
 				</tr>
 				<tr>
-					<td>File organization</td><td>
+					<td>File organization</td>
+					<td>
 						<code>src/lib/</code> for library code, <code>src/test/</code> for tests (not
 						co-located), <code>src/routes/</code> for SvelteKit
 					</td>
 				</tr>
 				<tr>
-					<td>Imports</td><td>
+					<td>Imports</td>
+					<td>
 						Import by real source extension (<code>.ts</code>/<code>.svelte.ts</code>), directly
 						from source (no barrels/re-exports)
 					</td>
 				</tr>
-				<tr><td>Formatting</td><td><code>tsv</code> with tabs, 100 char width</td></tr>
 				<tr>
-					<td>Breaking changes</td><td>Acceptable — delete unused code, don't shim or alias</td>
+					<td>Formatting</td>
+					<td><code>tsv</code> with tabs, 100 char width</td>
 				</tr>
 				<tr>
-					<td>Flat namespace</td><td>
+					<td>Breaking changes</td>
+					<td>Acceptable — delete unused code, don't shim or alias</td>
+				</tr>
+				<tr>
+					<td>Flat namespace</td>
+					<td>
 						All exported identifiers unique across all modules; the <code>svelte-docinfo</code>
 						analysis enforces it
 					</td>
 				</tr>
 				<tr>
-					<td>Build</td><td>
+					<td>Build</td>
+					<td>
 						<code>gro check</code> runs typecheck + test + gen --check + format --check + lint
 					</td>
 				</tr>
@@ -97,32 +109,38 @@ import {git_push} from './git.ts';`}
 		</p>
 		<table>
 			<thead>
-				<tr><th>Pattern</th><th>Convention</th></tr>
+				<tr>
+					<th>Pattern</th>
+					<th>Convention</th>
+				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>Error handling</td><td>
+					<td>Error handling</td>
+					<td>
 						<code>Result&lt;TValue, TError&gt;</code> discriminated union — never throw for expected
 						errors
 					</td>
 				</tr>
 				<tr>
-					<td>Dependency injection</td><td>
+					<td>Dependency injection</td>
+					<td>
 						Small <code>*Deps</code> interfaces for all I/O, plain object mocks — no mocking
 						libraries
 					</td>
 				</tr>
 				<tr>
-					<td>Validation</td><td>
+					<td>Validation</td>
+					<td>
 						<code>z.strictObject()</code> by default, PascalCase schema naming,
-						<code>.brand()</code>
-						for nominal types
+						<code>.brand()</code> for nominal types
 					</td>
 				</tr>
 				<tr>
-					<td>Testing</td><td>
-						Fixture-based testing for parsers — input files, generated
-						<code>expected.json</code>, never manually edit
+					<td>Testing</td>
+					<td>
+						Fixture-based testing for parsers — input files, generated <code>expected.json</code>,
+						never manually edit
 					</td>
 				</tr>
 			</tbody>
@@ -147,14 +165,18 @@ export interface FsDeps {
 		<p>{fuz_stack.references.length} detailed reference documents:</p>
 		<table>
 			<thead>
-				<tr><th>Reference</th><th>Covers</th></tr>
+				<tr>
+					<th>Reference</th>
+					<th>Covers</th>
+				</tr>
 			</thead>
 			<tbody>
 				{#each fuz_stack.references as ref (ref.slug)}
 					<tr>
 						<td>
 							<a href={resolve(('/skills/fuz-stack/references/' + ref.slug) as any)}>{ref.title}</a>
-						</td><td>{ref.description}</td>
+						</td>
+						<td>{ref.description}</td>
 					</tr>
 				{/each}
 			</tbody>

@@ -46,11 +46,17 @@
 		<TomeSectionHeader text="Toolchain" />
 		<table>
 			<thead>
-				<tr><th>Tool</th><th>Version</th></tr>
+				<tr>
+					<th>Tool</th>
+					<th>Version</th>
+				</tr>
 			</thead>
 			<tbody>
 				{#each Object.entries(stack.toolchain) as [tool, version] (tool)}
-					<tr><td>{tool}</td><td><code>{version}</code></td></tr>
+					<tr>
+						<td>{tool}</td>
+						<td><code>{version}</code></td>
+					</tr>
 				{/each}
 			</tbody>
 		</table>
@@ -59,8 +65,8 @@
 	<TomeSection>
 		<TomeSectionHeader text="TypeScript and Svelte packages" />
 		<p>
-			{packages.length} packages, {total_exported_modules} exported modules ({total_modules}
-			total), {total_exports} exports
+			{packages.length} packages, {total_exported_modules} exported modules ({total_modules} total),
+			{total_exports} exports
 		</p>
 		<table>
 			<thead>
