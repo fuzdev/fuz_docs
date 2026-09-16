@@ -48,7 +48,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `fuz_blog`     | blog software from scratch with SvelteKit                                       |
 | `fuz_mastodon` | Mastodon components and helpers                                                 |
 | `fuz_gitops`   | multi-repo management                                                           |
-| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3_wasm` + `blake3_wasm_small`)   |
+| `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3-wasm` + `blake3-wasm-small`)   |
 | `zzz`          | software garage — produce software with AI assistance                           |
 | `zap`          | convergence — deploy and operate infrastructure                                 |
 

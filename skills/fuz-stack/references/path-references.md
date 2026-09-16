@@ -94,7 +94,7 @@ ships**:
   in existing code while `#lib` rolls out.
 - **Cross-package** `@fuzdev/<pkg>/sub.ts` resolves via the target's `exports`
   `.js`/`.ts` mirror to its `dist`. Packages without subpath exports
-  (`@fuzdev/blake3_wasm`) are imported by bare name.
+  (`@fuzdev/blake3-wasm`) are imported by bare name.
 
 `$app`/`$env` stay (virtual modules). `@ryanatkn/eslint-config` warns on
 `$lib`/`$routes`/`#lib`/`#routes` inside `src/lib`, covering `import`/`export`

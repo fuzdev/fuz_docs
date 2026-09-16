@@ -52,7 +52,7 @@ dev server.
 - fuz_util (@fuzdev/fuz_util) - utility functions
 - mdz (@fuzdev/mdz) - markdown dialect rendering the skill docs
 - fuz_code (@fuzdev/fuz_code) - syntax highlighting
-- blake3 (@fuzdev/blake3_wasm) - hashing for the /tools/hash route
+- blake3 (@fuzdev/blake3-wasm) - hashing for the /tools/hash route
 - Gro (@fuzdev/gro) - build system and task runner
 
 ## Directory structure

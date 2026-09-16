@@ -222,7 +222,7 @@ npm surface of such a tool spells one way.
 
 | Project | WASM packages                                                                                                    | Native                                                                                                        |
 | ------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| blake3  | `@fuzdev/blake3_wasm` (SIMD), `@fuzdev/blake3_wasm_small` (no SIMD) — keeps its snake_case npm names             | none                                                                                                          |
+| blake3  | `@fuzdev/blake3-wasm` (SIMD), `@fuzdev/blake3-wasm-small` (no SIMD) (crates `blake3_wasm`, `blake3_wasm_small`)  | none                                                                                                          |
 | pglet   | `@fuzdev/pglet-wasm` (crate `pglet_wasm`)                                                                        | `pglet_server` daemon (PG wire)                                                                               |
 | tsv     | `@fuzdev/tsv-wasm` (parse + format + `tsv` CLI), `@fuzdev/tsv-format-wasm`, `@fuzdev/tsv-parse-wasm`                                                | `@fuzdev/tsv` (N-API loader) over `@fuzdev/tsv-<triple>` platform packages, each shipping the `tsv` CLI binary; `tsv_ffi` `.so` as source |
 
