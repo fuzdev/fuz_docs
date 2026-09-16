@@ -2,7 +2,7 @@
 	"fuz_util": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.68.0",
+			"version": "0.69.0",
 			"description": "utility belt for JS",
 			"tagline": "ancient not extinct",
 			"glyph": "🦕",
@@ -5251,7 +5251,7 @@
 						{
 							"name": "fact_hash_bytes",
 							"kind": "function",
-							"docComment": "Synchronously hash bytes into a fact hash.\n\nDelegates to `hash_blake3` (the fuz_util wrapper around `@fuzdev/blake3_wasm`)\nand prefixes the result with `blake3:`. Strings are UTF-8 encoded.",
+							"docComment": "Synchronously hash bytes into a fact hash.\n\nDelegates to `hash_blake3` (the fuz_util wrapper around `@fuzdev/blake3-wasm`)\nand prefixes the result with `blake3:`. Strings are UTF-8 encoded.",
 							"typeSignature": "(data: string | Uint8Array<ArrayBufferLike>): string & $brand<\"FactHash\">",
 							"sourceLine": 40,
 							"parameters": [
@@ -5445,7 +5445,7 @@
 							}
 						}
 					],
-					"moduleComment": "Fact hash producers.\n\nA `FactHash` is a `blake3:`-prefixed hex64 blake3 digest. The prefix makes\nthe hash self-identifying — any text scanner can find it without prior\nknowledge of the source.\n\nThe vocabulary — `FactHashSchema`, `FACT_HASH_PREFIX`, `FACT_HASH_PATTERN`,\n`is_fact_hash` — lives in `hash_schemas.ts`, which imports no WASM. This\nmodule holds the functions that actually hash, so importing it costs the\n`@fuzdev/blake3_wasm` binary. Client code validating a hash it received\nshould import from `hash_schemas.ts` instead.\n\nRuntime validation happens at construction (`fact_hash_bytes` /\n`fact_hash_stream` cast at the source; `FactHashSchema.parse` /\n`is_fact_hash` validate inputs from external boundaries).\n\nThe hash-producing helpers carry the `fact_hash_` prefix so they namespace\ncleanly alongside the branded `FactHash` type and the `FACT_HASH_*`\nconstants, and stay distinct from the raw-hex `hash_blake3` / `hash_sha256`\nfamily in `hash.ts` (those return bare digests; these return the branded,\n`blake3:`-prefixed wire form).",
+					"moduleComment": "Fact hash producers.\n\nA `FactHash` is a `blake3:`-prefixed hex64 blake3 digest. The prefix makes\nthe hash self-identifying — any text scanner can find it without prior\nknowledge of the source.\n\nThe vocabulary — `FactHashSchema`, `FACT_HASH_PREFIX`, `FACT_HASH_PATTERN`,\n`is_fact_hash` — lives in `hash_schemas.ts`, which imports no WASM. This\nmodule holds the functions that actually hash, so importing it costs the\n`@fuzdev/blake3-wasm` binary. Client code validating a hash it received\nshould import from `hash_schemas.ts` instead.\n\nRuntime validation happens at construction (`fact_hash_bytes` /\n`fact_hash_stream` cast at the source; `FactHashSchema.parse` /\n`is_fact_hash` validate inputs from external boundaries).\n\nThe hash-producing helpers carry the `fact_hash_` prefix so they namespace\ncleanly alongside the branded `FactHash` type and the `FACT_HASH_*`\nconstants, and stay distinct from the raw-hex `hash_blake3` / `hash_sha256`\nfamily in `hash.ts` (those return bare digests; these return the branded,\n`blake3:`-prefixed wire form).",
 					"dependencies": [
 						"hash_blake3.ts",
 						"hash_schemas.ts",
@@ -8613,7 +8613,7 @@
 							"returnDescription": "64-character hexadecimal hash string (32 bytes)"
 						}
 					],
-					"moduleComment": "BLAKE3 cryptographic hashing via `@fuzdev/blake3_wasm`.\n\nSynchronous and fast. Returns hex-encoded 256-bit (32-byte) digests.\nWASM initialization starts eagerly on import. Await `blake3_ready` before first use\nin browser contexts where the WASM must be fetched asynchronously.\n\nImporting this module costs the WASM binary. Code that only validates the\nshape of a hash wants `Blake3Hash` from `hash_schemas.ts`, which is\nWASM-free.",
+					"moduleComment": "BLAKE3 cryptographic hashing via `@fuzdev/blake3-wasm`.\n\nSynchronous and fast. Returns hex-encoded 256-bit (32-byte) digests.\nWASM initialization starts eagerly on import. Await `blake3_ready` before first use\nin browser contexts where the WASM must be fetched asynchronously.\n\nImporting this module costs the WASM binary. Code that only validates the\nshape of a hash wants `Blake3Hash` from `hash_schemas.ts`, which is\nWASM-free.",
 					"dependencies": [
 						"bytes.ts",
 						"hex.ts"
@@ -8712,7 +8712,7 @@
 							"returnType": "boolean"
 						}
 					],
-					"moduleComment": "Hash vocabulary — schemas, patterns, and guards, with no hashing.\n\nThis module is deliberately WASM-free. `hash_blake3.ts` and `fact_hash.ts`\nimport `@fuzdev/blake3_wasm` and kick off its initialization at module\nscope, so importing either one to reach a validator drags the WASM binary\ninto the bundle and fetches it at page load. Client code that only needs to\n*validate* a hash — action specs, wire schemas, cell payload shapes —\nimports from here and pays nothing.\n\nThe hashing functions live next door: `hash_blake3` in `hash_blake3.ts`,\nthe `fact_hash_*` producers in `fact_hash.ts`.",
+					"moduleComment": "Hash vocabulary — schemas, patterns, and guards, with no hashing.\n\nThis module is deliberately WASM-free. `hash_blake3.ts` and `fact_hash.ts`\nimport `@fuzdev/blake3-wasm` and kick off its initialization at module\nscope, so importing either one to reach a validator drags the WASM binary\ninto the bundle and fetches it at page load. Client code that only needs to\n*validate* a hash — action specs, wire schemas, cell payload shapes —\nimports from here and pays nothing.\n\nThe hashing functions live next door: `hash_blake3` in `hash_blake3.ts`,\nthe `fact_hash_*` producers in `fact_hash.ts`.",
 					"dependents": [
 						"fact_hash.ts",
 						"fact_store.ts"
@@ -19306,7 +19306,7 @@
 	"gro": {
 		"pkg_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.211.0",
+			"version": "0.212.0",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -239191,7 +239191,7 @@
 	"blake3": {
 		"pkg_json": {
 			"name": "@fuzdev/blake3",
-			"version": "0.1.1",
+			"version": "0.2.0",
 			"private": true,
 			"description": "BLAKE3 hashing compiled to WASM",
 			"repository": "https://github.com/fuzdev/blake3"

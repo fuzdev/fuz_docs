@@ -17,10 +17,10 @@ export const stack_nodes: Array<StackNode> = [
 		category: 'foundation',
 		language: 'wasm',
 		description: 'BLAKE3 hashing compiled to WASM',
-		layer: 0,
-		fan_in: 11,
+		layer: 2,
+		fan_in: 2,
 		x: -75,
-		y: 960
+		y: 720
 	},
 	{
 		name: 'fuz_app',
@@ -120,7 +120,7 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description: 'utility belt for JS',
 		layer: 1,
-		fan_in: 13,
+		fan_in: 14,
 		x: 0,
 		y: 840
 	},
@@ -152,7 +152,7 @@ export const stack_nodes: Array<StackNode> = [
 			'a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content',
 		layer: 2,
 		fan_in: 10,
-		x: 0,
+		x: 75,
 		y: 720
 	},
 	{
@@ -162,7 +162,7 @@ export const stack_nodes: Array<StackNode> = [
 		description: 'static analysis for TypeScript and Svelte',
 		layer: 0,
 		fan_in: 13,
-		x: 75,
+		x: 0,
 		y: 960
 	},
 	{
@@ -226,11 +226,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_blog',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_blog',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
@@ -271,11 +266,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_code',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_code',
 		to: 'fuz_css',
 		kind: 'peer'
 	},
@@ -341,11 +331,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_docs',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_docs',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
@@ -377,11 +362,6 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_docs',
 		to: 'svelte-docinfo',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_gitops',
-		to: 'blake3',
 		kind: 'dev'
 	},
 	{
@@ -421,11 +401,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_mastodon',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_mastodon',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
@@ -457,11 +432,6 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_mastodon',
 		to: 'svelte-docinfo',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_template',
-		to: 'blake3',
 		kind: 'dev'
 	},
 	{
@@ -501,11 +471,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz_ui',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz_ui',
 		to: 'fuz_code',
 		kind: 'peer'
 	},
@@ -533,11 +498,6 @@ export const stack_edges: Array<StackEdge> = [
 		from: 'fuz_ui',
 		to: 'svelte-docinfo',
 		kind: 'dev'
-	},
-	{
-		from: 'fuz_util',
-		to: 'blake3',
-		kind: 'peer'
 	},
 	{
 		from: 'fuz_util',
@@ -571,11 +531,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'fuz.dev',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'fuz.dev',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
@@ -603,11 +558,6 @@ export const stack_edges: Array<StackEdge> = [
 		from: 'fuz.dev',
 		to: 'mdz',
 		kind: 'dev'
-	},
-	{
-		from: 'gro',
-		to: 'blake3',
-		kind: 'peer'
 	},
 	{
 		from: 'gro',
@@ -641,11 +591,6 @@ export const stack_edges: Array<StackEdge> = [
 	},
 	{
 		from: 'mdz',
-		to: 'blake3',
-		kind: 'dev'
-	},
-	{
-		from: 'mdz',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
@@ -672,11 +617,6 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'mdz',
 		to: 'svelte-docinfo',
-		kind: 'dev'
-	},
-	{
-		from: 'svelte-docinfo',
-		to: 'blake3',
 		kind: 'dev'
 	},
 	{
@@ -708,11 +648,6 @@ export const stack_edges: Array<StackEdge> = [
 		from: 'svelte-docinfo',
 		to: 'mdz',
 		kind: 'dev'
-	},
-	{
-		from: 'zzz',
-		to: 'blake3',
-		kind: 'prod'
 	},
 	{
 		from: 'zzz',
