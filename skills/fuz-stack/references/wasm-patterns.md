@@ -4,8 +4,8 @@ description: WASM/N-API build targets — wasm-bindgen, component model, JS inte
 
 # WASM Patterns
 
-**Applies to**: `blake3` (WASM hashing) and `tsv` (parser/formatter bindings —
-WASM, C-FFI, N-API). The fuz workspace doesn't use WASM. **Publishing stance**:
+**Applies to**: `blake3` (WASM hashing), `pglet` (the embedded engine's wasm
+binding) and `tsv` (parser/formatter bindings — WASM, C-FFI, N-API). The fuz workspace doesn't use WASM. **Publishing stance**:
 npm gets **both** native (N-API) and WASM builds; the C-FFI `cdylib` also
 serves Deno FFI and Python.
 
@@ -205,16 +205,26 @@ profile (`[profile.corpus]` for differential/fuzz runs, `[profile.napi]` for
 the shipped N-API artifact; a plain release build aborts and the wrapper is
 inert — ./rust-patterns.md §Release Profile).
 
-## Package naming: `_wasm` suffix
+## Package naming: a `wasm` suffix, kebab on npm
 
-WASM artifacts carry `_wasm` wherever they could be confused with a native
-build; native stays bare. The suffix is part of the published identity — npm
-package, crate, and the generated `*_wasm_bg.wasm` agree.
+WASM artifacts carry a `wasm` suffix wherever they could be confused with a
+native build; native stays bare. The suffix is part of the published identity,
+and each namespace spells it its own way: the **crate** is `<name>_wasm` (Rust
+snake_case; the generated `*_wasm_bg.wasm` follows the crate), the **npm
+package** is `@fuzdev/<name>-wasm` (kebab — how every Rust-tooling peer spells
+its WASM edition: `@oxc-parser/binding-wasm32-wasi`, `@biomejs/wasm-*`,
+`esbuild-wasm`), and N-API platform packages are `@fuzdev/<name>-<triple>`. A
+feature subset sits between the name and the suffix (`@fuzdev/tsv-format-wasm`).
+This is a deliberate exception to the `@fuzdev` scope's snake_case library names
+(`@fuzdev/fuz_util`): a WASM or native package is a per-runtime delivery of a
+tool that sits beside those peers, not a library in the fuz stack, so the whole
+npm surface of such a tool spells one way.
 
-| Project | WASM packages                                                                                        | Native                                                |
-| ------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| blake3  | `@fuzdev/blake3_wasm` (SIMD), `@fuzdev/blake3_wasm_small` (no SIMD)                                  | none                                                  |
-| tsv     | `@fuzdev/tsv_wasm` (parse + format + `tsv` CLI), `@fuzdev/tsv_format_wasm`, `@fuzdev/tsv_parse_wasm` | `tsv` CLI binary, `tsv_ffi` `.so`, `tsv_napi` `.node` |
+| Project | WASM packages                                                                                                    | Native                                                                                                        |
+| ------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| blake3  | `@fuzdev/blake3_wasm` (SIMD), `@fuzdev/blake3_wasm_small` (no SIMD) — keeps its snake_case npm names             | none                                                                                                          |
+| pglet   | `@fuzdev/pglet-wasm` (crate `pglet_wasm`)                                                                        | `pglet_server` daemon (PG wire)                                                                               |
+| tsv     | `@fuzdev/tsv-wasm` (parse + format + `tsv` CLI), `@fuzdev/tsv-format-wasm`, `@fuzdev/tsv-parse-wasm`                                                | `@fuzdev/tsv` (N-API loader) over `@fuzdev/tsv-<triple>` platform packages, each shipping the `tsv` CLI binary; `tsv_ffi` `.so` as source |
 
 - **The three tsv WASM packages come from one crate**: `tsv_wasm` has
   `format`/`parse` features (default both); subset packages are
@@ -223,7 +233,7 @@ package, crate, and the generated `*_wasm_bg.wasm` agree.
   options-bag reader, ~0.2% on the format-only package). The umbrella is the
   flagship (ships the JS `tsv` CLI).
 - **"tsv" is deliberately overloaded**: the native CLI (`tsv_cli` crate), the
-  C-FFI lib, and the JS CLI in `@fuzdev/tsv_wasm` are all invoked as `tsv` —
+  C-FFI lib, and the JS CLI in `@fuzdev/tsv-wasm` are all invoked as `tsv` —
   one tool, per-runtime delivery.
 - Where artifacts are grouped by kind, don't repeat `(wasm)`/`(native)` in
   row names — the suffix carries it.
