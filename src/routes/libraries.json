@@ -107754,20 +107754,20 @@
 							"name": "BuiltinRole",
 							"kind": "type",
 							"docComment": "Zod schema for builtin roles only.",
-							"typeSignature": "\"admin\" | \"keeper\"",
+							"typeSignature": "\"keeper\" | \"admin\"",
 							"sourceLine": 59,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
 									{
 										"kind": "literal",
-										"value": "admin",
-										"text": "\"admin\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "admin",
+										"text": "\"admin\""
 									}
 								]
 							},
@@ -124391,26 +124391,6 @@
 									},
 									{
 										"kind": "literal",
-										"value": 401,
-										"text": "401"
-									},
-									{
-										"kind": "literal",
-										"value": 403,
-										"text": "403"
-									},
-									{
-										"kind": "literal",
-										"value": 404,
-										"text": "404"
-									},
-									{
-										"kind": "literal",
-										"value": 400,
-										"text": "400"
-									},
-									{
-										"kind": "literal",
 										"value": 102,
 										"text": "102"
 									},
@@ -124491,8 +124471,28 @@
 									},
 									{
 										"kind": "literal",
+										"value": 400,
+										"text": "400"
+									},
+									{
+										"kind": "literal",
+										"value": 401,
+										"text": "401"
+									},
+									{
+										"kind": "literal",
 										"value": 402,
 										"text": "402"
+									},
+									{
+										"kind": "literal",
+										"value": 403,
+										"text": "403"
+									},
+									{
+										"kind": "literal",
+										"value": 404,
+										"text": "404"
 									},
 									{
 										"kind": "literal",
@@ -128841,13 +128841,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "authenticated",
+										"text": "\"authenticated\""
 									},
 									{
 										"kind": "literal",
-										"value": "authenticated",
-										"text": "\"authenticated\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "other",
@@ -140358,20 +140358,20 @@
 							"name": "ConformancePrincipal",
 							"kind": "type",
 							"docComment": "Closed enum of fixture-provisioned principals a case runs `as`. Each\nvalue maps to a `TestFixture` accessor (or a seeded `extra_accounts`\nentry) in the runner's `resolve_principal` — there is **no** inline\ncredential minting in a case (that would be the setup-DSL trap).\n\n- `keeper` — the per-test bootstrapped keeper (holds `ROLE_KEEPER` +\n  `ROLE_ADMIN`), session credential.\n- `daemon` — the keeper authenticated via the daemon-token header.\n- `invalid_daemon` — a *malformed/invalid* `X-Daemon-Token` carried\n  alongside the keeper's session cookie, over a non-browser (no-Origin)\n  transport. The middleware soft-fail-discards the invalid daemon token\n  (matching the Rust spine's `None`), so auth falls through to the session\n  leg: the request authenticates as the keeper-via-session and a\n  daemon-gated action then refuses the session credential with\n  `credential_type_required` — not a hard `invalid_daemon_token` 401. The\n  no-Origin transport keeps the daemon token on the invalid-token path\n  rather than the browser-context discard; the session base credential is\n  what makes the credential-type gate (not the auth gate) the refusing\n  layer (without it the discard would 401 anonymous).\n- `daemon_browser` — a *valid* `X-Daemon-Token` carried in a browser\n  context (default `Origin` present) alongside the keeper's session cookie.\n  Browsers attach `Origin` automatically; the daemon-token middleware\n  discards a header-bearing daemon token as browser context (mirroring the\n  bearer guard and the Rust spine's `is_browser_context`), so the *valid*\n  token is dropped and auth falls through to the session leg → a daemon-gated\n  action then refuses the session credential with `credential_type_required`.\n  Distinct from `invalid_daemon`: here the token is well-formed and current,\n  so a 403 (not a 400 confirm-guard hit like `daemon`) proves the\n  browser-context discard fired — a valid daemon token does NOT authenticate\n  when an `Origin` is present. `Origin` is deliberately NOT suppressed; its\n  presence is the signal under test.\n- `token` — the keeper authenticated via a bearer api-token (non-browser\n  context; the runner suppresses `Origin` so the token isn't discarded).\n- `bearer_browser` — a *valid* bearer api-token carried in a browser context\n  (default `Origin` present), fresh jar so NO session rides alongside. The\n  bearer middleware discards the token as browser context (mirroring the\n  daemon guard + the Rust spine's `is_browser_context`), so the request\n  arrives anonymous and an authed action 401s. Proves a stolen bearer cannot\n  be replayed from a browser — wire-indistinguishable from sending no\n  credential (the `token` principal is the honored counterpart: it suppresses\n  `Origin`, so the same token authenticates).\n- `scoped_token` — the keeper authenticated via a bearer api-token minted\n  with a **narrowed** `TokenScope` (`{kind: 'methods', methods:\n  [SCOPED_TOKEN_ADMITTED_METHOD]}`), non-browser context. Minted through the\n  production `account_token_create` path over the keeper's session, not\n  seeded — `_testing_reset` deliberately seeds a `full` token, and a harness\n  that narrowed the seed would silently re-scope every other bearer case.\n  The scope gate sits between the credential gate and the role gate, so this\n  principal is what distinguishes `token_scope_required` from the\n  credential-type and role denials on either side of it.\n- `anonymous` — no credential, fresh cookie jar.\n- `fresh_non_admin` — a freshly minted account with no roles, session\n  credential (via the production invite → signup → login flow).\n- `role_holder` — a seeded `extra_accounts` principal holding a specific\n  role; the runner reads it by the username named in\n  `ConformanceTableOptions.principals.role_holder`.\n- `wrong_role` — a seeded `extra_accounts` principal holding a role\n  other than the one a route requires; named via\n  `ConformanceTableOptions.principals.wrong_role`.\n- `expired_session` — the keeper account presented via an *expired\n  server-side session* cookie (minted by `fixture.mint_expired_session()`:\n  a backdated `auth_session` row behind a still-valid signed cookie\n  payload, so the authoritative DB-row expiry gate is what refuses it).",
-							"typeSignature": "\"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
+							"typeSignature": "\"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
 							"sourceLine": 109,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "token",
+										"text": "\"token\""
 									},
 									{
 										"kind": "literal",
@@ -140438,7 +140438,7 @@
 							"name": "ConformanceCaseRequest",
 							"kind": "type",
 							"docComment": "The request a conformance case issues.",
-							"typeSignature": "{ method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
+							"typeSignature": "{ method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
 							"sourceLine": 141,
 							"members": [
 								{
@@ -140449,19 +140449,19 @@
 								{
 									"name": "as",
 									"kind": "variable",
-									"typeSignature": "\"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
+									"typeSignature": "\"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
 											{
 												"kind": "literal",
-												"value": "token",
-												"text": "\"token\""
+												"value": "keeper",
+												"text": "\"keeper\""
 											},
 											{
 												"kind": "literal",
-												"value": "keeper",
-												"text": "\"keeper\""
+												"value": "token",
+												"text": "\"token\""
 											},
 											{
 												"kind": "literal",
@@ -140652,7 +140652,7 @@
 							"name": "ConformanceCase",
 							"kind": "type",
 							"docComment": "A single conformance case. `name` is the assertion; the optional\nfree-text `note` is printed in the test label / failure output. A\nsecurity case's `note` should reference a **public** fuz_app doc\nproperty (`security.md` / `architecture.md` / module TSDoc), since the\ntable ships in a public package — not an internal planning doc. The note\nis documentation, not a gate: it stays free-text by design because a\nnon-empty-string check never catches a *wrong* citation — the citation\nis verified in review.",
-							"typeSignature": "{ name: string; request: { method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect: { ...; }...",
+							"typeSignature": "{ name: string; request: { method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect: { ...; }...",
 							"sourceLine": 245,
 							"members": [
 								{
@@ -140663,7 +140663,7 @@
 								{
 									"name": "request",
 									"kind": "variable",
-									"typeSignature": "{ method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
+									"typeSignature": "{ method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "ConformanceCaseRequest",
@@ -140752,7 +140752,7 @@
 									"name": "cases",
 									"kind": "variable",
 									"docComment": "The conformance cases to run, in order.",
-									"typeSignature": "readonly { name: string; request: { method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect:...",
+									"typeSignature": "readonly { name: string; request: { method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect:...",
 									"modifiers": [
 										"readonly"
 									],
@@ -148028,18 +148028,6 @@
 							},
 							"members": [
 								{
-									"name": "created_at",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
-									"name": "username",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
 									"name": "email",
 									"kind": "variable",
 									"typeSignature": "string | null",
@@ -148057,6 +148045,18 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "created_at",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "username",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
 								},
 								{
 									"name": "email_verified",
@@ -148277,13 +148277,13 @@
 							},
 							"members": [
 								{
-									"name": "created_at",
+									"name": "name",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
 								},
 								{
-									"name": "name",
+									"name": "created_at",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true

@@ -76,13 +76,13 @@
 			"exported_module_count": 33,
 			"export_count": 678,
 			"peer_dependencies": [
-				"@fuzdev/blake3_wasm",
+				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3_wasm",
+				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
@@ -157,12 +157,12 @@
 			"exported_module_count": 348,
 			"export_count": 2049,
 			"peer_dependencies": [
-				"@fuzdev/blake3_wasm",
+				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3_wasm",
+				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -492,7 +492,7 @@
 			"@fuzdev/tsv"
 		],
 		"@fuzdev/fuz_css": [
-			"@fuzdev/blake3_wasm",
+			"@fuzdev/blake3-wasm",
 			"@fuzdev/fuz_util",
 			"@fuzdev/gro"
 		],
@@ -507,7 +507,7 @@
 			"@fuzdev/mdz"
 		],
 		"@fuzdev/fuz_app": [
-			"@fuzdev/blake3_wasm",
+			"@fuzdev/blake3-wasm",
 			"@fuzdev/fuz_util"
 		],
 		"@fuzdev/fuz_code": [

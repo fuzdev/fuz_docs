@@ -18,12 +18,12 @@ const DEV_DIR = join(process.cwd(), '..');
 /**
  * Known package-name aliases that resolve to a repo dir but differ from that
  * repo's manifest `name`. The blake3 repo's manifest is named `@fuzdev/blake3`
- * but it publishes the `@fuzdev/blake3_wasm` / `@fuzdev/blake3_wasm_small`
+ * but it publishes the `@fuzdev/blake3-wasm` / `@fuzdev/blake3-wasm-small`
  * packages that consumers actually depend on.
  */
 const PACKAGE_NAME_ALIASES: Record<string, string> = {
-	'@fuzdev/blake3_wasm': 'blake3',
-	'@fuzdev/blake3_wasm_small': 'blake3'
+	'@fuzdev/blake3-wasm': 'blake3',
+	'@fuzdev/blake3-wasm-small': 'blake3'
 };
 
 interface ManifestInfo {
