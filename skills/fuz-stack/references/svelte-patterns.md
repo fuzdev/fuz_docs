@@ -102,10 +102,11 @@ initialized in declaration order.
 `SvelteMap`/`SvelteSet` from `svelte/reactivity` are mutation-tracked
 (standard `Map`/`Set` aren't); `$derived.by` over them recomputes on mutation
 — fuz_ui's `DocsLinks` (`links: SvelteMap`, `fragments_onscreen: SvelteSet`).
-For entity collections read by different lookups, maintain **multiple
-`SvelteMap` indexes** — zzz's `IndexedCollection`
-(`indexed_collection.svelte.ts`): `by_id` plus `single_index(key)` /
-`multi_index(key)`, `values` derived from `by_id`, so deriveds do `.get()`
+For entity collections read by different lookups, maintain **secondary
+indexes** — zzz's `IndexedCollection` (`indexed_collection.svelte.ts`):
+`by_id: SvelteMap` plus `single_index(key)` / `where(key, value)` /
+`derived_index(key)` (each a `$derived` rebuild, or kept in place for
+immutable keys), `values` derived from `by_id`, so deriveds do `.get()`
 lookups instead of array scans.
 
 ## Schema-Driven Reactive Classes

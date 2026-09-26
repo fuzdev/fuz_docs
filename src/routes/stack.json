@@ -1,19 +1,19 @@
 {
 	"toolchain": {
-		"rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
-		"cargo": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+		"rustc": "rustc 1.94.1 (e408947bf 2026-03-25)",
+		"cargo": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
 		"node": "v24.14.1",
 		"svelte": "5.56.2",
 		"sveltekit": "2.70.2",
 		"typescript": "5.9.3",
-		"gro": "0.212.0",
-		"vitest": "5.0.0"
+		"gro": "0.209.0",
+		"vitest": "4.1.9"
 	},
 	"libraries": [
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_util",
-			"version": "0.69.0",
+			"version": "0.68.0",
 			"path": "fuz_util",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
@@ -23,11 +23,11 @@
 			"exported_module_count": 59,
 			"export_count": 462,
 			"peer_dependencies": [
-				"@fuzdev/blake3-wasm"
+				"@fuzdev/blake3_wasm"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -38,7 +38,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.212.0",
+			"version": "0.209.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
@@ -48,14 +48,14 @@
 			"exported_module_count": 60,
 			"export_count": 352,
 			"peer_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_util"
 			],
 			"runtime_dependencies": [
-				"@fuzdev/tsv"
+				"@fuzdev/tsv_wasm"
 			],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -76,13 +76,13 @@
 			"exported_module_count": 33,
 			"export_count": 678,
 			"peer_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
@@ -107,7 +107,7 @@
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -136,7 +136,7 @@
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_util",
@@ -147,15 +147,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.112.0",
+			"version": "0.113.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"homepage_url": "https://app.fuz.dev/",
 			"published": true,
-			"module_count": 350,
-			"exported_module_count": 348,
-			"export_count": 2049,
+			"module_count": 349,
+			"exported_module_count": 347,
+			"export_count": 2055,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util"
@@ -189,7 +189,7 @@
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
@@ -212,7 +212,7 @@
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -242,7 +242,7 @@
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_mastodon",
@@ -271,7 +271,7 @@
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -283,7 +283,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.78.1",
+			"version": "0.78.0",
 			"path": "fuz_gitops",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
@@ -300,7 +300,7 @@
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -348,7 +348,7 @@
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -366,9 +366,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 211,
-			"exported_module_count": 208,
-			"export_count": 554,
+			"module_count": 214,
+			"exported_module_count": 211,
+			"export_count": 620,
 			"peer_dependencies": [
 				"@fuzdev/fuz_app",
 				"@fuzdev/fuz_ui",
@@ -402,7 +402,7 @@
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
-				"@fuzdev/blake3-wasm",
+				"@fuzdev/blake3_wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -414,7 +414,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_wasm_core",
-			"version": "0.2.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "Shared BLAKE3 WASM bindings core (wasm-bindgen exports)",
 			"crate_kind": "rlib",
@@ -425,7 +425,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_wasm",
-			"version": "0.2.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 hashing compiled to WASM",
 			"crate_kind": "cdylib",
@@ -438,7 +438,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_wasm_small",
-			"version": "0.2.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 hashing compiled to WASM, size-optimized build without SIMD",
 			"crate_kind": "cdylib",
@@ -451,7 +451,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_debug",
-			"version": "0.2.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "Development utilities for blake3_wasm (comparison, test vectors)",
 			"crate_kind": "bin",
@@ -462,7 +462,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_component",
-			"version": "0.2.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 WASI component via WIT interface",
 			"crate_kind": "cdylib",
@@ -473,7 +473,7 @@
 		{
 			"kind": "crate",
 			"name": "blake3_bench_wasmtime",
-			"version": "0.2.0",
+			"version": "0.1.1",
 			"path": "blake3",
 			"description": "BLAKE3 WASI component benchmarks using Wasmtime runtime",
 			"crate_kind": "bin",
@@ -484,15 +484,15 @@
 	],
 	"dependency_graph": {
 		"@fuzdev/fuz_util": [
-			"@fuzdev/blake3-wasm"
+			"@fuzdev/blake3_wasm"
 		],
 		"@fuzdev/gro": [
-			"@fuzdev/blake3-wasm",
+			"@fuzdev/blake3_wasm",
 			"@fuzdev/fuz_util",
-			"@fuzdev/tsv"
+			"@fuzdev/tsv_wasm"
 		],
 		"@fuzdev/fuz_css": [
-			"@fuzdev/blake3-wasm",
+			"@fuzdev/blake3_wasm",
 			"@fuzdev/fuz_util",
 			"@fuzdev/gro"
 		],
