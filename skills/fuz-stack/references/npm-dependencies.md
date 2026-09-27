@@ -44,10 +44,9 @@ periodically.
 | `@eslint/js`           | ESLint's built-in JS rule presets (used only inside the shared eslint-config package)         |
 | `globals`              | Global-identifier sets for ESLint configs (used only inside the shared eslint-config package) |
 
-**Being retired**: `prettier` + `prettier-plugin-svelte` remain in many
-repos' devDependencies but are mid-removal as tsv (`gro format`) takes over —
-don't add them to new repos; removing a repo's last usage is pre-authorized
-cleanup.
+**Retired**: `prettier` + `prettier-plugin-svelte` — tsv (`gro format`)
+formats every repo; don't add them (tsv keeps prettier only as its conformance
+oracle).
 
 ## Release tooling
 
