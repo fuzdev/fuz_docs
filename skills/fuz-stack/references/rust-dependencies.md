@@ -58,6 +58,7 @@ periodically.
 | `axum`                 | HTTP server (on hyper)                                                                                                           |
 | `axum-extra`           | axum extras (typed headers, cookies)                                                                                             |
 | `tower` / `tower-http` | Service middleware                                                                                                               |
+| `tungstenite`          | WebSocket protocol types — `fuz_realtime` downcasts axum's `tungstenite::Error` (pinned to axum's version)                       |
 | `reqwest`              | HTTP client                                                                                                                      |
 | `rustls`               | TLS backend for `reqwest` — installs the `ring` crypto provider as the process default (`reqwest` is wired `rustls-no-provider`) |
 
