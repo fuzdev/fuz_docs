@@ -131,8 +131,11 @@ functions describe what the `Promise` resolves to, not the `Promise`.
 ### `@throws`
 
 `@throws ErrorType description` — type as first word, even if just `Error`
-(`@throws TaskError if production cycles detected`). The bare and
-`{ErrorType}` forms parse but aren't preferred.
+(`@throws TaskError if production cycles detected`). svelte-docinfo always
+reads the unbraced first word as the type, so a description-only
+`@throws if …` records `if` as the type, and a lone `@throws Error` (no
+description) records no type. `{ErrorType}` parses exactly but isn't house
+style.
 
 ### `@example`
 
@@ -188,7 +191,8 @@ align?: DialogAlign;
 
 Not-stable public API (standard TSDoc semantics). A marker, not an exclusion —
 extracted as `internalMessage`, the declaration stays fully documented so
-consumers _can_ badge or filter (no fuz_ui surface does yet). Trailing prose is
+consumers _can_ badge or filter (fuz_ui's `DeclarationDetail` shows an
+`internal` badge plus the message; nothing filters on it yet). Trailing prose is
 kept: say who uses it or why it's internal. Use it for power-user-importable
 internals that should stay documented (deep extractor modules, orchestration
 seams); to remove a symbol from docs entirely, use `@nodocs`.
@@ -259,16 +263,20 @@ description → `@param` (source order) → `@returns` → `@mutates` → `@thro
 
 ### Where a tag has no effect
 
-The parser silently discards these (svelte-docinfo emits a `misplaced_tag`
-diagnostic, but no consumer imports `diagnostics` today):
+The parser discards these (svelte-docinfo emits `misplaced_tag` for the
+overload and `@module` cases, but no consumer imports `diagnostics` today):
 
 - Symbol-scope tags (`@example`, `@deprecated`, `@internal`, `@since`, `@see`,
   `@throws`, `@mutates`, `@default`, `@nodocs`) on a **non-primary overload
   signature** — put them on the primary (`@param`/`@returns` are per-signature)
 - `@nodocs` inside a `@module` comment — use the analyzer's `exclude` patterns
   to skip a module
-- `@default` on a top-level function — variables, interface members, and props only
-- `@defaultValue` / `@return` parse as synonyms but aren't house style
+- `@default` on a top-level function (dropped silently) — it lands on
+  variables, members of interfaces/type aliases/classes (callable members
+  included), and component props
+
+`@defaultValue` / `@defaultvalue` / `@return` do take effect — they parse as
+synonyms of `@default` / `@returns` — but aren't house style.
 
 ## Inter-linking with mdz
 

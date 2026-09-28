@@ -85,6 +85,7 @@ periodically.
 | `argon2`        | Password hashing                                                                                                                                                   |
 | `ed25519-dalek` | Ed25519 signing/verification (artifact + release signatures)                                                                                                       |
 | `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring)                                                                                                                              |
+| `ring`          | SHA-512 where `ring` is already the `rustls` provider (zap's detection digests) — through one wrapper module, so the backend swaps to `sha2` in one place          |
 | `subtle`        | Constant-time comparison                                                                                                                                           |
 | `zeroize`       | Secure memory clearing                                                                                                                                             |
 | `getrandom`     | OS randomness — the spine standard for new randomness (`fuz_sys::rand`, `fuz_auth`, `fuz_storage`)                                                                 |

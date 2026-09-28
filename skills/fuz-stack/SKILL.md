@@ -106,8 +106,9 @@ Action verbs: `parse`, `create`, `get`, `to`, `is`, `has`, `format`,
 ### Flat Namespace — Fail Fast
 
 All exported identifiers must have **unique names across all modules**;
-`svelte-docinfo` fails the build on duplicates, listing every conflict with
-module path and kind. Resolve by renaming the side that is _not_ the primary
+`svelte-docinfo` reports duplicates as `duplicate_declaration` diagnostics,
+listing every conflict with module path and kind (it fails the build only when
+the plugin is given `onDuplicates: 'throw'`). Resolve by renaming the side that is _not_ the primary
 public API, or `/** @nodocs */` the loser — but `@nodocs` hides it from docs
 and tomes, so it's wrong when external consumers use it.
 

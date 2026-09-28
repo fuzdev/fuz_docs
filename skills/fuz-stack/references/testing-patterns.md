@@ -207,8 +207,8 @@ as library exports.
 **Domain-specific**: `{domain}_test_helpers.ts` beside the tests; helpers for
 one fixture category go **inside** that fixture directory
 (`fixtures/mdz/mdz_test_helpers.ts`), not at `src/test/` root.
-(svelte-docinfo's camelCase `test-helpers.ts` is a pre-existing-style repo, not
-the canonical shape.)
+(svelte-docinfo's kebab-case `test-helpers.ts` with camelCase helpers like
+`runUpdateTask` is a pre-existing-style repo, not the canonical shape.)
 
 ## Shared Test Factories
 
@@ -243,9 +243,10 @@ export const task: Task = {
 
 Run one feature: `gro src/test/fixtures/mdz/update`. A parent
 `src/test/fixtures/update.task.ts` can fan out via `invoke_task` —
-svelte-docinfo's runs `tsdoc`/`ts`/`svelte`; its `svelte` child is bespoke,
-building one shared TS program across fixtures since Svelte type analysis
-needs a shared checker.
+svelte-docinfo's runs `tsdoc`/`ts`/`svelte`; its `svelte` child goes through
+the shared `runUpdateTask` with a `processAll` hook
+(`analyzeSvelteFixtureModules`), building one shared TS program across
+fixtures since Svelte type analysis needs a shared checker.
 
 The test loads all fixtures in `beforeAll` and asserts each in one loop with
 the fixture name in the message:
