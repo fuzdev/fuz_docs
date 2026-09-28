@@ -244,9 +244,9 @@ payload-on-variant (`strip_components` inside each tar variant of
 tagged enums kept on purpose (`BuildSource::Remote`, `SourceVerify::Minisign`);
 transparent scalar newtypes validated at the serde boundary (`AccountName`,
 `Mode`, `ContentHash` 64-lowercase-hex, `EnvVarName` POSIX-identifier);
-typed-enum-replaces-bool (`ExternalState` replacing an `external_state: bool`
-that was carried but never consumed). `fuzi_core` is a second exemplar
-(`Os`/`Cpu`/`Libc` + negation-aware `PlatformToken`,
+typed-enum-replaces-bools (`TriggerKind` replacing a `trigger_restart` +
+`trigger_reload` pair whose `{true, true}` was representable but meaningless).
+`fuzi_core` is a second exemplar (`Os`/`Cpu`/`Libc` + negation-aware `PlatformToken`,
 `LockfileVersion::from_raw`, an `Integrity` newtype over `ContentHash`).
 
 Two anti-patterns reviewers hit:
@@ -567,7 +567,8 @@ authoritative, non-regenerable state (lock ledgers, credentials) and waived for
 content-addressed bodies (a torn write is caught by re-hashing) and ephemeral
 run-state; state the choice when you skip it. zap — spine-free — hand-rolls
 both correctly: flock + full fsync for its authoritative lock file, temp +
-rename only for its regenerable detection cache. For the lock itself: `flock`
+rename only for its regenerable eval cache and last-run report
+(`home::write_atomic`). For the lock itself: `flock`
 locks the _inode_, so lock a stable sidecar path and **never unlink on
 release** (truncate but keep the dirent) — else two acquirers hold different
 inodes (zap's lock currently locks the pre-rename
