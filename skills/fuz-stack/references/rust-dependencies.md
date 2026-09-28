@@ -28,6 +28,7 @@ periodically.
 | `serde`      | Derive-based serialization framework                    |
 | `serde_json` | JSON (tsv enables `preserve_order` + `float_roundtrip`) |
 | `postcard`   | Compact binary serialization (the fuzd UDS wire)        |
+| `toml`       | TOML parsing — parse-only features (`std`, `serde`, `parse`), for reading declarative registries |
 | `hex`        | Hex encoding/decoding                                   |
 | `base64`     | URL-safe base64 (tokens)                                |
 
