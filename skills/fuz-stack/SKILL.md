@@ -126,7 +126,7 @@ and tomes, so it's wrong when external consumers use it.
 - **`src/routes/`** — SvelteKit routes
 - **No barrels** — import every module by full path
   (`@fuzdev/fuz_app/env/load.ts`); package `exports` use wildcards
-- **No re-exports** (TypeScript) — each symbol has one canonical module;
+- **No re-exports in TypeScript** — each TS symbol has one canonical module;
   callers import it from there. Don't `export {X} from './y.ts'` or re-export
   an import to spare callers an import line — two paths to one symbol drift
   and hide its source. Exceptions are modules whose job is to aggregate or
