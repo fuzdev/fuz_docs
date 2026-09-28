@@ -176633,10 +176633,45 @@
 							"returnType": "GitopsConfig"
 						},
 						{
+							"name": "gitops_config_leaked_private_repos",
+							"kind": "function",
+							"docComment": "The private repos a public host package must not publish. `gitops_sync` writes\nevery configured repo's GitHub metadata into the host project's generated\n`repos.json` — a public site's data when the host package is public — so a\nprivate repo in that config would leak. Empty when the host is private.",
+							"typeSignature": "(repos: readonly GitopsRepoConfig[], host_is_private: boolean): GitopsRepoConfig[]",
+							"sourceLine": 152,
+							"parameters": [
+								{
+									"name": "repos",
+									"type": "readonly GitopsRepoConfig[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "GitopsRepoConfig"
+										},
+										"readonly": true
+									},
+									"description": "the configured repos"
+								},
+								{
+									"name": "host_is_private",
+									"type": "boolean",
+									"description": "whether the host `package.json` sets `private: true`"
+								}
+							],
+							"returnType": "GitopsRepoConfig[]",
+							"returnTypeInfo": {
+								"kind": "array",
+								"element": {
+									"kind": "reference",
+									"name": "GitopsRepoConfig"
+								}
+							}
+						},
+						{
 							"name": "GitopsConfigModule",
 							"kind": "interface",
 							"typeSignature": "GitopsConfigModule",
-							"sourceLine": 143,
+							"sourceLine": 158,
 							"members": [
 								{
 									"name": "default",
@@ -176665,7 +176700,7 @@
 							"name": "load_gitops_config",
 							"kind": "function",
 							"typeSignature": "(config_path: string): Promise<GitopsConfig | null>",
-							"sourceLine": 147,
+							"sourceLine": 162,
 							"parameters": [
 								{
 									"name": "config_path",
@@ -176697,7 +176732,7 @@
 							"name": "validate_gitops_config_module",
 							"kind": "function",
 							"typeSignature": "(config_module: any, config_path: string): asserts config_module is GitopsConfigModule",
-							"sourceLine": 162,
+							"sourceLine": 177,
 							"parameters": [
 								{
 									"name": "config_module",
@@ -176717,6 +176752,7 @@
 					],
 					"dependents": [
 						"config_reconcile.ts",
+						"gitops_sync.task.ts",
 						"gitops_task_helpers.ts",
 						"local_repo.ts",
 						"repo_ops.ts",
@@ -176903,6 +176939,7 @@
 					"dependencies": [
 						"fetch_repo_data.ts",
 						"fs_fetch_value_cache.ts",
+						"gitops_config.ts",
 						"gitops_constants.ts",
 						"gitops_task_helpers.ts"
 					]

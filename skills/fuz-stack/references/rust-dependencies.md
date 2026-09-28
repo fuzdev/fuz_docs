@@ -82,6 +82,7 @@ periodically.
 | Crate           | Purpose                                                                                                                                                            |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `blake3`        | Content-addressed hashing, token hashing                                                                                                                           |
+| `ring`          | SHA-512 digests (zap's content detection) — already in the graph as rustls's crypto provider, so no new C or build deps                                          |
 | `argon2`        | Password hashing                                                                                                                                                   |
 | `ed25519-dalek` | Ed25519 signing/verification (artifact + release signatures)                                                                                                       |
 | `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring)                                                                                                                              |
