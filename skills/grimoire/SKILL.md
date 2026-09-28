@@ -415,20 +415,24 @@ unwieldy, split topics into `TODO_*.md` files (e.g., `TODO_PERF.md`,
 ## Arcs
 
 A **quest** is a goal; an **arc** is sustained execution — a long-running,
-gate-driven implementation effort run across many sessions in a dedicated git
-worktree. An arc may serve any number of quests or lore TODOs, or none.
+gate-driven implementation effort run across many sessions, in the repo's main
+checkout unless the operator starts it in a worktree. An arc may serve any
+number of quests or lore TODOs, or none.
 
-- **One arc ↔ one worktree/branch ↔ at most one live session** —
-  single-threaded by convention; no locks or bookkeeping, the operator owns
-  isolation.
-- **The worktree is the arc's body.** Its files stay public-repo clean — no
+- **One arc ↔ one checkout ↔ at most one live session** — the repo's main
+  checkout on `main` by default; a worktree or feature branch only when the
+  operator chooses one. Single-threaded by convention; no locks or
+  bookkeeping, the operator owns isolation.
+- **One reviewed commit per slice.** A slice's work stays unstaged through its
+  review rounds and is committed once review closes it.
+- **The checkout is the arc's body.** Its files stay public-repo clean — no
   grimoire references, no arc narration in the implementation repo.
 - **Lore is the arc's memory.** An index doc in `lore/{project}/` owns the
   resume state — status, milestone ladder, open-items ledger, landed log.
   Sessions update it as they go; a fresh session needs nothing else to
   continue.
-- **A board doc lists active arcs** — one pointer row each (worktree, branch,
-  index doc), never a second source of truth. Arcs are ephemeral: a closed
+- **A board doc lists active arcs** — one pointer row each (checkout, index
+  doc), never a second source of truth. Arcs are ephemeral: a closed
   arc's row is simply deleted, no history kept (git has it).
 - **Session structure**: one orchestrating session that never edits code — it
   delegates, updates lore between subagents, and owns the user-facing
@@ -436,8 +440,9 @@ worktree. An arc may serve any number of quests or lore TODOs, or none.
   model, e.g. Opus); both the orchestrator and the writer may spawn research
   subagents (a cheaper model, e.g. Sonnet — always read-only).
 
-Plain worktrees still serve smaller parallel work (two agents, two quests, no
-conflicts) without the arc apparatus.
+Worktrees are opt-in isolation the operator reaches for — for an arc, or for
+smaller parallel work (two agents, two quests, no conflicts) without the arc
+apparatus.
 
 ## Key Concepts
 
