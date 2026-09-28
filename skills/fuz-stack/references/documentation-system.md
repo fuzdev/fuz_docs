@@ -19,8 +19,9 @@ package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
   TypeScript compiler API: declarations, TSDoc tags, re-exports merged into
   `alsoExportedFrom`, module sorting, flat-namespace duplicate checks. Its API
   is camelCase (it targets the broad Svelte ecosystem). Its Vite plugin
-  exposes `modules` — and `diagnostics` (author-facing tag problems like
-  `misplaced_tag`; no repo consumes it yet) — as `virtual:svelte-docinfo`.
+  exposes `modules` and `diagnostics` (a 16-kind union: tag problems like
+  `misplaced_tag`, `duplicate_declaration`, `alias_lost`, transform and
+  resolver failures; no repo consumes it yet) as `virtual:svelte-docinfo`.
   fuz_ui depends on it as a dev dependency for types and a few helpers; the
   per-project analysis runs in each _consumer's_ build.
 - **`vite_plugin_pkg_json`** (fuz_ui) curates `package.json` to the

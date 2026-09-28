@@ -268,9 +268,13 @@ overload and `@module` cases, but no consumer imports `diagnostics` today):
 
 - Symbol-scope tags (`@example`, `@deprecated`, `@internal`, `@since`, `@see`,
   `@throws`, `@mutates`, `@default`, `@nodocs`) on a **non-primary overload
-  signature** — put them on the primary (`@param`/`@returns` are per-signature)
+  signature** — put them on the first overload signature, whose JSDoc documents
+  the symbol (`@param`/`@returns` are per-signature)
 - `@nodocs` inside a `@module` comment — use the analyzer's `exclude` patterns
   to skip a module
+- `@nodocs` on a member (class, interface, type alias, enum) or a component
+  prop — still emitted, no warning; it applies to top-level declarations and
+  export statements
 - `@default` on a top-level function (dropped silently) — it lands on
   variables, members of interfaces/type aliases/classes (callable members
   included), and component props

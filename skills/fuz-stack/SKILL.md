@@ -131,7 +131,7 @@ and tomes, so it's wrong when external consumers use it.
   callers import it from there. Don't `export {X} from './y.ts'` or re-export
   an import to spare callers an import line — two paths to one symbol drift
   and hide its source. Exceptions are modules whose job is to aggregate or
-  wrap: generated registries (`library.gen.ts`) and a hand-written entry over
+  wrap: generated registries and a hand-written entry over
   a non-importable generated module (wasm-pack's `pkg/`)
 - **Subdirectories** at 3+ closely related files sharing a domain concept
   (`lib/auth/`, `lib/env/`, `lib/db/` in fuz_app) — not preemptively; a lone
