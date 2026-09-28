@@ -52,6 +52,8 @@ most-used family and literal flex classes (`display:flex`, `flex:1`,
 `width:100%`) are as common as composites. The real cut points are rung 1 vs
 the rest, and rungs 1–5 vs rung 6. Same for text: `<small>` over
 `font-size: var(--font_size_sm)`, `<aside>` over a hand-built callout.
+Never hand-write a `rem` font size: fuz_css sets a 62.5% root, so `0.85rem`
+renders ~8.5px — smaller than the `--font_size_sm` text around it.
 
 ### Direction matters — don't churn `<style>` into class soup
 
