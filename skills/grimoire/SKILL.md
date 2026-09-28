@@ -358,7 +358,10 @@ context and degrades judgment.
 it grows over time as crystallized understanding accumulates from the cycle. Let
 creative bursts live as TODO docs in lore; expect noise there. The ongoing work is distilling
 what's learned into lasting knowledge and removing what's resolved or superseded.
-History and resolved decisions belong in commit logs, not in markdown.
+Process notes (dates, PR numbers, what changed when) belong in detail docs —
+lore, quests, history files — never in the always-loaded or index docs, which
+carry current state plus pointers. Noise and fully resolved history belong in
+commit logs.
 
 **What belongs here**: Cross-repo context, the _why_ behind decisions, future
 intent.
@@ -475,10 +478,10 @@ Don't build structure speculatively — let it emerge from genuine need.
 **Transparency as constraint**: Making the full scope visible — via indexes,
 structure diagrams — creates accountability. File sprawl becomes obvious when every
 file must be listed. The index isn't documentation; it's a mirror that pressures
-the grimoire to stay lean. In practice this is a top-level index doc (e.g.
-`INDEX.md`) that enumerates the grimoire's contents — primitives, lore entries,
-quests, supporting layers — and, like any claim the grimoire makes about itself,
-can be checked against what's actually on disk.
+the grimoire to stay lean. In practice these are the index docs — a lore index
+with a row per entry, a quest index, each lore entry's own file listing — and,
+like any claim the grimoire makes about itself, they can be checked against
+what's actually on disk (dead-link checks catch a listed file that's gone).
 
 **Private or shared**: A grimoire can be personal (spanning private and public
 repos) or collaborative (a team sharing taste and evolving it together) —
