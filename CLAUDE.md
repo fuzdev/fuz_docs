@@ -35,9 +35,6 @@ gro build      # build for production (static adapter)
 gro deploy     # build, commit, and push to deploy branch
 ```
 
-IMPORTANT for AI agents: Do NOT run `gro dev` - the developer will manage the
-dev server.
-
 ## Key dependencies
 
 - Svelte 5 - component framework with runes

@@ -158,8 +158,7 @@ and tomes, so it's wrong when external consumers use it.
 
 ## Gro Commands
 
-Gro is installed globally — run `gro` directly, never `npx gro`. **Never run
-`gro dev` or `npm run dev`** — the user manages the dev server.
+Gro is installed globally — run `gro` directly, never `npx gro`.
 
 ```bash
 gro check        # CI command: test + gen --check + format --check + lint + typecheck
