@@ -75,22 +75,22 @@ export const stack_nodes: Array<StackNode> = [
 		y: 120
 	},
 	{
-		name: 'fuz_gitops',
-		category: 'tooling',
-		language: 'ts',
-		description: 'a tool for managing many repos',
-		layer: 7,
-		fan_in: 0,
-		x: -75,
-		y: 120
-	},
-	{
 		name: 'fuz_mastodon',
 		category: 'app',
 		language: 'ts',
 		description: 'Mastodon components and helpers for Svelte, SvelteKit, and Fuz',
 		layer: 7,
 		fan_in: 1,
+		x: -75,
+		y: 120
+	},
+	{
+		name: 'fuz_repos',
+		category: 'tooling',
+		language: 'ts',
+		description: 'a tool for managing many repos',
+		layer: 7,
+		fan_in: 0,
 		x: 75,
 		y: 120
 	},
@@ -380,82 +380,82 @@ export const stack_edges: Array<StackEdge> = [
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'blake3',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'fuz_css',
 		kind: 'peer'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'fuz_ui',
 		kind: 'peer'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'fuz_util',
 		kind: 'peer'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'gro',
-		kind: 'peer'
+		kind: 'dev'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'mdz',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_gitops',
+		from: 'fuz_mastodon',
 		to: 'svelte-docinfo',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'blake3',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'fuz_code',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'fuz_css',
 		kind: 'peer'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'fuz_ui',
 		kind: 'peer'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'fuz_util',
 		kind: 'peer'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'gro',
-		kind: 'dev'
+		kind: 'peer'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'mdz',
 		kind: 'dev'
 	},
 	{
-		from: 'fuz_mastodon',
+		from: 'fuz_repos',
 		to: 'svelte-docinfo',
 		kind: 'dev'
 	},
