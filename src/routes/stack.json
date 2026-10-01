@@ -1,7 +1,7 @@
 {
 	"toolchain": {
-		"rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
-		"cargo": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+		"rustc": "rustc 1.94.1 (e408947bf 2026-03-25)",
+		"cargo": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
 		"node": "v24.14.1",
 		"svelte": "5.56.2",
 		"sveltekit": "2.70.2",
@@ -124,9 +124,9 @@
 			"glyph": "🧶",
 			"homepage_url": "https://ui.fuz.dev/",
 			"published": true,
-			"module_count": 103,
-			"exported_module_count": 103,
-			"export_count": 326,
+			"module_count": 98,
+			"exported_module_count": 98,
+			"export_count": 309,
 			"peer_dependencies": [
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
@@ -147,7 +147,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.114.0",
+			"version": "0.117.1",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -155,7 +155,7 @@
 			"published": true,
 			"module_count": 349,
 			"exported_module_count": 347,
-			"export_count": 2060,
+			"export_count": 2071,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util"
@@ -208,7 +208,7 @@
 			"published": false,
 			"module_count": 3,
 			"exported_module_count": 3,
-			"export_count": 36,
+			"export_count": 48,
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -283,15 +283,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_gitops",
-			"version": "0.78.1",
-			"path": "fuz_gitops",
+			"version": "0.79.0",
+			"path": "fuz_repos",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
 			"homepage_url": "https://gitops.fuz.dev/",
 			"published": true,
-			"module_count": 55,
-			"exported_module_count": 50,
-			"export_count": 223,
+			"module_count": 54,
+			"exported_module_count": 48,
+			"export_count": 264,
 			"peer_dependencies": [
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
