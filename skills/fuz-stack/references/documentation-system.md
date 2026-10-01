@@ -19,7 +19,7 @@ package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
   TypeScript compiler API: declarations, TSDoc tags, re-exports merged into
   `alsoExportedFrom`, module sorting, flat-namespace duplicate checks. Its API
   is camelCase (it targets the broad Svelte ecosystem). Its Vite plugin
-  exposes `modules` and `diagnostics` (a 16-kind union: tag problems like
+  exposes `modules` and `diagnostics` (a union of kinds: tag problems like
   `misplaced_tag`, `duplicate_declaration`, `alias_lost`, transform and
   resolver failures; no repo consumes it yet) as `virtual:svelte-docinfo`.
   fuz_ui depends on it as a dev dependency for types and a few helpers; the
@@ -193,6 +193,6 @@ root), `tomes_context` (set by `Docs`), `tome_context` (set by `TomeContent`),
 
 Components a consumer wires: `Docs`, `TomeContent`, `TomeSection`,
 `TomeSectionHeader`, `ApiIndex`, `ApiModule`, `LibrarySummary` /
-`LibraryDetail` (metadata card / expanded package info). The full ~27-component
+`LibraryDetail` (metadata card / expanded package info). The full component
 set is fuz_ui inventory (its `CLAUDE.md`). fuz_ui defines everything; other
 projects import unchanged — only tomes, categories, and branding differ.

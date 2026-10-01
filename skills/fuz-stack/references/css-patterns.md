@@ -153,11 +153,12 @@ declare module 'virtual:fuz.css' {
 ```
 
 HMR works. The default tree-shaken bundled mode needs no options; the dev-only
-`prescan` option eagerly scans sources so the first served CSS is complete. fuz_css
-itself passes `additional_elements: 'all'`, `additional_variables: 'all'`, and
-a computed `additional_classes` list for its docs demos. The Gro generator
-alternative (`gen_fuz_css()` in `src/routes/fuz.gen.css.ts`, committed
-`fuz.css`) is for projects that can't run the plugin.
+`prescan` option eagerly scans sources so the first served CSS is complete.
+fuz_css itself passes `additional_elements: 'all'`,
+`additional_variables: 'all'`, and a computed `additional_classes` list for its
+docs demos. The Gro generator alternative (`gen_fuz_css()` in
+`src/routes/fuz.gen.css.ts`, committed `fuz.css`) is for projects that can't run
+the plugin.
 
 ### Project `style.css`
 
@@ -169,8 +170,8 @@ candidates), not repeated per component.
 
 ## Style Variables (Design Tokens)
 
-Defined in TypeScript, rendered to CSS; ~560 tokens, each with `light` and/or
-`dark` values.
+Defined in TypeScript, rendered to CSS; each token has `light` and/or `dark`
+values.
 
 ### Colors
 
@@ -206,16 +207,15 @@ letter implies the palette.
 | `darken_*`  | Always darkens (agnostic, alpha-based)         | Shadows, backdrops             |
 | `lighten_*` | Always lightens (agnostic, alpha-based)        | Highlights                     |
 
-These are **variable** families. `text_*` and `shade_*` are the everyday
-opaque tokens — reach for them first;
-`fg_*`/`bg_*` overlays use alpha and accumulate when nested. `text_*`,
-`shade_*`, `darken_*`, `lighten_*` exist as classes too, but `fg_*`/`bg_*`
-have no bare token classes — the `bg_` class prefix means the _opaque_
-backgrounds (`bg_a_50`, `bg_positive_50`), so reach the adaptive overlays via
-literals (`background-color:var(--fg_10)`). `shade_*` and `text_*` have
-`_min`/`_max` for untinted extremes. For a color that doesn't adapt to the
-scheme, write the literal or define a custom property (the old
-`_light`/`_dark` variants were removed).
+These are **variable** families. `text_*` and `shade_*` are the everyday opaque
+tokens — reach for them first; `fg_*`/`bg_*` overlays use alpha and accumulate
+when nested. `text_*`, `shade_*`, `darken_*`, `lighten_*` exist as classes too,
+but `fg_*`/`bg_*` have no bare token classes — the `bg_` class prefix means the
+_opaque_ backgrounds (`bg_a_50`, `bg_positive_50`), so reach the adaptive
+overlays via literals (`background-color:var(--fg_10)`). `shade_*` and `text_*`
+have `_min`/`_max` for untinted extremes. For a color that doesn't adapt to the
+scheme, write the literal or define a custom property (the old `_light`/`_dark`
+variants were removed).
 
 ### Sizes
 
@@ -382,18 +382,19 @@ shorthand (`style:` is invalid on component tags):
 <PendingAnimation --font_size="var(--font_size_xl5)" />
 ```
 
-**Color scheme** is a `dark`/`light` class on the root element (`style.css`
-has `:root.dark { color-scheme: dark; }` / `:root.light { color-scheme: light; }`); persistence and system preference live
-in fuz_ui's `ThemeState` / `ThemeRoot`.
+**Color scheme** is a `dark`/`light` class on the root element (`style.css` has
+`:root.dark { color-scheme: dark; }` / `:root.light { color-scheme: light; }`);
+persistence and system preference live in fuz_ui's `ThemeState` / `ThemeRoot`.
 
 **Themes**: one registered theme (`base`); low/high contrast are
 `contrast_modifiers` composed via `compose_themes`; shipped-but-unregistered
 exemplars (`necromancer`, `sunset_ember`, `brutalish`, `terminalien` — some
-dark-only via `scheme`) show the range. Custom themes are arrays of `StyleVariable` overrides rendered by
-`render_theme_style()` into the `fuz.theme` layer, which beats `fuz.base` by
-layer order regardless of specificity. The generators also take a build-time
-`theme` option that bakes a theme into the bundled CSS with no JS; the runtime
-`ThemeRoot` path composes on top (runtime wins by layer order).
+dark-only via `scheme`) show the range. Custom themes are arrays of
+`StyleVariable` overrides rendered by `render_theme_style()` into the
+`fuz.theme` layer, which beats `fuz.base` by layer order regardless of
+specificity. The generators also take a build-time `theme` option that bakes a
+theme into the bundled CSS with no JS; the runtime `ThemeRoot` path composes on
+top (runtime wins by layer order).
 
 ## Components
 

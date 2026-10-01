@@ -74,8 +74,8 @@ const elapsed_ms = stop(); // does not log
 Duplicate keys auto-suffix (`operation_2`). `Timings` doesn't log —
 `print_timings(timings, log)` from `print.ts` outputs at debug level.
 `create_stopwatch(decimals?)` is the single-timer primitive (call the returned
-function for elapsed ms; pass `true` to reset). Gro's
-`TaskContext` carries a `Timings` for task performance.
+function for elapsed ms; pass `true` to reset). Gro's `TaskContext` carries a
+`Timings` for task performance.
 
 ## Concurrency (`async.ts`)
 
@@ -101,11 +101,11 @@ const results = await map_concurrent(file_paths, 5, async (path) => readFile(pat
 // results[i] corresponds to file_paths[i]
 ```
 
-Also: `AsyncSemaphore(permits)` for limiting arbitrary code paths
-(`acquire()` in `try`, `release()` in `finally`; `permits >= 0`, `Infinity`
-disables limiting without changing call sites); `create_deferred<T>()` →
-`{promise, resolve, reject}` (used by `run_dag()` and `throttle`); `wait` (delay);
-`is_promise` (thenable guard); `AsyncStatus`
+Also: `AsyncSemaphore(permits)` for limiting arbitrary code paths (`acquire()`
+in `try`, `release()` in `finally`; `permits >= 0`, `Infinity` disables limiting
+without changing call sites); `create_deferred<T>()` →
+`{promise, resolve, reject}` (used by `run_dag()` and `throttle`); `wait`
+(delay); `is_promise` (thenable guard); `AsyncStatus`
 (`'initial' | 'pending' | 'success' | 'failure'`, for UI lifecycle).
 
 ## DAG execution (`dag.ts`)

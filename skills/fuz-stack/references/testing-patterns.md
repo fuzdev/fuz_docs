@@ -46,12 +46,12 @@ extension.
 ### Assertions
 
 `assert` from vitest, chosen for **type narrowing**:
-`assert(x instanceof Error)` narrows `x`; `expect(x).toBeInstanceOf(Error)` doesn't. `assert.ok` is
-the standard guard narrowing `T | undefined` — don't swap it for
-`assert.isDefined` or others unless failure diagnostics improve without losing
-narrowing. Strengthen when the value is **known**: `assert.strictEqual`,
-`assert.include`/`notInclude` for membership (shows contents on failure).
-Custom helpers are `assert_*`, not `expect_*`.
+`assert(x instanceof Error)` narrows `x`; `expect(x).toBeInstanceOf(Error)`
+doesn't. `assert.ok` is the standard guard narrowing `T | undefined` — don't
+swap it for `assert.isDefined` or others unless failure diagnostics improve
+without losing narrowing. Strengthen when the value is **known**:
+`assert.strictEqual`, `assert.include`/`notInclude` for membership (shows
+contents on failure). Custom helpers are `assert_*`, not `expect_*`.
 
 `assert.throws()` takes an Error constructor, string, or RegExp — **never a
 function predicate** (`"errorLike is not a constructor"`). To inspect a thrown
@@ -182,7 +182,10 @@ describe_db('account queries', (get_db) => {
 
 **Integration tests** (`.integration.db.test.ts`) use `create_test_app()` from
 `#lib/testing/app_server.ts` for a full Hono app with middleware, routes, and
-database — takes `{session_options: create_session_config('test_session'), create_route_specs: (ctx) => my_routes(ctx)}`, returns `{app, create_session_headers, create_bearer_headers, create_account, cleanup}`.
+database — takes
+`{session_options: create_session_config('test_session'), create_route_specs: (ctx) => my_routes(ctx)}`,
+returns
+`{app, create_session_headers, create_bearer_headers, create_account, cleanup}`.
 
 ## Test Helpers
 
@@ -216,7 +219,7 @@ When components share behavior (`ContextmenuRoot` and
 `ContextmenuRootForSafariCompatibility`), extract test logic into factory
 modules exporting `create_shared_*_tests(Component, name, options)` that
 wrap `describe(...)`; test files become thin wrappers calling the factory.
-fuz_ui has 8 such modules for contextmenu
+fuz_ui's contextmenu suite is the exemplar
 (`contextmenu_test_{core,rendering,keyboard,nested,positioning,scoped,edge_cases,link_entries}.ts`).
 
 ## Fixture-Based Testing

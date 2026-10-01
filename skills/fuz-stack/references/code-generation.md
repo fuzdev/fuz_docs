@@ -22,9 +22,8 @@ the output name can't equal the gen name.
 ## The `gen` Export
 
 A gen file exports `gen`: a function from `GenContext` to `RawGenResult` (or a
-promise of one), or a `{generate, dependencies?}` config object. Types
-come from `@fuzdev/gro/gen.ts` (`Gen`, `GenContext` also re-exported from
-`@fuzdev/gro`).
+promise of one), or a `{generate, dependencies?}` config object. Types come from
+`@fuzdev/gro/gen.ts` (`Gen`, `GenContext` also re-exported from `@fuzdev/gro`).
 
 ```typescript
 // theme.gen.css.ts — fuz_css's base theme
@@ -76,8 +75,8 @@ export const gen: Gen = {
 
 `dependencies` is `'all'` (any change — for gens over the whole source tree,
 e.g. fuz_css's `css_classes_fixture.gen.json.ts` → `css_classes_fixture.json`
-snapshot of its class definitions), a `{patterns, files}`
-config (`patterns` test absolute paths; `files` may be relative), or a resolver
+snapshot of its class definitions), a `{patterns, files}` config (`patterns`
+test absolute paths; `files` may be relative), or a resolver
 `(ctx) => config | 'all' | null` that reads `ctx.changed_file_id`.
 
 ## CLI

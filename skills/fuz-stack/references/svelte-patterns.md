@@ -48,10 +48,10 @@ it `$state.raw()!`).
 ### `$state.snapshot()`
 
 Deep plain copy (zzz Cell's `encode_property` returns `$state.snapshot(value)`
-for serialization). Use it when handing a proxy to code doing
-reference-identity checks on members; for plain serialization it's usually
-unnecessary. **Observed
-quirk** (Svelte 5.56 + vite-plugin-svelte, unfiled): `const r = $state.snapshot(x)` is silently elided to `const r = x` downstream of
+for serialization). Use it when handing a proxy to code doing reference-identity
+checks on members; for plain serialization it's usually unnecessary. **Observed
+quirk** (Svelte 5.56 + vite-plugin-svelte, unfiled):
+`const r = $state.snapshot(x)` is silently elided to `const r = x` downstream of
 `compileModule`; `return $state.snapshot(x)` and inline expression use work.
 
 ## Derived Values
@@ -120,12 +120,13 @@ Cell pattern upgrades the shape to a Zod schema and automates hydration in a
 
 ## Context Patterns
 
-`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.ts` is the
-standard — it predates Svelte's `createContext` and serves the same role over
-raw `setContext`/`getContext`; don't "upgrade" it. Without a fallback, `get()`
-throws if unset and `get_maybe()` returns `undefined`; with `create_context(() => fallback)`, `get()` uses the fallback and `set()`'s value is optional.
-Define in a shared module; a provider calls `.set()` at init, consumers `.get()`
-at init:
+`create_context<T>()` from `@fuzdev/fuz_ui/context_helpers.ts` is the standard —
+it predates Svelte's `createContext` and serves the same role over raw
+`setContext`/`getContext`; don't "upgrade" it. Without a fallback, `get()`
+throws if unset and `get_maybe()` returns `undefined`; with
+`create_context(() => fallback)`, `get()` uses the fallback and `set()`'s value
+is optional. Define in a shared module; a provider calls `.set()` at init,
+consumers `.get()` at init:
 
 ```typescript
 export const frontend_context = create_context<Frontend>();
@@ -135,10 +136,10 @@ export const section_depth_context = create_context(() => 0);
 ### Getter contexts
 
 Contexts whose value may be reassigned wrap it in `() => T` so the context
-reference stays stable — `theme_state_context` (`() => ThemeState` — `theme_state`
-arrives as a reassignable prop), `library_context` (`() => Library`). Set with a closure over
-reactive state; **read lazily** — calling the getter once at init captures a
-snapshot and loses reactivity:
+reference stays stable — `theme_state_context` (`() => ThemeState` —
+`theme_state` arrives as a reassignable prop), `library_context`
+(`() => Library`). Set with a closure over reactive state; **read lazily** —
+calling the getter once at init captures a snapshot and loses reactivity:
 
 ```typescript
 theme_state_context.set(() => theme_state);
@@ -151,7 +152,9 @@ Other lazy forms in real consumers: inside a template `{@const}`
 (`MdzNodeView.svelte`) and as a prop default re-evaluated while the prop is
 undefined (`const { value = get_theme_state() } = $props()` in
 `ColorSchemeInput.svelte`). Components with an optional `library` prop resolve
-prop-or-ancestor via `set_library_context_with_fallback(() => library_prop, 'ApiIndex')` (fuz_ui's `library.svelte.ts`) — prefers the prop, falls back to the ancestor, throws a
+prop-or-ancestor via
+`set_library_context_with_fallback(() => library_prop, 'ApiIndex')` (fuz_ui's
+`library.svelte.ts`) — prefers the prop, falls back to the ancestor, throws a
 component-named error when neither exists. Direct value contexts
 (`frontend_context`, `site_context`) are for values stable for the context's
 lifetime. Inventory: grep `create_context<`.
@@ -164,7 +167,8 @@ component state can be exported from `<script module>`.
 **Parameterized children**: `Dialog` passes a `DialogContext` back
 (`{close, register_surface}` from `@fuzdev/fuz_ui/dialog.ts`; `register_surface`
 marks click-outside-safe regions) —
-`children: Snippet<[dialog: DialogContext]>`, rendered `{@render children(context)}`. `ThemeRoot` passes multiple values
+`children: Snippet<[dialog: DialogContext]>`, rendered
+`{@render children(context)}`. `ThemeRoot` passes multiple values
 (`Snippet<[theme_state, style, theme_style_html]>`).
 
 **Generics**: fuz_ui's only real `generics=` use is `Contextmenu.svelte`'s
@@ -172,8 +176,10 @@ tag-name generic (`generics="T extends string = 'span'"`); the generic
 list-renderer shape (`items: T[]` + `item: Snippet<[T]>`) has no ecosystem
 precedent yet.
 
-**Optional / string-or-snippet props**: `{#if snippet}{@render snippet()}{:else}…{/if}`; for `icon?: string | Snippet` branch on `typeof` at
-render (`Card`, `Alert`; `Alert` also parameterizes with `Snippet<[icon: string]>` to pass the resolved icon back).
+**Optional / string-or-snippet props**:
+`{#if snippet}{@render snippet()}{:else}…{/if}`; for `icon?: string | Snippet`
+branch on `typeof` at render (`Card`, `Alert`; `Alert` also parameterizes with
+`Snippet<[icon: string]>` to pass the resolved icon back).
 
 ## Each Blocks
 
@@ -187,9 +193,9 @@ Effects are an escape hatch. Prefer `$derived` for computing; `{@attach}` for
 syncing with external libraries or DOM; event handlers or function bindings
 (`bind:value={get, set}`) for user interaction; `$inspect` for debug logging;
 `createSubscriber` from `svelte/reactivity` for observing something external;
-`untrack()` for reads that shouldn't create a dependency (config reads,
-breaking bidirectional-sync loops). Don't wrap effect contents in `if (browser)` — effects don't run on the server. Avoid updating `$state` inside
-effects.
+`untrack()` for reads that shouldn't create a dependency (config reads, breaking
+bidirectional-sync loops). Don't wrap effect contents in `if (browser)` —
+effects don't run on the server. Avoid updating `$state` inside effects.
 
 - **Debugging**: `$inspect.trace(label)` as the first line of an `$effect` or
   `$derived.by` reports which dependency triggered a rerun.
@@ -227,12 +233,12 @@ export const my_attachment =
 
 - `autofocus` solves the HTML `autofocus` attribute not firing when an element
   mounts from a reactive `{#if}`.
-- `intersect` takes `() => IntersectParamsOrCallback | null | undefined` (a
-  bare callback or a params object: `onintersect`, `ondisconnect`, `count`,
-  `options`) and runs `$effect` internally, so reactive callbacks update without recreating
-  the IntersectionObserver (rebuilt only when options change, deep equality).
-  Reach for the lazy form whenever the attachment builds an expensive observer
-  from reactive values.
+- `intersect` takes `() => IntersectParamsOrCallback | null | undefined` (a bare
+  callback or a params object: `onintersect`, `ondisconnect`, `count`,
+  `options`) and runs `$effect` internally, so reactive callbacks update without
+  recreating the IntersectionObserver (rebuilt only when options change, deep
+  equality). Reach for the lazy form whenever the attachment builds an expensive
+  observer from reactive values.
 - `contextmenu_attachment(params)` caches menu params on the element's dataset;
   its cleanup removes the entry.
 
@@ -263,8 +269,9 @@ export class Scrollable {
 
 ## Props
 
-Treat props as though they will change: derive from them (`let color = $derived(type === 'danger' ? 'red' : 'green')`), never assign once at init.
-`let` (not `const`) when destructuring `$bindable()` props.
+Treat props as though they will change: derive from them
+(`let color = $derived(type === 'danger' ? 'red' : 'green')`), never assign once
+at init. `let` (not `const`) when destructuring `$bindable()` props.
 
 **Rest props**: intersect `SvelteHTMLElements['div']` (from `svelte/elements`,
 not `HTMLAttributes<HTMLDivElement>`) with custom props for single-root
@@ -286,9 +293,10 @@ Standard DOM syntax; conditional handlers pass `undefined` to remove
 **`on()` from `svelte/events`** for programmatic listeners in attachments,
 `.svelte.ts`, and plain `.ts` — preserves ordering relative to delegated
 declarative handlers and returns a cleanup. Always prefer it over
-`addEventListener`, even outside components (`on(element, 'wheel', onwheel, { passive: false })`).
+`addEventListener`, even outside components
+(`on(element, 'wheel', onwheel, { passive: false })`).
 
-**`swallow(event, immediate = true, prevent_default = true)`** from
+**`swallow(event, immediate = true, preventDefault = true)`** from
 `@fuzdev/fuz_util/dom.ts` combines `preventDefault()` and
 `stopImmediatePropagation()` (`swallow(e, false)` → `stopPropagation` instead;
 `swallow(e, true, false)` → no `preventDefault`). **Handling an event =

@@ -108,9 +108,9 @@ Action verbs: `parse`, `create`, `get`, `to`, `is`, `has`, `format`,
 All exported identifiers must have **unique names across all modules**;
 `svelte-docinfo` reports duplicates as `duplicate_declaration` diagnostics,
 listing every conflict with module path and kind (it fails the build only when
-the plugin is given `onDuplicates: 'throw'`). Resolve by renaming the side that is _not_ the primary
-public API, or `/** @nodocs */` the loser — but `@nodocs` hides it from docs
-and tomes, so it's wrong when external consumers use it.
+the plugin is given `onDuplicates: 'throw'`). Resolve by renaming the side that
+is _not_ the primary public API, or `/** @nodocs */` the loser — but `@nodocs`
+hides it from docs and tomes, so it's wrong when external consumers use it.
 
 - Component is primary (class is state/helper): suffix the class `State` /
   `Info` (`DocsLink.svelte` + `DocsLinkInfo`; precedent `ThemeState`,
@@ -128,11 +128,11 @@ and tomes, so it's wrong when external consumers use it.
 - **No barrels** — import every module by full path
   (`@fuzdev/fuz_app/env/load.ts`); package `exports` use wildcards
 - **No re-exports in TypeScript** — each TS symbol has one canonical module;
-  callers import it from there. Don't `export {X} from './y.ts'` or re-export
-  an import to spare callers an import line — two paths to one symbol drift
-  and hide its source. Exceptions are modules whose job is to aggregate or
-  wrap: generated registries and a hand-written entry over
-  a non-importable generated module (wasm-pack's `pkg/`)
+  callers import it from there. Don't `export {X} from './y.ts'` or re-export an
+  import to spare callers an import line — two paths to one symbol drift and
+  hide its source. Exceptions are modules whose job is to aggregate or wrap:
+  generated registries and a hand-written entry over a non-importable generated
+  module (wasm-pack's `pkg/`)
 - **Subdirectories** at 3+ closely related files sharing a domain concept
   (`lib/auth/`, `lib/env/`, `lib/db/` in fuz_app) — not preemptively; a lone
   file stays at `lib/` root; the subdirectory is part of the import path
@@ -161,7 +161,7 @@ and tomes, so it's wrong when external consumers use it.
 Gro is installed globally — run `gro` directly, never `npx gro`.
 
 ```bash
-gro check        # CI command: test + gen --check + format --check + lint + typecheck
+gro check        # CI command: typecheck + test + gen --check + format --check + lint
 gro test         # vitest
 gro typecheck    # faster iteration
 gro gen          # run *.gen.ts generators (gro gen --check verifies no drift)

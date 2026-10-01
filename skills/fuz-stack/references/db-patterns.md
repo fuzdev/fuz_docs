@@ -77,8 +77,9 @@ from `db/sql_columns.ts`:
 | `omit_columns(COLS, 'token_hash')` | a client-safe subset — throws on an unknown name so a typo can't keep the secret column on the wire (`as const` makes it a compile error too) |
 | `iso8601_timestamp_expr(COLS, ['created_at'])` | the `expr` override projecting the named timestamp columns through `iso8601_timestamp_column`; curried by alias, throws on a name outside `COLS` |
 
-Derived columns that aren't table columns (a correlated `COUNT(*) AS grant_count`) are **appended as expressions** next to the rendered const,
-never added to it — the const must be exactly the table's column set so
+Derived columns that aren't table columns (a correlated
+`COUNT(*) AS grant_count`) are **appended as expressions** next to the rendered
+const, never added to it — the const must be exactly the table's column set so
 the drift guard below can compare it to the schema.
 
 Don't spell a second column list anywhere: not a module-level "qualified
@@ -101,11 +102,12 @@ describe_db('InviteQueries', (get_db) => {
 ```
 
 `assert_columns_match_live` (`testing/db.ts`) reads `information_schema` via
-`query_public_columns` and `deepEqual`s the sorted const — a live DB is the
-only truth for the migration chain's end state once migrations append `ALTER TABLE`s. The `/ready` deploy gate covers the same drift at deploy time; this
-guard covers it at development time, per table, both directions. A consumer's
-own tables follow the identical shape — one const, render at the site, one
-guard test, no registration.
+`query_public_columns` and `deepEqual`s the sorted const — a live DB is the only
+truth for the migration chain's end state once migrations append `ALTER TABLE`s.
+The `/ready` deploy gate covers the same drift at deploy time; this guard covers
+it at development time, per table, both directions. A consumer's own tables
+follow the identical shape — one const, render at the site, one guard test, no
+registration.
 
 ## Rust twin
 
@@ -149,7 +151,7 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
   name outside `COLS` (the same hazard `omit_columns` guards: a misspelled
   timestamp would silently ship a raw Postgres timestamp). The TS twin is
   `iso8601_timestamp_expr(COLS, ['created_at'])`, curried by alias because TS
-  reads rows by name. A projection that *also* overrides a non-timestamp
+  reads rows by name. A projection that _also_ overrides a non-timestamp
   column keeps its `match` and falls through — bind the closure to a local
   outside the `match`: the returned closure borrows the `&["…"]` slice
   literal, and a temporary built inside an arm dies at the end of that arm:
@@ -174,30 +176,31 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
   `COLS.len()`, which also follows. Never write a bare integer index
   against a const-driven projection.
 - **Derived (narrowed) projections** — a client-safe listing that omits
-  `token_hash`, a metadata read that skips the payload — are *literal*
-  consts the decoder `col!`s into, pinned to their derivation by a unit
-  test: `assert_eq!(API_TOKEN_CLIENT_COLUMNS.to_vec(), omit_columns(&API_TOKEN_COLUMNS, &["token_hash"]))`. The base const's
-  drift guard covers them through the pin.
+  `token_hash`, a metadata read that skips the payload — are _literal_ consts
+  the decoder `col!`s into, pinned to their derivation by a unit test:
+  `assert_eq!(API_TOKEN_CLIENT_COLUMNS.to_vec(), omit_columns(&API_TOKEN_COLUMNS, &["token_hash"]))`.
+  The base const's drift guard covers them through the pin.
 - **Purpose rows.** Rust reads deliberately narrow rows the TS twin
   doesn't (`AccountRow` is an identity pair, not the table). Give each
   such shape its own private `const <SHAPE>_COLUMNS` + decoder next to
   the table const, decode via `col!`, and unit-check it as a subset with
-  `fuz_db::columns_not_in(&SHAPE, &TABLE)` — the rule is *one list per
-  shape*, never a column list typed at a call site. Scalar reads
+  `fuz_db::columns_not_in(&SHAPE, &TABLE)` — the rule is _one list per
+  shape_, never a column list typed at a call site. Scalar reads
   (`RETURNING id`, `SELECT EXISTS(…)`) and single-site join shapes whose
   projection is spelled inline next to their decoder stay literal.
 - The drift guard is a crate integration test, `tests/columns.rs`, over
   `fuz_db::query_ready_columns` — `#[ignore]`-gated like the crate's other
-  Postgres tests: every live table in the chains the fixture runs is a
-  const or a reasoned exemption, and each const names exactly its live
-  columns. Each spine crate exports a `fuz_db::ColumnProjections` set per
-  migration chain (`AUTH_COLUMN_PROJECTIONS`, `CELL_COLUMN_PROJECTIONS`,
+  Postgres tests: every live table in the chains the fixture runs is a const or
+  a reasoned exemption, and each const names exactly its live columns. Each
+  spine crate exports a `fuz_db::ColumnProjections` set per migration chain
+  (`AUTH_COLUMN_PROJECTIONS`, `CELL_COLUMN_PROJECTIONS`,
   `CELL_HISTORY_COLUMN_PROJECTIONS`, `FACT_COLUMN_PROJECTIONS`; `fuz_db`'s
-  `DB_COLUMN_PROJECTIONS` covers `schema_version`), and the test composes
-  the sets for the chains it migrates plus its own tables:
-  `column_projection_mismatches_merged(&live, &[DB_COLUMN_PROJECTIONS, AUTH_COLUMN_PROJECTIONS, …, OWN])`. Never copy a spine chain's
-  table→const list into a consumer — compose the exported set, so a spine
-  table addition reaches every registry through one edit.
+  `DB_COLUMN_PROJECTIONS` covers `schema_version`), and the test composes the
+  sets for the chains it migrates plus its own tables:
+  `column_projection_mismatches_merged(&live, &[DB_COLUMN_PROJECTIONS, AUTH_COLUMN_PROJECTIONS, …, OWN])`.
+  Never copy a spine chain's table→const list into a consumer — compose the
+  exported set, so a spine table addition reaches every registry through one
+  edit.
 - Identifiers match the TS side exactly (`CELL_GRANT_COLUMNS`,
   `qualify_columns`, `omit_columns`) per ./twin-impl.md — the const is
   the same array on both spines, so column order can be diffed by eye.

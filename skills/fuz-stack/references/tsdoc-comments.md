@@ -73,9 +73,9 @@ consumed downstream, counter or rate-limiter state.
 thing. Pick one.
 
 **4. Filler.** `@param X - the X` (drop it, but keep a qualifier: format,
-constraint, edge case); step-by-step narration of self-evident
-behavior; hedges ("simply", "just", "essentially", "should never happen");
-"useful for" bullet lists that repeat the description.
+constraint, edge case); step-by-step narration of self-evident behavior; hedges
+("simply", "just", "essentially", "should never happen"); "useful for" bullet
+lists that repeat the description.
 
 ```typescript
 // Weak — every line restates name + type
@@ -90,11 +90,12 @@ behavior; hedges ("simply", "just", "essentially", "should never happen");
 
 ### Voice
 
-`@mutates` and `@throws` are terse fragments — `@mutates <target> - <verb> <scope>`. Backticks on every table/column/symbol/constant name are house style.
-Multi-paragraph descriptions are _earned_ by security or invariant rationale
-(TOCTOU, fail-closed, sibling-supersede, ordering, init order). A union type
-alias documents its members as a bullet list of backticked literals with
-` - description`.
+`@mutates` and `@throws` are terse fragments —
+`@mutates <target> - <verb> <scope>`. Backticks on every
+table/column/symbol/constant name are house style. Multi-paragraph descriptions
+are _earned_ by security or invariant rationale (TOCTOU, fail-closed,
+sibling-supersede, ordering, init order). A union type alias documents its
+members as a bullet list of backticked literals with ` - description`.
 
 ### CLAUDE.md is a map; TSDoc is the detail
 
@@ -113,11 +114,12 @@ Complete sentences ending in a period; blank line between summary and detail.
 
 `@param name - description` — hyphen separator, source parameter order,
 identifiers backticked. Single-sentence descriptions are lowercase fragments
-with no period (`@param foo - the value to clamp`); multi-sentence
-descriptions are capitalized sentences with periods, continuation lines
-indented (`@param exclude_dev - If true, excludes dev dependencies to break cycles.` then ` *   Publishing uses exclude_dev=true …`). Acronyms and proper names (CSS, Zod, Fisher-Yates) stay
-capitalized. A legacy sentence-style file may stay internally consistent until
-touched.
+with no period (`@param foo - the value to clamp`); multi-sentence descriptions
+are capitalized sentences with periods, continuation lines indented
+(`@param exclude_dev - If true, excludes dev dependencies to break cycles.` then
+` *   Publishing uses exclude_dev=true …`). Acronyms and proper names (CSS, Zod,
+Fisher-Yates) stay capitalized. A legacy sentence-style file may stay internally
+consistent until touched.
 
 `@param options.field - description` documents a sub-property. Matching is by
 parameter name, so destructured params (`fn({a, b}: T)` — TS names it `__0`)
@@ -205,7 +207,7 @@ seams); to remove a symbol from docs entirely, use `@nodocs`.
 
 Drops the declaration from analysis output and duplicate checking. Dominant
 use: exported-but-internal plumbing forced by the no-barrels convention (mdz
-tags ~160 exports); also build-system internals (Gro `Args`/`task`, `gen`
+is the heaviest user); also build-system internals (Gro `Args`/`task`, `gen`
 exports) and flat-namespace collisions.
 
 ```typescript
@@ -239,7 +241,8 @@ earns its line when the mutation isn't obvious from the name:
   `despawn_all`
 - **Mutation behind a query-shaped name** — `LruMap.get` reorders the recency list
 
-Ranking when warranted: `@mutates this.field - description` > `@mutates this - description` > bare > omit (correct when the name says it all).
+Ranking when warranted: `@mutates this.field - description` >
+`@mutates this - description` > bare > omit (correct when the name says it all).
 
 ```typescript
 /**

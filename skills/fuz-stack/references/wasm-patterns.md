@@ -5,9 +5,9 @@ description: WASM/N-API build targets — wasm-bindgen, component model, JS inte
 # WASM Patterns
 
 **Applies to**: `blake3` (WASM hashing), `pglet` (the embedded engine's wasm
-binding) and `tsv` (parser/formatter bindings — WASM, C-FFI, N-API). The fuz workspace doesn't use WASM. **Publishing stance**:
-npm gets **both** native (N-API) and WASM builds; the C-FFI `cdylib` also
-serves Deno FFI and Python.
+binding) and `tsv` (parser/formatter bindings — WASM, C-FFI, N-API). The fuz
+workspace doesn't use WASM. **Publishing stance**: npm gets **both** native
+(N-API) and WASM builds; the C-FFI `cdylib` also serves Deno FFI and Python.
 
 ## Two Build Targets
 
@@ -69,14 +69,17 @@ impl hashing::GuestHasher for HasherResource {
 }
 ```
 
-Cargo: `crate-type = ["cdylib"]`; `blake3 = { workspace = true, features = ["wasm32_simd"] }` (the core's SIMD feature, in addition to `+simd128`);
-`[package.metadata.component]` with `package = "fuzdev:blake3"` and
-`world`/`path` under the `[package.metadata.component.target]` sub-table. wit-bindgen generates `#[export_name]` and unsafe ABI stubs, so the
-crate can't use `lints.workspace = true` — re-declare the **entire** workspace
-lint block with `unsafe_code = "allow"` (./rust-patterns.md §Lints;
-`blake3_component` also allows `same_length_and_capacity` + `use_self` for
-generated-code false positives). Build with `cargo-component` and the
-`wasm32-wasip1` target, no wasm-opt:
+Cargo: `crate-type = ["cdylib"]`;
+`blake3 = { workspace = true, features = ["wasm32_simd"] }` (the core's SIMD
+feature, in addition to `+simd128`); `[package.metadata.component]` with
+`package = "fuzdev:blake3"` and `world`/`path` under the
+`[package.metadata.component.target]` sub-table. wit-bindgen generates
+`#[export_name]` and unsafe ABI stubs, so the crate can't use
+`lints.workspace = true` — re-declare the **entire** workspace lint block with
+`unsafe_code = "allow"` (./rust-patterns.md §Lints; `blake3_component` also
+allows `same_length_and_capacity` + `use_self` for generated-code false
+positives). Build with `cargo-component` and the `wasm32-wasip1` target, no
+wasm-opt:
 
 ```bash
 RUSTFLAGS='-C opt-level=3 -C target-feature=+simd128' cargo component build -p blake3_component --release
@@ -180,9 +183,11 @@ ecosystem convention (`initSync` re-exported as `init_sync`).
 - `using hasher = new Blake3Hasher();` — `Symbol.dispose` runs `free()` at
   scope exit. `Blake3HasherInstance` / `Blake3HasherConstructor` type the class
   across entries.
-- `@fuzdev/fuz_util/hash_blake3.ts` is the ecosystem consumer: `export const blake3_ready = init();` (eager; immediate under sync init, awaited in
-  browsers) and `hash_blake3(data: Uint8Array | BufferSource | string): string`
-  returning 64-char hex (validated by the `Blake3Hash` Zod schema).
+- `@fuzdev/fuz_util/hash_blake3.ts` is the ecosystem consumer:
+  `export const blake3_ready = init();` (eager; immediate under sync init,
+  awaited in browsers) and
+  `hash_blake3(data: Uint8Array | BufferSource | string): string` returning
+  64-char hex (validated by the `Blake3Hash` Zod schema).
 - **`deno compile`**: wasm-bindgen's deno target loads WASM via `fetch()`,
   which `deno compile` can't do. The build patches the generated JS to
   `Deno.readFileSync` and creates a `_bg.js` stub for module resolution.
@@ -198,12 +203,13 @@ signatures so consumers choose by runtime:
 | `tsv_napi` | N-API        | Node.js, Bun (native npm path) | N-API errors         |
 | `tsv_ffi`  | C ABI        | Deno FFI, Python               | JSON error objects   |
 
-All share `tsv_arena`. `tsv_ffi` and `tsv_napi` override `unsafe_code = "allow"` with the full re-declared lint block. `tsv_ffi` uses raw pointers
-with `tsv_free(ptr, len)` and wraps every entry in `panic::catch_unwind`,
-rendering `{"error": "panic: …"}` — effective only under a `panic = "unwind"`
-profile (`[profile.corpus]` for differential/fuzz runs, `[profile.napi]` for
-the shipped N-API artifact; a plain release build aborts and the wrapper is
-inert — ./rust-patterns.md §Release Profile).
+All share `tsv_arena`. `tsv_ffi` and `tsv_napi` override `unsafe_code = "allow"`
+with the full re-declared lint block. `tsv_ffi` uses raw pointers with
+`tsv_free(ptr, len)` and wraps every entry in `panic::catch_unwind`, rendering
+`{"error": "panic: …"}` — effective only under a `panic = "unwind"` profile
+(`[profile.corpus]` for differential/fuzz runs, `[profile.napi]` for the shipped
+N-API artifact; a plain release build aborts and the wrapper is inert —
+./rust-patterns.md §Release Profile).
 
 ## Package naming: a `wasm` suffix, kebab on npm
 

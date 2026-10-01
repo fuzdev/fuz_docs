@@ -137,8 +137,9 @@ pure-literal fixtures.
 
 ## Tool twins: molt
 
-fuz_template's ejector ships as symmetric twins — `src/lib/molt.ts` (`npm run molt`) and the `molt` crate (`cargo molt`) — at full behavior parity: same
-flags, wizard, plan, byte-identical output trees. No reference/production
+fuz_template's ejector ships as symmetric twins — `src/lib/molt.ts`
+(`npm run molt`) and the `molt` crate (`cargo molt`) — at full behavior parity:
+same flags, wizard, plan, byte-identical output trees. No reference/production
 asymmetry: both ship, chosen by which toolchain the user has (TS so ejecting
 never requires Rust; Rust to dogfood the CLI conventions). Its mechanics differ
 instructively:

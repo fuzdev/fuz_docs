@@ -37,29 +37,29 @@ export const task: Task<Args> = {
 };
 ```
 
-**Args conventions**: `z.strictObject()`; `.meta({description})` for help
-text; `.default()` (fields without one are required on the CLI);
-`/** @nodocs */` on the `Args` exports to keep them out of API docs. Positional
-args go in `_: z.array(z.string())` — `gro test foo bar --dir src/lib/` gives
-`_ = ['foo', 'bar']`. Opt-out booleans use `--no-*`
-duals — `typecheck: z.boolean().default(true)` paired with
+**Args conventions**: `z.strictObject()`; `.meta({description})` for help text;
+`.default()` (fields without one are required on the CLI); `/** @nodocs */` on
+the `Args` exports to keep them out of API docs. Positional args go in
+`_: z.array(z.string())` — `gro test foo bar --dir src/lib/` gives
+`_ = ['foo', 'bar']`. Opt-out booleans use `--no-*` duals —
+`typecheck: z.boolean().default(true)` paired with
 `'no-typecheck': z.boolean().default(false)`; `--help` shows only the `no-*`
 entry.
 
 ## TaskContext
 
-Fields: `args`, `config: GroConfig`, `svelte_config: Promise<ParsedSvelteConfig>`, `filer`, `log`, `timings`, `invoke_task`.
-`svelte_config` is lazy (resolved on first
-access); `filer` tracks the filesystem (watches in dev); `log`/`timings` are
-task-scoped.
+Fields: `args`, `config: GroConfig`,
+`svelte_config: Promise<ParsedSvelteConfig>`, `filer`, `log`, `timings`,
+`invoke_task`. `svelte_config` is lazy (resolved on first access); `filer`
+tracks the filesystem (watches in dev); `log`/`timings` are task-scoped.
 
 **`invoke_task(task_name, args?, config?)`** composes tasks (omitting `config`
-passes the current one) and respects overrides — `invoke_task('test')` runs the user's override if one exists.
-`check.task.ts` is the core example: it invokes `typecheck`, `test`,
-`gen` (`{check: true}`), `format` (`{check: true}`), `lint`, with `--no-*`
-flags gating each. Direct import (`test_task.run(ctx)`) bypasses override
-resolution — tighter coupling, rarely wanted. CLI args forward to composed
-tasks via `--` sections: `gro check -- gro test --coverage` forwards
+passes the current one) and respects overrides — `invoke_task('test')` runs the
+user's override if one exists. `check.task.ts` is the core example: it invokes
+`typecheck`, `test`, `gen` (`{check: true}`), `format` (`{check: true}`),
+`lint`, with `--no-*` flags gating each. Direct import (`test_task.run(ctx)`)
+bypasses override resolution — tighter coupling, rarely wanted. CLI args forward
+to composed tasks via `--` sections: `gro check -- gro test --coverage` forwards
 `--coverage` to `test`; multiple `--` sections target different sub-tasks.
 
 ## Error Handling

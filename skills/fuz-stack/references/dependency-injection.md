@@ -58,7 +58,7 @@ composable by intersection, and self-documenting. `Pick<>` on a _small_
 `*Deps` is fine; a `Pick<>` narrowing reused across many sites is a named
 interface waiting to happen — fuz_app's action factories take
 `ActionFactoryDeps {log, audit}` (`auth/deps.ts`) rather than repeating
-`Pick<RouteFactoryDeps, 'log' | 'audit'>` at a dozen sites.
+`Pick<RouteFactoryDeps, 'log' | 'audit'>` at every site.
 
 **Bundles vs single capabilities**: `*Deps` names the injected **bundle**. Its
 members are often pure-noun service interfaces or classes (`Keyring`, `Logger`,

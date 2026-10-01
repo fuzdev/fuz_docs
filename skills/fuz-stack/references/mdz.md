@@ -48,19 +48,21 @@ breaks; chat input) or `pre-wrap` (spaces/tabs preserved too).
   registered components/elements render; rich rendering is injected, not built
   in.
 - **Attribute grammar is strings + bare booleans.** Names are an ASCII letter
-  followed by letters, digits, `-`, `_` (the tag-name charset); values are `"…"`/`'…'` (empty valid, `>` inside a quote
-  is content, no escapes) or absent (`<input disabled />`); order preserved.
-  Any malformed form bails the **whole tag** to literal text: unquoted values,
-  `a={5}` (reserved, not evaluated), spaces around `=`, duplicate names, a
-  newline/tab in the open tag, missing space between attributes, unterminated
-  quote, dangling `=`. Directives, namespaces, spread, and `{shorthand}` can
-  never parse (`:` and `{` aren't attribute-name/value chars). One shared helper (`mdz_filter_element_attributes`, used by
-  `MdzNodeView`, `MdzStreamNodeView`, and `mdz_to_svelte`) enforces the policy
-  at render and build time: **elements** keep only `class`, `title`, `lang`,
-  `dir`, `role`, `aria-{label,hidden,describedby,labelledby}` — anything else
-  is dropped in prod and DEV-warned by name, element still rendering;
-  **components** receive every attribute as an untyped prop (`string | true`)
-  — registering a component is the trust decision.
+  followed by letters, digits, `-`, `_` (the tag-name charset); values are
+  `"…"`/`'…'` (empty valid, `>` inside a quote is content, no escapes) or absent
+  (`<input disabled />`); order preserved. Any malformed form bails the **whole
+  tag** to literal text: unquoted values, `a={5}` (reserved, not evaluated),
+  spaces around `=`, duplicate names, a newline/tab in the open tag, missing
+  space between attributes, unterminated quote, dangling `=`. Directives,
+  namespaces, spread, and `{shorthand}` can never parse (`:` and `{` aren't
+  attribute-name/value chars). One shared helper
+  (`mdz_filter_element_attributes`, used by `MdzNodeView`, `MdzStreamNodeView`,
+  and `mdz_to_svelte`) enforces the policy at render and build time:
+  **elements** keep only `class`, `title`, `lang`, `dir`, `role`,
+  `aria-{label,hidden,describedby,labelledby}` — anything else is dropped in
+  prod and DEV-warned by name, element still rendering; **components** receive
+  every attribute as an untyped prop (`string | true`) — registering a component
+  is the trust decision.
 
 ## Rendering: plain by default, inject richer
 
@@ -114,5 +116,6 @@ streaming only when genuinely rendering partial input as it arrives.
 ## Testing
 
 Fixture-based (`fixtures/mdz/`, `fixtures/svelte_preprocess_mdz/`) — the
-fixtures are ground truth for what parses; regenerate via `gro src/test/fixtures/mdz/update`, never hand-edit `expected.json`
+fixtures are ground truth for what parses; regenerate via
+`gro src/test/fixtures/mdz/update`, never hand-edit `expected.json`
 (./testing-patterns.md §Fixture-Based Testing).

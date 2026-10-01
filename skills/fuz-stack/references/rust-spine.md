@@ -15,7 +15,7 @@ consumer authors need the spine's names in one place, so it carries them.
 
 ## Spine layers
 
-The crates a consumer server names (the full ~35-crate inventory is the fuz
+The crates a consumer server names (the full crate inventory is the fuz
 repo's concern):
 
 - **System leaves** — `fuz_sys` (fs, file_lock, secure_file, pid, env,
@@ -57,28 +57,28 @@ composition), not a shared helper. The boxed-closure shapes —
 `ExtraActionSpecsRuntime` POD (`password_hasher` / `keyring` /
 `daemon_token_state` / `session_cookie_name`, all `fuz_auth` types) — live in
 `fuz_actions::consumer_lifecycle`, generic over `App` and `E` so `fuz_testing`
-never enters the spine. (Not in
-`fuz_http::lifecycle`: `fuz_http` deps no spine crate, so it can't name
-`fuz_auth` types.) Each consumer instantiates with a one-line concrete alias
+never enters the spine. (Not in `fuz_http::lifecycle`: `fuz_http` deps no spine
+crate, so it can't name `fuz_auth` types.) Each consumer instantiates with a
+one-line concrete alias
 (`pub type ExtraActionSpecsFactory = fuz_actions::ExtraActionSpecsFactory<handlers::App>;`)
 — its own definition, not a re-export shim.
 
-`RunAppOptions` shares a bind/drain vocabulary: `default_addr: SocketAddr`
-(more expressive than a bare port; loopback-only consumers default
-`127.0.0.1:<port>` and override only the port), `drain_timeout: Duration`
-passed `fuz_http::DEFAULT_DRAIN_TIMEOUT` (10 s), and
-`rate_limiters: fuz_auth::RateLimiterMode`. Remaining fields are per-consumer (zzz adds
-`force_test_actions`) — don't force one struct across consumers; bind env-var
-names are per-consumer too (`PORT`/`HOST` forge, `ZZZ_PORT` zzz).
+`RunAppOptions` shares a bind/drain vocabulary: `default_addr: SocketAddr` (more
+expressive than a bare port; loopback-only consumers default `127.0.0.1:<port>`
+and override only the port), `drain_timeout: Duration` passed
+`fuz_http::DEFAULT_DRAIN_TIMEOUT` (10 s), and
+`rate_limiters: fuz_auth::RateLimiterMode`. Remaining fields are per-consumer
+(zzz adds `force_test_actions`) — don't force one struct across consumers; bind
+env-var names are per-consumer too (`PORT`/`HOST` forge, `ZZZ_PORT` zzz).
 
 **Every spine rate limiter is built through `RateLimiterMode`** —
 `mode.limiter(fuz_auth::DEFAULT_LOGIN_IP_RATE_LIMIT)`, never
 `Some(Arc::new(RateLimiter::new(…)))` + a conditional null. Production passes
 `Enforced`; the `testing_*` binary passes `DisabledForTesting` — the twin of
 `fuz_app`'s testing wiring (a cross-process suite's failed-login cases would
-otherwise exhaust the per-IP budget). Building through the mode keeps a newly wired
-surface from staying enforced while the rest is disabled, and any process that
-nulls a limiter prints a startup banner (same fail-loud shape as
+otherwise exhaust the per-IP budget). Building through the mode keeps a newly
+wired surface from staying enforced while the rest is disabled, and any process
+that nulls a limiter prints a startup banner (same fail-loud shape as
 `TestingArgon2idHasher`). Consumer-owned limiters that aren't spine surfaces
 (visiones's upload caps) stay live in both modes.
 
@@ -89,10 +89,11 @@ The daemon-token keeper wiring (`BootstrapKeeperResolved` + boot-time
 
 `fuz_http` owns the error constructors (`invalid_params(detail, reason)`,
 `internal_error`, `internal_error_with_source`, `not_found`, `conflict`,
-`forbidden`, `validation_error`, `rate_limited`) and `parse_params<T: DeserializeOwned>`. Consumers import, never re-declare — the envelope is what
-parity tests assert byte-for-byte. Prefer typed `#[derive(Deserialize)]` input
-structs + `parse_params` over `params.get().and_then(Value::as_str)` chains
-(the chains are migration debt).
+`forbidden`, `validation_error`, `rate_limited`) and
+`parse_params<T: DeserializeOwned>`. Consumers import, never re-declare — the
+envelope is what parity tests assert byte-for-byte. Prefer typed
+`#[derive(Deserialize)]` input structs + `parse_params` over
+`params.get().and_then(Value::as_str)` chains (the chains are migration debt).
 
 `JsonrpcErrorCode` is a `#[repr(i32)]` enum with a hand-written `Serialize`
 emitting the bare `i32` — not scattered `pub const … : i32`. Because
@@ -103,9 +104,11 @@ magic number.
 
 ## Env loading
 
-- **Injectable seam**: load through `from_vars(get: impl Fn(&str) -> Option<String>)` so tests inject a map — `fuz_forge_server`'s env struct is
-  the exemplar, including a test that _rejects retired var names_. Audit for
-  stray `std::env::var` in router code (both consumers still have a few).
+- **Injectable seam**: load through
+  `from_vars(get: impl Fn(&str) -> Option<String>)` so tests inject a map —
+  `fuz_forge_server`'s env struct is the exemplar, including a test that
+  _rejects retired var names_. Audit for stray `std::env::var` in router code
+  (both consumers still have a few).
 - **Fail loud, not just closed**: security-consequential misconfig refuses to
   boot — an empty `FUZ_ALLOWED_ORIGINS` (empty allowlist = allow-all;
   `fuz_http::require_non_empty_origins`), a _malformed_ trusted-proxy list
@@ -123,16 +126,18 @@ magic number.
   `Arc<App>` into handler closures, so the compiled registry can't exist until
   the App does — `App.action_registry: OnceLock<Arc<ActionRegistry>>`, `set()`
   after construction.
-- **`ActionContext<'a>` is the borrowed per-request seam**: `notify: &dyn Fn(&str, &Value)`, `connection_id: Option<…>` (set on WS, `None` on HTTP),
-  `signal: &fuz_realtime::SignalToken` (alias of `CancellationToken`, threaded
-  into providers),
-  `request_id`, plus `db`, `auth`, `audit`, `log`, `client_ip`,
-  `credential_type`, `post_commit_effects`.
+- **`ActionContext<'a>` is the borrowed per-request seam**:
+  `notify: &dyn Fn(&str, &Value)`, `connection_id: Option<…>` (set on WS, `None`
+  on HTTP), `signal: &fuz_realtime::SignalToken` (alias of `CancellationToken`,
+  threaded into providers), `request_id`, plus `db`, `auth`, `audit`, `log`,
+  `client_ip`, `credential_type`, `post_commit_effects`.
 - **Streaming needs an owned sender**: the borrowed `notify` can't be captured
-  into a `'static` closure, so zzz builds a per-request `ProgressSender = Box<dyn Fn(Value) + Send + Sync>` — only when the request carries a progress
-  token _and_ arrived over WS — wrapping chunks with `fuz_http::notification(…)`
-  and routing through `Arc<fuz_realtime::ConnectionRegistry>::send_to`. HTTP →
-  `None` → non-streaming.
+  into a `'static` closure, so zzz builds a per-request
+  `ProgressSender = Box<dyn Fn(Value) + Send + Sync>` — only when the request
+  carries a progress token _and_ arrived over WS — wrapping chunks with
+  `fuz_http::notification(…)` and routing through
+  `Arc<fuz_realtime::ConnectionRegistry>::send_to`. HTTP → `None` →
+  non-streaming.
 - **Migration namespaces compose**: substrate DDL lives in the owning crate
   (`fuz_auth::AUTH_MIGRATIONS`, `fuz_cell::CELL_MIGRATIONS`,
   `fuz_fact::FACT_MIGRATIONS`); the consumer composes them with its own via
@@ -180,11 +185,11 @@ Every spine-consuming workspace's `xtask` wraps the shared audit — don't
 hand-roll it: `fuz_audit::xtask_main()` (complete single-subcommand xtask; the
 forge's 3-line `main`), `run_check_release_cli()` (workspaces with their own
 router — zzz, zap), `run_check_release_cli_with_rules(&AuditRules)` where
-`AuditRules` is one POD: `extra_forbidden: &[&str]` (fuz adds `fuz_sign` so
-its `fuz` binary can never sign) + `per_binary: &[PerBinaryForbid]`
-(`fuz`/`fuzd` must not link `fuzi_*`). Only the fuz workspace passes rules;
-the no-arg consumers stay insulated.
-Exit codes: clean 0, policy violation 65, tooling failure 69/70.
+`AuditRules` is one POD: `extra_forbidden: &[&str]` (fuz adds `fuz_sign` so its
+`fuz` binary can never sign) + `per_binary: &[PerBinaryForbid]` (`fuz`/`fuzd`
+must not link `fuzi_*`). Only the fuz workspace passes rules; the no-arg
+consumers stay insulated. Exit codes: clean 0, policy violation 65, tooling
+failure 69/70.
 
 `BUILTIN_CRATE_LAYERING` — per-crate _library_ layering applied
 unconditionally in every workspace (absent subjects skipped; the OK output

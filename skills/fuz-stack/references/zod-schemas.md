@@ -188,8 +188,9 @@ export const RequestResponseActionSpec = ActionSpec.extend({
 **Cell schemas (zzz)** are `CellJson.extend()`: every field has `.default()`
 (instantiation from partial JSON); `.meta({cell_class_name})` links schema to
 class for the registry; both `FooJson` and `FooJsonInput` (constructors and
-`set_json()`) are exported; the
-base class is generic over the schema (`abstract class Cell<TSchema extends z.ZodType>`) and validates with `this.schema.parse()`.
+`set_json()`) are exported; the base class is generic over the schema
+(`abstract class Cell<TSchema extends z.ZodType>`) and validates with
+`this.schema.parse()`.
 
 ## Metadata
 
@@ -206,9 +207,10 @@ fuz_app's `SchemaFieldMeta` (`@fuzdev/fuz_app/schema_meta.ts`) adds
 ## Validation at Boundaries
 
 - **`safeParse` for external input** where invalid data is a normal condition —
-  route-spec input middleware (parsed data stored as `c.set('validated_input', result.data)`; `dev_only(result.error.issues)` strips issue details from
-  production responses), external API responses. Route specs
-  validate input via `safeParse` and output in DEV only.
+  route-spec input middleware (parsed data stored as
+  `c.set('validated_input', result.data)`; `dev_only(result.error.issues)`
+  strips issue details from production responses), external API responses. Route
+  specs validate input via `safeParse` and output in DEV only.
 - **`parse` for fail-fast** where invalid data is a bug or fatal misconfig —
   internal assertions (`RoleName.parse(name)`), CLI args, factories, Cell
   field updates.

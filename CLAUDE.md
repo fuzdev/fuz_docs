@@ -120,6 +120,7 @@ skills/
 │   ├── references/                    # Detailed documentation loaded as needed
 │   │   ├── code-generation.md         # Gro gen system (.gen.* files, dependencies, common patterns)
 │   │   ├── css-patterns.md            # fuz_css styling conventions and utility classes
+│   │   ├── db-patterns.md             # Query modules, named-column projections, schema drift guard (TS + Rust)
 │   │   ├── dependency-injection.md    # Injectable *Deps interfaces, mock factories, composition patterns
 │   │   ├── documentation-system.md    # Docs pipeline, Tome system, layout architecture, project setup
 │   │   ├── fuz-util.md                # fuz_util: Result, error helpers, Logger, Timings, concurrency, DAG, type utilities

@@ -18,13 +18,16 @@ worked precedent throughout).
 Companions: ./rust-spine.md (spine surface + consumer contracts),
 ./rust-perf.md, ./rust-dependencies.md, ./twin-impl.md, ./wasm-patterns.md.
 
-Values: no backwards compatibility (delete, don't shim); `unsafe_code = "forbid"` + pedantic lints; if it's slow, it's a bug; copious `// TODO:`
-(`todo!()` warns workspace-wide — `#[allow(clippy::todo)]` with
+Values: no backwards compatibility (delete, don't shim);
+`unsafe_code = "forbid"` + pedantic lints; if it's slow, it's a bug; copious
+`// TODO:` (`todo!()` warns workspace-wide — `#[allow(clippy::todo)]` with
 justification); `///` for public API, `//` for implementation notes.
 
 ## New Workspace Checklist
 
-1. `[workspace.package]`: `edition = "2024"`, `version = "0.1.0"`, `license = "MIT"`, `publish = false` (until publishing is real); `resolver = "2"`.
+1. `[workspace.package]`: `edition = "2024"`, `version = "0.1.0"`,
+   `license = "MIT"`, `publish = false` (until publishing is real);
+   `resolver = "2"`.
 2. Copy the canonical `[workspace.lints.*]` block (§Lints); every crate takes
    `[lints] workspace = true`. Root `clippy.toml` with
    `allow-{unwrap,expect,panic}-in-tests = true`.
@@ -32,7 +35,9 @@ justification); `///` for public API, `//` for implementation notes.
    only with a driving need.
 4. Crate naming `{project}_{crate}`; short bare names only for
    frequently-typed binaries (§Project Structure).
-5. Errors from day one: `thiserror` library enums, a binary wrapper error, `fn main() -> ExitCode`; pick and test the exit-code dialect early (§CLI Patterns).
+5. Errors from day one: `thiserror` library enums, a binary wrapper error,
+   `fn main() -> ExitCode`; pick and test the exit-code dialect early (§CLI
+   Patterns).
 6. Dev automation: spine-consuming workspaces add an `xtask` crate wrapping
    `check-release` (./rust-spine.md); binding/library repos may drive builds
    through a script runner instead (tsv and blake3 use Deno tasks, no xtask).
@@ -78,7 +83,7 @@ todo = "warn"
 unwrap_used = "warn"
 ```
 
-Workspaces diverge deliberately — tsv carries a parser-shaped superset (~35
+Workspaces diverge deliberately — tsv carries a parser-shaped superset (many
 extra allows plus `unreachable = "warn"`); blake3 omits
 `missing_debug_implementations`. Superset-by-design isn't drift; the repo's
 `CLAUDE.md` documents it, so diff an override against that repo's block, not
@@ -90,14 +95,16 @@ and a `rust-toolchain.toml` pin, since floating stable breaks on new nursery
 lints. `private_intra_doc_links` stays at default warn where module headers
 deliberately link private members.
 
-**The doc-link gate** is `cargo doc --no-deps --workspace --document-private-items`, and three things about it have bitten: rustdoc
-lints fire only under `cargo doc` (never build/test/clippy); the pass condition
-is the **exit code**, not a warning grep (under `deny` a broken link is an
-`error:`, so `grep -c '^warning: unresolved link'` returns 0 on broken and
-clean alike); and `--document-private-items` is part of the gate — without it
-rustdoc resolves links only inside documented items, so every comment on a
-private or `pub(crate)` item goes unchecked — a ``[`crate::a::b`]`` whose `b`
-is a private module is never even checked, and becomes a hard `error:` (not a
+**The doc-link gate** is
+`cargo doc --no-deps --workspace --document-private-items`, and three things
+about it have bitten: rustdoc lints fire only under `cargo doc` (never
+build/test/clippy); the pass condition is the **exit code**, not a warning grep
+(under `deny` a broken link is an `error:`, so
+`grep -c '^warning: unresolved link'` returns 0 on broken and clean alike); and
+`--document-private-items` is part of the gate — without it rustdoc resolves
+links only inside documented items, so every comment on a private or
+`pub(crate)` item goes unchecked — a ``[`crate::a::b`]`` whose `b` is a private
+module is never even checked, and becomes a hard `error:` (not a
 `private_intra_doc_links` warning) once the flag is on. A related nursery trap:
 `doc_link_code` rejects `` [`Arc`]`<`[`T`]`>` `` — wrap the whole thing in
 `<code>` as clippy suggests.
@@ -122,14 +129,15 @@ panic = "abort"
 strip = true
 ```
 
-~2x slower builds, no symbols in backtraces — worth it for size and
-performance; carried byte-identically across workspaces. Deliberate
-exceptions: WASM-first repos set `opt-level = "s"` as the base (blake3),
-overridden per-build via `RUSTFLAGS`; tsv's `[profile.corpus]` (`inherits = "release"`, `panic = "unwind"`, `lto = false`, `codegen-units = 16`) exists
-because `catch_unwind` is dead under abort and it powers the Prettier
-differential run; its `[profile.napi]` (`panic = "unwind"`) because
-`#[napi(catch_unwind)]` is inert under abort and a panic would kill the _host_
-(dev server, editor); `[profile.profiling]` keeps `debug = true`, `strip = false`.
+~2x slower builds, no symbols in backtraces — worth it for size and performance;
+carried byte-identically across workspaces. Deliberate exceptions: WASM-first
+repos set `opt-level = "s"` as the base (blake3), overridden per-build via
+`RUSTFLAGS`; tsv's `[profile.corpus]` (`inherits = "release"`,
+`panic = "unwind"`, `lto = false`, `codegen-units = 16`) exists because
+`catch_unwind` is dead under abort and it powers the Prettier differential run;
+its `[profile.napi]` (`panic = "unwind"`) because `#[napi(catch_unwind)]` is
+inert under abort and a panic would kill the _host_ (dev server, editor);
+`[profile.profiling]` keeps `debug = true`, `strip = false`.
 
 ## Error Handling
 
@@ -197,14 +205,14 @@ tokio::select! {
 }
 ```
 
-axum's `with_graceful_shutdown(shutdown.cancelled())` drains in-flight
-requests; **always bound the drain with a timeout `select!`** — a hung handler
-otherwise keeps the process alive forever (the spine ships
-`fuz_http::serve_with_shutdown` + `DEFAULT_DRAIN_TIMEOUT`). Long-running tasks
-check the token via `select!` and every shutdown branch flushes pending work —
-the reference shape is a `Notify`-driven flusher debounced behind the most
-recent event (so an idle daemon doesn't tick), every arm including
-`shutdown.cancelled()`, the shutdown arm doing a final `flush()`. `TaskTracker` when shutdown must verify all workers
+axum's `with_graceful_shutdown(shutdown.cancelled())` drains in-flight requests;
+**always bound the drain with a timeout `select!`** — a hung handler otherwise
+keeps the process alive forever (the spine ships
+`fuz_http::serve_with_shutdown` + `DEFAULT_DRAIN_TIMEOUT`). Long-running tasks check the token via `select!` and
+every shutdown branch flushes pending work — the reference shape is a
+`Notify`-driven flusher debounced behind the most recent event (so an idle
+daemon doesn't tick), its `select!` carrying a `shutdown.cancelled()` arm that
+does a final `flush()`. Add `TaskTracker` when shutdown must verify all workers
 exited; skip it for short-lived tasks.
 
 **Don't**: `std::process::exit()` in async code (bypasses Drop); bare
@@ -251,10 +259,11 @@ typed-enum-replaces-bools (`TriggerKind` replacing a `trigger_restart` +
 
 Two anti-patterns reviewers hit:
 
-- **The flattened discriminated union** — `struct { available: bool, error: Option<String> }` with a doc-comment saying "matches a TS discriminated
-  union". The comment _is_ the smell; lift to an enum with payload-on-variant
-  and a hand-written `Serialize` for the flat wire shape (zzz's
-  `ProviderStatus`: `Available{…} | Unavailable{…, error}`).
+- **The flattened discriminated union** —
+  `struct { available: bool, error: Option<String> }` with a doc-comment saying
+  "matches a TS discriminated union". The comment _is_ the smell; lift to an
+  enum with payload-on-variant and a hand-written `Serialize` for the flat wire
+  shape (zzz's `ProviderStatus`: `Available{…} | Unavailable{…, error}`).
 - **The `json!({"kind": …})` closed set** — response bodies built with bare
   `json!` across `match` arms are a discriminated union evading the enum rule;
   model as `#[serde(tag = "kind", rename_all = "snake_case")]` with identical
@@ -265,8 +274,9 @@ Two anti-patterns reviewers hit:
 A newtype introduced to retire primitive drift must reach the wire/persistence
 shapes, not just the compute helper. When the wire format is fixed (a signed
 manifest), a per-field serde adapter serializes the newtype to the legacy
-primitive: `fuz_crypto::ContentHash` ships via `#[serde(with = "fuz_crypto::blake3_hex")]`. zap threads `scalar::ContentHash` end-to-end
-(schema → lock → resolved content) with two provenance constructors —
+primitive: `fuz_crypto::ContentHash` ships via
+`#[serde(with = "fuz_crypto::blake3_hex")]`. zap threads `scalar::ContentHash`
+end-to-end (schema → lock → resolved content) with two provenance constructors —
 validating `new` for parsed input, infallible `of_bytes` for computed hashes.
 Same shape serializes closed sets to primitive wire values
 (`fuz_http::JsonrpcErrorCode`, ./rust-spine.md).
@@ -383,13 +393,13 @@ pub trait Storage: Send + Sync {
 }
 ```
 
-Traits consumed as `Arc<dyn Trait>` can't use RPITIT — return `BoxFuture<'_, T>` manually rather than `#[async_trait]` (`PasswordHasher`,
-`BootstrapTokenStore`); migrate uniformly when RPITIT gains `dyn` support.
-Every `pub` trait in a shared crate states its object-safety on an item-level
-`///` line: **Object-safe** (dispatched dynamically; no generic methods, no
-RPITIT) or **Not object-safe** (generic-bound/concrete use; RPITIT allowed) —
-so contributors know why they can't add a generic method. Private one-off
-helper traits need no marker.
+Traits consumed as `Arc<dyn Trait>` can't use RPITIT — return `BoxFuture<'_, T>`
+manually rather than `#[async_trait]` (`PasswordHasher`, `BootstrapTokenStore`);
+migrate uniformly when RPITIT gains `dyn` support. Every `pub` trait in a shared
+crate states its object-safety on an item-level `///` line: **Object-safe**
+(dispatched dynamically; no generic methods, no RPITIT) or **Not object-safe**
+(generic-bound/concrete use; RPITIT allowed) — so contributors know why they
+can't add a generic method. Private one-off helper traits need no marker.
 
 ### Test injection — concrete impls in a separate crate
 
@@ -409,11 +419,13 @@ When a handler needs a `'static` sender (streaming past the request):
 
 ### What stays concrete
 
-tokio, tracing, `std::fs`, `std::env`, `std::time`. Clock: `#[tokio::test(start_paused = true)]` + `tokio::time::advance` already gives deterministic control — skip a
-`Clock` trait. Filesystem: prefer a domain-scoped trait (`BootstrapTokenStore`
-with `read_token`/`delete_token`) over a general `Fs` — narrow seams compose,
-wide ones accumulate. Logger/env: abstract only when production noise blocks
-log-shape assertions or a subsystem needs per-call env override.
+tokio, tracing, `std::fs`, `std::env`, `std::time`. Clock:
+`#[tokio::test(start_paused = true)]` + `tokio::time::advance` already gives
+deterministic control — skip a `Clock` trait. Filesystem: prefer a domain-scoped
+trait (`BootstrapTokenStore` with `read_token`/`delete_token`) over a general
+`Fs` — narrow seams compose, wide ones accumulate. Logger/env: abstract only
+when production noise blocks log-shape assertions or a subsystem needs per-call
+env override.
 
 ## Project Structure
 
@@ -454,8 +466,9 @@ tests in `tests/`. Three recurring shapes:
   + generated `expected.json`, never hand-edited) plus a **differential
   oracle** — corpus comparison against Prettier under the unwind profile so
   panics surface as data — plus per-runtime binding tests.
-- **Binding crates** (blake3): correctness asserted from the _consumer
-  language_ against shared vectors; zero Rust unit tests by design, `cargo test` as a compile gate — the boundary is where the bugs are.
+- **Binding crates** (blake3): correctness asserted from the _consumer language_
+  against shared vectors; zero Rust unit tests by design, `cargo test` as a
+  compile gate — the boundary is where the bugs are.
 - **Twin servers** (zzz, fuz_forge): the TS cross-backend suite launching the
   `testing_*` binary (./twin-impl.md).
 
@@ -504,10 +517,9 @@ remediation, not to error type.**
 Dry-run posture is per tool: convergence/deploy tools default to dry-run with
 opt-in execute (`zap --wetrun`); build/prune tools default to execute with
 `--dry-run` (fuz). The env-file flag is hyphenated `--env-file` (argh's default
-rendering). **Env overlay without
-`set_var`**: zap parses `--env-file` into a process-wide `OnceLock<HashMap>`
-consulted before `std::env` — `set_var` is unsafe in edition 2024, so this
-works under `unsafe_code = "forbid"`.
+rendering). **Env overlay without `set_var`**: zap parses `--env-file` into a
+process-wide `OnceLock<HashMap>` consulted before `std::env` — `set_var` is
+unsafe in edition 2024, so this works under `unsafe_code = "forbid"`.
 
 ## Patterns
 
@@ -515,8 +527,8 @@ works under `unsafe_code = "forbid"`.
 
 Executable config (a TS builder run under `deno`) evaluates through
 `fuz_eval::eval_module(&EvalRequest)`: `deno run --no-prompt` with **no**
-net/env/write, a caller-chosen `ReadScope` (`Scoped(dir)` or `Unrestricted`),
-a wall-clock timeout + kill, the wrapper piped over stdin. Don't re-roll the
+net/env/write, a caller-chosen `ReadScope` (`Scoped(dir)` or `Unrestricted`), a
+wall-clock timeout + kill, the wrapper piped over stdin. Don't re-roll the
 spawn. Policy belongs to the caller — zap passes `Unrestricted` under a
 first-party trust model (configs resolve imports from anywhere up the tree);
 net/env/write walls remain. zap's wrapper also enforces **determinism by
@@ -527,11 +539,10 @@ content-addressed fact. The ingredients are shared `fuz_eval` exports
 (`DETERMINISM_STUBS_JS`, `CONSOLE_TO_STDERR_JS`,
 `build_extract_export_wrapper(name, stubs)` — injection-safe, export name
 JSON-encoded into bracket notation) — a simple consumer composes these; a rich
-wrapper (zap's builder) composes the constants directly. Principle: anything
-the evaluated code
-needs from the world is a **declared, inert input** the trusted parent
-resolves and records; an injected live capability is an undeclared input no
-cache key can capture.
+wrapper (zap's builder) composes the constants directly. Principle: anything the
+evaluated code needs from the world is a **declared, inert input** the trusted
+parent resolves and records; an injected live capability is an undeclared input
+no cache key can capture.
 
 ### Sidecar controller
 
@@ -558,21 +569,19 @@ Supply-chain isolation is a crate-graph property (./rust-dependencies.md).
 
 State several invocations mutate (a lock ledger, an intent file) needs
 **advisory file locking** (`nix::fcntl::Flock`, acquired before
-read-modify-write) and **atomic temp + rename**. The ecosystem implementation
-is `fuz_sys::fs::write_atomic` (write `.<name>.tmp.<pid>` → `sync_all` →
-rename → **fsync the parent dir**); it replaced ~five hand-rolled copies — use
-it, don't re-roll.
-**Calibrate durability by authority**: the parent-dir fsync is required for
-authoritative, non-regenerable state (lock ledgers, credentials) and waived for
-content-addressed bodies (a torn write is caught by re-hashing) and ephemeral
-run-state; state the choice when you skip it. zap — spine-free — hand-rolls
-both correctly: flock + full fsync for its authoritative lock file, temp +
-rename only for its regenerable eval cache and last-run report
-(`home::write_atomic`). For the lock itself: `flock`
-locks the _inode_, so lock a stable sidecar path and **never unlink on
-release** (truncate but keep the dirent) — else two acquirers hold different
-inodes (zap's lock currently locks the pre-rename
-inode with a `TODO`; known wart).
+read-modify-write) and **atomic temp + rename**. The ecosystem implementation is
+`fuz_sys::fs::write_atomic` (write `.<name>.tmp.<pid>` → `sync_all` → rename →
+**fsync the parent dir**); it replaced several hand-rolled copies — use it,
+don't re-roll. **Calibrate durability by authority**: the parent-dir fsync is
+required for authoritative, non-regenerable state (lock ledgers, credentials)
+and waived for content-addressed bodies (a torn write is caught by re-hashing)
+and ephemeral run-state; state the choice when you skip it. zap — spine-free —
+hand-rolls both correctly: flock + full fsync for its authoritative lock file,
+temp + rename only for its regenerable eval cache and last-run report
+(`home::write_atomic`). For the lock itself: `flock` locks the _inode_, so lock
+a stable sidecar path and **never unlink on release** (truncate but keep the
+dirent) — else two acquirers hold different inodes (zap's lock currently locks
+the pre-rename inode with a `TODO`; known wart).
 
 ### Content-addressed storage with size-based routing
 
@@ -601,11 +610,13 @@ private constant behind named public aliases (`fuz_sys::limits`:
 
 Encode phase in the type so calling a method in the wrong phase is a compile
 error — a correctness pattern. The in-codebase shape is the **consuming
-transition**, not `PhantomData<S>`: zap's `SecretRegistry::freeze(mut self) -> Result<SecretMasker>` makes "mask before frozen" unrepresentable by moving
-into the next type, and the fallible transition doubles as validation. Reach
-for `PhantomData<S>` only when one value threads several states through a
-generic API. Skip type state when states are data-driven, only one transition
-exists, or the API must stay casual-caller ergonomic.
+transition**, not `PhantomData<S>`: zap's
+`SecretRegistry::freeze(mut self) -> Result<SecretMasker>` makes "mask before
+frozen" unrepresentable by moving into the next type, and the fallible
+transition doubles as validation. Reach for `PhantomData<S>` only when one value
+threads several states through a generic API. Skip type state when states are
+data-driven, only one transition exists, or the API must stay casual-caller
+ergonomic.
 
 ### Secret masking
 

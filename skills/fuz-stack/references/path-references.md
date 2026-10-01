@@ -114,7 +114,7 @@ workspace-root paths are safe bare (mdz doesn't linkify those prefixes).
 
 The linkifier won't fire on these, costing tokens and navigability:
 
-- **Mixing forms**: backticks + `./` or `../` is the wrong-of-both-worlds.
+- **Mixing forms**: backticks + `./` or `../` is the worst of both worlds.
   Pick bare (navigational) or module form.
 - **Backticking a navigable target**: "`~/dev/fuz_util`" reads as an
   identifier; write bare `~/dev/fuz_util`.

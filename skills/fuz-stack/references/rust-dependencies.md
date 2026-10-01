@@ -11,15 +11,14 @@ Prefer these; reach outside only with explicit approval (§Adding a
 dependency). For an external project adopting fuz-stack the list is advisory;
 the approval process applies inside the ecosystem.
 
-Source of truth is each repo's root `[workspace.dependencies]`; this doc
-mirrors their **union** (any one workspace carries a small subset — zap ~11
-direct external crates, the forge ~24, the rest transitive via the spine).
-Path-dep crates (including cross-repo deps onto the spine) aren't dependencies
-in this sense. A few approved crates are pinned at the member-crate level
-rather than the root: `js-sys`, `wasm-bindgen`, `talc` (wasm32-only) in
-`tsv_wasm`; `similar`, `tempfile` in `tsv_debug`; `libc` in `zzz_server`;
-`http-body-util` as a `fuz_http` dev-dependency. Verify against the workspaces
-periodically.
+Source of truth is each repo's root `[workspace.dependencies]`; this doc mirrors
+their **union** (any one workspace carries a small subset as direct deps — zap
+the fewest, the forge more — the rest transitive via the spine). Path-dep crates
+(including cross-repo deps onto the spine) aren't dependencies in this sense. A
+few approved crates are pinned at the member-crate level rather than the root:
+`js-sys`, `wasm-bindgen`, `talc` (wasm32-only) in `tsv_wasm`; `similar`,
+`tempfile` in `tsv_debug`; `libc` in `zzz_server`; `http-body-util` as a
+`fuz_http` dev-dependency. Verify against the workspaces periodically.
 
 ## Serialization & encoding
 
@@ -82,11 +81,10 @@ periodically.
 | Crate           | Purpose                                                                                                                                                            |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `blake3`        | Content-addressed hashing, token hashing                                                                                                                           |
-| `ring`          | SHA-512 digests (zap's content detection) — already in the graph as rustls's crypto provider, so no new C or build deps                                          |
+| `ring`          | SHA-512 digests (zap's content detection) — already in the graph as the `rustls` crypto provider, so no new C or build deps; used through one wrapper module, so the backend swaps to `sha2` in one place |
 | `argon2`        | Password hashing                                                                                                                                                   |
 | `ed25519-dalek` | Ed25519 signing/verification (artifact + release signatures)                                                                                                       |
 | `hmac` / `sha2` | HMAC-SHA256 (signed cookies, keyring)                                                                                                                              |
-| `ring`          | SHA-512 where `ring` is already the `rustls` provider (zap's detection digests) — through one wrapper module, so the backend swaps to `sha2` in one place          |
 | `subtle`        | Constant-time comparison                                                                                                                                           |
 | `zeroize`       | Secure memory clearing                                                                                                                                             |
 | `getrandom`     | OS randomness — the spine standard for new randomness (`fuz_sys::rand`, `fuz_auth`, `fuz_storage`)                                                                 |
