@@ -55272,7 +55272,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.208.0",
+			"version": "0.209.0",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -66965,7 +66965,7 @@
 							"sourceLine": 97
 						},
 						{
-							"name": "logo_fuz_gitops",
+							"name": "logo_fuz_repos",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
 							"sourceLine": 103
@@ -173904,14 +173904,14 @@
 	},
 	"fuz_repos": {
 		"pkg_json": {
-			"name": "@fuzdev/fuz_gitops",
-			"version": "0.79.0",
+			"name": "@fuzdev/fuz_repos",
+			"version": "0.80.0",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly blue spider facing you",
 			"license": "MIT",
-			"homepage": "https://gitops.fuz.dev/",
+			"homepage": "https://repos.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_repos",
 			"funding": "https://www.ryanatkn.com/funding",
 			"exports": {
@@ -173939,7 +173939,7 @@
 						{
 							"name": "CargoMetadata",
 							"kind": "interface",
-							"docComment": "The handful of identity fields gitops reads from a Rust repo's `Cargo.toml`\nto render it on the dashboard. Everything is optional — a workspace root has\nno `name`, and any field may be absent or inherited.",
+							"docComment": "The handful of identity fields fuz_repos reads from a Rust repo's `Cargo.toml`\nto render it on the dashboard. Everything is optional — a workspace root has\nno `name`, and any field may be absent or inherited.",
 							"typeSignature": "CargoMetadata",
 							"sourceLine": 10,
 							"members": [
@@ -173972,7 +173972,7 @@
 						{
 							"name": "cargo_toml_load",
 							"kind": "function",
-							"docComment": "Best-effort read of a repo's root `Cargo.toml` for the identity fields the\ngitops dashboard renders. Returns `null` when there's no `Cargo.toml`.",
+							"docComment": "Best-effort read of a repo's root `Cargo.toml` for the identity fields the\ndashboard renders. Returns `null` when there's no `Cargo.toml`.",
 							"typeSignature": "(repo_dir: string): Promise<CargoMetadata | null>",
 							"sourceLine": 28,
 							"parameters": [
@@ -174006,7 +174006,7 @@
 						{
 							"name": "cargo_toml_parse",
 							"kind": "function",
-							"docComment": "Extracts `name`/`version`/`description`/`repository` from the `[package]` and\n`[workspace.package]` tables of a `Cargo.toml`.\n\nDeliberately not a full TOML parser: it scans for simple `key = \"value\"`\nstring entries in those two tables, which covers both a single-crate manifest\nand a workspace root. Inline-table values like `version = { workspace = true }`\n(and the equivalent `version.workspace = true`) are ignored — a member crate\ninheriting from the workspace has no literal here, and gitops only ever reads a\nrepo's root manifest, where these are concrete. The first non-empty value for a\nkey wins, so a top-level `[package]` takes precedence over `[workspace.package]`\nwhen both appear.",
+							"docComment": "Extracts `name`/`version`/`description`/`repository` from the `[package]` and\n`[workspace.package]` tables of a `Cargo.toml`.\n\nDeliberately not a full TOML parser: it scans for simple `key = \"value\"`\nstring entries in those two tables, which covers both a single-crate manifest\nand a workspace root. Inline-table values like `version = { workspace = true }`\n(and the equivalent `version.workspace = true`) are ignored — a member crate\ninheriting from the workspace has no literal here, and fuz_repos only ever reads a\nrepo's root manifest, where these are concrete. The first non-empty value for a\nkey wins, so a top-level `[package]` takes precedence over `[workspace.package]`\nwhen both appear.",
 							"typeSignature": "(contents: string): CargoMetadata",
 							"sourceLine": 47,
 							"parameters": [
@@ -181251,7 +181251,7 @@
 						{
 							"name": "RepoJson",
 							"kind": "interface",
-							"docComment": "Serialized repo data as stored in `repos.ts` (JSON).\n\n`package_json` is the repo's full `package.json`, carried alongside\n`library_json` because gitops reads `dependencies`/`devDependencies` for the\npublishing cascade — fields the curated `LibraryJson.pkg_json` omits.",
+							"docComment": "Serialized repo data as stored in `repos.ts` (JSON).\n\n`package_json` is the repo's full `package.json`, carried alongside\n`library_json` because fuz_repos reads `dependencies`/`devDependencies` for the\npublishing cascade — fields the curated `LibraryJson.pkg_json` omits.",
 							"typeSignature": "RepoJson",
 							"sourceLine": 17,
 							"members": [

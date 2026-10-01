@@ -118,7 +118,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.208.0",
+			"version": "0.209.0",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -282,12 +282,12 @@
 		},
 		{
 			"kind": "package",
-			"name": "@fuzdev/fuz_gitops",
-			"version": "0.79.0",
+			"name": "@fuzdev/fuz_repos",
+			"version": "0.80.0",
 			"path": "fuz_repos",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
-			"homepage_url": "https://gitops.fuz.dev/",
+			"homepage_url": "https://repos.fuz.dev/",
 			"published": true,
 			"module_count": 54,
 			"exported_module_count": 48,
@@ -527,7 +527,7 @@
 			"@fuzdev/fuz_ui",
 			"@fuzdev/fuz_util"
 		],
-		"@fuzdev/fuz_gitops": [
+		"@fuzdev/fuz_repos": [
 			"@fuzdev/fuz_css",
 			"@fuzdev/fuz_ui",
 			"@fuzdev/fuz_util",
