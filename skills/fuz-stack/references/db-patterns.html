@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.CYL-ouvA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/NcGVX3hS.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.DZd2AWhx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CD9_ZSYJ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dhc2Vmwm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/KLvWrc7_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/YEDlyx8T.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.Dm1ky86W.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/cUXvls_Q.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CxU3QqwE.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/PPVm8Dsz.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CnuFIiuC.js" rel="modulepreload">
@@ -36,24 +36,24 @@
 		<link href="/_app/immutable/chunks/C0j2Cue3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DwcvKg9U.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.DApD5k_d.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.CrhD8GbD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CXG-uLn2.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/ssUBcWy3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DNyJsL3h.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DZHXkdZ-.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CMZBxy68.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/yPGHLeDh.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/R3xGJNej.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4twVV24.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BezFm6Y3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BUfKvZ4D.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DkJzlrGN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6tR3hbD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dyu_5ysp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/qJY-9XID.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/20.BTGnsnfG.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Baz-G_5F.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/20.QvS05yfN.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CeUXqBwW.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/seemzYDA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DfZsmuSx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CeK7SoxL.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/wIMo8eUz.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CnWD0Wor.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B8Ljp2qe.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -99,8 +99,9 @@ exported column const. Never <!--]--><!--[3--><!--[-1--><code>SELECT *</code><!-
 <!--]--><!--[3--><!--[-1--><code>deleted_at === null</code><!--]--><!--]--><!--[2--> filter then rejects every row — a silent outage. A named
 projection turns the same drift into a loud <!--]--><!--[3--><!--[-1--><code>column "…" does not exist</code><!--]--><!--]--><!--[2--> at
 first read, and keeps a leftover column off a strict wire schema.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->The const is a column-name array; SQL text is rendered <!--]--><!--[4--><strong><!--[--><!--[2-->at the read site<!--]--><!--]--><!----></strong><!--]--><!--[2-->
-from <!--]--><!--[3--><!--[-1--><code>db/sql_columns.ts</code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[12--><table><!--[0--><thead><tr><!--[--><!----><th><!--[0--><!--[--><!--[2-->Helper<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Use<!--]--><!--]--><!--]--><!----></th><!----><!--]--><!----></tr></thead><!--]--><!--[0--><tbody><!--[--><!--[-1--><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>columns_sql(COLS)</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->single-table reads + <!--]--><!--[3--><!--[-1--><code>RETURNING</code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code>a, b, c</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>qualify_columns(COLS, 'i')</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->reads that alias the table (JOINs) → <!--]--><!--[3--><!--[-1--><code>i.a, i.b, i.c</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>omit_columns(COLS, 'token_hash')</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->a client-safe subset — throws on an unknown name so a typo can't keep the secret column on the wire (<!--]--><!--[3--><!--[-1--><code>as const</code><!--]--><!--]--><!--[2--> makes it a compile error too)<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>iso8601_timestamp_expr(COLS, ['created_at'])</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->the <!--]--><!--[3--><!--[-1--><code>expr</code><!--]--><!--]--><!--[2--> override projecting the named timestamp columns through <!--]--><!--[3--><!--[-1--><code>iso8601_timestamp_column</code><!--]--><!--]--><!--[2-->; curried by alias, throws on a name outside <!--]--><!--[3--><!--[-1--><code>COLS</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--]--></tbody><!--]--></table><!--]--><!--[8--><p><!--[--><!--[2-->Derived columns that aren't table columns (a correlated <!--]--><!--[3--><!--[-1--><code>COUNT(*) AS grant_count</code><!--]--><!--]--><!--[2-->) are <!--]--><!--[4--><strong><!--[--><!--[2-->appended as expressions<!--]--><!--]--><!----></strong><!--]--><!--[2--> next to the rendered const,
-never added to it — the const must be exactly the table's column set so
+from <!--]--><!--[3--><!--[-1--><code>db/sql_columns.ts</code><!--]--><!--]--><!--[2-->:<!--]--><!--]--><!----></p><!--]--><!--[12--><table><!--[0--><thead><tr><!--[--><!----><th><!--[0--><!--[--><!--[2-->Helper<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Use<!--]--><!--]--><!--]--><!----></th><!----><!--]--><!----></tr></thead><!--]--><!--[0--><tbody><!--[--><!--[-1--><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>columns_sql(COLS)</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->single-table reads + <!--]--><!--[3--><!--[-1--><code>RETURNING</code><!--]--><!--]--><!--[2--> → <!--]--><!--[3--><!--[-1--><code>a, b, c</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>qualify_columns(COLS, 'i')</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->reads that alias the table (JOINs) → <!--]--><!--[3--><!--[-1--><code>i.a, i.b, i.c</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>omit_columns(COLS, 'token_hash')</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->a client-safe subset — throws on an unknown name so a typo can't keep the secret column on the wire (<!--]--><!--[3--><!--[-1--><code>as const</code><!--]--><!--]--><!--[2--> makes it a compile error too)<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>iso8601_timestamp_expr(COLS, ['created_at'])</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->the <!--]--><!--[3--><!--[-1--><code>expr</code><!--]--><!--]--><!--[2--> override projecting the named timestamp columns through <!--]--><!--[3--><!--[-1--><code>iso8601_timestamp_column</code><!--]--><!--]--><!--[2-->; curried by alias, throws on a name outside <!--]--><!--[3--><!--[-1--><code>COLS</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--]--></tbody><!--]--></table><!--]--><!--[8--><p><!--[--><!--[2-->Derived columns that aren't table columns (a correlated
+<!--]--><!--[3--><!--[-1--><code>COUNT(*) AS grant_count</code><!--]--><!--]--><!--[2-->) are <!--]--><!--[4--><strong><!--[--><!--[2-->appended as expressions<!--]--><!--]--><!----></strong><!--]--><!--[2--> next to the rendered
+const, never added to it — the const must be exactly the table's column set so
 the drift guard below can compare it to the schema.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Don't spell a second column list anywhere: not a module-level "qualified
 copy", not a per-site subset. Derive from the one const so one guard
 covers every projection.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="the-drift-guard-both-directions"><!--[--><!--[2-->The drift guard (both directions)<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->The projection makes a <!--]--><!--[5--><em><!--[--><!--[2-->dropped<!--]--><!--]--><!----></em><!--]--><!--[2--> column fail loud. A column <!--]--><!--[5--><em><!--[--><!--[2-->added<!--]--><!--]--><!----></em><!--]--><!--[2--> to the
@@ -111,11 +112,12 @@ const is asserted against the live <!--]--><!--[3--><!--[-1--><code>public</code
 		<span class="token_special_keyword">await</span> <span class="token_function">assert_columns_match_live</span><span class="token_punctuation">(</span><span class="token_function">get_db</span><span class="token_punctuation">(),</span> <span class="token_string">'invite'</span><span class="token_punctuation">,</span> <span class="token_constant">INVITE_COLUMNS</span><span class="token_punctuation">);</span>
 	<span class="token_punctuation">});</span>
 <span class="token_punctuation">});</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>assert_columns_match_live</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>testing/db.ts</code><!--]--><!--]--><!--[2-->) reads <!--]--><!--[3--><!--[-1--><code>information_schema</code><!--]--><!--]--><!--[2--> via
-<!--]--><!--[3--><!--[-1--><code>query_public_columns</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>deepEqual</code><!--]--><!--]--><!--[2-->s the sorted const — a live DB is the
-only truth for the migration chain's end state once migrations append <!--]--><!--[3--><!--[-1--><code>ALTER TABLE</code><!--]--><!--]--><!--[2-->s. The <!--]--><!--[3--><!--[-1--><code>/ready</code><!--]--><!--]--><!--[2--> deploy gate covers the same drift at deploy time; this
-guard covers it at development time, per table, both directions. A consumer's
-own tables follow the identical shape — one const, render at the site, one
-guard test, no registration.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="rust-twin"><!--[--><!--[2-->Rust twin<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Same discipline, same identifiers, one extra rule.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="rust" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_doc_comment token_comment">/// The `cell_grant` table's columns, in projection order.</span>
+<!--]--><!--[3--><!--[-1--><code>query_public_columns</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>deepEqual</code><!--]--><!--]--><!--[2-->s the sorted const — a live DB is the only
+truth for the migration chain's end state once migrations append <!--]--><!--[3--><!--[-1--><code>ALTER TABLE</code><!--]--><!--]--><!--[2-->s.
+The <!--]--><!--[3--><!--[-1--><code>/ready</code><!--]--><!--]--><!--[2--> deploy gate covers the same drift at deploy time; this guard covers
+it at development time, per table, both directions. A consumer's own tables
+follow the identical shape — one const, render at the site, one guard test, no
+registration.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="rust-twin"><!--[--><!--[2-->Rust twin<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Same discipline, same identifiers, one extra rule.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="rust" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_doc_comment token_comment">/// The `cell_grant` table's columns, in projection order.</span>
 <span class="token_keyword">pub</span> <span class="token_keyword">const</span> <span class="token_constant">CELL_GRANT_COLUMNS</span><span class="token_punctuation">:</span> <span class="token_punctuation">[</span><span class="token_operator">&amp;</span><span class="token_builtin">str</span><span class="token_punctuation">;</span> <span class="token_number">8</span><span class="token_punctuation">]</span> <span class="token_operator">=</span> <span class="token_punctuation">[</span>
     <span class="token_string">"id"</span><span class="token_punctuation">,</span> <span class="token_string">"cell_id"</span><span class="token_punctuation">,</span> <span class="token_string">"level"</span><span class="token_punctuation">,</span> <span class="token_string">"actor_id"</span><span class="token_punctuation">,</span> <span class="token_string">"role"</span><span class="token_punctuation">,</span> <span class="token_string">"scope_id"</span><span class="token_punctuation">,</span> <span class="token_string">"granted_by"</span><span class="token_punctuation">,</span> <span class="token_string">"created_at"</span><span class="token_punctuation">,</span>
 <span class="token_punctuation">];</span>
@@ -148,7 +150,7 @@ the column it meant to hide.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!
 name outside <!--]--><!--[3--><!--[-1--><code>COLS</code><!--]--><!--]--><!--[2--> (the same hazard <!--]--><!--[3--><!--[-1--><code>omit_columns</code><!--]--><!--]--><!--[2--> guards: a misspelled
 timestamp would silently ship a raw Postgres timestamp). The TS twin is
 <!--]--><!--[3--><!--[-1--><code>iso8601_timestamp_expr(COLS, ['created_at'])</code><!--]--><!--]--><!--[2-->, curried by alias because TS
-reads rows by name. A projection that *also* overrides a non-timestamp
+reads rows by name. A projection that <!--]--><!--[5--><em><!--[--><!--[2-->also<!--]--><!--]--><!----></em><!--]--><!--[2--> overrides a non-timestamp
 column keeps its <!--]--><!--[3--><!--[-1--><code>match</code><!--]--><!--]--><!--[2--> and falls through — bind the closure to a local
 outside the <!--]--><!--[3--><!--[-1--><code>match</code><!--]--><!--]--><!--[2-->: the returned closure borrows the <!--]--><!--[3--><!--[-1--><code>&amp;["…"]</code><!--]--><!--]--><!--[2--> slice
 literal, and a temporary built inside an arm dies at the end of that arm:<!--]--><!--[15--><!--[0--><!--[--><code data-lang="rust" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_keyword">let</span> timestamps <span class="token_operator">=</span> <span class="token_function">iso8601_timestamp_expr</span><span class="token_punctuation">(</span><span class="token_operator">&amp;</span><span class="token_constant">CELL_COLUMNS</span><span class="token_punctuation">,</span> <span class="token_operator">&amp;</span><span class="token_punctuation">[</span><span class="token_string">"created_at"</span><span class="token_punctuation">],</span> alias<span class="token_punctuation">);</span>
@@ -167,28 +169,29 @@ until its struct field lands. A CTE / JOIN read appends its extra
 expressions after the const's columns and indexes them from
 <!--]--><!--[3--><!--[-1--><code>COLS.len()</code><!--]--><!--]--><!--[2-->, which also follows. Never write a bare integer index
 against a const-driven projection.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Derived (narrowed) projections<!--]--><!--]--><!----></strong><!--]--><!--[2--> — a client-safe listing that omits
-<!--]--><!--[3--><!--[-1--><code>token_hash</code><!--]--><!--]--><!--[2-->, a metadata read that skips the payload — are *literal*
-consts the decoder <!--]--><!--[3--><!--[-1--><code>col!</code><!--]--><!--]--><!--[2-->s into, pinned to their derivation by a unit
-test: <!--]--><!--[3--><!--[-1--><code>assert_eq!(API_TOKEN_CLIENT_COLUMNS.to_vec(), omit_columns(&amp;API_TOKEN_COLUMNS, &amp;["token_hash"]))</code><!--]--><!--]--><!--[2-->. The base const's
-drift guard covers them through the pin.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Purpose rows.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Rust reads deliberately narrow rows the TS twin
+<!--]--><!--[3--><!--[-1--><code>token_hash</code><!--]--><!--]--><!--[2-->, a metadata read that skips the payload — are <!--]--><!--[5--><em><!--[--><!--[2-->literal<!--]--><!--]--><!----></em><!--]--><!--[2--> consts
+the decoder <!--]--><!--[3--><!--[-1--><code>col!</code><!--]--><!--]--><!--[2-->s into, pinned to their derivation by a unit test:
+<!--]--><!--[3--><!--[-1--><code>assert_eq!(API_TOKEN_CLIENT_COLUMNS.to_vec(), omit_columns(&amp;API_TOKEN_COLUMNS, &amp;["token_hash"]))</code><!--]--><!--]--><!--[2-->.
+The base const's drift guard covers them through the pin.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Purpose rows.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Rust reads deliberately narrow rows the TS twin
 doesn't (<!--]--><!--[3--><!--[-1--><code>AccountRow</code><!--]--><!--]--><!--[2--> is an identity pair, not the table). Give each
 such shape its own private <!--]--><!--[3--><!--[-1--><code>const &lt;SHAPE>_COLUMNS</code><!--]--><!--]--><!--[2--> + decoder next to
 the table const, decode via <!--]--><!--[3--><!--[-1--><code>col!</code><!--]--><!--]--><!--[2-->, and unit-check it as a subset with
-<!--]--><!--[3--><!--[-1--><code>fuz_db::columns_not_in(&amp;SHAPE, &amp;TABLE)</code><!--]--><!--]--><!--[2--> — the rule is *one list per
-shape*, never a column list typed at a call site. Scalar reads
+<!--]--><!--[3--><!--[-1--><code>fuz_db::columns_not_in(&amp;SHAPE, &amp;TABLE)</code><!--]--><!--]--><!--[2--> — the rule is <!--]--><!--[5--><em><!--[--><!--[2-->one list per
+shape<!--]--><!--]--><!----></em><!--]--><!--[2-->, never a column list typed at a call site. Scalar reads
 (<!--]--><!--[3--><!--[-1--><code>RETURNING id</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>SELECT EXISTS(…)</code><!--]--><!--]--><!--[2-->) and single-site join shapes whose
 projection is spelled inline next to their decoder stay literal.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->The drift guard is a crate integration test, <!--]--><!--[3--><!--[-1--><code>tests/columns.rs</code><!--]--><!--]--><!--[2-->, over
 <!--]--><!--[3--><!--[-1--><code>fuz_db::query_ready_columns</code><!--]--><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>#[ignore]</code><!--]--><!--]--><!--[2-->-gated like the crate's other
-Postgres tests: every live table in the chains the fixture runs is a
-const or a reasoned exemption, and each const names exactly its live
-columns. Each spine crate exports a <!--]--><!--[3--><!--[-1--><code>fuz_db::ColumnProjections</code><!--]--><!--]--><!--[2--> set per
-migration chain (<!--]--><!--[3--><!--[-1--><code>AUTH_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>CELL_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2-->,
+Postgres tests: every live table in the chains the fixture runs is a const or
+a reasoned exemption, and each const names exactly its live columns. Each
+spine crate exports a <!--]--><!--[3--><!--[-1--><code>fuz_db::ColumnProjections</code><!--]--><!--]--><!--[2--> set per migration chain
+(<!--]--><!--[3--><!--[-1--><code>AUTH_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>CELL_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code>CELL_HISTORY_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>FACT_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2-->; <!--]--><!--[3--><!--[-1--><code>fuz_db</code><!--]--><!--]--><!--[2-->'s
-<!--]--><!--[3--><!--[-1--><code>DB_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2--> covers <!--]--><!--[3--><!--[-1--><code>schema_version</code><!--]--><!--]--><!--[2-->), and the test composes
-the sets for the chains it migrates plus its own tables:
-<!--]--><!--[3--><!--[-1--><code>column_projection_mismatches_merged(&amp;live, &amp;[DB_COLUMN_PROJECTIONS, AUTH_COLUMN_PROJECTIONS, …, OWN])</code><!--]--><!--]--><!--[2-->. Never copy a spine chain's
-table→const list into a consumer — compose the exported set, so a spine
-table addition reaches every registry through one edit.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Identifiers match the TS side exactly (<!--]--><!--[3--><!--[-1--><code>CELL_GRANT_COLUMNS</code><!--]--><!--]--><!--[2-->,
+<!--]--><!--[3--><!--[-1--><code>DB_COLUMN_PROJECTIONS</code><!--]--><!--]--><!--[2--> covers <!--]--><!--[3--><!--[-1--><code>schema_version</code><!--]--><!--]--><!--[2-->), and the test composes the
+sets for the chains it migrates plus its own tables:
+<!--]--><!--[3--><!--[-1--><code>column_projection_mismatches_merged(&amp;live, &amp;[DB_COLUMN_PROJECTIONS, AUTH_COLUMN_PROJECTIONS, …, OWN])</code><!--]--><!--]--><!--[2-->.
+Never copy a spine chain's table→const list into a consumer — compose the
+exported set, so a spine table addition reaches every registry through one
+edit.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Identifiers match the TS side exactly (<!--]--><!--[3--><!--[-1--><code>CELL_GRANT_COLUMNS</code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code>qualify_columns</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>omit_columns</code><!--]--><!--]--><!--[2-->) per <!--]--><!--[7--><!--[1--><a href="/skills/fuz-stack/references/twin-impl"><!--[--><!--[2-->./twin-impl<!--]--><!--]--><!----></a><!--]--><!--]--><!--[2--> — the const is
 the same array on both spines, so column order can be diffed by eye.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h2 id="anti-patterns"><!--[--><!--[2-->Anti-patterns<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>SELECT *</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>RETURNING *</code><!--]--><!--]--><!--[2--> on any table read, "mapper-fed" or not — the
 mapper narrows the wire, not the read.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->A second column list (a qualified copy, a <!--]--><!--[3--><!--[-1--><code>SELECT id, name</code><!--]--><!--]--><!--[2--> typed at one
@@ -198,15 +201,15 @@ telling you the DDL and the const disagree; decide which is right.<!--]--><!--]-
 			
 			<script>
 				{
-					__sveltekit_disvvi = {
+					__sveltekit_erprw9 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.CYL-ouvA.js"),
-						import("/_app/immutable/entry/app.Dm1ky86W.js")
+						import("/_app/immutable/entry/start.DZd2AWhx.js"),
+						import("/_app/immutable/entry/app.CxU3QqwE.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 20],

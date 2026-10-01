@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.CYL-ouvA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/NcGVX3hS.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.DZd2AWhx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CD9_ZSYJ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dhc2Vmwm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/KLvWrc7_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/YEDlyx8T.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.Dm1ky86W.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/cUXvls_Q.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CxU3QqwE.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/PPVm8Dsz.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CnuFIiuC.js" rel="modulepreload">
@@ -36,24 +36,24 @@
 		<link href="/_app/immutable/chunks/C0j2Cue3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DwcvKg9U.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.DApD5k_d.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.CrhD8GbD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CXG-uLn2.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/ssUBcWy3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DNyJsL3h.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DZHXkdZ-.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CMZBxy68.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/yPGHLeDh.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/R3xGJNej.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4twVV24.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BezFm6Y3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BUfKvZ4D.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DkJzlrGN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6tR3hbD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dyu_5ysp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/qJY-9XID.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/23.RD2V79xl.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Baz-G_5F.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/23.tROwJgn6.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CeUXqBwW.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/seemzYDA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DfZsmuSx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CeK7SoxL.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/wIMo8eUz.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CnWD0Wor.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B8Ljp2qe.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -99,8 +99,8 @@ owning one (./dependency-injection §Design Principles).<!--]--><!--]--><!----><
 <span class="token_keyword">const</span> elapsed_ms <span class="token_operator">=</span> <span class="token_function">stop</span><span class="token_punctuation">();</span> <span class="token_comment">// does not log</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Duplicate keys auto-suffix (<!--]--><!--[3--><!--[-1--><code>operation_2</code><!--]--><!--]--><!--[2-->). <!--]--><!--[3--><!--[-1--><code>Timings</code><!--]--><!--]--><!--[2--> doesn't log —
 <!--]--><!--[3--><!--[-1--><code>print_timings(timings, log)</code><!--]--><!--]--><!--[2--> from <!--]--><!--[3--><!--[-1--><code>print.ts</code><!--]--><!--]--><!--[2--> outputs at debug level.
 <!--]--><!--[3--><!--[-1--><code>create_stopwatch(decimals?)</code><!--]--><!--]--><!--[2--> is the single-timer primitive (call the returned
-function for elapsed ms; pass <!--]--><!--[3--><!--[-1--><code>true</code><!--]--><!--]--><!--[2--> to reset). Gro's
-<!--]--><!--[3--><!--[-1--><code>TaskContext</code><!--]--><!--]--><!--[2--> carries a <!--]--><!--[3--><!--[-1--><code>Timings</code><!--]--><!--]--><!--[2--> for task performance.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="concurrency-asyncts"><!--[--><!--[2-->Concurrency (<!--]--><!--[3--><!--[-1--><code>async.ts</code><!--]--><!--]--><!--[2-->)<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Three bounded-concurrency functions over iterables. All require
+function for elapsed ms; pass <!--]--><!--[3--><!--[-1--><code>true</code><!--]--><!--]--><!--[2--> to reset). Gro's <!--]--><!--[3--><!--[-1--><code>TaskContext</code><!--]--><!--]--><!--[2--> carries a
+<!--]--><!--[3--><!--[-1--><code>Timings</code><!--]--><!--]--><!--[2--> for task performance.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="concurrency-asyncts"><!--[--><!--[2-->Concurrency (<!--]--><!--[3--><!--[-1--><code>async.ts</code><!--]--><!--]--><!--[2-->)<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Three bounded-concurrency functions over iterables. All require
 <!--]--><!--[3--><!--[-1--><code>concurrency >= 1</code><!--]--><!--]--><!--[2-->, accept an optional <!--]--><!--[3--><!--[-1--><code>AbortSignal</code><!--]--><!--]--><!--[2-->, pass <!--]--><!--[3--><!--[-1--><code>(item, index)</code><!--]--><!--]--><!--[2--> to
 <!--]--><!--[3--><!--[-1--><code>fn</code><!--]--><!--]--><!--[2--> (which may be sync), spawn the next item as each settles, and resolve
 immediately on empty input.<!--]--><!--]--><!----></p><!--]--><!--[12--><table><!--[0--><thead><tr><!--[--><!----><th><!--[0--><!--[--><!--[2-->Function<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Returns results<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Fail behavior<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Use when<!--]--><!--]--><!--]--><!----></th><!----><!--]--><!----></tr></thead><!--]--><!--[0--><tbody><!--[--><!--[-1--><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>each_concurrent</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->No<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Fail-fast<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Side effects only<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>map_concurrent</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Yes (ordered)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Fail-fast<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Transform + collect<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>map_concurrent_settled</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Yes (settled)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Collects all (no throw)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Best-effort collection<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--]--></tbody><!--]--></table><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Fail-fast<!--]--><!--]--><!----></strong><!--]--><!--[2-->: on first rejection, stop spawning and reject — partial results
@@ -108,11 +108,11 @@ are lost; with <!--]--><!--[3--><!--[-1--><code>signal</code><!--]--><!--]--><!-
 <!--]--><!--[3--><!--[-1--><code>Promise.allSettled</code><!--]--><!--]--><!--[2--> — never rejects; on abort it resolves with partial
 results: completed items keep their settlements, in-flight items reject with
 the abort reason, never-pulled items are absent.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_keyword">const</span> results <span class="token_operator">=</span> <span class="token_special_keyword">await</span> <span class="token_function">map_concurrent</span><span class="token_punctuation">(</span>file_paths<span class="token_punctuation">,</span> <span class="token_number">5</span><span class="token_punctuation">,</span> <span class="token_keyword">async</span> <span class="token_punctuation">(</span>path<span class="token_punctuation">)</span> <span class="token_operator">=></span> <span class="token_function">readFile</span><span class="token_punctuation">(</span>path<span class="token_punctuation">,</span> <span class="token_string">'utf8'</span><span class="token_punctuation">));</span>
-<span class="token_comment">// results[i] corresponds to file_paths[i]</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Also: <!--]--><!--[3--><!--[-1--><code>AsyncSemaphore(permits)</code><!--]--><!--]--><!--[2--> for limiting arbitrary code paths
-(<!--]--><!--[3--><!--[-1--><code>acquire()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>try</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>release()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>finally</code><!--]--><!--]--><!--[2-->; <!--]--><!--[3--><!--[-1--><code>permits >= 0</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>Infinity</code><!--]--><!--]--><!--[2-->
-disables limiting without changing call sites); <!--]--><!--[3--><!--[-1--><code>create_deferred&lt;T>()</code><!--]--><!--]--><!--[2--> →
-<!--]--><!--[3--><!--[-1--><code>{promise, resolve, reject}</code><!--]--><!--]--><!--[2--> (used by <!--]--><!--[3--><!--[-1--><code>run_dag()</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>throttle</code><!--]--><!--]--><!--[2-->); <!--]--><!--[3--><!--[-1--><code>wait</code><!--]--><!--]--><!--[2--> (delay);
-<!--]--><!--[3--><!--[-1--><code>is_promise</code><!--]--><!--]--><!--[2--> (thenable guard); <!--]--><!--[3--><!--[-1--><code>AsyncStatus</code><!--]--><!--]--><!--[2-->
+<span class="token_comment">// results[i] corresponds to file_paths[i]</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Also: <!--]--><!--[3--><!--[-1--><code>AsyncSemaphore(permits)</code><!--]--><!--]--><!--[2--> for limiting arbitrary code paths (<!--]--><!--[3--><!--[-1--><code>acquire()</code><!--]--><!--]--><!--[2-->
+in <!--]--><!--[3--><!--[-1--><code>try</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>release()</code><!--]--><!--]--><!--[2--> in <!--]--><!--[3--><!--[-1--><code>finally</code><!--]--><!--]--><!--[2-->; <!--]--><!--[3--><!--[-1--><code>permits >= 0</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>Infinity</code><!--]--><!--]--><!--[2--> disables limiting
+without changing call sites); <!--]--><!--[3--><!--[-1--><code>create_deferred&lt;T>()</code><!--]--><!--]--><!--[2--> →
+<!--]--><!--[3--><!--[-1--><code>{promise, resolve, reject}</code><!--]--><!--]--><!--[2--> (used by <!--]--><!--[3--><!--[-1--><code>run_dag()</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>throttle</code><!--]--><!--]--><!--[2-->); <!--]--><!--[3--><!--[-1--><code>wait</code><!--]--><!--]--><!--[2-->
+(delay); <!--]--><!--[3--><!--[-1--><code>is_promise</code><!--]--><!--]--><!--[2--> (thenable guard); <!--]--><!--[3--><!--[-1--><code>AsyncStatus</code><!--]--><!--]--><!--[2-->
 (<!--]--><!--[3--><!--[-1--><code>'initial' | 'pending' | 'success' | 'failure'</code><!--]--><!--]--><!--[2-->, for UI lifecycle).<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="dag-execution-dagts"><!--[--><!--[2-->DAG execution (<!--]--><!--[3--><!--[-1--><code>dag.ts</code><!--]--><!--]--><!--[2-->)<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>run_dag()</code><!--]--><!--]--><!--[2--> executes dependency-graph nodes concurrently; nodes declare
 <!--]--><!--[3--><!--[-1--><code>depends_on</code><!--]--><!--]--><!--[2-->, independent nodes run in parallel up to <!--]--><!--[3--><!--[-1--><code>max_concurrency</code><!--]--><!--]--><!--[2-->
 (built on <!--]--><!--[3--><!--[-1--><code>AsyncSemaphore</code><!--]--><!--]--><!--[2--> + <!--]--><!--[3--><!--[-1--><code>Deferred</code><!--]--><!--]--><!--[2-->).<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_keyword">interface</span> <span class="token_class_name">BuildStep</span> <span class="token_keyword">extends</span> <span class="token_class_name">DagNode</span> <span class="token_punctuation">{</span> command<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span> <span class="token_punctuation">}</span>
@@ -155,15 +155,15 @@ appears.<!--]--><!--]--><!----></p><!--]--><!--]--><!--]--><!----></div><!----><
 			
 			<script>
 				{
-					__sveltekit_disvvi = {
+					__sveltekit_erprw9 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.CYL-ouvA.js"),
-						import("/_app/immutable/entry/app.Dm1ky86W.js")
+						import("/_app/immutable/entry/start.DZd2AWhx.js"),
+						import("/_app/immutable/entry/app.CxU3QqwE.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 23],

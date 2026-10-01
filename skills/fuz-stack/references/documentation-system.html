@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.CYL-ouvA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/NcGVX3hS.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.DZd2AWhx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CD9_ZSYJ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dhc2Vmwm.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/KLvWrc7_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/YEDlyx8T.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.Dm1ky86W.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/cUXvls_Q.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CxU3QqwE.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/PPVm8Dsz.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CnuFIiuC.js" rel="modulepreload">
@@ -36,24 +36,24 @@
 		<link href="/_app/immutable/chunks/C0j2Cue3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DwcvKg9U.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.DApD5k_d.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.CrhD8GbD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CXG-uLn2.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/ssUBcWy3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DNyJsL3h.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DZHXkdZ-.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CMZBxy68.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/yPGHLeDh.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/R3xGJNej.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4twVV24.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BezFm6Y3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BUfKvZ4D.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DkJzlrGN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6tR3hbD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dyu_5ysp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/qJY-9XID.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/22.B11c8_hq.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Baz-G_5F.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/22.JWM1UfOh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CeUXqBwW.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/seemzYDA.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DfZsmuSx.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CeK7SoxL.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/wIMo8eUz.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CnWD0Wor.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B8Ljp2qe.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.CbYRi83X.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -69,8 +69,9 @@ package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
 TypeScript compiler API: declarations, TSDoc tags, re-exports merged into
 <!--]--><!--[3--><!--[-1--><code>alsoExportedFrom</code><!--]--><!--]--><!--[2-->, module sorting, flat-namespace duplicate checks. Its API
 is camelCase (it targets the broad Svelte ecosystem). Its Vite plugin
-exposes <!--]--><!--[3--><!--[-1--><code>modules</code><!--]--><!--]--><!--[2--> — and <!--]--><!--[3--><!--[-1--><code>diagnostics</code><!--]--><!--]--><!--[2--> (author-facing tag problems like
-<!--]--><!--[3--><!--[-1--><code>misplaced_tag</code><!--]--><!--]--><!--[2-->; no repo consumes it yet) — as <!--]--><!--[3--><!--[-1--><code>virtual:svelte-docinfo</code><!--]--><!--]--><!--[2-->.
+exposes <!--]--><!--[3--><!--[-1--><code>modules</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>diagnostics</code><!--]--><!--]--><!--[2--> (a union of kinds: tag problems like
+<!--]--><!--[3--><!--[-1--><code>misplaced_tag</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>duplicate_declaration</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>alias_lost</code><!--]--><!--]--><!--[2-->, transform and
+resolver failures; no repo consumes it yet) as <!--]--><!--[3--><!--[-1--><code>virtual:svelte-docinfo</code><!--]--><!--]--><!--[2-->.
 fuz_ui depends on it as a dev dependency for types and a few helpers; the
 per-project analysis runs in each <!--]--><!--[5--><em><!--[--><!--[2-->consumer's<!--]--><!--]--><!----></em><!--]--><!--[2--> build.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>vite_plugin_pkg_json</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> (fuz_ui) curates <!--]--><!--[3--><!--[-1--><code>package.json</code><!--]--><!--]--><!--[2--> to the
 publish-safe <!--]--><!--[3--><!--[-1--><code>PkgJson</code><!--]--><!--]--><!--[2--> subset as <!--]--><!--[3--><!--[-1--><code>virtual:pkg.json</code><!--]--><!--]--><!--[2-->, keeping <!--]--><!--[3--><!--[-1--><code>scripts</code><!--]--><!--]--><!--[2-->,
@@ -165,21 +166,21 @@ breadcrumb, nav dialog toggle), <!--]--><!--[3--><!--[-1--><code>DocsSecondaryNa
 root), <!--]--><!--[3--><!--[-1--><code>tomes_context</code><!--]--><!--]--><!--[2--> (set by <!--]--><!--[3--><!--[-1--><code>Docs</code><!--]--><!--]--><!--[2-->), <!--]--><!--[3--><!--[-1--><code>tome_context</code><!--]--><!--]--><!--[2--> (set by <!--]--><!--[3--><!--[-1--><code>TomeContent</code><!--]--><!--]--><!--[2-->),
 <!--]--><!--[3--><!--[-1--><code>docs_links_context</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>DocsLinks</code><!--]--><!--]--><!--[2-->, fragment tracking).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Components a consumer wires: <!--]--><!--[3--><!--[-1--><code>Docs</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>TomeContent</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>TomeSection</code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code>TomeSectionHeader</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>ApiIndex</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>ApiModule</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>LibrarySummary</code><!--]--><!--]--><!--[2--> /
-<!--]--><!--[3--><!--[-1--><code>LibraryDetail</code><!--]--><!--]--><!--[2--> (metadata card / expanded package info). The full ~27-component
+<!--]--><!--[3--><!--[-1--><code>LibraryDetail</code><!--]--><!--]--><!--[2--> (metadata card / expanded package info). The full component
 set is fuz_ui inventory (its <!--]--><!--[3--><!--[-1--><code>CLAUDE.md</code><!--]--><!--]--><!--[2-->). fuz_ui defines everything; other
 projects import unchanged — only tomes, categories, and branding differ.<!--]--><!--]--><!----></p><!--]--><!--]--><!--]--><!----></div><!----><!----><!--]--><!----><!----></div></div></div><!--]--><!--]--><!----><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
 			
 			<script>
 				{
-					__sveltekit_disvvi = {
+					__sveltekit_erprw9 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.CYL-ouvA.js"),
-						import("/_app/immutable/entry/app.Dm1ky86W.js")
+						import("/_app/immutable/entry/start.DZd2AWhx.js"),
+						import("/_app/immutable/entry/app.CxU3QqwE.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 22],
