@@ -265,12 +265,12 @@ for (const fixture of fixtures) {
 **CRITICAL: never manually create or edit `expected.json`.** Create inputs and
 run the update task.
 
-**fuz_gitops** uses a different fixture shape: git repos generated
-idempotently from data files (`fixtures/repo_fixtures/*.ts` +
-`generate_repos.ts`, isolated configs in `fixtures/configs/`, DI mocks in
-`fixtures/mock_operations.ts`), covering publishing, cascades, cycles, private
-packages, major bumps, peer deps, and isolation. Repos generate on first test
-run; regenerate with `gro src/test/fixtures/generate_repos`.
+**fuz_gitops** uses a different fixture shape: repos built in memory from data
+files (`fixtures/repo_fixtures/*.ts` → `LocalRepo`s via
+`load_repo_fixtures.ts`, key-list configs in `fixtures/configs/`, and
+`create_fixture_gitops_ops` in `fixtures/mock_operations.ts` serving each
+fixture's changesets), covering publishing, cascades, cycles, private packages,
+major bumps, peer deps, and isolation.
 
 ## Mock Patterns
 
@@ -281,10 +281,11 @@ tracking/in-memory/throwing shapes: ./dependency-injection.md. Factories are
 
 **`vi.mock()` is a legacy escape hatch**, not a pattern — it exists where code
 predates DI (gro's build/deploy/cache tests) or a call site has no seam
-(fuz_gitops's `npm_registry.test.ts` mocks fuz_util's `spawn_out`/`wait`
-because that module shells out with no DI seam). fuz_app module-mocks its auth
-`query_*` cluster from several middleware tests; the bearer-auth subset is
-factored into `testing/middleware.ts` as table-driven
+(fuz_gitops's `operations_defaults.test.ts` mocks fuz_util's `spawn_out` to
+test the default operations themselves, which shell out with no seam below
+them). fuz_app module-mocks its auth `query_*` cluster from several
+middleware tests; the bearer-auth subset is factored into
+`testing/middleware.ts` as table-driven
 `describe_bearer_auth_cases` / `create_bearer_auth_test_app` — a documented
 carve-out. Treat any _new_ `vi.mock` as a signal to add a deps seam. When
 unavoidable: gro uses `vi.clearAllMocks()` in `beforeEach` +

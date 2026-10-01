@@ -107,8 +107,10 @@ exemplar.
 **Legacy `*Operations` (fuz_gitops)**: `GitOperations` /
 `default_git_operations` / `create_mock_git_ops` under a `GitopsOperations`
 composite with an `ops` param — migrating to `*Deps` opportunistically (fuz_css
-already did). **Never author new `*Operations`**; follow local naming when
-touching fuz_gitops until the rename lands.
+already did; fuz_gitops's task entry points and `npm_registry.ts` take `*Deps`,
+e.g. `GitopsPublishDeps`, `NpmRegistryDeps`). **Never author new
+`*Operations`**; follow local naming when touching fuz_gitops's `*Operations`
+code.
 
 ## Layer Contracts (L0 platform vs L1 domain)
 
