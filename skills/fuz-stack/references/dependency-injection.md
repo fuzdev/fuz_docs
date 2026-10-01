@@ -104,12 +104,12 @@ test-side mock module (fuz_css: `src/test/fixtures/mock_deps.ts`) — fuz_css's
 `CacheDeps` / `default_cache_deps` / `create_mock_cache_deps` is the cleanest
 exemplar.
 
-**Legacy `*Operations` (fuz_gitops)**: `GitOperations` /
+**Legacy `*Operations` (fuz_repos)**: `GitOperations` /
 `default_git_operations` / `create_mock_git_ops` under a `GitopsOperations`
 composite with an `ops` param — migrating to `*Deps` opportunistically (fuz_css
-already did; fuz_gitops's task entry points and `npm_registry.ts` take `*Deps`,
+already did; fuz_repos's task entry points and `npm_registry.ts` take `*Deps`,
 e.g. `GitopsPublishDeps`, `NpmRegistryDeps`). **Never author new
-`*Operations`**; follow local naming when touching fuz_gitops's `*Operations`
+`*Operations`**; follow local naming when touching fuz_repos's `*Operations`
 code.
 
 ## Layer Contracts (L0 platform vs L1 domain)
@@ -258,4 +258,4 @@ solves with injection. Full treatment: ./rust-patterns.md §Dependency Injection
 | Narrow platform deps + `RuntimeDeps` composite                                          | fuz_app `runtime/` | Required first param; composite at entry points          |
 | App capability bundle (`AppDeps`, `RouteFactoryDeps`, `QueryDeps`, `ActionFactoryDeps`) | fuz_app server     | Required first param; two-step composition root          |
 | Focused domain deps (`CacheDeps`)                                                       | fuz_css            | Optional param with default (`deps = default_cache_deps`) |
-| Grouped legacy `*Operations`                                                            | fuz_gitops         | Optional `ops` param — migrating to `*Deps`              |
+| Grouped legacy `*Operations`                                                            | fuz_repos          | Optional `ops` param — migrating to `*Deps`              |

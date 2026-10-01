@@ -47,7 +47,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `fuz_code`     | syntax styling for TypeScript, Svelte, Markdown, and more                       |
 | `fuz_blog`     | blog software from scratch with SvelteKit                                       |
 | `fuz_mastodon` | Mastodon components and helpers                                                 |
-| `fuz_gitops`   | multi-repo management                                                           |
+| `fuz_repos`    | multi-repo management                                                           |
 | `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3-wasm` + `blake3-wasm-small`)   |
 | `zzz`          | software garage — produce software with AI assistance                           |
 | `zap`          | convergence — deploy and operate infrastructure                                 |
@@ -295,7 +295,7 @@ import small interfaces directly, never `Pick<Composite>`.
   callback). No `*Config`. Single-capability service interfaces keep pure-noun
   names (`Keyring`, `FactStore`).
 - **Files** — `deps.ts` + `deps_defaults.ts` + test-side `mock_deps.ts`
-  (fuz_css is the exemplar). fuz_gitops's `*Operations` is legacy — never
+  (fuz_css is the exemplar). fuz_repos's `*Operations` is legacy — never
   author new ones.
 - **Composition roots** — `AppDeps` (fuz_app server, assembled once in a
   two-step root); `RuntimeDeps` (env/fs/commands, platform factories for

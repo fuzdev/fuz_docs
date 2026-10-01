@@ -45,7 +45,7 @@ export const stack_repos: ReadonlyArray<StackRepo> = [
 	{ path: 'fuz_template', name: '@fuzdev/fuz_template', category: 'app', language: 'ts' },
 	{ path: 'fuz_blog', name: '@fuzdev/fuz_blog', category: 'app', language: 'ts' },
 	{ path: 'fuz_mastodon', name: '@fuzdev/fuz_mastodon', category: 'app', language: 'ts' },
-	{ path: 'fuz_repos', name: '@fuzdev/fuz_gitops', category: 'tooling', language: 'ts' },
+	{ path: 'fuz_repos', name: '@fuzdev/fuz_repos', category: 'tooling', language: 'ts' },
 	{ path: 'fuz_docs', name: '@fuzdev/fuz_docs', category: 'app', language: 'ts' },
 	{ path: 'fuz.dev', name: '@fuzdev/fuz.dev', category: 'site', language: 'ts' },
 	{ path: 'zzz', name: '@fuzdev/zzz', category: 'app', language: 'ts' },

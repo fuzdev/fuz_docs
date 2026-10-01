@@ -200,7 +200,7 @@ signature intact if you copy it. For `Result`, `assert.ok(result.ok)` narrows
 directly.
 
 **Repo-local**: `src/test/test_helpers.ts` for domain factories (gro's
-`create_mock_task_context`, fuz_gitops's `create_mock_repo`); fuz_ui's adds
+`create_mock_task_context`, fuz_repos's `create_mock_repo`); fuz_ui's adds
 component lifecycle (`mount_component` / `unmount_component` wrapping
 `mount`/`unmount` into a `document.body` container) and DOM event factories
 (`create_keyboard_event`, `create_mouse_event`, `create_touch_event`,
@@ -265,7 +265,7 @@ for (const fixture of fixtures) {
 **CRITICAL: never manually create or edit `expected.json`.** Create inputs and
 run the update task.
 
-**fuz_gitops** uses a different fixture shape: repos built in memory from data
+**fuz_repos** uses a different fixture shape: repos built in memory from data
 files (`fixtures/repo_fixtures/*.ts` → `LocalRepo`s via
 `load_repo_fixtures.ts`, key-list configs in `fixtures/configs/`, and
 `create_fixture_gitops_ops` in `fixtures/mock_operations.ts` serving each
@@ -281,7 +281,7 @@ tracking/in-memory/throwing shapes: ./dependency-injection.md. Factories are
 
 **`vi.mock()` is a legacy escape hatch**, not a pattern — it exists where code
 predates DI (gro's build/deploy/cache tests) or a call site has no seam
-(fuz_gitops's `operations_defaults.test.ts` mocks fuz_util's `spawn_out` to
+(fuz_repos's `operations_defaults.test.ts` mocks fuz_util's `spawn_out` to
 test the default operations themselves, which shell out with no seam below
 them). fuz_app module-mocks its auth `query_*` cluster from several
 middleware tests; the bearer-auth subset is factored into
