@@ -354,11 +354,11 @@ matching on `self`** dispatches statically, needs no vtable, and stays
 exhaustively checked. A trait earns its place only when the set is genuinely
 open or crosses a crate boundary the lower crate can't name.
 
-- `fuz_storage::StorageBackend { File, Forge, Ssh }` — the `Storage` trait is
-  RPITIT and never consumed as `dyn`; the enum is the dispatch. The wrapper
-  must forward each backend's provided-method overrides (streaming
-  `download_to_file`/`upload_file`) or it silently regresses every backend to
-  the buffered default.
+- `fuz_storage::StorageBackend { File, Forge, Ssh, Https }` — the `Storage`
+  trait is RPITIT and never consumed as `dyn`; the enum is the dispatch. The
+  wrapper must forward each backend's provided-method overrides (streaming
+  `download_to_file`/`upload_file`, bounded `download_capped`) or it silently
+  regresses every backend to the default.
 - `zzz_server::Provider`, `zap_core::Connection` (local/ssh/mock) — async
   methods matching on `self`, no `#[async_trait]`.
 - `zap_core::EventHandler` (`Null` / `Stdout` / `Masking` decorator / `Multi`
