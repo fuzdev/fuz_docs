@@ -44,7 +44,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                  |
 | `fuz_docs`     | experimental AI-generated docs and skills for Fuz                               |
 | `fuz_template` | web app template — TypeScript + SvelteKit + optional Rust                       |
-| `fuz_code`     | syntax styling for TypeScript, Svelte, Markdown, and more                       |
+| `fuz_code`     | syntax styler for TypeScript, Svelte, Markdown, and more                        |
 | `fuz_blog`     | blog software from scratch with SvelteKit                                       |
 | `fuz_mastodon` | Mastodon components and helpers                                                 |
 | `fuz_repos`    | multi-repo management                                                           |
