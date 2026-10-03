@@ -38,7 +38,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.212.0",
+			"version": "0.213.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
@@ -174,9 +174,9 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_code",
-			"version": "0.48.0",
+			"version": "0.49.1",
 			"path": "fuz_code",
-			"description": "syntax styling utilities and components for TypeScript, Svelte, Markdown, and more",
+			"description": "syntax styler for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
 			"homepage_url": "https://code.fuz.dev/",
 			"published": true,

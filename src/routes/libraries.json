@@ -19296,7 +19296,7 @@
 	"gro": {
 		"pkg_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.212.0",
+			"version": "0.213.0",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -107297,20 +107297,20 @@
 							"name": "BuiltinRole",
 							"kind": "type",
 							"docComment": "Zod schema for builtin roles only.",
-							"typeSignature": "\"keeper\" | \"admin\"",
+							"typeSignature": "\"admin\" | \"keeper\"",
 							"sourceLine": 59,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "admin",
+										"text": "\"admin\""
 									},
 									{
 										"kind": "literal",
-										"value": "admin",
-										"text": "\"admin\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									}
 								]
 							},
@@ -107320,7 +107320,7 @@
 							"name": "is_builtin_role",
 							"kind": "function",
 							"docComment": "Whether `name` is a builtin role (`keeper` / `admin`).\n\nBuiltin roles are **global-only**: no grant path binds one to a scope\n(`role_grant_assign`, `role_grant_offer_create`, and\n`role_grant_offer_accept` refuse it), and every gate that reads one checks\nthe global grant, so a scoped builtin row confers nothing.",
-							"typeSignature": "(name: string): name is \"keeper\" | \"admin\"",
+							"typeSignature": "(name: string): name is \"admin\" | \"keeper\"",
 							"sourceLine": 72,
 							"parameters": [
 								{
@@ -123994,6 +123994,26 @@
 									},
 									{
 										"kind": "literal",
+										"value": 401,
+										"text": "401"
+									},
+									{
+										"kind": "literal",
+										"value": 403,
+										"text": "403"
+									},
+									{
+										"kind": "literal",
+										"value": 404,
+										"text": "404"
+									},
+									{
+										"kind": "literal",
+										"value": 400,
+										"text": "400"
+									},
+									{
+										"kind": "literal",
 										"value": 102,
 										"text": "102"
 									},
@@ -124074,28 +124094,8 @@
 									},
 									{
 										"kind": "literal",
-										"value": 400,
-										"text": "400"
-									},
-									{
-										"kind": "literal",
-										"value": 401,
-										"text": "401"
-									},
-									{
-										"kind": "literal",
 										"value": 402,
 										"text": "402"
-									},
-									{
-										"kind": "literal",
-										"value": 403,
-										"text": "403"
-									},
-									{
-										"kind": "literal",
-										"value": 404,
-										"text": "404"
 									},
 									{
 										"kind": "literal",
@@ -128538,13 +128538,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "authenticated",
-										"text": "\"authenticated\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "authenticated",
+										"text": "\"authenticated\""
 									},
 									{
 										"kind": "other",
@@ -140056,20 +140056,20 @@
 							"name": "ConformancePrincipal",
 							"kind": "type",
 							"docComment": "Closed enum of fixture-provisioned principals a case runs `as`. Each\nvalue maps to a `TestFixture` accessor (or a seeded `extra_accounts`\nentry) in the runner's `resolve_principal` — there is **no** inline\ncredential minting in a case (that would be the setup-DSL trap).\n\n- `keeper` — the per-test bootstrapped keeper (holds `ROLE_KEEPER` +\n  `ROLE_ADMIN`), session credential.\n- `daemon` — the keeper authenticated via the daemon-token header.\n- `invalid_daemon` — a *malformed/invalid* `X-Daemon-Token` carried\n  alongside the keeper's session cookie, over a non-browser (no-Origin)\n  transport. The middleware soft-fail-discards the invalid daemon token\n  (matching the Rust spine's `None`), so auth falls through to the session\n  leg: the request authenticates as the keeper-via-session and a\n  daemon-gated action then refuses the session credential with\n  `credential_type_required` — not a hard `invalid_daemon_token` 401. The\n  no-Origin transport keeps the daemon token on the invalid-token path\n  rather than the browser-context discard; the session base credential is\n  what makes the credential-type gate (not the auth gate) the refusing\n  layer (without it the discard would 401 anonymous).\n- `daemon_browser` — a *valid* `X-Daemon-Token` carried in a browser\n  context (default `Origin` present) alongside the keeper's session cookie.\n  Browsers attach `Origin` automatically; the daemon-token middleware\n  discards a header-bearing daemon token as browser context (mirroring the\n  bearer guard and the Rust spine's `is_browser_context`), so the *valid*\n  token is dropped and auth falls through to the session leg → a daemon-gated\n  action then refuses the session credential with `credential_type_required`.\n  Distinct from `invalid_daemon`: here the token is well-formed and current,\n  so a 403 (not a 400 confirm-guard hit like `daemon`) proves the\n  browser-context discard fired — a valid daemon token does NOT authenticate\n  when an `Origin` is present. `Origin` is deliberately NOT suppressed; its\n  presence is the signal under test.\n- `token` — the keeper authenticated via a bearer api-token (non-browser\n  context; the runner suppresses `Origin` so the token isn't discarded).\n- `bearer_browser` — a *valid* bearer api-token carried in a browser context\n  (default `Origin` present), fresh jar so NO session rides alongside. The\n  bearer middleware discards the token as browser context (mirroring the\n  daemon guard + the Rust spine's `is_browser_context`), so the request\n  arrives anonymous and an authed action 401s. Proves a stolen bearer cannot\n  be replayed from a browser — wire-indistinguishable from sending no\n  credential (the `token` principal is the honored counterpart: it suppresses\n  `Origin`, so the same token authenticates).\n- `scoped_token` — the keeper authenticated via a bearer api-token minted\n  with a **narrowed** `TokenScope` (`{kind: 'methods', methods:\n  [SCOPED_TOKEN_ADMITTED_METHOD]}`), non-browser context. Minted through the\n  production `account_token_create` path over the keeper's session, not\n  seeded — `_testing_reset` deliberately seeds a `full` token, and a harness\n  that narrowed the seed would silently re-scope every other bearer case.\n  The scope gate sits between the credential gate and the role gate, so this\n  principal is what distinguishes `token_scope_required` from the\n  credential-type and role denials on either side of it.\n- `anonymous` — no credential, fresh cookie jar.\n- `fresh_non_admin` — a freshly minted account with no roles, session\n  credential (via the production invite → signup → login flow).\n- `role_holder` — a seeded `extra_accounts` principal holding a specific\n  role; the runner reads it by the username named in\n  `ConformanceTableOptions.principals.role_holder`.\n- `wrong_role` — a seeded `extra_accounts` principal holding a role\n  other than the one a route requires; named via\n  `ConformanceTableOptions.principals.wrong_role`.\n- `expired_session` — the keeper account presented via an *expired\n  server-side session* cookie (minted by `fixture.mint_expired_session()`:\n  a backdated `auth_session` row behind a still-valid signed cookie\n  payload, so the authoritative DB-row expiry gate is what refuses it).",
-							"typeSignature": "\"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
+							"typeSignature": "\"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
 							"sourceLine": 109,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "token",
+										"text": "\"token\""
 									},
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "literal",
@@ -140136,7 +140136,7 @@
 							"name": "ConformanceCaseRequest",
 							"kind": "type",
 							"docComment": "The request a conformance case issues.",
-							"typeSignature": "{ method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
+							"typeSignature": "{ method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
 							"sourceLine": 141,
 							"members": [
 								{
@@ -140147,19 +140147,19 @@
 								{
 									"name": "as",
 									"kind": "variable",
-									"typeSignature": "\"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
+									"typeSignature": "\"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
 											{
 												"kind": "literal",
-												"value": "keeper",
-												"text": "\"keeper\""
+												"value": "token",
+												"text": "\"token\""
 											},
 											{
 												"kind": "literal",
-												"value": "token",
-												"text": "\"token\""
+												"value": "keeper",
+												"text": "\"keeper\""
 											},
 											{
 												"kind": "literal",
@@ -140350,7 +140350,7 @@
 							"name": "ConformanceCase",
 							"kind": "type",
 							"docComment": "A single conformance case. `name` is the assertion; the optional\nfree-text `note` is printed in the test label / failure output. A\nsecurity case's `note` should reference a **public** fuz_app doc\nproperty (`security.md` / `architecture.md` / module TSDoc), since the\ntable ships in a public package — not an internal planning doc. The note\nis documentation, not a gate: it stays free-text by design because a\nnon-empty-string check never catches a *wrong* citation — the citation\nis verified in review.",
-							"typeSignature": "{ name: string; request: { method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect: { ...; }...",
+							"typeSignature": "{ name: string; request: { method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect: { ...; }...",
 							"sourceLine": 245,
 							"members": [
 								{
@@ -140361,7 +140361,7 @@
 								{
 									"name": "request",
 									"kind": "variable",
-									"typeSignature": "{ method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
+									"typeSignature": "{ method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "ConformanceCaseRequest",
@@ -140450,7 +140450,7 @@
 									"name": "cases",
 									"kind": "variable",
 									"docComment": "The conformance cases to run, in order.",
-									"typeSignature": "readonly { name: string; request: { method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect:...",
+									"typeSignature": "readonly { name: string; request: { method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect:...",
 									"modifiers": [
 										"readonly"
 									],
@@ -147995,13 +147995,13 @@
 							},
 							"members": [
 								{
-									"name": "name",
+									"name": "created_at",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
 								},
 								{
-									"name": "created_at",
+									"name": "name",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
@@ -166170,8 +166170,8 @@
 	"fuz_code": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_code",
-			"version": "0.48.0",
-			"description": "syntax styling utilities and components for TypeScript, Svelte, Markdown, and more",
+			"version": "0.49.1",
+			"description": "syntax styler for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly pink spider facing you",
@@ -166216,7 +166216,7 @@
 									"name": "content",
 									"type": "string",
 									"optional": true,
-									"description": "The source code to syntax highlight."
+									"description": "The source code to style."
 								},
 								{
 									"name": "dangerous_raw_html",
@@ -166240,7 +166240,7 @@
 										]
 									},
 									"optional": true,
-									"description": "Language identifier (e.g. 'ts', 'css', 'html', 'json', 'svelte', 'md').\nSelects the registered lexer and sets the `data-lang` attribute. `null`\ndisables highlighting (content renders as plain text); `undefined`\nfalls back to the default ('svelte').",
+									"description": "Language identifier (e.g. 'ts', 'css', 'html', 'json', 'svelte', 'md').\nSelects the registered lexer and sets the `data-lang` attribute. `null`\nor an unregistered id disables styling (content renders as plain text,\nand an unregistered id logs an error in DEV); `undefined` falls back to\nthe default ('svelte').",
 									"defaultValue": "'svelte'"
 								},
 								{
@@ -166307,7 +166307,7 @@
 										]
 									},
 									"optional": true,
-									"description": "Optional snippet to customize how the highlighted markup is rendered.\nReceives the generated HTML string as a parameter."
+									"description": "Optional snippet to customize how the styled markup is rendered.\nReceives the generated HTML string as a parameter."
 								}
 							],
 							"acceptsChildren": true
@@ -166436,7 +166436,7 @@
 										]
 									},
 									"optional": true,
-									"description": "Language identifier (e.g. 'ts', 'css', 'html', 'json', 'svelte', 'md').\nSelects the registered lexer and sets the `data-lang` attribute. `null`\ndisables highlighting (content renders as plain text); `undefined`\nfalls back to the default ('svelte').",
+									"description": "Language identifier (e.g. 'ts', 'css', 'html', 'json', 'svelte', 'md').\nSelects the registered lexer and sets the `data-lang` attribute. `null`\nor an unregistered id disables highlighting (content renders as plain\ntext, and an unregistered id logs an error in DEV); `undefined` falls\nback to the default ('svelte').",
 									"defaultValue": "'svelte'"
 								},
 								{
@@ -166598,7 +166598,7 @@
 										]
 									},
 									"optional": true,
-									"description": "Language identifier (e.g. 'ts', 'css', 'svelte'). `null` disables\nhighlighting; `undefined` falls back to the default ('svelte').",
+									"description": "Language identifier (e.g. 'ts', 'css', 'svelte'). `null` disables\nstyling; `undefined` falls back to the default ('svelte').",
 									"defaultValue": "'svelte'"
 								},
 								{
@@ -167534,7 +167534,7 @@
 						{
 							"name": "LexedSyntax",
 							"kind": "interface",
-							"docComment": "The result of lexing: the source text plus its flat token event stream.",
+							"docComment": "The result of lexing: the source text plus its flat event stream.",
 							"typeSignature": "LexedSyntax",
 							"sourceLine": 132,
 							"members": [
@@ -167750,7 +167750,7 @@
 						{
 							"name": "lex_syntax",
 							"kind": "function",
-							"docComment": "Lexes `text` with `lang`, returning the flat token event stream.",
+							"docComment": "Lexes `text` with `lang`, returning the flat event stream.",
 							"typeSignature": "(text: string, lang: SyntaxLang, langs?: Map<string, SyntaxLang> | undefined, types?: TokenTypeRegistry): LexedSyntax",
 							"sourceLine": 270,
 							"parameters": [
@@ -167794,7 +167794,7 @@
 						{
 							"name": "render_syntax_html",
 							"kind": "function",
-							"docComment": "Renders a lexed token event stream to HTML in one forward pass.\nGap text is copy-escaped; token spans use the precomputed open tags.",
+							"docComment": "Renders a lexed event stream to HTML in one forward pass.\nGap text is copy-escaped; token spans use the precomputed open tags.",
 							"typeSignature": "(lexed: LexedSyntax): string",
 							"sourceLine": 314,
 							"parameters": [
@@ -168154,7 +168154,7 @@
 							"returnType": "number"
 						}
 					],
-					"moduleComment": "Flat-event lexer substrate — the engine beneath the hand-written per-language\nlexers (`lexer_json.ts`, `lexer_ts.ts`, …).\n\nTokens are emitted as variable-length records into one `Int32Array`:\n\n- leaf:  `[type_id, start, end]` where `type_id > 0`\n- open:  `[-type_id, start]` — opens a container token\n- close: `[0, end]` — closes the innermost open container\n\nUntyped text is implicit — it's the gap between events, recovered from\noffsets. Adjacent same-type leaves are coalesced at emit time so runs like\n`});` become one span.",
+					"moduleComment": "Flat-event lexer substrate — the engine beneath the per-language\nlexers (`lexer_json.ts`, `lexer_ts.ts`, …).\n\nTokens are emitted as variable-length records into one `Int32Array`:\n\n- leaf:  `[type_id, start, end]` where `type_id > 0`\n- open:  `[-type_id, start]` — opens a container token\n- close: `[0, end]` — closes the innermost open container\n\nUntyped text is implicit — it's the gap between events, recovered from\noffsets. Adjacent same-type leaves are coalesced at emit time so runs like\n`});` become one span.",
 					"dependents": [
 						"highlight_manager.ts",
 						"lexer_bash.ts",
@@ -168174,12 +168174,12 @@
 						{
 							"name": "lexer_bash",
 							"kind": "variable",
-							"docComment": "The shell (bash-family) language registration for the lexer engine.\n\nRegistered as `sh`; `bash` and `shell` alias it: POSIX sh is a syntactic\nsubset of bash for highlighting purposes, and the bash-only constructs this\nlexer additionally recognizes don't occur in sh input, so running it on sh\nscripts is exact. There is no separate sh lexer.",
+							"docComment": "The shell (bash-family) language registration for the lexer engine.\n\nRegistered as `sh`; `bash` and `shell` alias it: POSIX sh is a syntactic\nsubset of bash for styling purposes, and the bash-only constructs this\nlexer additionally recognizes don't occur in sh input, so running it on sh\nscripts is exact. There is no separate sh lexer.",
 							"typeSignature": "SyntaxLang",
 							"sourceLine": 1003
 						}
 					],
-					"moduleComment": "Hand-written Bash/shell lexer.\n\nEmits: `shebang`, `comment`, `string` (double-quoted strings are containers\nwhose `$`-expansions nest as `variable`/`command_substitution`), `keyword`,\n`builtin`, `boolean`, `number`, `variable`, `command_substitution` (a\ncontainer), `function`, `file_descriptor`, `operator`, `punctuation`, plus\nheredocs (`heredoc` container + `heredoc_delimiter`).\n\nNotable behavior:\n- command substitution is recognized in both `$(…)` and legacy backtick\n  form; both are `command_substitution` containers with an ordinary-bash\n  interior.\n- arithmetic expansion `$((…))` is recognized as distinct from command\n  substitution `$(…)`; its `$((`/`))` are punctuation and the interior lexes\n  as ordinary bash (numbers, `$vars`, and general operators fall out\n  naturally — no dedicated arithmetic token types).\n- heredocs match any delimiter, honor `<<-`, and support quoted (no\n  expansion) vs unquoted (expanded) bodies; multiple heredocs redirected on\n  one line are queued and their bodies consumed in order.\n- `${…}` parameter expansion spans balanced braces — nested expansions\n  (`${a:-${b}}`) and quoted `}`s stay inside the one `variable` token.\n\nWord classification (keyword/builtin/boolean) is a context-free `Map`\nlookup.\n\nNesting (`$(…)`/`$((…))`/backtick interiors, double-quoted string bodies,\nunquoted heredoc bodies) runs on an explicit pooled frame stack, so\narbitrarily deep input tokenizes fully without touching the JS call stack.\n\nScope: the bash family — registered as `sh`, with `bash`/`shell` as\naliases. POSIX sh is a syntactic subset of bash for highlighting purposes\n(everything sh scripts use — `$(…)`, `$((…))`, backticks, heredocs, `${…}`\n— is shared syntax), and bash-only forms don't occur in sh input. Shells\nwith their own syntax (fish, PowerShell) are out of scope.\n\nResilience: unterminated single-line constructs stop at the line boundary;\nunterminated strings, command substitutions, and heredocs extend to the\nwindow end. `$(…)`/`$((…))` interiors discover their own closing delimiter\nduring real tokenization (nothing is prescanned), so a `)` inside a comment,\nstring, or heredoc body never ends a substitution early. The tradeoff is\nthat damage propagates rather than being contained: a malformed interior\nthat consumes the closing `)` (say an unterminated string) extends the\nsubstitution past it, editor-style.",
+					"moduleComment": "Bash/shell lexer.\n\nEmits: `shebang`, `comment`, `string` (double-quoted strings are containers\nwhose `$`-expansions nest as `variable`/`command_substitution`), `keyword`,\n`builtin`, `boolean`, `number`, `variable`, `command_substitution` (a\ncontainer), `function`, `file_descriptor`, `operator`, `punctuation`, plus\nheredocs (`heredoc` container + `heredoc_delimiter`).\n\nNotable behavior:\n- command substitution is recognized in both `$(…)` and legacy backtick\n  form; both are `command_substitution` containers with an ordinary-bash\n  interior.\n- arithmetic expansion `$((…))` is recognized as distinct from command\n  substitution `$(…)`; its `$((`/`))` are punctuation and the interior lexes\n  as ordinary bash (numbers, `$vars`, and general operators fall out\n  naturally — no dedicated arithmetic token types).\n- heredocs match any delimiter, honor `<<-`, and support quoted (no\n  expansion) vs unquoted (expanded) bodies; multiple heredocs redirected on\n  one line are queued and their bodies consumed in order.\n- `${…}` parameter expansion spans balanced braces — nested expansions\n  (`${a:-${b}}`) and quoted `}`s stay inside the one `variable` token.\n\nWord classification (keyword/builtin/boolean) is a context-free `Map`\nlookup.\n\nNesting (`$(…)`/`$((…))`/backtick interiors, double-quoted string bodies,\nunquoted heredoc bodies) runs on an explicit pooled frame stack, so\narbitrarily deep input tokenizes fully without touching the JS call stack.\n\nScope: the bash family — registered as `sh`, with `bash`/`shell` as\naliases. POSIX sh is a syntactic subset of bash for styling purposes\n(everything sh scripts use — `$(…)`, `$((…))`, backticks, heredocs, `${…}`\n— is shared syntax), and bash-only forms don't occur in sh input. Shells\nwith their own syntax (fish, PowerShell) are out of scope.\n\nResilience: unterminated single-line constructs stop at the line boundary;\nunterminated strings, command substitutions, and heredocs extend to the\nwindow end. `$(…)`/`$((…))` interiors discover their own closing delimiter\nduring real tokenization (nothing is prescanned), so a `)` inside a comment,\nstring, or heredoc body never ends a substitution early. The tradeoff is\nthat damage propagates rather than being contained: a malformed interior\nthat consumes the closing `)` (say an unterminated string) extends the\nsubstitution past it, editor-style.",
 					"dependencies": [
 						"lexer.ts"
 					],
@@ -168198,7 +168198,7 @@
 							"sourceLine": 323
 						}
 					],
-					"moduleComment": "Hand-written CSS lexer.\n\nEmits: `comment`, `atrule` (a container wrapping `rule` + prelude), `rule`,\n`selector`, `string`, `property`, `important`, `function`, `url` (a\ncontainer), `keyword` (`and`/`not`/`only`/`or` inside at-rule preludes), and\n`punctuation`.\n\nStructure is decided by a brace-context lookahead: from each item, the first\ntop-level `{`, `;`, or `}` (skipping strings, comments, `()`, and `[]`) says\nwhether the item is a qualified rule (its prelude is a `selector`) or a\ndeclaration (`property : value`). Because that decision is purely local, the\nflat main loop nests to any depth, so native CSS nesting works for free.\n\nValues (declaration right-hand sides and at-rule preludes) are tokenized\nsparsely: only strings, `url()`, functions, `!important`, and\n`property`-before-colon are tokenized; numbers, colors, units, and bare\nidentifiers stay plain text.\n\nResilience: unterminated strings extend to end of line; unterminated\ncomments and blocks extend to end of window.",
+					"moduleComment": "CSS lexer.\n\nEmits: `comment`, `atrule` (a container wrapping `rule` + prelude), `rule`,\n`selector`, `string`, `property`, `important`, `function`, `url` (a\ncontainer), `keyword` (`and`/`not`/`only`/`or` inside at-rule preludes), and\n`punctuation`.\n\nStructure is decided by a brace-context lookahead: from each item, the first\ntop-level `{`, `;`, or `}` (skipping strings, comments, `()`, and `[]`) says\nwhether the item is a qualified rule (its prelude is a `selector`) or a\ndeclaration (`property : value`). Because that decision is purely local, the\nflat main loop nests to any depth, so native CSS nesting works for free.\n\nValues (declaration right-hand sides and at-rule preludes) are tokenized\nsparsely: only strings, `url()`, functions, `!important`, and\n`property`-before-colon are tokenized; numbers, colors, units, and bare\nidentifiers stay plain text.\n\nResilience: unterminated strings extend to end of line; unterminated\ncomments and blocks extend to end of window.",
 					"dependencies": [
 						"lexer.ts"
 					],
@@ -168217,7 +168217,7 @@
 							"sourceLine": 139
 						}
 					],
-					"moduleComment": "Hand-written JSON lexer (accepts JSONC — line and block comments).\n\nEmits: `property` (a string key), `string`, `comment`, `number`,\n`punctuation`, `operator` (`:`), `boolean`, and `null` (aliased to\n`keyword`).\n\nResilience: unterminated strings extend to end of line; unterminated block\ncomments extend to end of window.",
+					"moduleComment": "JSON lexer (accepts JSONC — line and block comments).\n\nEmits: `property` (a string key), `string`, `comment`, `number`,\n`punctuation`, `operator` (`:`), `boolean`, and `null` (aliased to\n`keyword`).\n\nResilience: unterminated strings extend to end of line; unterminated block\ncomments extend to end of window.",
 					"dependencies": [
 						"lexer.ts"
 					],
@@ -168422,7 +168422,7 @@
 							"sourceLine": 706
 						}
 					],
-					"moduleComment": "Hand-written HTML/XML lexer.\n\nEmits: flat `comment`, `processing_instruction`, `doctype`, `cdata`, and\n`entity` (alias `named_entity` for the `&amp;`-style form); a `tag` container\nholding a nested `tag` (the `<name` opener with `punctuation`/`namespace`\nchildren — the name itself stays plain text), `attr_name` (with `namespace`),\n`attr_value` (spanning the `=` and quotes, which are `punctuation` with\n`attr_equals`/`attr_quote` aliases, plus entities), and a final\n`punctuation` closer; `special_attr` containers for `style=`/`on*=`\nattributes whose `value` embeds css/js; and `script`/`style` region\ncontainers wrapping `lang_js`/`lang_css` around embedded language windows.\n\nTwo registrations share this scanner: `lexer_markup` (`markup`/`html`/\n`mathml`/`svg`) uses HTML semantics — rawtext elements (`script`, `style`)\nand RCDATA elements (`textarea`/`title`) plus the `style=`/`on*=` attribute\nembedding; `lexer_xml` (`xml`/`ssml`/`atom`/`rss`) scans plain XML with\nneither.\n\nHTML-semantics details: a comment ends at the first `-->` (even one\ncontaining a second `<!--`); doctypes skip a `[…]` internal subset; CDATA\nsections inside `<script>`/`<style>` are handed to the embedded language\nas-is (no `included_cdata` structure — HTML treats them as source text);\nrawtext close tags accept whitespace before `>` (`</script >`).\n\nResilience: unterminated comments, processing instructions, doctypes,\nCDATA sections, tags, quoted attribute values, and rawtext regions all\nextend to the end of the window.",
+					"moduleComment": "HTML/XML lexer.\n\nEmits: flat `comment`, `processing_instruction`, `doctype`, `cdata`, and\n`entity` (alias `named_entity` for the `&amp;`-style form); a `tag` container\nholding a nested `tag` (the `<name` opener with `punctuation`/`namespace`\nchildren — the name itself stays plain text), `attr_name` (with `namespace`),\n`attr_value` (spanning the `=` and quotes, which are `punctuation` with\n`attr_equals`/`attr_quote` aliases, plus entities), and a final\n`punctuation` closer; `special_attr` containers for `style=`/`on*=`\nattributes whose `value` embeds css/js; and `script`/`style` region\ncontainers wrapping `lang_js`/`lang_css` around embedded language windows.\n\nTwo registrations share this scanner: `lexer_markup` (`markup`/`html`/\n`mathml`/`svg`) uses HTML semantics — rawtext elements (`script`, `style`)\nand RCDATA elements (`textarea`/`title`) plus the `style=`/`on*=` attribute\nembedding; `lexer_xml` (`xml`/`ssml`/`atom`/`rss`) scans plain XML with\nneither.\n\nHTML-semantics details: a comment ends at the first `-->` (even one\ncontaining a second `<!--`); doctypes skip a `[…]` internal subset; CDATA\nsections inside `<script>`/`<style>` are handed to the embedded language\nas-is (no `included_cdata` structure — HTML treats them as source text);\nrawtext close tags accept whitespace before `>` (`</script >`).\n\nResilience: unterminated comments, processing instructions, doctypes,\nCDATA sections, tags, quoted attribute values, and rawtext regions all\nextend to the end of the window.",
 					"dependencies": [
 						"lexer.ts"
 					],
@@ -168443,7 +168443,7 @@
 							"sourceLine": 457
 						}
 					],
-					"moduleComment": "Hand-written Markdown lexer — the structural rethink: a line-oriented block\nscan (fences, headings, blockquotes, lists, horizontal rules) with an\ninline scan per block (bold/italic/strikethrough, inline code, links,\nentities, and raw markup constructs dispatched through `lexer_markup`).\n\nFenced code is one `fenced_code` container (`code_fence` delimiter lines\nwith the `punctuation` alias + a `lang_*` container embedding the fence\nlanguage). The rest: `heading`/`blockquote`/`list` containers with aliased\n`punctuation`, `link` > `link_text_wrapper`/`url_wrapper`, `inline_code`\n(alias `code`) with `content`, `bold`/`italic`/`strikethrough`, and markup's\ntag/comment/entity vocabulary for raw HTML.\n\nNotable behavior: fence info words match exactly (` ```json ` embeds json,\nnot javascript) and closing fences accept any length ≥ the opener; interior\nlines starting with backticks are fence *content*, not stray `code_fence`\ntokens; heading/blockquote/list interiors get the inline scan; list\ncontainers span their line rather than swallowing preceding newlines;\nhorizontal rules (`---`/`***`/`___`) get an `hr` token (alias\n`punctuation`). Emphasis delimiters require non-space-adjacent interiors\nfree of the delimiter (and word boundaries for `_` forms) and are\nline-bounded — they do not span paragraphs.\n\nResilience: an unterminated fence extends to the end of the window.",
+					"moduleComment": "Markdown lexer — a line-oriented block\nscan (fences, headings, blockquotes, lists, horizontal rules) with an\ninline scan per block (bold/italic/strikethrough, inline code, links,\nentities, and raw markup constructs dispatched through `lexer_markup`).\n\nFenced code is one `fenced_code` container (`code_fence` delimiter lines\nwith the `punctuation` alias + a `lang_*` container embedding the fence\nlanguage). The rest: `heading`/`blockquote`/`list` containers with aliased\n`punctuation`, `link` > `link_text_wrapper`/`url_wrapper`, `inline_code`\n(alias `code`) with `content`, `bold`/`italic`/`strikethrough`, and markup's\ntag/comment/entity vocabulary for raw HTML.\n\nNotable behavior: fence info words match exactly (` ```json ` embeds json,\nnot javascript) and closing fences accept any length ≥ the opener; interior\nlines starting with backticks are fence *content*, not stray `code_fence`\ntokens; heading/blockquote/list interiors get the inline scan; list\ncontainers span their line rather than swallowing preceding newlines;\nhorizontal rules (`---`/`***`/`___`) get an `hr` token (alias\n`punctuation`). Emphasis delimiters require non-space-adjacent interiors\nfree of the delimiter (and word boundaries for `_` forms) and are\nline-bounded — they do not span paragraphs.\n\nResilience: an unterminated fence extends to the end of the window.",
 					"dependencies": [
 						"lexer.ts",
 						"lexer_markup.ts"
@@ -168463,7 +168463,7 @@
 							"sourceLine": 670
 						}
 					],
-					"moduleComment": "Hand-written Rust lexer.\n\nA single flat scan loop — Rust has no re-entrant interiors at the token\nlevel (no template interpolations), so the constructs that nest are handled\nwith counters in one forward pass: block comments nest by depth, raw strings\nclose on a `\"` followed by their opening hash count, and attribute interiors\nlex inline (marker and leading path attribute-styled, arguments under the\nnormal rules) with a `[`/`]` depth counter marking where the bracket closes.\n\nDisambiguation notes: `'` is a lifetime when ident-shaped text follows\nwithout a closing quote (`'a`, `'static`, loop labels) and a char literal\notherwise; `name!` is a macro invocation unless the `!` starts `!=`; the\nstring prefixes (`r`/`b`/`c`/`br`/`cr`) are recognized before generic\nidentifier scanning and fall through to it when no quote follows.\n\nResilience: unterminated block comments, strings (which span lines in\nRust), and raw strings extend to the end of the window; an unterminated\nattribute simply lexes its interior to there.",
+					"moduleComment": "Rust lexer.\n\nA single flat scan loop — Rust has no re-entrant interiors at the token\nlevel (no template interpolations), so the constructs that nest are handled\nwith counters in one forward pass: block comments nest by depth, raw strings\nclose on a `\"` followed by their opening hash count, and attribute interiors\nlex inline (marker and leading path attribute-styled, arguments under the\nnormal rules) with a `[`/`]` depth counter marking where the bracket closes.\n\nDisambiguation notes: `'` is a lifetime when ident-shaped text follows\nwithout a closing quote (`'a`, `'static`, loop labels) and a char literal\notherwise; `name!` is a macro invocation unless the `!` starts `!=`; the\nstring prefixes (`r`/`b`/`c`/`br`/`cr`) are recognized before generic\nidentifier scanning and fall through to it when no quote follows.\n\nResilience: unterminated block comments, strings (which span lines in\nRust), and raw strings extend to the end of the window; an unterminated\nattribute simply lexes its interior to there.",
 					"dependencies": [
 						"lexer.ts"
 					],
@@ -168482,7 +168482,7 @@
 							"sourceLine": 243
 						}
 					],
-					"moduleComment": "Hand-written Svelte lexer — the shared markup scanner (`lexer_markup.ts`)\nin svelte mode plus the `{…}` expression lexer.\n\nEmits markup's tag/attr/comment/entity structure (no `special_attr` —\nsvelte handles `style=`/`on*=` as ordinary attributes; js-style line and\nblock comments between attributes emit `comment` leaves), `script`+`lang_ts`\nand `style`+`lang_css` regions (svelte scripts are always TypeScript), and\n`svelte_expression` containers whose forms nest a same-span `block`\n(`{#if}`/`{:else if}`/`{/each}`/…), `each` (`{#each list as item}`),\n`at_directive` (`{@render}`/`{@const}`/…), or `declaration_tag`\n(`{const …}`/`{let …}`) container with `special_keyword`/`at_keyword`/\n`keyword` leaves and `lang_ts` interiors.\n\nNotable behavior: expression braces balance to any depth and skip\nstrings/templates/comments (`{'}'}` works); expression-valued attributes\nemit full structure (`attr_name` + `attr_value` with `attr_equals`, not the\n`=` swallowed into the name); quoted values interleave text and expressions\n(`class=\"a {b} c\"`); the `{#each}` expression before `as` is lexed as ts; the\nclosing `}` is always expression punctuation; `as`/`then` are keywords only\nin the each/await forms that define them, not anywhere they appear; directive\nmodifiers (`transition:fade|global`) get punctuation pipes.\n\nResilience: an unterminated expression extends to the end of the window.",
+					"moduleComment": "Svelte lexer — the shared markup scanner (`lexer_markup.ts`)\nin svelte mode plus the `{…}` expression lexer.\n\nEmits markup's tag/attr/comment/entity structure (no `special_attr` —\nsvelte handles `style=`/`on*=` as ordinary attributes; js-style line and\nblock comments between attributes emit `comment` leaves), `script`+`lang_ts`\nand `style`+`lang_css` regions (svelte scripts are always TypeScript), and\n`svelte_expression` containers whose forms nest a same-span `block`\n(`{#if}`/`{:else if}`/`{/each}`/…), `each` (`{#each list as item}`),\n`at_directive` (`{@render}`/`{@const}`/…), or `declaration_tag`\n(`{const …}`/`{let …}`) container with `special_keyword`/`at_keyword`/\n`keyword` leaves and `lang_ts` interiors.\n\nNotable behavior: expression braces balance to any depth and skip\nstrings/templates/comments (`{'}'}` works); expression-valued attributes\nemit full structure (`attr_name` + `attr_value` with `attr_equals`, not the\n`=` swallowed into the name); quoted values interleave text and expressions\n(`class=\"a {b} c\"`); the `{#each}` expression before `as` is lexed as ts; the\nclosing `}` is always expression punctuation; `as`/`then` are keywords only\nin the each/await forms that define them, not anywhere they appear; directive\nmodifiers (`transition:fade|global`) get punctuation pipes.\n\nResilience: an unterminated expression extends to the end of the window.",
 					"dependencies": [
 						"lexer.ts",
 						"lexer_markup.ts"
@@ -168502,7 +168502,7 @@
 							"sourceLine": 1321
 						}
 					],
-					"moduleComment": "Hand-written TypeScript/JavaScript lexer.\n\nDisambiguation rests on three rules: previous-token tracking separates a\nregex literal from division, template literals nest their `${…}`\ninterpolations, and matching is position-major (a string wins over a comment\nthat opens inside it).\n\nNesting (template interpolations, generic argument lists, `: type`\nannotations) runs on an explicit pooled frame stack, so arbitrarily deep\ninput tokenizes fully without touching the JS call stack.\n\nResilience: unterminated strings extend to end of line; unterminated\ntemplates, block comments, and interpolations extend to end of window.\nInterpolation bodies discover their own closing `}` during real tokenization\n(nothing is prescanned), so constructs that contain a `}` — regex literals,\nstrings, comments — never end an interpolation early. The tradeoff is that\ndamage propagates rather than being contained: a malformed interior that\nconsumes the closing `}` (say an unterminated block comment) extends the\ninterpolation past it, editor-style.",
+					"moduleComment": "TypeScript/JavaScript lexer.\n\nDisambiguation rests on three rules: previous-token tracking separates a\nregex literal from division, template literals nest their `${…}`\ninterpolations, and matching is position-major (a string wins over a comment\nthat opens inside it).\n\nNesting (template interpolations, generic argument lists, `: type`\nannotations) runs on an explicit pooled frame stack, so arbitrarily deep\ninput tokenizes fully without touching the JS call stack.\n\nResilience: unterminated strings extend to end of line; unterminated\ntemplates, block comments, and interpolations extend to end of window.\nInterpolation bodies discover their own closing `}` during real tokenization\n(nothing is prescanned), so constructs that contain a `}` — regex literals,\nstrings, comments — never end an interpolation early. The tradeoff is that\ndamage propagates rather than being contained: a malformed interior that\nconsumes the closing `}` (say an unterminated block comment) extends the\ninterpolation past it, editor-style.",
 					"dependencies": [
 						"lexer.ts"
 					],
@@ -168713,7 +168713,7 @@
 						{
 							"name": "svelte_preprocess_fuz_code",
 							"kind": "function",
-							"docComment": "Svelte preprocessor that compiles static `Code` component content at build time,\nreplacing runtime syntax highlighting with pre-rendered HTML.",
+							"docComment": "Svelte preprocessor that compiles static `Code` component content at build time,\nreplacing runtime syntax styling with pre-rendered HTML.",
 							"typeSignature": "(options?: PreprocessFuzCodeOptions): PreprocessorGroup",
 							"sourceLine": 64,
 							"examples": [
@@ -168757,7 +168757,7 @@
 						{
 							"name": "SyntaxStyler",
 							"kind": "class",
-							"docComment": "Registry and facade over the hand-written lexer engine (`lexer.ts`): registers\nlanguages, lexes text to a flat token event stream, and renders that stream to\nsyntax-highlighted HTML.",
+							"docComment": "Registry and facade over the lexer engine (`lexer.ts`): registers\nlanguages, lexes text to a flat event stream, and renders that stream to\nsyntax-styled HTML.",
 							"sourceLine": 44,
 							"examples": [
 								"```ts\nimport {syntax_styler_global} from '@fuzdev/fuz_code/syntax_styler_global.ts';\n\nconst html = syntax_styler_global.stylize('const x = 1;', 'ts');\n```"
@@ -168833,7 +168833,7 @@
 								{
 									"name": "lex",
 									"kind": "function",
-									"docComment": "Lexes `text` with the language registered as `lang`, returning the flat\ntoken event stream. Throws when `lang` is not registered — see `has_lang`.",
+									"docComment": "Lexes `text` with the language registered as `lang`, returning the flat\nevent stream. Throws when `lang` is not registered — see `has_lang`.",
 									"typeSignature": "(text: string, lang: string): LexedSyntax",
 									"parameters": [
 										{
@@ -168850,7 +168850,7 @@
 								{
 									"name": "stylize",
 									"kind": "function",
-									"docComment": "Generates syntax-highlighted HTML (spans with `.token_*` classes) from\n`text`. Throws when `lang` is not registered — see `has_lang`.",
+									"docComment": "Generates syntax-styled HTML (spans with `.token_*` classes) from\n`text`. Throws when `lang` is not registered — see `has_lang`.",
 									"typeSignature": "(text: string, lang: string): string",
 									"parameters": [
 										{
@@ -176362,6 +176362,7 @@
 						"local_repo.ts",
 						"operations.ts",
 						"operations_defaults.ts",
+						"repo.svelte.ts",
 						"repo_readiness.ts",
 						"repos_status_load.ts"
 					]
@@ -176413,7 +176414,7 @@
 							"name": "resolve_gitops_repos",
 							"kind": "function",
 							"docComment": "Resolves the gitops config's repos through `repos status`: loads the\nconfig's registry keys, reports on them, and resolves each to its checkout,\nin config order. Reads nothing but git state and writes nothing.",
-							"typeSignature": "(options: ResolveGitopsReposOptions): Promise<{ config_path: string; gitops_config: { repos: string[]; }; report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { ...; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; local_repo_paths: LocalRepoPath[]; }>",
+							"typeSignature": "(options: ResolveGitopsReposOptions): Promise<{ config_path: string; gitops_config: { repos: string[]; }; report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { ...; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; local_repo_paths: LocalRepoPath[]; }>",
 							"sourceLine": 67,
 							"throws": [
 								{
@@ -176427,14 +176428,14 @@
 									"type": "ResolveGitopsReposOptions"
 								}
 							],
-							"returnType": "Promise<{ config_path: string; gitops_config: { repos: string[]; }; report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } ...",
+							"returnType": "Promise<{ config_path: string; gitops_config: { repos: string[]; }; report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } ...",
 							"returnTypeInfo": {
 								"kind": "reference",
 								"name": "Promise",
 								"typeArgs": [
 									{
 										"kind": "object",
-										"text": "{ config_path: string; gitops_config: { repos: string[]; }; report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...;..."
+										"text": "{ config_path: string; gitops_config: { repos: string[]; }; report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...;..."
 									}
 								]
 							},
@@ -176925,12 +176926,12 @@
 							"name": "local_repos_resolve",
 							"kind": "function",
 							"docComment": "Resolves a gitops config's registry keys against a `repos status` report,\nin config order. Every key must name an owned repo that's present and was\nprobed; each that doesn't is a problem, and any problem fails the whole\nresolve, naming them all.",
-							"typeSignature": "(options: { keys: readonly string[]; report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; host?: { ...; } | undefined; registry?: string | undefined; }): Result<...>",
+							"typeSignature": "(options: { keys: readonly string[]; report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; host?: { ...; } | undefined; registry?: string | undefined; }): Result<...>",
 							"sourceLine": 73,
 							"parameters": [
 								{
 									"name": "options",
-									"type": "{ keys: readonly string[]; report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregist...",
+									"type": "{ keys: readonly string[]; report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregist...",
 									"propertyDescriptions": {
 										"keys": "the config's registry keys, in config order",
 										"report": "`repos status <keys…> --json`'s report",
@@ -181689,6 +181690,7 @@
 					"dependents": [
 						"fetch_repo_data.ts",
 						"github_helpers.ts",
+						"gitops_sync.task.ts",
 						"ModulesDetail.svelte",
 						"ModulesNav.svelte",
 						"ModulesPage.svelte",
@@ -182055,18 +182057,18 @@
 							"name": "check_publish_readiness",
 							"kind": "function",
 							"docComment": "Checks a `repos status --fetch --json` report on the repos a real publish\nreads and writes: every key's entry ready (`repo_readiness_for_publish`),\nthe report fetched, and busy detection available, since a live session it\ncan't vouch for may be working in any checkout.",
-							"typeSignature": "(options: { report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; keys: readonly string[]; } & RepoReadinessFormatOptions): Result<...>",
+							"typeSignature": "(options: { report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; keys: readonly string[]; } & RepoReadinessFormatOptions): Result<...>",
 							"sourceLine": 229,
 							"parameters": [
 								{
 									"name": "options",
-									"type": "{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m...",
+									"type": "{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m...",
 									"typeInfo": {
 										"kind": "intersection",
 										"members": [
 											{
 												"kind": "object",
-												"text": "{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
+												"text": "{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
 											},
 											{
 												"kind": "reference",
@@ -182147,18 +182149,18 @@
 							"name": "check_gen_readiness",
 							"kind": "function",
 							"docComment": "Checks a `repos status --json` report on the repos `gitops_sync` generates\nthe site data from (`repo_readiness_for_gen`).",
-							"typeSignature": "(options: { report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; keys: readonly string[]; allow_dirty?: boolean | undefined; now?: number | undefined; } & RepoReadinessFormatOptions): Result<...>",
+							"typeSignature": "(options: { report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; keys: readonly string[]; allow_dirty?: boolean | undefined; now?: number | undefined; } & RepoReadinessFormatOptions): Result<...>",
 							"sourceLine": 344,
 							"parameters": [
 								{
 									"name": "options",
-									"type": "{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m...",
+									"type": "{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m...",
 									"typeInfo": {
 										"kind": "intersection",
 										"members": [
 											{
 												"kind": "object",
-												"text": "{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
+												"text": "{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
 											},
 											{
 												"kind": "reference",
@@ -182335,7 +182337,7 @@
 							"name": "REPOS_STATUS_FORMAT_VERSION",
 							"kind": "variable",
 							"docComment": "The `repos status --json` document's format version, Rust's\n`STATUS_FORMAT_VERSION`: the one these schemas parse.",
-							"typeSignature": "18",
+							"typeSignature": "19",
 							"sourceLine": 44
 						},
 						{
@@ -182885,8 +182887,8 @@
 							"name": "ReposSyncAction",
 							"kind": "type",
 							"docComment": "A sync action on a branch.",
-							"typeSignature": "{ kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; }",
-							"sourceLine": 191,
+							"typeSignature": "{ kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; } | { kind: \"rebase\"; ahead: number; behind: number; }",
+							"sourceLine": 192,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -182901,6 +182903,10 @@
 									{
 										"kind": "object",
 										"text": "{ kind: \"move\"; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"rebase\"; ahead: number; behind: number; }"
 									}
 								]
 							},
@@ -182910,8 +182916,8 @@
 							"name": "ReposBranchNeedsHuman",
 							"kind": "type",
 							"docComment": "Why a branch is left to a person.",
-							"typeSignature": "\"diverged\" | \"unmapped\" | \"archived_ahead\" | \"shallow_local_work\" | \"upstream_not_a_branch\"",
-							"sourceLine": 201,
+							"typeSignature": "\"diverged\" | \"diverged_published\" | \"diverged_merge\" | \"diverged_tagged\" | \"unmapped\" | \"archived_ahead\" | \"shallow_local_work\" | \"upstream_not_a_branch\"",
+							"sourceLine": 205,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -182919,6 +182925,21 @@
 										"kind": "literal",
 										"value": "diverged",
 										"text": "\"diverged\""
+									},
+									{
+										"kind": "literal",
+										"value": "diverged_published",
+										"text": "\"diverged_published\""
+									},
+									{
+										"kind": "literal",
+										"value": "diverged_merge",
+										"text": "\"diverged_merge\""
+									},
+									{
+										"kind": "literal",
+										"value": "diverged_tagged",
+										"text": "\"diverged_tagged\""
 									},
 									{
 										"kind": "literal",
@@ -182949,7 +182970,7 @@
 							"kind": "type",
 							"docComment": "Why a branch reads as cleanup.",
 							"typeSignature": "\"merged\" | \"upstream_gone\"",
-							"sourceLine": 205,
+							"sourceLine": 209,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -182971,8 +182992,8 @@
 							"name": "ReposVerdict",
 							"kind": "type",
 							"docComment": "What sync does about a branch.",
-							"typeSignature": "{ kind: \"quiet\"; } | { kind: \"act\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; }; } | { kind: \"held\"; action: { kind: \"push\"; commits: number; } | { ...; } | { ...; }; by: \"entry\" | ... 7 more ... | \"busy_unknown\"; } | { ...; } | { ...; } | { ...; }",
-							"sourceLine": 220,
+							"typeSignature": "{ kind: \"quiet\"; } | { kind: \"act\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; } | { kind: \"rebase\"; ahead: number; behind: number; }; } | { ...; } | { ...; } | { ...; } | { ...; }",
+							"sourceLine": 224,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -182982,15 +183003,15 @@
 									},
 									{
 										"kind": "object",
-										"text": "{ kind: \"act\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; }; }"
+										"text": "{ kind: \"act\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; } | { kind: \"rebase\"; ahead: number; behind: number; }; }"
 									},
 									{
 										"kind": "object",
-										"text": "{ kind: \"held\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; }; by: \"entry\" | \"pinned\" | \"push_url\" | \"fetch_failed\" | \"dirty_checkout\" | \"unprobed_worktree\" | \"several_checkouts\" | \"busy\" | \"busy_unknown\"; }"
+										"text": "{ kind: \"held\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; } | { kind: \"rebase\"; ahead: number; behind: number; }; by: \"entry\" | \"pinned\" | \"push_url\" | \"fetch_failed\" | \"dirty_checkout\" | \"unprobed_worktree\" | \"several_checkouts\" | \"busy\" | \"busy_unknown\"; }"
 									},
 									{
 										"kind": "object",
-										"text": "{ kind: \"needs_human\"; reason: \"diverged\" | \"unmapped\" | \"archived_ahead\" | \"shallow_local_work\" | \"upstream_not_a_branch\"; }"
+										"text": "{ kind: \"needs_human\"; reason: \"diverged\" | \"diverged_published\" | \"diverged_merge\" | \"diverged_tagged\" | \"unmapped\" | \"archived_ahead\" | \"shallow_local_work\" | \"upstream_not_a_branch\"; }"
 									},
 									{
 										"kind": "object",
@@ -183009,7 +183030,7 @@
 							"kind": "type",
 							"docComment": "A clone's shape: shallow, sparse, or partial.",
 							"typeSignature": "{ shallow: boolean; sparse: boolean; partial_filter: string | null; }",
-							"sourceLine": 230,
+							"sourceLine": 234,
 							"members": [
 								{
 									"name": "shallow",
@@ -183047,7 +183068,7 @@
 							"kind": "type",
 							"docComment": "A checkout's HEAD: a probed checkout's, an unprobed worktree's, or an\nunlisted git dir's — the last two `null` when it can't be read.",
 							"typeSignature": "{ kind: \"branch\"; name: string; } | { kind: \"detached\"; commit: string; }",
-							"sourceLine": 240,
+							"sourceLine": 244,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183068,7 +183089,7 @@
 							"kind": "type",
 							"docComment": "A checkout's uncommitted work, by kind.",
 							"typeSignature": "{ staged: number; unstaged: number; untracked: number; conflicted: number; }",
-							"sourceLine": 249,
+							"sourceLine": 253,
 							"members": [
 								{
 									"name": "staged",
@@ -183098,7 +183119,7 @@
 							"kind": "type",
 							"docComment": "A git operation in progress.",
 							"typeSignature": "\"rebase\" | \"merge\" | \"cherry_pick\" | \"revert\" | \"bisect\" | \"sequencer\" | \"am\"",
-							"sourceLine": 261,
+							"sourceLine": 265,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183146,7 +183167,7 @@
 							"kind": "type",
 							"docComment": "One checkout of a repo: its primary, or a linked worktree probed.",
 							"typeSignature": "{ path: string; primary: boolean; head: { kind: \"branch\"; name: string; } | { kind: \"detached\"; commit: string; }; uncommitted: { staged: number; unstaged: number; untracked: number; conflicted: number; }; ... 4 more ...; busy: { ...; }[]; }",
-							"sourceLine": 275,
+							"sourceLine": 279,
 							"members": [
 								{
 									"name": "path",
@@ -183276,7 +183297,7 @@
 							"kind": "type",
 							"docComment": "A branch's relation to its upstream.",
 							"typeSignature": "{ kind: \"in_sync\"; } | { kind: \"ahead\"; commits: number; } | { kind: \"behind\"; commits: number; } | { kind: \"diverged\"; ahead: number; behind: number; } | { kind: \"shallow\"; } | { kind: \"gone\"; } | { kind: \"unmapped\"; } | { ...; }",
-							"sourceLine": 288,
+							"sourceLine": 292,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183321,7 +183342,7 @@
 							"kind": "type",
 							"docComment": "One local branch and its verdict.",
 							"typeSignature": "{ name: string; upstream: string | null; worktree: string | null; symref: string | null; unique_commits: number; newest_commit_at: number; relation: { kind: \"in_sync\"; } | { kind: \"ahead\"; commits: number; } | ... 5 more ... | { ...; }; verdict: { ...; } | ... 4 more ... | { ...; }; }",
-							"sourceLine": 301,
+							"sourceLine": 305,
 							"members": [
 								{
 									"name": "name",
@@ -183405,7 +183426,7 @@
 								{
 									"name": "verdict",
 									"kind": "variable",
-									"typeSignature": "{ kind: \"quiet\"; } | { kind: \"act\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; }; } | { kind: \"held\"; action: { kind: \"push\"; commits: number; } | { ...; } | { ...; }; by: \"entry\" | ... 7 more ... | \"busy_unknown\"; } | { ...; } | { ...; } | { ...; }",
+									"typeSignature": "{ kind: \"quiet\"; } | { kind: \"act\"; action: { kind: \"push\"; commits: number; } | { kind: \"fast_forward\"; commits: number; } | { kind: \"move\"; } | { kind: \"rebase\"; ahead: number; behind: number; }; } | { ...; } | { ...; } | { ...; } | { ...; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "ReposVerdict",
@@ -183420,7 +183441,7 @@
 							"kind": "type",
 							"docComment": "Whether an entry's primary checkout sits where the registry puts it.",
 							"typeSignature": "{ on_branch: boolean | null; clean: boolean; idle: boolean; followed: { kind: \"in_sync\"; } | { kind: \"ahead\"; commits: number; } | { kind: \"behind\"; commits: number; } | { kind: \"diverged\"; ahead: number; behind: number; } | ... 4 more ... | null; }",
-							"sourceLine": 310,
+							"sourceLine": 314,
 							"members": [
 								{
 									"name": "on_branch",
@@ -183504,7 +183525,7 @@
 							"kind": "type",
 							"docComment": "Why a worktree wasn't probed.",
 							"typeSignature": "{ kind: \"prunable\"; } | { kind: \"missing\"; } | { kind: \"failed\"; error: string; }",
-							"sourceLine": 320,
+							"sourceLine": 324,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183529,7 +183550,7 @@
 							"kind": "type",
 							"docComment": "What an unprobed worktree's git dir holds that a prune would lose.",
 							"typeSignature": "{ submodules: boolean; worktree_refs: boolean; staged: boolean | null; }",
-							"sourceLine": 328,
+							"sourceLine": 332,
 							"members": [
 								{
 									"name": "submodules",
@@ -183567,7 +183588,7 @@
 							"kind": "type",
 							"docComment": "What pruning an unprobed worktree would lose.",
 							"typeSignature": "{ kind: \"operation\"; op: \"rebase\" | \"merge\" | \"cherry_pick\" | \"revert\" | \"bisect\" | \"sequencer\" | \"am\"; } | { kind: \"detached_head\"; } | { kind: \"unknown_head\"; } | { kind: \"missing_branch\"; name: string; } | ... 4 more ... | { ...; }",
-							"sourceLine": 342,
+							"sourceLine": 346,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183616,7 +183637,7 @@
 							"kind": "type",
 							"docComment": "Whether pruning an unprobed worktree is safe.",
 							"typeSignature": "{ kind: \"safe\"; } | { kind: \"loses\"; losses: ({ kind: \"operation\"; op: \"rebase\" | \"merge\" | \"cherry_pick\" | \"revert\" | \"bisect\" | \"sequencer\" | \"am\"; } | { kind: \"detached_head\"; } | { kind: \"unknown_head\"; } | ... 5 more ... | { ...; })[]; } | { ...; }",
-							"sourceLine": 350,
+							"sourceLine": 354,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183641,7 +183662,7 @@
 							"kind": "type",
 							"docComment": "A worktree of the repo that couldn't be probed.",
 							"typeSignature": "{ path: string; git_dir: string | null; head: { kind: \"branch\"; name: string; } | { kind: \"detached\"; commit: string; } | null; locked: boolean; in_progress: \"rebase\" | \"merge\" | \"cherry_pick\" | ... 4 more ... | null; why: { ...; } | ... 1 more ... | { ...; }; holds: { ...; } | null; }",
-							"sourceLine": 362,
+							"sourceLine": 366,
 							"members": [
 								{
 									"name": "path",
@@ -183779,7 +183800,7 @@
 							"kind": "type",
 							"docComment": "An unprobed worktree (flattened) with its prune verdict and live sessions.",
 							"typeSignature": "{ path: string; git_dir: string | null; head: { kind: \"branch\"; name: string; } | { kind: \"detached\"; commit: string; } | null; locked: boolean; in_progress: \"rebase\" | \"merge\" | \"cherry_pick\" | ... 4 more ... | null; why: { ...; } | ... 1 more ... | { ...; }; holds: { ...; } | null; prune: { ...; } | ... 2 more ......",
-							"sourceLine": 369,
+							"sourceLine": 373,
 							"members": [
 								{
 									"name": "path",
@@ -183956,7 +183977,7 @@
 							"kind": "type",
 							"docComment": "The `origin` remote as git sees it, when it isn't the registry's `url`.",
 							"typeSignature": "{ kind: \"url\"; url: string; } | { kind: \"no_url\"; } | { kind: \"missing\"; }",
-							"sourceLine": 379,
+							"sourceLine": 383,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -183981,7 +184002,7 @@
 							"kind": "type",
 							"docComment": "Why no `git remote` command fits an origin's fix.",
 							"typeSignature": "\"outside_repo_file\" | \"valueless_url\" | \"empty_value\" | \"several_urls\"",
-							"sourceLine": 388,
+							"sourceLine": 392,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184014,7 +184035,7 @@
 							"kind": "type",
 							"docComment": "How to point `origin` at the registry's URL.",
 							"typeSignature": "{ kind: \"add\"; } | { kind: \"set_url\"; } | { kind: \"by_hand\"; reason: \"outside_repo_file\" | \"valueless_url\" | \"empty_value\" | \"several_urls\"; }",
-							"sourceLine": 396,
+							"sourceLine": 400,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184039,7 +184060,7 @@
 							"kind": "type",
 							"docComment": "Why a remote couldn't be reached.",
 							"typeSignature": "\"dns\" | \"connection\" | \"host_key\" | \"auth\"",
-							"sourceLine": 400,
+							"sourceLine": 404,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184072,7 +184093,7 @@
 							"kind": "type",
 							"docComment": "How to repair a fetch refspec naming a ref gone from origin.",
 							"typeSignature": "{ kind: \"unset_refspec\"; pattern: string; } | { kind: \"set_branches\"; branch: string | null; } | { kind: \"by_hand\"; }",
-							"sourceLine": 408,
+							"sourceLine": 412,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184097,7 +184118,7 @@
 							"kind": "type",
 							"docComment": "Why a fetch or the visibility check failed, or why the tool refused to\nfetch: Rust's `RemoteFailure` without `rejected`, which only a push meets.",
 							"typeSignature": "{ kind: \"ref_gone\"; refname: string; fix: { kind: \"unset_refspec\"; pattern: string; } | { kind: \"set_branches\"; branch: string | null; } | { kind: \"by_hand\"; }; } | { kind: \"unreachable\"; cause: \"dns\" | ... 2 more ... | \"auth\"; message: string; } | ... 5 more ... | { ...; }",
-							"sourceLine": 435,
+							"sourceLine": 439,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184142,7 +184163,7 @@
 							"kind": "type",
 							"docComment": "What an anonymous read of a repo declared private found.",
 							"typeSignature": "{ kind: \"leak\"; } | { kind: \"private\"; } | { kind: \"unknown\"; failure: { kind: \"ref_gone\"; refname: string; fix: { kind: \"unset_refspec\"; pattern: string; } | { kind: \"set_branches\"; branch: string | null; } | { ...; }; } | ... 6 more ... | { ...; }; }",
-							"sourceLine": 443,
+							"sourceLine": 447,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184167,7 +184188,7 @@
 							"kind": "type",
 							"docComment": "What kind of failure stopped an entry's probe.",
 							"typeSignature": "\"path_unreadable\" | \"non_utf8_path\" | \"config_unreadable\" | \"fetch_url_unreadable\" | \"push_urls_unreadable\" | \"git_not_run\" | \"git_timed_out\" | \"git_failed\" | \"unexpected_output\"",
-							"sourceLine": 459,
+							"sourceLine": 463,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184225,7 +184246,7 @@
 							"kind": "type",
 							"docComment": "Why an entry's probe failed: its kind, and a message for display.",
 							"typeSignature": "{ kind: \"path_unreadable\" | \"non_utf8_path\" | \"config_unreadable\" | \"fetch_url_unreadable\" | \"push_urls_unreadable\" | \"git_not_run\" | \"git_timed_out\" | \"git_failed\" | \"unexpected_output\"; message: string; }",
-							"sourceLine": 466,
+							"sourceLine": 470,
 							"members": [
 								{
 									"name": "kind",
@@ -184295,7 +184316,7 @@
 							"kind": "type",
 							"docComment": "Why sync would stop on an entry and leave it to a person.",
 							"typeSignature": "{ kind: \"not_a_repo\"; detail: string; } | { kind: \"operation_in_progress\"; checkout: string; op: \"rebase\" | \"merge\" | \"cherry_pick\" | \"revert\" | \"bisect\" | \"sequencer\" | \"am\"; } | { kind: \"origin_mismatch\"; origin: { ...; } | ... 1 more ... | { ...; }; expected: string; fix: { ...; } | ... 1 more ... | { ...; }; } |...",
-							"sourceLine": 519,
+							"sourceLine": 523,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184368,7 +184389,7 @@
 							"kind": "type",
 							"docComment": "One registry entry's state.",
 							"typeSignature": "{ key: string; kind: \"repo\" | \"reference\"; dir: string; url: string; writable: boolean; archived: boolean; visibility: \"public\" | \"private\" | null; ci: boolean; branch: string | null; pinned: boolean; ... 13 more ...; visibility_check: { ...; } | ... 2 more ... | null; }",
-							"sourceLine": 548,
+							"sourceLine": 552,
 							"members": [
 								{
 									"name": "key",
@@ -184733,7 +184754,7 @@
 							"kind": "type",
 							"docComment": "What keeps a moved worktree's repair from being offered.",
 							"typeSignature": "{ kind: \"rewrites\"; path: string; git_dir: string; } | { kind: \"claimed_dir\"; git_dir: string; } | { kind: \"swapped\"; git_dir: string; with: string; } | { kind: \"relative_gitdir\"; git_dir: string; } | { ...; } | { ...; } | { ...; }",
-							"sourceLine": 562,
+							"sourceLine": 566,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184774,7 +184795,7 @@
 							"kind": "type",
 							"docComment": "A child of the workspace root holding a `.git` that no registry entry\nclaims, its `kind` flattened beside its own fields.",
 							"typeSignature": "{ kind: \"clone\"; dir: string; origin: string | null; owned: boolean; } | { kind: \"worktree\"; dir: string; origin: string | null; owned: boolean; } | { kind: \"moved_worktree\"; entry: string; blocked_by: { ...; } | ... 6 more ... | null; exit_noise: string | null; dir: string; origin: string | null; owned: boolean; } ...",
-							"sourceLine": 598,
+							"sourceLine": 602,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184810,13 +184831,13 @@
 							"name": "ReposStatusReport",
 							"kind": "type",
 							"docComment": "The `repos status --json` report.",
-							"typeSignature": "{ version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | ...",
-							"sourceLine": 615,
+							"typeSignature": "{ version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | ...",
+							"sourceLine": 619,
 							"members": [
 								{
 									"name": "version",
 									"kind": "variable",
-									"typeSignature": "18"
+									"typeSignature": "19"
 								},
 								{
 									"name": "workspace",
@@ -184886,7 +184907,7 @@
 							"kind": "type",
 							"docComment": "A fatal error as `repos status --json` prints it, its `kind` flattened\nbeside `message` and `hint`. Only the kinds `status` can print: the rest\nof Rust's `ErrorKind` are `repos push`'s, or precede knowing `--json`.",
 							"typeSignature": "{ kind: \"references_with_targets\"; message: string; hint: string | null; } | { kind: \"root_not_found\"; message: string; hint: string | null; } | { kind: \"registry_not_found\"; message: string; hint: string | null; } | ... 7 more ... | { ...; }",
-							"sourceLine": 655,
+							"sourceLine": 659,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -184942,13 +184963,13 @@
 							"name": "ReposStatusErrorReport",
 							"kind": "type",
 							"docComment": "The document `repos status --json` prints on a fatal error, in place of the report.",
-							"typeSignature": "{ version: 18; error: { kind: \"references_with_targets\"; message: string; hint: string | null; } | { kind: \"root_not_found\"; message: string; hint: string | null; } | { kind: \"registry_not_found\"; message: string; hint: string | null; } | ... 7 more ... | { ...; }; }",
-							"sourceLine": 662,
+							"typeSignature": "{ version: 19; error: { kind: \"references_with_targets\"; message: string; hint: string | null; } | { kind: \"root_not_found\"; message: string; hint: string | null; } | { kind: \"registry_not_found\"; message: string; hint: string | null; } | ... 7 more ... | { ...; }; }",
+							"sourceLine": 666,
 							"members": [
 								{
 									"name": "version",
 									"kind": "variable",
-									"typeSignature": "18"
+									"typeSignature": "19"
 								},
 								{
 									"name": "error",
@@ -184967,8 +184988,8 @@
 							"name": "ReposStatusDocument",
 							"kind": "type",
 							"docComment": "Either document `repos status --json` prints. No tag is needed: `error`\nis the error document's alone, and each side's strictness refuses the\nother's fields. A consumer wanting a sharper parse error branches on\n`error` first and parses with that side's schema.",
-							"typeSignature": "{ version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | ...",
-							"sourceLine": 671,
+							"typeSignature": "{ version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | ...",
+							"sourceLine": 675,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -185061,7 +185082,7 @@
 							"name": "parse_repos_status_output",
 							"kind": "function",
 							"docComment": "Parses what `repos status --json` printed into its report, or a message\nsaying what went wrong and what to change.",
-							"typeSignature": "(output: ReposCommandOutput): Result<{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; }, ReposStatusLoadFailure>",
+							"typeSignature": "(output: ReposCommandOutput): Result<{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; }, ReposStatusLoadFailure>",
 							"sourceLine": 61,
 							"parameters": [
 								{
@@ -185070,7 +185091,7 @@
 									"description": "the command's stdout, stderr, and exit code"
 								}
 							],
-							"returnType": "Result<{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ...",
+							"returnType": "Result<{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ...",
 							"returnTypeInfo": {
 								"kind": "union",
 								"alias": "Result",
@@ -185084,7 +185105,7 @@
 											},
 											{
 												"kind": "object",
-												"text": "{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
+												"text": "{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
 											}
 										]
 									},
@@ -185109,7 +185130,7 @@
 							"name": "load_repos_status",
 							"kind": "function",
 							"docComment": "Runs `repos status <keys…> --json` and parses its report.",
-							"typeSignature": "(options: { keys: string[]; registry?: string | undefined; fetch?: boolean | undefined; repos_ops: ReposOperations; }): Promise<Result<{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { ...; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; }, ReposStatusLoadFailure>>",
+							"typeSignature": "(options: { keys: string[]; registry?: string | undefined; fetch?: boolean | undefined; repos_ops: ReposOperations; }): Promise<Result<{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { ...; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 more ... | { ...; })[] | null; }; }, ReposStatusLoadFailure>>",
 							"sourceLine": 151,
 							"parameters": [
 								{
@@ -185123,7 +185144,7 @@
 									}
 								}
 							],
-							"returnType": "Promise<Result<{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ....",
+							"returnType": "Promise<Result<{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ....",
 							"returnTypeInfo": {
 								"kind": "reference",
 								"name": "Promise",
@@ -185154,7 +185175,7 @@
 													},
 													{
 														"kind": "object",
-														"text": "{ report: { version: 18; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
+														"text": "{ report: { version: 19; workspace: string; registry: string; fetched: boolean; sessions: { kind: \"available\"; unscoped: { pid: number; cwd: string; worktree: string | null; process_cwd: string | null; source: \"session_file\" | \"roster_worker\"; }[]; } | { ...; }; entries: { ...; }[]; unregistered: ({ ...; } | ... 4 m..."
 													}
 												]
 											}

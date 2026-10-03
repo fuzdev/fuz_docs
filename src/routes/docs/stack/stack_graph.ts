@@ -46,8 +46,7 @@ export const stack_nodes: Array<StackNode> = [
 		name: 'fuz_code',
 		category: 'ui',
 		language: 'ts',
-		description:
-			'syntax styling utilities and components for TypeScript, Svelte, Markdown, and more',
+		description: 'syntax styler for TypeScript, Svelte, Markdown, and more',
 		layer: 5,
 		fan_in: 9,
 		x: 0,
