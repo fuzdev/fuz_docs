@@ -214,7 +214,8 @@ Full guide: ./references/tsdoc-comments.md.
 Projects use **tomes** (not "stories") plus auto-generated API docs. Pipeline:
 source → `svelte-docinfo` Vite plugin → `virtual:svelte-docinfo` →
 `library_json_from_modules()` → `Library` → Tome pages + API routes. Setup,
-layout, and components: ./references/documentation-system.md.
+layout, components, and README code-example style:
+./references/documentation-system.md.
 
 ## mdz — Strict Markdown Dialect
 

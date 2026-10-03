@@ -196,3 +196,24 @@ Components a consumer wires: `Docs`, `TomeContent`, `TomeSection`,
 `LibraryDetail` (metadata card / expanded package info). The full component
 set is fuz_ui inventory (its `CLAUDE.md`). fuz_ui defines everything; other
 projects import unchanged — only tomes, categories, and branding differ.
+
+## README code examples
+
+Code examples teach by structure, not by explanation: the reader learns from
+the code, and comments provide narrative beats rather than restating it.
+
+- **Comments as section labels** — name the conceptual category of what
+  follows, not the syntax: `// one-shot hash`, `// streaming hasher` — not
+  `// Call the hash function`.
+- **Trailing comments for constraints and alternatives** — where the reader
+  meets them: `const mac = keyed_hash(key, data); // key must be 32 bytes`.
+- **Let code be self-documenting** — imports teach the API, names teach data
+  flow, calls teach usage; comments carry only what code can't say
+  (constraints, alternatives, non-obvious behavior).
+- **Real patterns, not contrived demos** — realistic names and usage, no
+  `foo`/`bar`.
+
+Anti-patterns: comments that restate the function name; jargon headers
+(`### Node.js — zero-config`); inline comments longer than the code they
+annotate; sales-pitch prose ("blazing fast"); stating what the reader can
+see (`// returns a Uint8Array`). In-code doc comments: ./tsdoc-comments.md.
