@@ -508,9 +508,10 @@ remediation, not to error type.**
   carve-out: a reserved code for a non-failure the caller branches on (fuz's
   `10` = update available) is a distinct category, minted deliberately.
 - **argh gotcha**: `argh::from_env()` hard-exits `1` on a parse error,
-  violating "usage = 2". zap's fix: `T::from_args(&[cmd], &args)` and map the
-  `EarlyExit` (`Ok` → stdout, exit 0; `Err` → stderr, exit 2). Several binaries
-  still use `from_env()` and carry the wrong usage code.
+  violating "usage = 2". Parse through `fuz_sys::cli::parse_env_args::<T>(usage_exit)`
+  (`argh` feature): help → stdout, exit 0; usage error → stderr, `usage_exit`
+  (`EXIT_USAGE` = 2; fuzi's sysexits dialect passes 64). Spine-free CLIs (zap)
+  hand-roll the same `T::from_args` + `EarlyExit` mapping.
 
 ### Flags
 

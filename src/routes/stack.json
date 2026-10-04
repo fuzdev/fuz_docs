@@ -155,7 +155,7 @@
 			"published": true,
 			"module_count": 349,
 			"exported_module_count": 347,
-			"export_count": 2071,
+			"export_count": 2072,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util"

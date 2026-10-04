@@ -19,7 +19,7 @@ The crates a consumer server names (the full crate inventory is the fuz
 repo's concern):
 
 - **System leaves** — `fuz_sys` (fs, file_lock, secure_file, pid, env,
-  limits, cli; `logging`/`signal`/`tls` features), `fuz_home` (the `~/.fuz`
+  limits, cli; `logging`/`signal`/`capture`/`argh`/`tls` features), `fuz_home` (the `~/.fuz`
   layer), `fuz_crypto` (Ed25519 verify, `ContentHash`, canonical JSON),
   `fuz_eval` (sandboxed one-shot Deno eval). HTTP/DB-free by enforced rule.
 - **HTTP spine** — `fuz_http` (JSON-RPC envelope, IP/origin, lifecycle),
@@ -163,8 +163,8 @@ magic number.
 2. **Client-side CLI lifecycle splits by transport.**
    - `fuzd`'s UDS lifecycle lives in `fuz_daemon`: v2 `daemon.json`
      (`socket_path`, no port), `Hello`-based health over `fuz_client`, a
-     `DaemonState` enum (`Running(info)` / `Stopped` / `Stale(info)`) with one
-     `get_daemon_state()` resolver.
+     `DaemonState` enum (`Running(info)` / `Unresponsive(info)` / `Stopped` /
+     `Stale(info)`) with one `get_daemon_state()` resolver.
    - zzz's HTTP lifecycle is deliberately **local to zzz's CLI**: a port-based
      `DaemonInfo` (`version`, `pid`, `port`, `started`, `app_version`; schema
      shared with `fuz_app` TS), a reqwest `/health` probe, a `Wedged(info)` arm
@@ -177,7 +177,7 @@ magic number.
      crate for a single HTTP consumer.
    - The HTTP lifecycle (and `reqwest`) must never enter the `fuz`/`fuzd`
      graph — a convention, not a `check-release` rule, since `fuz` legitimately
-     links `fuz_daemon`/`fuz_client` for UDS.
+     links `fuz_client` for UDS (and `fuzd` links `fuz_daemon`).
 
 ## xtask & check-release
 

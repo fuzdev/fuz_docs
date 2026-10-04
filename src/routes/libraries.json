@@ -93369,7 +93369,7 @@
 								{
 									"name": "read_secure_file",
 									"kind": "function",
-									"docComment": "Hardened secret-file read (see `FsSecureReadDeps.read_secure_file`) —\nthe token mints the keeper account, so a symlinked, group/other-readable,\nor oversized file must refuse rather than be honored. Throws on refusal;\nevery throw reads as `TOKEN_FILE_MISSING` upstream.",
+									"docComment": "Hardened secret-file read (see `FsSecureReadDeps.read_secure_file`) —\nthe token mints the keeper account, so a symlinked, non-regular,\ngroup/other-readable, or oversized file must refuse rather than be\nhonored. Throws on refusal;\nevery throw reads as `TOKEN_FILE_MISSING` upstream.",
 									"typeSignature": "(path: string): Promise<Uint8Array<ArrayBufferLike>>",
 									"parameters": [
 										{
@@ -93462,7 +93462,7 @@
 							"kind": "function",
 							"docComment": "Bootstrap the first account with keeper and admin privileges.\n\nUses an atomic `bootstrap_lock` UPDATE to prevent concurrent bootstrap\nattempts (TOCTOU). The full flow runs in a single transaction:\n\n1. Read and verify the bootstrap token (before transaction)\n2. Hash the password (CPU-intensive, before transaction)\n3. Acquire the bootstrap lock atomically (inside transaction)\n4. Create account + actor\n5. Grant keeper and admin role_grants (no expiry, `granted_by = null`)\n6. Delete the token file (after commit, reported via `token_file_deleted`)",
 							"typeSignature": "(deps: BootstrapAccountDeps, provided_token: string, input: BootstrapAccountInput): Promise<BootstrapAccountResult>",
-							"sourceLine": 94,
+							"sourceLine": 95,
 							"mutates": {
 								"bootstrap_lock row": "flips `bootstrapped` to `true` atomically",
 								"account / actor / role_grant tables": "inserts the bootstrap account, actor, and the keeper + admin role_grants",
@@ -100120,7 +100120,7 @@
 								{
 									"name": "read_secure_file",
 									"kind": "function",
-									"docComment": "Hardened secret-file read — used for the bootstrap token (the file that\nmints the keeper account). Production wiring passes the runtime's\n`read_secure_file` (`FsSecureReadDeps`), which rejects symlinks,\ngroup/other-accessible modes, and oversized files; both the boot-time\navailability probe and the request-time read go through this one\ncapability so the probe can never be laxer than the read it gates.",
+									"docComment": "Hardened secret-file read — used for the bootstrap token (the file that\nmints the keeper account). Production wiring passes the runtime's\n`read_secure_file` (`FsSecureReadDeps`), which rejects symlinks,\nnon-regular files, group/other-accessible modes, and oversized files; both the boot-time\navailability probe and the request-time read go through this one\ncapability so the probe can never be laxer than the read it gates.",
 									"typeSignature": "(path: string): Promise<Uint8Array<ArrayBufferLike>>",
 									"parameters": [
 										{
@@ -100234,7 +100234,7 @@
 								{
 									"name": "read_secure_file",
 									"kind": "function",
-									"docComment": "Hardened secret-file read — used for the bootstrap token (the file that\nmints the keeper account). Production wiring passes the runtime's\n`read_secure_file` (`FsSecureReadDeps`), which rejects symlinks,\ngroup/other-accessible modes, and oversized files; both the boot-time\navailability probe and the request-time read go through this one\ncapability so the probe can never be laxer than the read it gates.",
+									"docComment": "Hardened secret-file read — used for the bootstrap token (the file that\nmints the keeper account). Production wiring passes the runtime's\n`read_secure_file` (`FsSecureReadDeps`), which rejects symlinks,\nnon-regular files, group/other-accessible modes, and oversized files; both the boot-time\navailability probe and the request-time read go through this one\ncapability so the probe can never be laxer than the read it gates.",
 									"typeSignature": "(path: string): Promise<Uint8Array<ArrayBufferLike>>",
 									"parameters": [
 										{
@@ -129923,7 +129923,7 @@
 							"kind": "function",
 							"docComment": "Create a runtime backed by Deno APIs.\n\nReturns an object satisfying all `*Deps` interfaces from `runtime/deps.ts`.\nPass to shared functions that accept `EnvDeps`, `FsReadDeps`, etc.",
 							"typeSignature": "(args: readonly string[]): RuntimeDeps",
-							"sourceLine": 90,
+							"sourceLine": 95,
 							"parameters": [
 								{
 									"name": "args",
@@ -130157,7 +130157,7 @@
 								{
 									"name": "read_secure_file",
 									"kind": "function",
-									"docComment": "Read a small secret file with fail-loud checks: rejects symlinks, any\ngroup/other-accessible mode (must be `0600`/`0400`; skipped where POSIX\nmodes don't apply), and files over a 4 KiB cap. Permission checks run on\nthe open descriptor where the platform allows, so the file can't be\nswapped between check and read. Throws on any refusal — a refused secret\nmust never degrade to an empty read.",
+									"docComment": "Read a small secret file with fail-loud checks: rejects symlinks,\nnon-regular files (FIFO, device, directory — real runtimes only; the mock\nhas no file types), any group/other-accessible mode (must be `0600`/`0400`; skipped where POSIX\nmodes don't apply), and files over a 4 KiB cap. Permission checks run on\nthe open descriptor where the platform allows, so the file can't be\nswapped between check and read. Throws on any refusal — a refused secret\nmust never degrade to an empty read.",
 									"typeSignature": "(path: string): Promise<Uint8Array<ArrayBufferLike>>",
 									"parameters": [
 										{
@@ -130200,7 +130200,7 @@
 							"kind": "interface",
 							"docComment": "File system read operations.",
 							"typeSignature": "FsReadDeps",
-							"sourceLine": 126,
+							"sourceLine": 127,
 							"members": [
 								{
 									"name": "stat",
@@ -130356,7 +130356,7 @@
 							"kind": "interface",
 							"docComment": "File system write operations.",
 							"typeSignature": "FsWriteDeps",
-							"sourceLine": 148,
+							"sourceLine": 149,
 							"members": [
 								{
 									"name": "mkdir",
@@ -130522,7 +130522,7 @@
 							"kind": "interface",
 							"docComment": "Streaming file I/O — read a file as a byte stream, or write a byte stream to\na file, both bounded in memory (peak ≈ one chunk, not the whole file).\n\nKept separate from `FsReadDeps` / `FsWriteDeps` so the whole-buffer\n`read_file` / `write_file` consumers and their partial test stubs are\nunaffected; only the full runtime factories implement these. Used for\nGB-scale artifact transfer (the `fuzf file get` / `put` path) where buffering\nthe whole file would OOM the client.",
 							"typeSignature": "FsStreamDeps",
-							"sourceLine": 181,
+							"sourceLine": 182,
 							"members": [
 								{
 									"name": "read_file_stream",
@@ -130629,7 +130629,7 @@
 							"kind": "interface",
 							"docComment": "File system remove operations.",
 							"typeSignature": "FsRemoveDeps",
-							"sourceLine": 201,
+							"sourceLine": 202,
 							"members": [
 								{
 									"name": "remove",
@@ -130666,7 +130666,7 @@
 							"kind": "interface",
 							"docComment": "Command execution.",
 							"typeSignature": "CommandDeps",
-							"sourceLine": 209,
+							"sourceLine": 210,
 							"members": [
 								{
 									"name": "run_command",
@@ -130707,7 +130707,7 @@
 							"kind": "interface",
 							"docComment": "HTTP fetch capability.",
 							"typeSignature": "FetchDeps",
-							"sourceLine": 228,
+							"sourceLine": 229,
 							"members": [
 								{
 									"name": "fetch",
@@ -130722,7 +130722,7 @@
 							"kind": "interface",
 							"docComment": "Warning/diagnostic output.",
 							"typeSignature": "LogDeps",
-							"sourceLine": 236,
+							"sourceLine": 237,
 							"members": [
 								{
 									"name": "warn",
@@ -130745,7 +130745,7 @@
 							"kind": "interface",
 							"docComment": "Terminal I/O operations.",
 							"typeSignature": "TerminalDeps",
-							"sourceLine": 244,
+							"sourceLine": 245,
 							"members": [
 								{
 									"name": "stdout_write",
@@ -130849,7 +130849,7 @@
 							"kind": "interface",
 							"docComment": "Process lifecycle.",
 							"typeSignature": "ProcessDeps",
-							"sourceLine": 254,
+							"sourceLine": 255,
 							"members": [
 								{
 									"name": "exit",
@@ -130871,7 +130871,7 @@
 							"kind": "interface",
 							"docComment": "Full runtime capabilities returned by `create_deno_runtime` or `create_node_runtime`.\n\nExtends all `*Deps` interfaces with additional app-level capabilities.\nFunctions should accept narrow `*Deps` interfaces, not this full type —\nthis type is for the wiring layer that creates and passes the runtime.",
 							"typeSignature": "RuntimeDeps",
-							"sourceLine": 266,
+							"sourceLine": 267,
 							"extends": [
 								"EnvDeps",
 								"FsReadDeps",
@@ -131459,14 +131459,38 @@
 							"kind": "variable",
 							"docComment": "Maximum size for secure files. Prevents DoS from unexpectedly large files;\n4 KiB is generous for token/key material. Matches the Rust twin's\n`MAX_SECURE_FILE_SIZE`.",
 							"typeSignature": "4096",
-							"sourceLine": 32
+							"sourceLine": 34
+						},
+						{
+							"name": "assert_secure_regular_file",
+							"kind": "function",
+							"docComment": "Refuse anything but a regular file — a FIFO, device node, socket, or\ndirectory at the secret's path.",
+							"typeSignature": "(path: string, is_file: boolean): void",
+							"sourceLine": 50,
+							"throws": [
+								{
+									"type": "Error",
+									"description": "naming the path"
+								}
+							],
+							"parameters": [
+								{
+									"name": "path",
+									"type": "string"
+								},
+								{
+									"name": "is_file",
+									"type": "boolean"
+								}
+							],
+							"returnType": "void"
 						},
 						{
 							"name": "assert_secure_mode",
 							"kind": "function",
 							"docComment": "Refuse any group/other-accessible mode (only `0600`/`0400` pass).\n\nCallers own the platform gating: the real runtimes skip the check where\nmodes aren't meaningful (Node on Windows, a `null` Deno mode); the mock\nchecks its simulated modes unconditionally.",
 							"typeSignature": "(path: string, mode: number): void",
-							"sourceLine": 51,
+							"sourceLine": 65,
 							"throws": [
 								{
 									"type": "Error",
@@ -131490,7 +131514,7 @@
 							"kind": "function",
 							"docComment": "Refuse a byte count over `MAX_SECURE_FILE_SIZE`.",
 							"typeSignature": "(path: string, size: number): void",
-							"sourceLine": 64,
+							"sourceLine": 78,
 							"throws": [
 								{
 									"type": "Error",
@@ -131514,7 +131538,7 @@
 							"kind": "function",
 							"docComment": "Drain `read_chunk` into a cap-bounded buffer.\n\nReads up to cap + 1 bytes so a file growing between stat and read is still\ncaught (the stat-time size check alone races). `read_chunk` fills the given\ntarget from the file's current position and returns the bytes read\n(`null`/`0` = EOF) — the seam that lets the Node and Deno handle APIs share\none loop.",
 							"typeSignature": "(path: string, read_chunk: (target: Uint8Array<ArrayBufferLike>) => Promise<number | null>): Promise<Uint8Array<ArrayBufferLike>>",
-							"sourceLine": 81,
+							"sourceLine": 95,
 							"throws": [
 								{
 									"type": "Error",
@@ -131562,13 +131586,13 @@
 						{
 							"name": "load_secure_file_node",
 							"kind": "function",
-							"docComment": "Read a secret file with fail-loud checks (Node implementation).\n\n- `O_NOFOLLOW` atomically rejects symlinks during open (no TOCTOU window)\n- the permission check runs on the open descriptor, not the path, so the\n  file can't be swapped between check and read — any group/other access\n  (not `0600`/`0400`) is refused\n- a size cap bounds the read; the read itself is limited to cap + 1 so a\n  file growing between stat and read is still caught",
+							"docComment": "Read a secret file with fail-loud checks (Node implementation).\n\n- `O_NOFOLLOW` atomically rejects symlinks during open (no TOCTOU window)\n- `O_NONBLOCK` keeps the open from waiting on a FIFO that has no writer (it\n  has no effect on a regular file); the regular-file check on the open\n  descriptor then refuses it, a device node, or a directory\n- `O_NOCTTY` keeps a terminal device at the path from becoming the process's\n  controlling terminal in the moment before that check refuses it\n- the permission check runs on the open descriptor, not the path, so the\n  file can't be swapped between check and read — any group/other access\n  (not `0600`/`0400`) is refused\n- a size cap bounds the read; the read itself is limited to cap + 1 so a\n  file growing between stat and read is still caught",
 							"typeSignature": "(path: string): Promise<Uint8Array<ArrayBufferLike>>",
-							"sourceLine": 110,
+							"sourceLine": 129,
 							"throws": [
 								{
 									"type": "Error",
-									"description": "on a missing file, symlink, permissive mode, oversized file, or I/O failure"
+									"description": "on a missing file, symlink, non-regular file, permissive mode, oversized file, or I/O failure"
 								}
 							],
 							"parameters": [
@@ -131608,7 +131632,7 @@
 							"returnDescription": "the file's bytes"
 						}
 					],
-					"moduleComment": "Hardened secret-file read — the TS twin of the Rust spine's\n`fuz_sys::secure_file::load_secure_file`.\n\nThe file this guards is typically the highest-value credential on the host\n(the bootstrap token mints the keeper account), so the read fails loud\nrather than degrading: a symlink, a group/other-accessible mode, or an\noversized file is refused, never returned. The deploy recipe places the\ntoken at `0600`, so the check ratifies the shape zap produces; a\nhand-placed `0644` file fails at boot instead of being read.\n\nThe Node implementation lives here (`load_secure_file_node`, wired as\n`create_node_runtime().read_secure_file`); the Deno runtime implements the\nsame contract over `Deno.open` in `runtime/deno.ts`, and the mock honors\nthe mode/size checks over its in-memory map. All three refuse through the\nshared `assert_secure_mode` / `assert_secure_size` / `read_secure_bounded`\nhelpers so the checks — and their operator-facing messages — can't drift\nbetween runtimes.",
+					"moduleComment": "Hardened secret-file read — the TS twin of the Rust spine's\n`fuz_sys::secure_file::load_secure_file`.\n\nThe file this guards is typically the highest-value credential on the host\n(the bootstrap token mints the keeper account), so the read fails loud\nrather than degrading: a symlink, a non-regular file (FIFO, device node,\ndirectory), a group/other-accessible mode, or an oversized file is refused,\nnever returned. The deploy recipe places the token at `0600`, so the check\nratifies the shape zap produces; a hand-placed `0644` file fails at boot\ninstead of being read.\n\nThe Node implementation lives here (`load_secure_file_node`, wired as\n`create_node_runtime().read_secure_file`); the Deno runtime implements the\nsame contract over `Deno.open` in `runtime/deno.ts`, and the mock honors\nthe mode/size checks over its in-memory map (it has no file types). The real\nruntimes refuse through the shared `assert_secure_regular_file` /\n`assert_secure_mode` / `assert_secure_size` / `read_secure_bounded` helpers,\nand the mock through the mode and size ones, so the checks — and their\noperator-facing messages — can't drift between runtimes.",
 					"dependents": [
 						"runtime/deno.ts",
 						"runtime/mock.ts",
@@ -131793,7 +131817,7 @@
 								{
 									"name": "read_secure_file",
 									"kind": "function",
-									"docComment": "Hardened secret-file read for the bootstrap token — pass the runtime's\n`read_secure_file` (see `FsSecureReadDeps`). Rejects symlinks,\ngroup/other-accessible modes, and oversized files.",
+									"docComment": "Hardened secret-file read for the bootstrap token — pass the runtime's\n`read_secure_file` (see `FsSecureReadDeps`). Rejects symlinks,\nnon-regular files, group/other-accessible modes, and oversized files.",
 									"typeSignature": "(path: string): Promise<Uint8Array<ArrayBufferLike>>",
 									"parameters": [
 										{
