@@ -339,6 +339,12 @@ the getter context `sidebar_state_context`. For derived-heavy state, pair
 writable `$state` fields with `readonly` deriveds — fuz_ui's `ApiSearchState`
 (`api_search.svelte.ts`).
 
+**Role-gated UI reads global grants.** Gate on `auth.is_admin` /
+`auth.has_global_role(role)` from fuz_app's `AuthState`
+(`ui/auth_state.svelte.ts`) — global grants only, the rule the server's role
+gates apply — never on a scan of grant role names, which reads a grant scoped
+to one resource as authority everywhere.
+
 **Plain classes for imperative loops.** Canvas2D/WebGPU renderers, rAF loops,
 and long-lived pointer listeners use a **plain class with no runes**, mounted
 by a thin `.svelte` wrapper: private fields (`#hovered_id`) stay non-reactive

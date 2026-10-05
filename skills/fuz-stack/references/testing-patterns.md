@@ -186,6 +186,9 @@ database — takes
 `{session_options: create_session_config('test_session'), create_route_specs: (ctx) => my_routes(ctx)}`,
 returns
 `{app, create_session_headers, create_bearer_headers, create_account, cleanup}`.
+In-process harnesses leave `create_app_server`'s `auth_cleanup` off, as
+`create_test_app` does — a background pass deletes rows and writes audit rows
+mid-test.
 
 ## Test Helpers
 
@@ -337,7 +340,11 @@ and skip groups whose config is absent. The roster is fuz_app inventory
 driving the real dispatcher and transport so per-action auth, validation,
 `ctx.notify`, and broadcast fan-out run through real code. DB-backed WS tests
 use `.db.test.ts` and the shared PGlite factory; non-DB WS tests build a fresh
-harness per test with ad-hoc action specs.
+harness per test with ad-hoc action specs. A real-upgrade (cross-process) test
+that waits for a server-initiated message, or needs connections registered in a
+known order, opens through `create_admitted_ws_transport`
+(`testing/transports/ws_transport.ts`): an open socket is not yet an admitted
+connection, and a push sent before admission is dropped, not queued.
 
 **Serde boundary conformance** (Rust ↔ hand-written TS): round-trip + coverage
 guard rather than codegen — ./twin-impl.md §Serde boundary conformance.

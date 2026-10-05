@@ -165,8 +165,14 @@ interface; don't leak platform types (node's `SpawnOptions`) through an L1 shape
   assembly: `create_app_backend(options)` builds `AppDeps` and returns it with
   lifecycle metadata; `create_app_server({backend, ...})` consumes it.
   Post-assembly extension points register through documented methods on the
-  capability (the audit emitter's `add_listener` — same identifier as its Rust
-  twin), not by re-shaping the bundle.
+  capability, not by re-shaping the bundle: the audit emitter's `add_listener`
+  (same identifier as its Rust twin), and `AppDeps.connection_closer`'s
+  `add(closer)` — `create_app_backend` creates the closer empty and
+  `create_app_server` adds each WebSocket transport it mounts and its audit
+  stream registry, so a revocation handler built from the bundle closes on
+  every transport the server mounts. A transport mounted by hand passes
+  `deps.connection_closer` to its mount helper (`register_ws_endpoint`,
+  `create_audit_log_sse`), which adds it.
 
 ## Design Principles
 
@@ -213,6 +219,12 @@ individual `vi.fn()` for call tracking is fine.
   defaulting to a module-level `node:fs` import couples the module to one
   runtime and hides the effect. Require the dep, or default at an explicit
   platform factory — not per-field at module scope.
+- **Optional capability whose absence skips a security effect** — with a
+  per-factory `connection_closer?:`, a revocation handed none still succeeds
+  and the connections it should have ended stay open; nothing fails. Make the
+  capability a required member and name the no-op: a backend with no live
+  connections passes `noop_connection_closer`, so opting out is written at the
+  call site.
 - **Category blurring under a `*Deps` name** — config values mixed with
   capabilities, several optional-with-fallback; tests can't tell what needs a
   mock vs a literal. Split, or use the ad-hoc form deliberately.

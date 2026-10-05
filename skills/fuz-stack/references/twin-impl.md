@@ -48,6 +48,14 @@ makes it cheap.
   Consumers inherit shared _conformance principals_ (credential type × context
   combinations — daemon-token-with-Origin, invalid-token variants) so a new
   upstream auth edge case tests every consumer.
+- **A declared difference is a capability flag**, not a branch on the backend's
+  name or a hand-skipped case. Each backend config carries a
+  `BackendCapabilities`; a suite gates a case with `test_if(capabilities.X, …)`
+  (`ws_handshake_pipelining`, `ws_account_actions`) or forks one assertion on
+  the flag (`ws_self_revocation_reply`). Every flag is required, so a
+  full capabilities literal — the family defaults, a consumer's hand-written
+  one — fails to compile until it declares a new flag; a preset spread off a
+  family default inherits that default.
 - **`testing_spine_stub`** is the domain-free third consumer exercising the
   Rust spine without any business logic, so spine parity is tested
   independently of zzz/fuz_forge.
@@ -100,9 +108,12 @@ must already match, so internal renames are cleanup.
 **Utility twins** follow the same discipline at micro scale —
 `fuz_sys::env::parse_stringbool` ↔ `z.stringbool()`, the `DaemonInfo` schema
 shared between zzz's Rust CLI and `fuz_app`, the `lru`-backed `RateLimiter`
-twinning `fuz_app`'s `LruMap`. When porting a utility, find its twin first;
-diverging semantics under a shared name is the same defect class as a name
-mismatch.
+twinning `fuz_app`'s `LruMap`, `fuz_sys::periodic::spawn_periodic` ↔
+`fuz_app`'s `start_periodic` (same schedule; shutdown differs because a promise
+cannot be dropped — the Rust task drops a pass in progress, the TS `stop()`
+waits it out). When porting
+a utility, find its twin first; diverging semantics under a shared name is the
+same defect class as a name mismatch.
 
 ## Serde boundary conformance
 

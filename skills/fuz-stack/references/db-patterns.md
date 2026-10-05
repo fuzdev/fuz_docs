@@ -42,14 +42,15 @@ export const query_invite_delete_unclaimed = async (
 
 Rust mirrors this: `query_<table>_<verb><C: GenericClient + ?Sized>(client: &C, …)`,
 `Result<Row, CrateError>` / `Result<Option<Row>, …>`, the driver error
-wrapped in the crate's `thiserror` variant. On the Rust spine, a bulk delete
-whose rows have a post-commit effect returns their ids, not a count
-(`query_session_cleanup_expired`, `query_session_enforce_limit`): the caller
-commits, then closes the connections of exactly what it deleted. Effects that
-leave the database — closing a socket, ending a stream — run after the commit
-is answered, never inside the transaction. A revocation's close is dropped
-with a transaction that rolled back; the expiry sweep closes even when its
-commit fails, since an expired session is refused with or without its row.
+wrapped in the crate's `thiserror` variant.
+
+A bulk delete whose rows have a post-commit effect returns their ids, not a
+count (`query_session_cleanup_expired`, `query_session_enforce_limit`): the
+caller commits, then closes the connections of exactly what it deleted. Effects
+that leave the database — closing a socket, ending a stream — run after the
+commit is answered, never inside the transaction. A revocation's close is
+dropped with a transaction that rolled back; the expiry sweep closes even when
+its commit fails, since an expired session is refused with or without its row.
 
 ## Named-column projections
 
