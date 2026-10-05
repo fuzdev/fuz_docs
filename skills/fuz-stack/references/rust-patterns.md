@@ -30,7 +30,9 @@ justification); `///` for public API, `//` for implementation notes.
    `resolver = "2"`.
 2. Copy the canonical `[workspace.lints.*]` block (§Lints); every crate takes
    `[lints] workspace = true`. Root `clippy.toml` with
-   `allow-{unwrap,expect,panic}-in-tests = true`.
+   `allow-{unwrap,expect,panic}-in-tests = true`. A workspace that resolves
+   home-relative paths through `fuz_sys::home_dir` adds a `disallowed-methods`
+   entry for `std::env::home_dir` (§Security).
 3. Copy the canonical `[profile.release]` (§Release Profile); derived profiles
    only with a driving need.
 4. Crate naming `{project}_{crate}`; short bare names only for
@@ -215,9 +217,21 @@ daemon doesn't tick), its `select!` carrying a `shutdown.cancelled()` arm that
 does a final `flush()`. Add `TaskTracker` when shutdown must verify all workers
 exited; skip it for short-lived tasks.
 
+**Periodic upkeep goes on one loop, not a hand-rolled `interval`.**
+`fuz_sys::periodic::spawn_periodic(name, interval, shutdown, pass)` (`periodic`
+feature; `fuz_http` re-exports it) fixes the rules every sweep otherwise
+re-decides: a startup pass, then one per interval; passes never overlap and a
+slow one delays the schedule instead of bursting; a failed pass is logged at
+`warn` with its source chain and retried next interval; cancelling the token
+drops the pass in progress, so the handle joins at once — a pass must be safe
+to drop mid-flight (transactional work rolls back, the next start's pass
+picks it up). A sweep is its pass plus one call; the owner awaits the handle
+after the drain.
+
 **Don't**: `std::process::exit()` in async code (bypasses Drop); bare
 `tokio::spawn` with no shutdown awareness for anything holding resources;
-`tokio::sync::broadcast` as a poor-man's cancellation token.
+`tokio::sync::broadcast` as a poor-man's cancellation token; a bare
+`tokio::time::interval` loop for a sweep (`spawn_periodic`).
 
 ## Naming
 
@@ -472,6 +486,13 @@ tests in `tests/`. Three recurring shapes:
 - **Twin servers** (zzz, fuz_forge): the TS cross-backend suite launching the
   `testing_*` binary (./twin-impl.md).
 
+**A test of a path guard runs where a broken guard is harmless.**
+A mutant or regression case for a `$HOME` / `~` / store-root guard runs the
+real binary under a scratch `HOME` and cwd, seeds a decoy where the wrong
+resolution would land, and aims any network call at a dead port — so a
+regression shows as the decoy being read, never as a write into the operator's
+real home.
+
 ## CLI Patterns
 
 Arg parsing tracks binary size:
@@ -566,6 +587,29 @@ ops (open with `O_NOFOLLOW`, check permissions on the fd); `0o600` files,
 daemon-info file readable by tooling is `0o644` on purpose; state the choice).
 Supply-chain isolation is a crate-graph property (./rust-dependencies.md).
 
+**One `$HOME` lookup.** A home-relative path resolves through
+`fuz_sys::home_dir` — `$HOME`, else the password database, and only ever
+non-empty and absolute — never `std::env::var("HOME")` or
+`std::env::home_dir` (which reads an empty `HOME` as unset and substitutes
+another home). An empty or relative home is an error, not a path: joined
+onto, it names a directory under the process cwd. A `~` path the process will
+read or create takes `expand_tilde_checked`; the infallible `expand_tilde`
+(literal when there is no usable home) is kept for a twin that shares that
+rule, and `collapse_tilde` is the display-side inverse. The fuz and forge
+workspaces enforce it with a `clippy.toml` `disallowed-methods` entry on
+`std::env::home_dir` — only those two carry the guard, and it does not catch a
+direct `HOME` read. A workspace that does not link `fuz_sys` has to apply the
+same refusals by hand. A directory that must be real is probed, not assumed
+(`fuz_sys::fs::probe_real_dir` → absent / real directory / something else,
+without following a link at the path), so a store entry that turns out to be a
+link is refused rather than read through.
+
+**Naming a store never creates it.** A consumer command that reads storage
+parses it with `parse_existing_storage`, which refuses a missing local root
+(exit 1 + hint, nothing created); only a publish creates a store, on its
+first upload. Every backend, local included, holds keys to one validator
+(`validate_forge_key`), and a write never follows a redirect.
+
 ### Transactional state files
 
 State several invocations mutate (a lock ledger, an intent file) needs
@@ -603,9 +647,10 @@ that grew between `stat` and read is rejected, not truncated. **Streams**:
 `Content-Length` is a hint, not a bound — enforce a byte counter mid-stream,
 abort on overrun, unlink partial output (fuz_forge's upload pipeline layers
 preflight + counter + statvfs free-space check `507 storage_full` + a
-concurrency semaphore + an orphan-temp sweep). **Centralize the ceilings**: one
-private constant behind named public aliases (`fuz_sys::limits`:
-`ARTIFACT_CEILING_BYTES` feeding `MAX_TRANSFER_SIZE`, `MAX_FILE_SIZE`, …).
+concurrency semaphore, with `fuz_fact`'s orphan-temp sweeper as the crash
+backstop). **Centralize the ceilings**: one private constant behind named
+public aliases (`fuz_sys::limits`: `ARTIFACT_CEILING_BYTES` feeding
+`MAX_TRANSFER_SIZE`, `MAX_FILE_SIZE`, …).
 
 ### Type state
 

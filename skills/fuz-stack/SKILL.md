@@ -382,15 +382,17 @@ _inventory_.
 
 - ./references/rust-patterns.md — new-workspace checklist, lints (and the
   crate-override re-declare trap), release profile, `thiserror` taxonomy +
-  `.hint()`/`.exit_code()`/classifiers, graceful shutdown, the DI escalation
-  ladder, make-impossible-states idioms (zap_types is the reference), CLI/exit
-  codes, shared patterns (sandboxed eval, transactional state files, CAS,
-  bounded reads, type state, secret masking)
+  `.hint()`/`.exit_code()`/classifiers, graceful shutdown + periodic upkeep,
+  the DI escalation ladder, make-impossible-states idioms (zap_types is the
+  reference), CLI/exit codes, shared patterns (sandboxed eval, the one `$HOME`
+  lookup, transactional state files, CAS, bounded reads, type state, secret
+  masking)
 - ./references/db-patterns.md — query modules, `*_COLUMNS` + `col!` decode,
   drift guard (TS twin in the same doc)
 - ./references/rust-spine.md — spine crate map, `run_app` / `RunAppOptions` /
-  the `testing_*` sibling binary, `fuz_http` JSON-RPC envelope, env loading,
-  daemon lifecycle, `check-release` + crate-layering rules
+  the `testing_*` sibling binary, upkeep tasks, WS/SSE admission, `fuz_http`
+  JSON-RPC envelope, env loading, daemon lifecycle, `check-release` +
+  crate-layering rules
 - ./references/rust-perf.md — profiling, arenas, lock hygiene, `unsafe` escape hatch
 - ./references/rust-dependencies.md — approved crates, crate-vs-feature isolation
 - ./references/twin-impl.md — TS ↔ Rust twin architecture, naming parity, wire

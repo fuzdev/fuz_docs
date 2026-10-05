@@ -167,7 +167,10 @@ dependency graph or it is not, and that is auditable.
 **When a utility gets reimplemented a third time, extract it as a spine-free
 leaf** — no tokio-server/HTTP/DB surface, so spine-free repos can link it too.
 `fuz_eval` (the sandboxed config-eval harness, lifted out of zap) is the proven
-case, now shared down to its JS wrapper ingredients.
+case, now shared down to its JS wrapper ingredients. `fuz_sys::periodic` is the
+second: the loop every spine server's sweeps run on, a default-off feature of
+the existing leaf rather than a new crate (./rust-patterns.md §Async Runtime &
+Graceful Shutdown).
 
 Known-duplicated, not yet extracted: a minimal dotenv (`KEY=VALUE`) parser
 (three copies), an env-isolating subprocess harness with a capped output drain

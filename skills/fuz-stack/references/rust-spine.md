@@ -5,7 +5,8 @@ description: Spine crate map, consumer servers, env, daemon lifecycle
 # Rust Spine & Consumer Servers
 
 **Applies to**: the fuz workspace's spine crates and the servers consuming
-them — `zzz_server`, `fuz_forge_server`, the test-only `testing_spine_stub`.
+them — `zzz_server`, `fuz_forge_server`, the other consumer servers, and the
+test-only `testing_spine_stub`.
 The spine is the Rust twin of `fuz_app`'s TS backend (./twin-impl.md).
 Consumers take the spine as **path deps to a sibling checkout of the fuz
 repo** — not git URLs, not vendoring. Shape/idiom conventions:
@@ -19,15 +20,19 @@ The crates a consumer server names (the full crate inventory is the fuz
 repo's concern):
 
 - **System leaves** — `fuz_sys` (fs, file_lock, secure_file, pid, env,
-  limits, cli; `logging`/`signal`/`capture`/`argh`/`tls` features), `fuz_home` (the `~/.fuz`
-  layer), `fuz_crypto` (Ed25519 verify, `ContentHash`, canonical JSON),
-  `fuz_eval` (sandboxed one-shot Deno eval). HTTP/DB-free by enforced rule.
+  limits, cli, `home_dir` + tilde expansion;
+  `logging`/`signal`/`periodic`/`capture`/`argh`/`tls` features), `fuz_home`
+  (the `~/.fuz` layer), `fuz_crypto` (Ed25519 verify, `ContentHash`, canonical
+  JSON), `fuz_eval` (sandboxed one-shot Deno eval). HTTP/DB-free by enforced
+  rule.
 - **HTTP spine** — `fuz_http` (JSON-RPC envelope, IP/origin, lifecycle),
-  `fuz_db` (pool + migrations), `fuz_auth` (keyring, sessions,
-  `PasswordHasher`, bootstrap, audit), `fuz_actions` (dispatch +
-  `consumer_lifecycle`), `fuz_realtime` (WS/SSE registries), `fuz_cell` /
-  `fuz_cell_actions` (storage / verbs), `fuz_fact` / `fuz_fact_serving`
-  (content-addressed bytes / authz'd reads), `fuz_storage` (File/Forge/Ssh).
+  `fuz_db` (pool + migrations, `status`), `fuz_auth` (keyring, sessions,
+  `PasswordHasher`, bootstrap, audit, `spawn_auth_cleanup`), `fuz_actions`
+  (dispatch + `consumer_lifecycle`, `admit_upgrade`), `fuz_realtime` (WS/SSE
+  registries, two-phase registration), `fuz_cell` / `fuz_cell_actions`
+  (storage / verbs), `fuz_fact` / `fuz_fact_serving` (content-addressed
+  bytes + `spawn_orphan_temp_sweeper` / authz'd reads), `fuz_storage`
+  (File/Forge/Ssh/Https).
 - **Tooling** — `fuz_audit` (dep-graph audit), `fuz_testing` (test-only
   impls, e.g. `TestingArgon2idHasher` — never shippable).
 
@@ -81,6 +86,25 @@ wired surface from staying enforced while the rest is disabled, and any process
 that nulls a limiter prints a startup banner (same fail-loud shape as
 `TestingArgon2idHasher`). Consumer-owned limiters that aren't spine surfaces
 (visiones's upload caps) stay live in both modes.
+
+**Upkeep runs beside the server, owned by `run_app`.** Every spine server
+schedules `fuz_auth::spawn_auth_cleanup(AuthCleanupOptions { pool, audit,
+socket_revoker }, DEFAULT_AUTH_CLEANUP_INTERVAL, shutdown.clone())` — expired
+sessions deleted and their connections closed, expired role-grant offers
+audited once — and a disk-CAS consumer adds
+`fuz_fact::spawn_orphan_temp_sweeper(facts_dir, shutdown.clone())`. The shape:
+`run_app` spawns the tasks after the bind (migrations have run, so each
+startup pass can read the schema), serves, then cancels the token — a serve
+error returns without the signal — and awaits every handle before returning.
+Where a consumer splits out a `build_router`, it spawns nothing and returns a
+`BuiltRouter { router, app: Option<App> }` (`None` in boot-only mode) for
+`run_app` to schedule from. `socket_revoker` is the revoker the app's
+revocation handlers already hold (`RealtimeRevoker` where an SSE stream sits
+beside the WebSocket): a sweep with nothing to close through strands the swept
+sessions' connections. A consumer's own sweep goes on the same loop
+(`fuz_http::spawn_periodic`, cord's invite sweep) — two or more tasks collect
+in a `spawn_upkeep(…) -> [JoinHandle<()>; N]`. `testing_spine_stub` schedules
+none.
 
 The daemon-token keeper wiring (`BootstrapKeeperResolved` + boot-time
 `query_keeper_account_id`) is spine-owned in `fuz_auth` — don't re-implement.
@@ -138,6 +162,15 @@ magic number.
   `fuz_http::notification(…)` and routing through
   `Arc<fuz_realtime::ConnectionRegistry>::send_to`. HTTP → `None` →
   non-streaming.
+- **WS and SSE admission is two-phase, and spine-owned**: `register_action_ws`
+  gates origin → 401 → token scope → role, then `admit_upgrade` registers the
+  connection pending, re-reads the credential
+  (`fuz_auth::revalidate_resolved_auth`), and admits — the per-account cap
+  evicts only there. A credential revoked mid-upgrade closes with 4001, a
+  failed re-read with 1011, a superseded socket with 4004. A consumer mounting
+  its own long-lived transport follows the same order (`register_pending` /
+  `subscribe_pending` → re-read → `admit`); a pending entry is closeable but
+  receives nothing and counts toward nothing.
 - **Migration namespaces compose**: substrate DDL lives in the owning crate
   (`fuz_auth::AUTH_MIGRATIONS`, `fuz_cell::CELL_MIGRATIONS`,
   `fuz_fact::FACT_MIGRATIONS`); the consumer composes them with its own via
@@ -157,9 +190,11 @@ magic number.
 
 1. **Server-side graceful shutdown is shared.** Signal → `CancellationToken` is
    `fuz_sys::signal::shutdown_token()` (`signal` feature); `fuz_http::lifecycle`
-   re-exports it and adds `serve_with_shutdown` for axum consumers; `fuzd`
-   (UDS, no axum) calls `fuz_sys::signal` directly. This split is why
-   `fuz_sys` (home-agnostic OS leaf) and `fuz_home` (`~/.fuz`) are separate.
+   re-exports it — with `spawn_periodic` and the `CancellationToken` type, so
+   a consumer names neither `fuz_sys` nor `tokio-util` — and adds
+   `serve_with_shutdown` for axum consumers; `fuzd` (UDS, no axum) calls
+   `fuz_sys::signal` directly. This split is why `fuz_sys` (home-agnostic OS
+   leaf) and `fuz_home` (`~/.fuz`) are separate.
 2. **Client-side CLI lifecycle splits by transport.**
    - `fuzd`'s UDS lifecycle lives in `fuz_daemon`: v2 `daemon.json`
      (`socket_path`, no port), `Hello`-based health over `fuz_client`, a
