@@ -55966,7 +55966,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.209.0",
+			"version": "0.210.0",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -56807,7 +56807,7 @@
 							"kind": "component",
 							"sourceLine": 1,
 							"externalTypes": [
-								"SvelteHTMLElements['menu']"
+								"OmitStrict<SvelteHTMLElements['menu'], 'title' | 'children' | 'onselect'>"
 							],
 							"props": [
 								{
@@ -56816,11 +56816,11 @@
 									"optional": true,
 									"defaultValue": "get_theme_state()"
 								}
-							],
-							"acceptsChildren": true
+							]
 						}
 					],
 					"dependencies": [
+						"RadioMenu.svelte",
 						"theme_state.svelte.ts"
 					]
 				},
@@ -64098,7 +64098,7 @@
 										]
 									},
 									"optional": true,
-									"description": "The close button floating just outside the content surface's top-right\ncorner. `true` (the default) renders an absolutely-positioned `.sm.plain.icon_button`\nthat closes the dialog; `false` removes it. It renders after\n`children`, so a content control (or an `autofocus` element) takes initial\nfocus on open rather than the close button.\n\nPass a `Snippet` to render your own. It receives `attrs`\n(`DialogCloseButtonAttrs`) carrying the default's placement, styling, a11y,\nand `onclick` (closes the dialog), plus the `DialogContext` (e.g. `{close}`).\nSpread `attrs` onto a `<button>` to inherit the corner anchoring and override\nonly what differs (e.g. the glyph), or drop it to place the button freely. The\nsurface is a containing block (`position: relative`), so an absolutely-positioned\ncustom button anchors to it.",
+									"description": "The close button floating just outside the content surface's top-right\ncorner. `true` (the default) renders an absolutely-positioned\n`.sized_sm.plain.icon_button` that closes the dialog; `false` removes it. It renders after\n`children`, so a content control (or an `autofocus` element) takes initial\nfocus on open rather than the close button.\n\nPass a `Snippet` to render your own. It receives `attrs`\n(`DialogCloseButtonAttrs`) carrying the default's placement, styling, a11y,\nand `onclick` (closes the dialog), plus the `DialogContext` (e.g. `{close}`).\nSpread `attrs` onto a `<button>` to inherit the corner anchoring and override\nonly what differs (e.g. the glyph), or drop it to place the button freely. The\nsurface is a containing block (`position: relative`), so an absolutely-positioned\ncustom button anchors to it.",
 									"defaultValue": "true"
 								},
 								{
@@ -67614,97 +67614,97 @@
 							"name": "logo_gro",
 							"kind": "variable",
 							"typeSignature": "{ label: string; paths: { fill: string; d: string; }[]; }",
-							"sourceLine": 22
+							"sourceLine": 24
 						},
 						{
 							"name": "logo_fuz",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 56
+							"sourceLine": 58
 						},
 						{
 							"name": "logo_fuz_app",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 66
+							"sourceLine": 68
 						},
 						{
 							"name": "logo_fuz_css",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; style: string; }",
-							"sourceLine": 72
+							"sourceLine": 74
 						},
 						{
 							"name": "logo_fuz_ui",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 79
+							"sourceLine": 81
 						},
 						{
 							"name": "logo_fuz_code",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 85
+							"sourceLine": 87
 						},
 						{
 							"name": "logo_fuz_blog",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 91
+							"sourceLine": 93
 						},
 						{
 							"name": "logo_fuz_mastodon",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 97
+							"sourceLine": 99
 						},
 						{
 							"name": "logo_fuz_repos",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 103
+							"sourceLine": 105
 						},
 						{
 							"name": "logo_fuz_docs",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 109
+							"sourceLine": 111
 						},
 						{
 							"name": "logo_svelte_docinfo",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 115
+							"sourceLine": 117
 						},
 						{
 							"name": "logo_fuz_template",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 125
+							"sourceLine": 127
 						},
 						{
 							"name": "logo_fuz_util",
 							"kind": "variable",
 							"typeSignature": "{ label: string; paths: { fill: string; d: string; }[]; }",
-							"sourceLine": 135
+							"sourceLine": 137
 						},
 						{
 							"name": "logo_tsv",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 161
+							"sourceLine": 163
 						},
 						{
 							"name": "logo_github",
 							"kind": "variable",
 							"typeSignature": "{ label: string; paths: { d: string; 'fill-rule': \"evenodd\"; 'clip-rule': string; transform: string; }[]; viewBox: string; }",
-							"sourceLine": 171
+							"sourceLine": 173
 						},
 						{
 							"name": "logo_mdn",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 184
+							"sourceLine": 186
 						}
 					],
 					"dependencies": [
@@ -68465,6 +68465,106 @@
 					]
 				},
 				{
+					"path": "RadioMenu.svelte",
+					"declarations": [
+						{
+							"name": "RadioMenu",
+							"kind": "component",
+							"sourceLine": 1,
+							"genericParams": [
+								{
+									"name": "T"
+								}
+							],
+							"externalTypes": [
+								"OmitStrict<SvelteHTMLElements['menu'], 'title' | 'children' | 'onselect'>"
+							],
+							"props": [
+								{
+									"name": "options",
+									"type": "T[]"
+								},
+								{
+									"name": "value",
+									"type": "T",
+									"description": "The selected option, compared by identity; bindable.",
+									"bindable": true
+								},
+								{
+									"name": "onselect",
+									"type": "(option: T) => void",
+									"optional": true,
+									"description": "Called after a click selects an option."
+								},
+								{
+									"name": "label",
+									"type": "(option: T) => string",
+									"description": "The display text of an option - also the default `title` and `key` source."
+								},
+								{
+									"name": "title",
+									"type": "(option: T, selected: boolean) => string",
+									"optional": true,
+									"description": "The button title, defaulting to \"select X\" / \"X is selected\" from `label`."
+								},
+								{
+									"name": "key",
+									"type": "(option: T) => unknown",
+									"optional": true,
+									"description": "Keys the options list; defaults to the label.",
+									"defaultValue": "(option: T): unknown => label(option)"
+								},
+								{
+									"name": "children",
+									"type": "Snippet<[option: T, selected: boolean]>",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Snippet",
+										"typeArgs": [
+											{
+												"kind": "tuple",
+												"elements": [
+													{
+														"name": "option",
+														"type": {
+															"kind": "other",
+															"text": "T"
+														}
+													},
+													{
+														"name": "selected",
+														"type": {
+															"kind": "intrinsic",
+															"text": "boolean"
+														}
+													}
+												]
+											}
+										]
+									},
+									"optional": true,
+									"description": "Custom button content in place of the label text.",
+									"parameters": [
+										{
+											"name": "option",
+											"type": "T"
+										},
+										{
+											"name": "selected",
+											"type": "boolean"
+										}
+									]
+								}
+							],
+							"acceptsChildren": true
+						}
+					],
+					"moduleComment": "A horizontal menu of joined `menuitemradio` buttons with one selected -\nthe shape `ColorSchemeInput` takes, and any other few-way pick where the\noptions should sit one glance apart rather than behind a `select`.",
+					"dependents": [
+						"ColorSchemeInput.svelte"
+					]
+				},
+				{
 					"path": "Redirect.svelte",
 					"declarations": [
 						{
@@ -69116,7 +69216,7 @@
 									"name": "spiders",
 									"type": "string[]",
 									"optional": true,
-									"defaultValue": "[\n\t\t\t'var(--color_a_50)',\n\t\t\t'var(--color_b_50)',\n\t\t\t'var(--color_c_50)',\n\t\t\t'var(--color_d_50)',\n\t\t\t'var(--color_e_50)',\n\t\t\t'var(--color_f_50)',\n\t\t\t'var(--color_g_50)',\n\t\t\t'var(--color_h_50)',\n\t\t\t'var(--color_i_50)',\n\t\t\t'var(--color_j_50)'\n\t\t]"
+									"defaultValue": "[\n\t\t\t'var(--palette_a_50)',\n\t\t\t'var(--palette_b_50)',\n\t\t\t'var(--palette_c_50)',\n\t\t\t'var(--palette_d_50)',\n\t\t\t'var(--palette_e_50)',\n\t\t\t'var(--palette_f_50)',\n\t\t\t'var(--palette_g_50)',\n\t\t\t'var(--palette_h_50)',\n\t\t\t'var(--palette_i_50)',\n\t\t\t'var(--palette_j_50)'\n\t\t]"
 								},
 								{
 									"name": "seed",
@@ -69775,12 +69875,16 @@
 							"name": "ThemeStateJson",
 							"kind": "interface",
 							"typeSignature": "ThemeStateJson",
-							"sourceLine": 8,
+							"sourceLine": 9,
 							"members": [
 								{
 									"name": "theme",
 									"kind": "variable",
-									"typeSignature": "Theme"
+									"typeSignature": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Theme"
+									}
 								},
 								{
 									"name": "color_scheme",
@@ -69814,7 +69918,7 @@
 							"name": "ThemeStateOptions",
 							"kind": "type",
 							"typeSignature": "Partial<ThemeStateJson>",
-							"sourceLine": 13,
+							"sourceLine": 14,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Partial",
@@ -69829,8 +69933,12 @@
 								{
 									"name": "theme",
 									"kind": "variable",
-									"typeSignature": "Theme",
-									"optional": true
+									"typeSignature": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
+									"optional": true,
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Theme"
+									}
 								},
 								{
 									"name": "color_scheme",
@@ -69864,13 +69972,17 @@
 						{
 							"name": "ThemeState",
 							"kind": "class",
-							"sourceLine": 15,
+							"sourceLine": 16,
 							"members": [
 								{
 									"name": "theme",
 									"kind": "variable",
-									"typeSignature": "Theme",
-									"reactivity": "$state.raw"
+									"typeSignature": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
+									"reactivity": "$state.raw",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Theme"
+									}
 								},
 								{
 									"name": "color_scheme",
@@ -69933,13 +70045,13 @@
 							"name": "theme_state_context",
 							"kind": "variable",
 							"typeSignature": "{ get: (error_message?: string | undefined) => () => ThemeState; get_maybe: () => (() => ThemeState) | undefined; set: (value: () => ThemeState) => () => ThemeState; }",
-							"sourceLine": 36
+							"sourceLine": 37
 						},
 						{
 							"name": "sync_color_scheme",
 							"kind": "function",
 							"typeSignature": "(color_scheme: ColorScheme | null): void",
-							"sourceLine": 38,
+							"sourceLine": 39,
 							"parameters": [
 								{
 									"name": "color_scheme",
@@ -69982,19 +70094,19 @@
 							"name": "COLOR_SCHEME_STORAGE_KEY",
 							"kind": "variable",
 							"typeSignature": "\"fuz:color-scheme\"",
-							"sourceLine": 47
+							"sourceLine": 48
 						},
 						{
 							"name": "THEME_STORAGE_KEY",
 							"kind": "variable",
 							"typeSignature": "\"fuz:theme\"",
-							"sourceLine": 48
+							"sourceLine": 49
 						},
 						{
 							"name": "save_color_scheme",
 							"kind": "function",
 							"typeSignature": "(color_scheme: ColorScheme | null, key?: string): void",
-							"sourceLine": 50,
+							"sourceLine": 51,
 							"parameters": [
 								{
 									"name": "color_scheme",
@@ -70042,7 +70154,7 @@
 							"name": "load_color_scheme",
 							"kind": "function",
 							"typeSignature": "(fallback?: ColorScheme, key?: string): ColorScheme",
-							"sourceLine": 57,
+							"sourceLine": 58,
 							"parameters": [
 								{
 									"name": "fallback",
@@ -70102,12 +70214,12 @@
 						{
 							"name": "save_theme",
 							"kind": "function",
-							"typeSignature": "(theme: Theme | null, key?: string): void",
-							"sourceLine": 62,
+							"typeSignature": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; } | null, key?: string): void",
+							"sourceLine": 63,
 							"parameters": [
 								{
 									"name": "theme",
-									"type": "Theme | null",
+									"type": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; } | null",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -70133,12 +70245,16 @@
 						{
 							"name": "load_theme",
 							"kind": "function",
-							"typeSignature": "(fallback?: Theme, key?: string): Theme",
-							"sourceLine": 66,
+							"typeSignature": "(fallback?: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }, key?: string): { ...; }",
+							"sourceLine": 67,
 							"parameters": [
 								{
 									"name": "fallback",
-									"type": "Theme",
+									"type": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Theme"
+									},
 									"defaultValue": "default_themes[0]!"
 								},
 								{
@@ -70147,7 +70263,11 @@
 									"defaultValue": "THEME_STORAGE_KEY"
 								}
 							],
-							"returnType": "Theme"
+							"returnType": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
+							"returnTypeInfo": {
+								"kind": "reference",
+								"name": "Theme"
+							}
 						}
 					],
 					"dependencies": [
@@ -70173,13 +70293,13 @@
 							"props": [
 								{
 									"name": "selected_theme",
-									"type": "{ theme: Theme; }",
+									"type": "{ theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }; }",
 									"optional": true,
 									"defaultValue": "get_theme_state()"
 								},
 								{
 									"name": "themes",
-									"type": "Theme[]",
+									"type": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }[]",
 									"typeInfo": {
 										"kind": "array",
 										"element": {
@@ -70198,13 +70318,13 @@
 								},
 								{
 									"name": "select",
-									"type": "((theme: Theme) => boolean | void) | null",
+									"type": "((theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }) => boolean | void) | null",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
 											{
 												"kind": "function",
-												"text": "(theme: Theme) => boolean | void"
+												"text": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[] | undefined; }) => boolean | void"
 											},
 											{
 												"kind": "intrinsic",
@@ -70217,7 +70337,7 @@
 								},
 								{
 									"name": "onselect",
-									"type": "EventHandler<Event, HTMLMenuElement> & ((theme: Theme) => void)",
+									"type": "EventHandler<Event, HTMLMenuElement> & ((theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | ... 2 more ... | undefined; scheme_mirror?: { ...; }[] | undefined; }) => void)",
 									"typeInfo": {
 										"kind": "intersection",
 										"members": [
@@ -70227,7 +70347,7 @@
 											},
 											{
 												"kind": "function",
-												"text": "(theme: Theme) => void"
+												"text": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[] | undefined; }) => void"
 											}
 										]
 									},
@@ -70235,7 +70355,7 @@
 								},
 								{
 									"name": "onedit",
-									"type": "(theme: Theme) => void",
+									"type": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }) => void",
 									"optional": true
 								}
 							],
@@ -70274,19 +70394,23 @@
 								},
 								{
 									"name": "load_theme",
-									"type": "(fallback?: Theme, key?: string) => Theme",
+									"type": "(fallback?: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }, key?: string) => { ...; }",
 									"optional": true,
 									"defaultValue": "default_load_theme"
 								},
 								{
 									"name": "save_theme",
-									"type": "(theme: Theme | null, key?: string) => void",
+									"type": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; } | null, key?: string) => void",
 									"optional": true,
 									"defaultValue": "default_save_theme"
 								},
 								{
 									"name": "theme_fallback",
-									"type": "Theme",
+									"type": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Theme"
+									},
 									"optional": true
 								},
 								{
@@ -71066,7 +71190,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.121.0",
+			"version": "0.122.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -91631,7 +91755,7 @@
 									"name": "emit_role_grant_target",
 									"kind": "function",
 									"docComment": "Emit a role-grant-shape audit event with `actor_id` / `account_id` /\n`ip` lifted from `auth` + `ctx`. Delegates to `emit`.\n\nUse for any event populating one of the `target_*_id` columns.\nReach for the lower-level `emit` only when the event is non-role-grant\nshape (e.g. `app_settings_update`, bootstrap, signup).",
-									"typeSignature": "<T extends string>(ctx: AuditEmitRoleGrantContext, auth: RequestActorContext, input: { event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<...>) | null; metadata: (T extends \"login\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | undefined; }): void",
+									"typeSignature": "<T extends string>(ctx: AuditEmitRoleGrantContext, auth: RequestActorContext, input: { event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<...>) | null; metadata: (T extends \"bootstrap\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | undefined; }): void",
 									"genericParams": [
 										{
 											"name": "T",
@@ -91649,7 +91773,7 @@
 										},
 										{
 											"name": "input",
-											"type": "{ event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<\"Uuid\">) | null; metadata: (T extends \"login\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | undefi..."
+											"type": "{ event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<\"Uuid\">) | null; metadata: (T extends \"bootstrap\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | un..."
 										}
 									],
 									"returnType": "void"
@@ -92348,11 +92472,16 @@
 							"name": "AuditEventType",
 							"kind": "type",
 							"docComment": "Zod schema for audit event types.",
-							"typeSignature": "\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\"",
+							"typeSignature": "\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\"",
 							"sourceLine": 71,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
+									{
+										"kind": "literal",
+										"value": "bootstrap",
+										"text": "\"bootstrap\""
+									},
 									{
 										"kind": "literal",
 										"value": "login",
@@ -92362,11 +92491,6 @@
 										"kind": "literal",
 										"value": "logout",
 										"text": "\"logout\""
-									},
-									{
-										"kind": "literal",
-										"value": "bootstrap",
-										"text": "\"bootstrap\""
 									},
 									{
 										"kind": "literal",
@@ -92524,13 +92648,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "role",
+										"text": "\"role\""
 									},
 									{
 										"kind": "literal",
-										"value": "role",
-										"text": "\"role\""
+										"value": "token",
+										"text": "\"token\""
 									}
 								]
 							}
@@ -92539,7 +92663,7 @@
 							"name": "audit_event_revocation_scopes",
 							"kind": "variable",
 							"docComment": "The `RevocationScope` of every builtin audit event — declared once, so the\nWebSocket and SSE revocation listeners read one answer instead of keeping a\nlist each. Typed over `AuditEventType`, so a new event type does not compile\nuntil it declares its scope here.\n\nA scope other than `none` marks an event whose success invalidates a live\nconnection's credential or access: `logout`, `password_change`,\n`session_revoke_all`, `token_revoke_all`, `account_delete`, and\n`account_purge` are account-wide, `session_revoke` and `token_revoke` name\nthe one credential they ended, and `role_grant_revoke` names the lost role.\nGranting access revokes nothing, and neither does an event about a subject\nother than a connection's identity.\n\nTwin of the `revocation_scope` column of the Rust spine's\n`AUDIT_EVENT_SPECS`.",
-							"typeSignature": "Readonly<Record<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\", RevocationScope>>",
+							"typeSignature": "Readonly<Record<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\", RevocationScope>>",
 							"sourceLine": 112,
 							"typeInfo": {
 								"kind": "reference",
@@ -92574,13 +92698,13 @@
 													},
 													{
 														"kind": "literal",
-														"value": "token",
-														"text": "\"token\""
+														"value": "role",
+														"text": "\"role\""
 													},
 													{
 														"kind": "literal",
-														"value": "role",
-														"text": "\"role\""
+														"value": "token",
+														"text": "\"token\""
 													}
 												]
 											}
@@ -92623,13 +92747,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "role",
+										"text": "\"role\""
 									},
 									{
 										"kind": "literal",
-										"value": "role",
-										"text": "\"role\""
+										"value": "token",
+										"text": "\"token\""
 									}
 								]
 							}
@@ -92697,6 +92821,24 @@
 							"sourceLine": 490,
 							"members": [
 								{
+									"name": "bootstrap",
+									"kind": "variable",
+									"typeSignature": "{ [x: string]: unknown; error: string; } | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "object",
+												"text": "{ [x: string]: unknown; error: string; }"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
 									"name": "login",
 									"kind": "variable",
 									"typeSignature": "{ [x: string]: unknown; username: string; } | null",
@@ -92718,24 +92860,6 @@
 									"name": "logout",
 									"kind": "variable",
 									"typeSignature": "null"
-								},
-								{
-									"name": "bootstrap",
-									"kind": "variable",
-									"typeSignature": "{ [x: string]: unknown; error: string; } | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "object",
-												"text": "{ [x: string]: unknown; error: string; }"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
 								},
 								{
 									"name": "signup",
@@ -93213,7 +93337,7 @@
 									"name": "metadata",
 									"kind": "variable",
 									"docComment": "Per-event-type metadata. Builtin `T` narrows to `AuditMetadataMap[T]`;\nconsumer strings widen to a generic record (validation runs against\n`AuditLogConfig.metadata_schemas` at insert time).",
-									"typeSignature": "T extends \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | ... 17 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null",
+									"typeSignature": "T extends \"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | ... 17 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null",
 									"optional": true
 								}
 							]
@@ -136410,7 +136534,7 @@
 									"name": "app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides for `AppServerOptions`. Excludes fields\n`create_test_app` manages directly: `backend`, `session_options`,\n`create_route_specs`, `rpc_endpoints`, `bootstrap` (top-level slots\nabove).",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -136434,11 +136558,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
-															},
-															{
-																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -136451,6 +136570,11 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
+															},
+															{
+																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -136465,7 +136589,7 @@
 							"name": "SuiteAppOptions",
 							"kind": "type",
 							"docComment": "`app_options` shape accepted by `create_test_app` and the DB-backed suite\nhelpers. Excludes fields the helpers manage directly — `backend` /\n`session_options` / `create_route_specs` are constructed by the helper\nitself; `rpc_endpoints` and `bootstrap` live on top-level options so\nsetup-time surface lookup and runtime dispatch read from one source of\ntruth.",
-							"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+							"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 							"sourceLine": 577,
 							"typeInfo": {
 								"kind": "reference",
@@ -136489,11 +136613,6 @@
 													},
 													{
 														"kind": "literal",
-														"value": "bootstrap",
-														"text": "\"bootstrap\""
-													},
-													{
-														"kind": "literal",
 														"value": "session_options",
 														"text": "\"session_options\""
 													},
@@ -136506,6 +136625,11 @@
 														"kind": "literal",
 														"value": "rpc_endpoints",
 														"text": "\"rpc_endpoints\""
+													},
+													{
+														"kind": "literal",
+														"value": "bootstrap",
+														"text": "\"bootstrap\""
 													}
 												]
 											}
@@ -137406,7 +137530,7 @@
 								{
 									"name": "app_options",
 									"kind": "variable",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -137430,11 +137554,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
-															},
-															{
-																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -137447,6 +137566,11 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
+															},
+															{
+																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -138518,7 +138642,7 @@
 								{
 									"name": "calls",
 									"kind": "variable",
-									"typeSignature": "AuditLogInput<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
+									"typeSignature": "AuditLogInput<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
 									"typeInfo": {
 										"kind": "array",
 										"element": {
@@ -138530,6 +138654,11 @@
 													"members": [
 														{
 															"kind": "literal",
+															"value": "bootstrap",
+															"text": "\"bootstrap\""
+														},
+														{
+															"kind": "literal",
 															"value": "login",
 															"text": "\"login\""
 														},
@@ -138537,11 +138666,6 @@
 															"kind": "literal",
 															"value": "logout",
 															"text": "\"logout\""
-														},
-														{
-															"kind": "literal",
-															"value": "bootstrap",
-															"text": "\"bootstrap\""
 														},
 														{
 															"kind": "literal",
@@ -138680,12 +138804,12 @@
 							"name": "create_recording_audit_emitter",
 							"kind": "function",
 							"docComment": "Build a no-op `AuditEmitter` that records every `emit`, `emit_pool`, and\n`emit_role_grant_target` call into `calls` as an `AuditLogInput`. Use to\ncapture audit metadata shapes in unit tests (e.g. password change failure\noutcome, role-grant create denial) without standing up the full PGlite +\n`query_audit_log` pipeline.\n\n**Capture scope — all four production fan-out shapes.**\n`emit_role_grant_target` mirrors `create_audit_emitter`'s lift logic in\nplace — `actor_id` / `account_id` / `ip` are populated from `auth` + `ctx`\nand the `event_type` / `outcome` / `target_*_id` / `metadata` fields\nforward from the input envelope. Tests asserting on role-grant-shape\nemissions read out of the same homogeneous `calls` array.\n`notify` is a no-op; `add_listener` records into a local array that\n`listener_count` reports (registered listeners never fire — this emitter\ncaptures `emit` shapes, not fan-out).\n\n`emit` AND `emit_pool` both append to `calls`, so a test reads either\nentry point's writes off the same array.\n\nPass `calls_ref` to write into a caller-owned array (callers that\ndeclared `const events: Array<AuditLogInput> = []` and want to keep\nthe reference). Omit to let the helper allocate a fresh array and\nreturn it on the `calls` field of the result.\n\nThe returned emitter is deliberately NOT frozen — slots stay mutable\nso a test can override one when it needs bespoke shape (e.g. an\n`emit_pool` that throws on the first call). The production\n`create_audit_emitter` freeze invariant exists to catch the\n`patch_audit_emit_capture` hot-patch footgun against the\nclosure-captured `emit`; the recording emitter has no inner closure,\nso the freeze isn't load-bearing here.",
-							"typeSignature": "(calls_ref?: AuditLogInput<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[] | undefined): RecordingAuditEmitter",
+							"typeSignature": "(calls_ref?: AuditLogInput<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[] | undefined): RecordingAuditEmitter",
 							"sourceLine": 97,
 							"parameters": [
 								{
 									"name": "calls_ref",
-									"type": "AuditLogInput<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
+									"type": "AuditLogInput<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
 									"typeInfo": {
 										"kind": "array",
 										"element": {
@@ -138697,6 +138821,11 @@
 													"members": [
 														{
 															"kind": "literal",
+															"value": "bootstrap",
+															"text": "\"bootstrap\""
+														},
+														{
+															"kind": "literal",
 															"value": "login",
 															"text": "\"login\""
 														},
@@ -138704,11 +138833,6 @@
 															"kind": "literal",
 															"value": "logout",
 															"text": "\"logout\""
-														},
-														{
-															"kind": "literal",
-															"value": "bootstrap",
-															"text": "\"bootstrap\""
 														},
 														{
 															"kind": "literal",
@@ -143526,7 +143650,7 @@
 								{
 									"name": "app_options",
 									"kind": "variable",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -143550,11 +143674,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
-															},
-															{
-																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -143567,6 +143686,11 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
+															},
+															{
+																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -149485,13 +149609,13 @@
 															},
 															{
 																"kind": "literal",
-																"value": "updated_by",
-																"text": "\"updated_by\""
+																"value": "created_by",
+																"text": "\"created_by\""
 															},
 															{
 																"kind": "literal",
-																"value": "created_by",
-																"text": "\"created_by\""
+																"value": "updated_by",
+																"text": "\"updated_by\""
 															}
 														]
 													}
@@ -149506,18 +149630,6 @@
 								]
 							},
 							"members": [
-								{
-									"name": "created_at",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
-									"name": "username",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
 								{
 									"name": "email",
 									"kind": "variable",
@@ -149538,9 +149650,27 @@
 									}
 								},
 								{
+									"name": "username",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
 									"name": "email_verified",
 									"kind": "variable",
 									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "password_hash",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "created_at",
+									"kind": "variable",
+									"typeSignature": "string",
 									"optional": true
 								},
 								{
@@ -149568,12 +149698,6 @@
 											}
 										]
 									}
-								},
-								{
-									"name": "password_hash",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
 								},
 								{
 									"name": "deleted_by",
@@ -149677,13 +149801,13 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "updated_by",
-																		"text": "\"updated_by\""
+																		"value": "created_by",
+																		"text": "\"created_by\""
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "created_by",
-																		"text": "\"created_by\""
+																		"value": "updated_by",
+																		"text": "\"updated_by\""
 																	}
 																]
 															}
@@ -149734,13 +149858,13 @@
 															},
 															{
 																"kind": "literal",
-																"value": "account_id",
-																"text": "\"account_id\""
+																"value": "updated_by",
+																"text": "\"updated_by\""
 															},
 															{
 																"kind": "literal",
-																"value": "updated_by",
-																"text": "\"updated_by\""
+																"value": "account_id",
+																"text": "\"account_id\""
 															}
 														]
 													}
@@ -149895,13 +150019,13 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "account_id",
-																		"text": "\"account_id\""
+																		"value": "updated_by",
+																		"text": "\"updated_by\""
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "updated_by",
-																		"text": "\"updated_by\""
+																		"value": "account_id",
+																		"text": "\"account_id\""
 																	}
 																]
 															}
@@ -149952,6 +150076,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "actor_id",
+																"text": "\"actor_id\""
+															},
+															{
+																"kind": "literal",
 																"value": "scope_kind",
 																"text": "\"scope_kind\""
 															},
@@ -149962,18 +150091,13 @@
 															},
 															{
 																"kind": "literal",
-																"value": "granted_by",
-																"text": "\"granted_by\""
-															},
-															{
-																"kind": "literal",
-																"value": "actor_id",
-																"text": "\"actor_id\""
-															},
-															{
-																"kind": "literal",
 																"value": "revoked_by",
 																"text": "\"revoked_by\""
+															},
+															{
+																"kind": "literal",
+																"value": "granted_by",
+																"text": "\"granted_by\""
 															},
 															{
 																"kind": "literal",
@@ -150000,6 +150124,12 @@
 									"optional": true
 								},
 								{
+									"name": "role",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
 									"name": "expires_at",
 									"kind": "variable",
 									"typeSignature": "string | null",
@@ -150017,12 +150147,6 @@
 											}
 										]
 									}
-								},
-								{
-									"name": "role",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
 								},
 								{
 									"name": "revoked_at",
@@ -150208,6 +150332,11 @@
 																	},
 																	{
 																		"kind": "literal",
+																		"value": "actor_id",
+																		"text": "\"actor_id\""
+																	},
+																	{
+																		"kind": "literal",
 																		"value": "scope_kind",
 																		"text": "\"scope_kind\""
 																	},
@@ -150218,18 +150347,13 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "granted_by",
-																		"text": "\"granted_by\""
-																	},
-																	{
-																		"kind": "literal",
-																		"value": "actor_id",
-																		"text": "\"actor_id\""
-																	},
-																	{
-																		"kind": "literal",
 																		"value": "revoked_by",
 																		"text": "\"revoked_by\""
+																	},
+																	{
+																		"kind": "literal",
+																		"value": "granted_by",
+																		"text": "\"granted_by\""
 																	},
 																	{
 																		"kind": "literal",
@@ -150290,6 +150414,10 @@
 																		},
 																		{
 																			"kind": "other",
+																			"text": "\"actor_id\""
+																		},
+																		{
+																			"kind": "other",
 																			"text": "\"scope_kind\""
 																		},
 																		{
@@ -150298,15 +150426,11 @@
 																		},
 																		{
 																			"kind": "other",
-																			"text": "\"granted_by\""
-																		},
-																		{
-																			"kind": "other",
-																			"text": "\"actor_id\""
-																		},
-																		{
-																			"kind": "other",
 																			"text": "\"revoked_by\""
+																		},
+																		{
+																			"kind": "other",
+																			"text": "\"granted_by\""
 																		},
 																		{
 																			"kind": "other",
@@ -150419,6 +150543,12 @@
 									"optional": true
 								},
 								{
+									"name": "seq",
+									"kind": "variable",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
 									"name": "event_type",
 									"kind": "variable",
 									"typeSignature": "string",
@@ -150433,12 +150563,6 @@
 										"kind": "reference",
 										"name": "AuditOutcome"
 									}
-								},
-								{
-									"name": "seq",
-									"kind": "variable",
-									"typeSignature": "number",
-									"optional": true
 								},
 								{
 									"name": "metadata",
@@ -153679,7 +153803,7 @@
 									"name": "app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides for `AppServerOptions`.",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -153703,11 +153827,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
-															},
-															{
-																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -153720,6 +153839,11 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
+															},
+															{
+																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -156513,7 +156637,7 @@
 									"name": "app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides for `AppServerOptions`.",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -156537,11 +156661,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
-															},
-															{
-																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -156554,6 +156673,11 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
+															},
+															{
+																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -156806,7 +156930,7 @@
 									"name": "rate_limiting_app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides forwarded to `describe_rate_limiting_tests`.",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -156830,11 +156954,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
-															},
-															{
-																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -156847,6 +156966,11 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
+															},
+															{
+																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -168345,7 +168469,7 @@
 	"fuz_code": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_code",
-			"version": "0.49.1",
+			"version": "0.50.0",
 			"description": "syntax styler for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
 			"logo": "logo.svg",
@@ -176080,7 +176204,7 @@
 	"fuz_repos": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_repos",
-			"version": "0.80.0",
+			"version": "0.81.0",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
 			"logo": "logo.svg",
