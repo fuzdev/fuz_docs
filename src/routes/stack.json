@@ -66,7 +66,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.65.0",
+			"version": "0.65.1",
 			"path": "fuz_css",
 			"description": "semantic-first CSS framework and design system",
 			"glyph": "🪴",
@@ -118,7 +118,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.210.0",
+			"version": "0.210.1",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -147,7 +147,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.122.0",
+			"version": "0.123.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -367,9 +367,9 @@
 			"glyph": "💤",
 			"homepage_url": "https://www.zzz.software/",
 			"published": false,
-			"module_count": 230,
-			"exported_module_count": 227,
-			"export_count": 722,
+			"module_count": 231,
+			"exported_module_count": 228,
+			"export_count": 729,
 			"peer_dependencies": [
 				"@fuzdev/fuz_app",
 				"@fuzdev/fuz_ui",

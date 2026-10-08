@@ -33611,7 +33611,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.65.0",
+			"version": "0.65.1",
 			"description": "semantic-first CSS framework and design system",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -35150,7 +35150,7 @@
 								{
 									"name": "explicit_classes",
 									"kind": "variable",
-									"docComment": "Classes explicitly annotated via `@fuz-classes` comments, or null if none.\nThese produce errors if they can't be resolved during generation.",
+									"docComment": "Classes explicitly annotated via `@fuz-classes` comments, or null if none.\nThese produce errors if they can't be resolved during generation - by a\nclass definition or, when base styles are bundled, a base style rule.",
 									"typeSignature": "Set<string> | null",
 									"typeInfo": {
 										"kind": "union",
@@ -35276,7 +35276,7 @@
 							"kind": "function",
 							"docComment": "Returns true if the extraction data has any non-null fields.",
 							"typeSignature": "(data: ExtractionData): boolean",
-							"sourceLine": 67,
+							"sourceLine": 68,
 							"parameters": [
 								{
 									"name": "data",
@@ -35290,7 +35290,7 @@
 							"kind": "interface",
 							"docComment": "Extraction result with classes mapped to their source locations.\nExtends `ExtractionData` with `tracked_vars` which is internal to AST walking.\n\nUses embedded diagnostics (rather than a Result type) because file extraction\ncan partially succeed: some classes may be extracted while others produce errors.\nThis differs from `CssLiteralParseResult` which uses a discriminated union\nbecause single-class parsing is binary success/failure.",
 							"typeSignature": "ExtractionResult",
-							"sourceLine": 86,
+							"sourceLine": 87,
 							"extends": [
 								"ExtractionData"
 							],
@@ -35327,7 +35327,7 @@
 							"kind": "type",
 							"docComment": "Acorn plugin type - a function that extends the Parser class.",
 							"typeSignature": "AcornPlugin",
-							"sourceLine": 94,
+							"sourceLine": 95,
 							"members": [
 								{
 									"name": "(call)",
@@ -35348,7 +35348,7 @@
 							"kind": "interface",
 							"docComment": "Options for CSS class extraction.",
 							"typeSignature": "ExtractCssClassesOptions",
-							"sourceLine": 99,
+							"sourceLine": 100,
 							"members": [
 								{
 									"name": "filename",
@@ -35373,7 +35373,7 @@
 							"name": "SourceIndex",
 							"kind": "class",
 							"docComment": "Helper class for converting character offsets to line/column positions.\nSvelte template nodes (Comment, Text, ExpressionTag) only have char offsets,\nso this class enables efficient conversion.\n\nBuild: O(n) where n = source length\nLookup: O(log m) where m = number of lines (binary search)",
-							"sourceLine": 130,
+							"sourceLine": 131,
 							"members": [
 								{
 									"name": "constructor",
@@ -35413,7 +35413,7 @@
 							"kind": "function",
 							"docComment": "Extracts CSS classes from a Svelte file using AST parsing.",
 							"typeSignature": "(source: string, file?: string): ExtractionResult",
-							"sourceLine": 293,
+							"sourceLine": 294,
 							"parameters": [
 								{
 									"name": "source",
@@ -35435,7 +35435,7 @@
 							"kind": "function",
 							"docComment": "Extracts CSS classes from a TypeScript/JS file using AST parsing.",
 							"typeSignature": "(source: string, file?: string, acorn_plugins?: AcornPlugin[] | undefined): ExtractionResult",
-							"sourceLine": 483,
+							"sourceLine": 484,
 							"parameters": [
 								{
 									"name": "source",
@@ -35463,7 +35463,7 @@
 							"kind": "function",
 							"docComment": "Unified extraction function that auto-detects file type.\nReturns just the class names as a Set.",
 							"typeSignature": "(source: string, options?: ExtractCssClassesOptions): Set<string> | null",
-							"sourceLine": 555,
+							"sourceLine": 556,
 							"parameters": [
 								{
 									"name": "source",
@@ -35504,7 +35504,7 @@
 							"kind": "function",
 							"docComment": "Unified extraction function that auto-detects file type.\nReturns full extraction result with locations and diagnostics.",
 							"typeSignature": "(source: string, options?: ExtractCssClassesOptions): ExtractionResult",
-							"sourceLine": 571,
+							"sourceLine": 572,
 							"parameters": [
 								{
 									"name": "source",
@@ -36103,7 +36103,7 @@
 								{
 									"name": "explicit_classes",
 									"kind": "variable",
-									"docComment": "Classes that were explicitly annotated (via `@fuz-classes` or `additional_classes`).\nUnresolved explicit classes produce warnings.",
+									"docComment": "Classes that were explicitly annotated (via `@fuz-classes` or `additional_classes`).\nAn explicit class that no definition or interpreter resolves is an error,\nunless `is_base_style_class` claims it.",
 									"typeSignature": "Set<string> | null",
 									"optional": true,
 									"typeInfo": {
@@ -36125,6 +36125,26 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "is_base_style_class",
+									"kind": "variable",
+									"docComment": "Whether the bundled base styles target a class, so an explicit class\nwith no utility definition still resolves - its base rules ship instead.\nNull when no base styles are bundled (utility-only mode or\n`base_css: null`), where such a class errors.",
+									"typeSignature": "((class_name: string) => boolean) | null",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "function",
+												"text": "(class_name: string) => boolean"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
 								}
 							]
 						},
@@ -36132,7 +36152,7 @@
 							"name": "generate_classes_css",
 							"kind": "function",
 							"typeSignature": "(options: GenerateClassesCssOptions): GenerateClassesCssResult",
-							"sourceLine": 206,
+							"sourceLine": 214,
 							"parameters": [
 								{
 									"name": "options",
@@ -38839,7 +38859,7 @@
 								{
 									"name": "additional_classes",
 									"kind": "variable",
-									"docComment": "Classes to always include in the output, regardless of detection.\nUseful for dynamically generated class names that can't be statically extracted.",
+									"docComment": "Classes to always include in the output, regardless of detection.\nUseful for dynamically generated class names that can't be statically extracted.\nA class no class definition resolves is an error, as with a\n`@fuz-classes` hint, unless base styles are bundled and a base style rule\ntargets it (like `selected` or `palette_a`).",
 									"typeSignature": "Iterable<string>",
 									"optional": true,
 									"typeInfo": {
@@ -39016,7 +39036,7 @@
 							"kind": "interface",
 							"docComment": "Options for error and warning handling.",
 							"typeSignature": "CssDiagnosticsOptions",
-							"sourceLine": 303,
+							"sourceLine": 306,
 							"members": [
 								{
 									"name": "on_error",
@@ -39076,7 +39096,7 @@
 							"kind": "interface",
 							"docComment": "Options for cache behavior.",
 							"typeSignature": "CssCacheOptions",
-							"sourceLine": 329,
+							"sourceLine": 332,
 							"members": [
 								{
 									"name": "cache_dir",
@@ -39100,7 +39120,7 @@
 							"kind": "interface",
 							"docComment": "Combined base options shared by both Gro and Vite plugins.\nThese options work identically in both contexts.",
 							"typeSignature": "CssGeneratorBaseOptions",
-							"sourceLine": 346,
+							"sourceLine": 349,
 							"extends": [
 								"CssExtractionOptions",
 								"CssClassOptions",
@@ -55966,7 +55986,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.210.0",
+			"version": "0.210.1",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -71190,7 +71210,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.122.0",
+			"version": "0.123.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -91755,7 +91775,7 @@
 									"name": "emit_role_grant_target",
 									"kind": "function",
 									"docComment": "Emit a role-grant-shape audit event with `actor_id` / `account_id` /\n`ip` lifted from `auth` + `ctx`. Delegates to `emit`.\n\nUse for any event populating one of the `target_*_id` columns.\nReach for the lower-level `emit` only when the event is non-role-grant\nshape (e.g. `app_settings_update`, bootstrap, signup).",
-									"typeSignature": "<T extends string>(ctx: AuditEmitRoleGrantContext, auth: RequestActorContext, input: { event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<...>) | null; metadata: (T extends \"bootstrap\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | undefined; }): void",
+									"typeSignature": "<T extends string>(ctx: AuditEmitRoleGrantContext, auth: RequestActorContext, input: { event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<...>) | null; metadata: (T extends \"login\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | undefined; }): void",
 									"genericParams": [
 										{
 											"name": "T",
@@ -91773,7 +91793,7 @@
 										},
 										{
 											"name": "input",
-											"type": "{ event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<\"Uuid\">) | null; metadata: (T extends \"bootstrap\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | un..."
+											"type": "{ event_type: T; target_account_id: (string & $brand<\"Uuid\">) | null; target_actor_id: (string & $brand<\"Uuid\">) | null; metadata: (T extends \"login\" | ... 26 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null) | undefined; outcome?: \"success\" | ... 1 more ... | undefi..."
 										}
 									],
 									"returnType": "void"
@@ -92472,16 +92492,11 @@
 							"name": "AuditEventType",
 							"kind": "type",
 							"docComment": "Zod schema for audit event types.",
-							"typeSignature": "\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\"",
+							"typeSignature": "\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\"",
 							"sourceLine": 71,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
-									{
-										"kind": "literal",
-										"value": "bootstrap",
-										"text": "\"bootstrap\""
-									},
 									{
 										"kind": "literal",
 										"value": "login",
@@ -92491,6 +92506,11 @@
 										"kind": "literal",
 										"value": "logout",
 										"text": "\"logout\""
+									},
+									{
+										"kind": "literal",
+										"value": "bootstrap",
+										"text": "\"bootstrap\""
 									},
 									{
 										"kind": "literal",
@@ -92648,13 +92668,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "role",
-										"text": "\"role\""
+										"value": "token",
+										"text": "\"token\""
 									},
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "role",
+										"text": "\"role\""
 									}
 								]
 							}
@@ -92663,7 +92683,7 @@
 							"name": "audit_event_revocation_scopes",
 							"kind": "variable",
 							"docComment": "The `RevocationScope` of every builtin audit event — declared once, so the\nWebSocket and SSE revocation listeners read one answer instead of keeping a\nlist each. Typed over `AuditEventType`, so a new event type does not compile\nuntil it declares its scope here.\n\nA scope other than `none` marks an event whose success invalidates a live\nconnection's credential or access: `logout`, `password_change`,\n`session_revoke_all`, `token_revoke_all`, `account_delete`, and\n`account_purge` are account-wide, `session_revoke` and `token_revoke` name\nthe one credential they ended, and `role_grant_revoke` names the lost role.\nGranting access revokes nothing, and neither does an event about a subject\nother than a connection's identity.\n\nTwin of the `revocation_scope` column of the Rust spine's\n`AUDIT_EVENT_SPECS`.",
-							"typeSignature": "Readonly<Record<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\", RevocationScope>>",
+							"typeSignature": "Readonly<Record<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\", RevocationScope>>",
 							"sourceLine": 112,
 							"typeInfo": {
 								"kind": "reference",
@@ -92698,13 +92718,13 @@
 													},
 													{
 														"kind": "literal",
-														"value": "role",
-														"text": "\"role\""
+														"value": "token",
+														"text": "\"token\""
 													},
 													{
 														"kind": "literal",
-														"value": "token",
-														"text": "\"token\""
+														"value": "role",
+														"text": "\"role\""
 													}
 												]
 											}
@@ -92747,13 +92767,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "role",
-										"text": "\"role\""
+										"value": "token",
+										"text": "\"token\""
 									},
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "role",
+										"text": "\"role\""
 									}
 								]
 							}
@@ -92821,24 +92841,6 @@
 							"sourceLine": 490,
 							"members": [
 								{
-									"name": "bootstrap",
-									"kind": "variable",
-									"typeSignature": "{ [x: string]: unknown; error: string; } | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "object",
-												"text": "{ [x: string]: unknown; error: string; }"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								},
-								{
 									"name": "login",
 									"kind": "variable",
 									"typeSignature": "{ [x: string]: unknown; username: string; } | null",
@@ -92860,6 +92862,24 @@
 									"name": "logout",
 									"kind": "variable",
 									"typeSignature": "null"
+								},
+								{
+									"name": "bootstrap",
+									"kind": "variable",
+									"typeSignature": "{ [x: string]: unknown; error: string; } | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "object",
+												"text": "{ [x: string]: unknown; error: string; }"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
 								},
 								{
 									"name": "signup",
@@ -93337,7 +93357,7 @@
 									"name": "metadata",
 									"kind": "variable",
 									"docComment": "Per-event-type metadata. Builtin `T` narrows to `AuditMetadataMap[T]`;\nconsumer strings widen to a generic record (validation runs against\n`AuditLogConfig.metadata_schemas` at insert time).",
-									"typeSignature": "T extends \"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | ... 17 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null",
+									"typeSignature": "T extends \"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | ... 17 more ... | \"db_admin_row_delete\" ? (AuditMetadataMap[T] & Record<...>) | null : Record<...> | null",
 									"optional": true
 								}
 							]
@@ -109106,20 +109126,20 @@
 							"name": "BuiltinRole",
 							"kind": "type",
 							"docComment": "Zod schema for builtin roles only.",
-							"typeSignature": "\"keeper\" | \"admin\"",
+							"typeSignature": "\"admin\" | \"keeper\"",
 							"sourceLine": 59,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "admin",
+										"text": "\"admin\""
 									},
 									{
 										"kind": "literal",
-										"value": "admin",
-										"text": "\"admin\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									}
 								]
 							},
@@ -109129,7 +109149,7 @@
 							"name": "is_builtin_role",
 							"kind": "function",
 							"docComment": "Whether `name` is a builtin role (`keeper` / `admin`).\n\nBuiltin roles are **global-only**: no grant path binds one to a scope\n(`role_grant_assign`, `role_grant_offer_create`, and\n`role_grant_offer_accept` refuse it), and every gate that reads one checks\nthe global grant, so a scoped builtin row confers nothing.",
-							"typeSignature": "(name: string): name is \"keeper\" | \"admin\"",
+							"typeSignature": "(name: string): name is \"admin\" | \"keeper\"",
 							"sourceLine": 72,
 							"parameters": [
 								{
@@ -125595,6 +125615,26 @@
 									},
 									{
 										"kind": "literal",
+										"value": 401,
+										"text": "401"
+									},
+									{
+										"kind": "literal",
+										"value": 403,
+										"text": "403"
+									},
+									{
+										"kind": "literal",
+										"value": 404,
+										"text": "404"
+									},
+									{
+										"kind": "literal",
+										"value": 400,
+										"text": "400"
+									},
+									{
+										"kind": "literal",
 										"value": 102,
 										"text": "102"
 									},
@@ -125675,28 +125715,8 @@
 									},
 									{
 										"kind": "literal",
-										"value": 400,
-										"text": "400"
-									},
-									{
-										"kind": "literal",
-										"value": 401,
-										"text": "401"
-									},
-									{
-										"kind": "literal",
 										"value": 402,
 										"text": "402"
-									},
-									{
-										"kind": "literal",
-										"value": 403,
-										"text": "403"
-									},
-									{
-										"kind": "literal",
-										"value": 404,
-										"text": "404"
 									},
 									{
 										"kind": "literal",
@@ -130141,13 +130161,13 @@
 									},
 									{
 										"kind": "literal",
-										"value": "authenticated",
-										"text": "\"authenticated\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "authenticated",
+										"text": "\"authenticated\""
 									},
 									{
 										"kind": "other",
@@ -136534,7 +136554,7 @@
 									"name": "app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides for `AppServerOptions`. Excludes fields\n`create_test_app` manages directly: `backend`, `session_options`,\n`create_route_specs`, `rpc_endpoints`, `bootstrap` (top-level slots\nabove).",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -136558,6 +136578,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
+															},
+															{
+																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -136570,11 +136595,6 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
-															},
-															{
-																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -136589,7 +136609,7 @@
 							"name": "SuiteAppOptions",
 							"kind": "type",
 							"docComment": "`app_options` shape accepted by `create_test_app` and the DB-backed suite\nhelpers. Excludes fields the helpers manage directly — `backend` /\n`session_options` / `create_route_specs` are constructed by the helper\nitself; `rpc_endpoints` and `bootstrap` live on top-level options so\nsetup-time surface lookup and runtime dispatch read from one source of\ntruth.",
-							"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+							"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 							"sourceLine": 577,
 							"typeInfo": {
 								"kind": "reference",
@@ -136613,6 +136633,11 @@
 													},
 													{
 														"kind": "literal",
+														"value": "bootstrap",
+														"text": "\"bootstrap\""
+													},
+													{
+														"kind": "literal",
 														"value": "session_options",
 														"text": "\"session_options\""
 													},
@@ -136625,11 +136650,6 @@
 														"kind": "literal",
 														"value": "rpc_endpoints",
 														"text": "\"rpc_endpoints\""
-													},
-													{
-														"kind": "literal",
-														"value": "bootstrap",
-														"text": "\"bootstrap\""
 													}
 												]
 											}
@@ -137530,7 +137550,7 @@
 								{
 									"name": "app_options",
 									"kind": "variable",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -137554,6 +137574,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
+															},
+															{
+																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -137566,11 +137591,6 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
-															},
-															{
-																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -138642,7 +138662,7 @@
 								{
 									"name": "calls",
 									"kind": "variable",
-									"typeSignature": "AuditLogInput<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
+									"typeSignature": "AuditLogInput<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
 									"typeInfo": {
 										"kind": "array",
 										"element": {
@@ -138654,11 +138674,6 @@
 													"members": [
 														{
 															"kind": "literal",
-															"value": "bootstrap",
-															"text": "\"bootstrap\""
-														},
-														{
-															"kind": "literal",
 															"value": "login",
 															"text": "\"login\""
 														},
@@ -138666,6 +138681,11 @@
 															"kind": "literal",
 															"value": "logout",
 															"text": "\"logout\""
+														},
+														{
+															"kind": "literal",
+															"value": "bootstrap",
+															"text": "\"bootstrap\""
 														},
 														{
 															"kind": "literal",
@@ -138804,12 +138824,12 @@
 							"name": "create_recording_audit_emitter",
 							"kind": "function",
 							"docComment": "Build a no-op `AuditEmitter` that records every `emit`, `emit_pool`, and\n`emit_role_grant_target` call into `calls` as an `AuditLogInput`. Use to\ncapture audit metadata shapes in unit tests (e.g. password change failure\noutcome, role-grant create denial) without standing up the full PGlite +\n`query_audit_log` pipeline.\n\n**Capture scope — all four production fan-out shapes.**\n`emit_role_grant_target` mirrors `create_audit_emitter`'s lift logic in\nplace — `actor_id` / `account_id` / `ip` are populated from `auth` + `ctx`\nand the `event_type` / `outcome` / `target_*_id` / `metadata` fields\nforward from the input envelope. Tests asserting on role-grant-shape\nemissions read out of the same homogeneous `calls` array.\n`notify` is a no-op; `add_listener` records into a local array that\n`listener_count` reports (registered listeners never fire — this emitter\ncaptures `emit` shapes, not fan-out).\n\n`emit` AND `emit_pool` both append to `calls`, so a test reads either\nentry point's writes off the same array.\n\nPass `calls_ref` to write into a caller-owned array (callers that\ndeclared `const events: Array<AuditLogInput> = []` and want to keep\nthe reference). Omit to let the helper allocate a fresh array and\nreturn it on the `calls` field of the result.\n\nThe returned emitter is deliberately NOT frozen — slots stay mutable\nso a test can override one when it needs bespoke shape (e.g. an\n`emit_pool` that throws on the first call). The production\n`create_audit_emitter` freeze invariant exists to catch the\n`patch_audit_emit_capture` hot-patch footgun against the\nclosure-captured `emit`; the recording emitter has no inner closure,\nso the freeze isn't load-bearing here.",
-							"typeSignature": "(calls_ref?: AuditLogInput<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[] | undefined): RecordingAuditEmitter",
+							"typeSignature": "(calls_ref?: AuditLogInput<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[] | undefined): RecordingAuditEmitter",
 							"sourceLine": 97,
 							"parameters": [
 								{
 									"name": "calls_ref",
-									"type": "AuditLogInput<\"bootstrap\" | \"login\" | \"logout\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
+									"type": "AuditLogInput<\"login\" | \"logout\" | \"bootstrap\" | \"signup\" | \"password_change\" | \"session_revoke\" | \"session_revoke_all\" | \"token_create\" | \"token_revoke\" | \"token_revoke_all\" | \"role_grant_create\" | ... 16 more ... | \"db_admin_row_delete\">[]",
 									"typeInfo": {
 										"kind": "array",
 										"element": {
@@ -138821,11 +138841,6 @@
 													"members": [
 														{
 															"kind": "literal",
-															"value": "bootstrap",
-															"text": "\"bootstrap\""
-														},
-														{
-															"kind": "literal",
 															"value": "login",
 															"text": "\"login\""
 														},
@@ -138833,6 +138848,11 @@
 															"kind": "literal",
 															"value": "logout",
 															"text": "\"logout\""
+														},
+														{
+															"kind": "literal",
+															"value": "bootstrap",
+															"text": "\"bootstrap\""
 														},
 														{
 															"kind": "literal",
@@ -141766,20 +141786,20 @@
 							"name": "ConformancePrincipal",
 							"kind": "type",
 							"docComment": "Closed enum of fixture-provisioned principals a case runs `as`. Each\nvalue maps to a `TestFixture` accessor (or a seeded `extra_accounts`\nentry) in the runner's `resolve_principal` — there is **no** inline\ncredential minting in a case (that would be the setup-DSL trap).\n\n- `keeper` — the per-test bootstrapped keeper (holds `ROLE_KEEPER` +\n  `ROLE_ADMIN`), session credential.\n- `daemon` — the keeper authenticated via the daemon-token header.\n- `invalid_daemon` — a *malformed/invalid* `X-Daemon-Token` carried\n  alongside the keeper's session cookie, over a non-browser (no-Origin)\n  transport. The middleware soft-fail-discards the invalid daemon token\n  (matching the Rust spine's `None`), so auth falls through to the session\n  leg: the request authenticates as the keeper-via-session and a\n  daemon-gated action then refuses the session credential with\n  `credential_type_required` — not a hard `invalid_daemon_token` 401. The\n  no-Origin transport keeps the daemon token on the invalid-token path\n  rather than the browser-context discard; the session base credential is\n  what makes the credential-type gate (not the auth gate) the refusing\n  layer (without it the discard would 401 anonymous).\n- `daemon_browser` — a *valid* `X-Daemon-Token` carried in a browser\n  context (default `Origin` present) alongside the keeper's session cookie.\n  Browsers attach `Origin` automatically; the daemon-token middleware\n  discards a header-bearing daemon token as browser context (mirroring the\n  bearer guard and the Rust spine's `is_browser_context`), so the *valid*\n  token is dropped and auth falls through to the session leg → a daemon-gated\n  action then refuses the session credential with `credential_type_required`.\n  Distinct from `invalid_daemon`: here the token is well-formed and current,\n  so a 403 (not a 400 confirm-guard hit like `daemon`) proves the\n  browser-context discard fired — a valid daemon token does NOT authenticate\n  when an `Origin` is present. `Origin` is deliberately NOT suppressed; its\n  presence is the signal under test.\n- `token` — the keeper authenticated via a bearer api-token (non-browser\n  context; the runner suppresses `Origin` so the token isn't discarded).\n- `bearer_browser` — a *valid* bearer api-token carried in a browser context\n  (default `Origin` present), fresh jar so NO session rides alongside. The\n  bearer middleware discards the token as browser context (mirroring the\n  daemon guard + the Rust spine's `is_browser_context`), so the request\n  arrives anonymous and an authed action 401s. Proves a stolen bearer cannot\n  be replayed from a browser — wire-indistinguishable from sending no\n  credential (the `token` principal is the honored counterpart: it suppresses\n  `Origin`, so the same token authenticates).\n- `scoped_token` — the keeper authenticated via a bearer api-token minted\n  with a **narrowed** `TokenScope` (`{kind: 'methods', methods:\n  [SCOPED_TOKEN_ADMITTED_METHOD]}`), non-browser context. Minted through the\n  production `account_token_create` path over the keeper's session, not\n  seeded — `_testing_reset` deliberately seeds a `full` token, and a harness\n  that narrowed the seed would silently re-scope every other bearer case.\n  The scope gate sits between the credential gate and the role gate, so this\n  principal is what distinguishes `token_scope_required` from the\n  credential-type and role denials on either side of it.\n- `anonymous` — no credential, fresh cookie jar.\n- `fresh_non_admin` — a freshly minted account with no roles, session\n  credential (via the production invite → signup → login flow).\n- `role_holder` — a seeded `extra_accounts` principal holding a specific\n  role; the runner reads it by the username named in\n  `ConformanceTableOptions.principals.role_holder`.\n- `wrong_role` — a seeded `extra_accounts` principal holding a role\n  other than the one a route requires; named via\n  `ConformanceTableOptions.principals.wrong_role`.\n- `expired_session` — the keeper account presented via an *expired\n  server-side session* cookie (minted by `fixture.mint_expired_session()`:\n  a backdated `auth_session` row behind a still-valid signed cookie\n  payload, so the authoritative DB-row expiry gate is what refuses it).",
-							"typeSignature": "\"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
+							"typeSignature": "\"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
 							"sourceLine": 109,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
 									{
 										"kind": "literal",
-										"value": "keeper",
-										"text": "\"keeper\""
+										"value": "token",
+										"text": "\"token\""
 									},
 									{
 										"kind": "literal",
-										"value": "token",
-										"text": "\"token\""
+										"value": "keeper",
+										"text": "\"keeper\""
 									},
 									{
 										"kind": "literal",
@@ -141846,7 +141866,7 @@
 							"name": "ConformanceCaseRequest",
 							"kind": "type",
 							"docComment": "The request a conformance case issues.",
-							"typeSignature": "{ method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
+							"typeSignature": "{ method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
 							"sourceLine": 141,
 							"members": [
 								{
@@ -141857,19 +141877,19 @@
 								{
 									"name": "as",
 									"kind": "variable",
-									"typeSignature": "\"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
+									"typeSignature": "\"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
 											{
 												"kind": "literal",
-												"value": "keeper",
-												"text": "\"keeper\""
+												"value": "token",
+												"text": "\"token\""
 											},
 											{
 												"kind": "literal",
-												"value": "token",
-												"text": "\"token\""
+												"value": "keeper",
+												"text": "\"keeper\""
 											},
 											{
 												"kind": "literal",
@@ -142060,7 +142080,7 @@
 							"name": "ConformanceCase",
 							"kind": "type",
 							"docComment": "A single conformance case. `name` is the assertion; the optional\nfree-text `note` is printed in the test label / failure output. A\nsecurity case's `note` should reference a **public** fuz_app doc\nproperty (`security.md` / `architecture.md` / module TSDoc), since the\ntable ships in a public package — not an internal planning doc. The note\nis documentation, not a gate: it stays free-text by design because a\nnon-empty-string check never catches a *wrong* citation — the citation\nis verified in review.",
-							"typeSignature": "{ name: string; request: { method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect: { ...; }...",
+							"typeSignature": "{ name: string; request: { method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect: { ...; }...",
 							"sourceLine": 245,
 							"members": [
 								{
@@ -142071,7 +142091,7 @@
 								{
 									"name": "request",
 									"kind": "variable",
-									"typeSignature": "{ method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
+									"typeSignature": "{ method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "ConformanceCaseRequest",
@@ -142160,7 +142180,7 @@
 									"name": "cases",
 									"kind": "variable",
 									"docComment": "The conformance cases to run, in order.",
-									"typeSignature": "readonly { name: string; request: { method: string; as: \"keeper\" | \"token\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect:...",
+									"typeSignature": "readonly { name: string; request: { method: string; as: \"token\" | \"keeper\" | \"daemon\" | \"invalid_daemon\" | \"daemon_browser\" | \"bearer_browser\" | \"scoped_token\" | \"anonymous\" | \"fresh_non_admin\" | \"role_holder\" | \"wrong_role\" | \"expired_session\"; params?: unknown; verb?: \"GET\" | ... 1 more ... | undefined; }; expect:...",
 									"modifiers": [
 										"readonly"
 									],
@@ -143650,7 +143670,7 @@
 								{
 									"name": "app_options",
 									"kind": "variable",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -143674,6 +143694,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
+															},
+															{
+																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -143686,11 +143711,6 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
-															},
-															{
-																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -149609,13 +149629,13 @@
 															},
 															{
 																"kind": "literal",
-																"value": "created_by",
-																"text": "\"created_by\""
+																"value": "updated_by",
+																"text": "\"updated_by\""
 															},
 															{
 																"kind": "literal",
-																"value": "updated_by",
-																"text": "\"updated_by\""
+																"value": "created_by",
+																"text": "\"created_by\""
 															}
 														]
 													}
@@ -149630,6 +149650,18 @@
 								]
 							},
 							"members": [
+								{
+									"name": "created_at",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
+								{
+									"name": "username",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
+								},
 								{
 									"name": "email",
 									"kind": "variable",
@@ -149650,27 +149682,9 @@
 									}
 								},
 								{
-									"name": "username",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
 									"name": "email_verified",
 									"kind": "variable",
 									"typeSignature": "boolean",
-									"optional": true
-								},
-								{
-									"name": "password_hash",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
-									"name": "created_at",
-									"kind": "variable",
-									"typeSignature": "string",
 									"optional": true
 								},
 								{
@@ -149698,6 +149712,12 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "password_hash",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
 								},
 								{
 									"name": "deleted_by",
@@ -149801,13 +149821,13 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "created_by",
-																		"text": "\"created_by\""
+																		"value": "updated_by",
+																		"text": "\"updated_by\""
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "updated_by",
-																		"text": "\"updated_by\""
+																		"value": "created_by",
+																		"text": "\"created_by\""
 																	}
 																]
 															}
@@ -149858,13 +149878,13 @@
 															},
 															{
 																"kind": "literal",
-																"value": "updated_by",
-																"text": "\"updated_by\""
+																"value": "account_id",
+																"text": "\"account_id\""
 															},
 															{
 																"kind": "literal",
-																"value": "account_id",
-																"text": "\"account_id\""
+																"value": "updated_by",
+																"text": "\"updated_by\""
 															}
 														]
 													}
@@ -149880,13 +149900,13 @@
 							},
 							"members": [
 								{
-									"name": "name",
+									"name": "created_at",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
 								},
 								{
-									"name": "created_at",
+									"name": "name",
 									"kind": "variable",
 									"typeSignature": "string",
 									"optional": true
@@ -150019,13 +150039,13 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "updated_by",
-																		"text": "\"updated_by\""
+																		"value": "account_id",
+																		"text": "\"account_id\""
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "account_id",
-																		"text": "\"account_id\""
+																		"value": "updated_by",
+																		"text": "\"updated_by\""
 																	}
 																]
 															}
@@ -150076,11 +150096,6 @@
 															},
 															{
 																"kind": "literal",
-																"value": "actor_id",
-																"text": "\"actor_id\""
-															},
-															{
-																"kind": "literal",
 																"value": "scope_kind",
 																"text": "\"scope_kind\""
 															},
@@ -150091,13 +150106,18 @@
 															},
 															{
 																"kind": "literal",
-																"value": "revoked_by",
-																"text": "\"revoked_by\""
+																"value": "granted_by",
+																"text": "\"granted_by\""
 															},
 															{
 																"kind": "literal",
-																"value": "granted_by",
-																"text": "\"granted_by\""
+																"value": "actor_id",
+																"text": "\"actor_id\""
+															},
+															{
+																"kind": "literal",
+																"value": "revoked_by",
+																"text": "\"revoked_by\""
 															},
 															{
 																"kind": "literal",
@@ -150124,12 +150144,6 @@
 									"optional": true
 								},
 								{
-									"name": "role",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								},
-								{
 									"name": "expires_at",
 									"kind": "variable",
 									"typeSignature": "string | null",
@@ -150147,6 +150161,12 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "role",
+									"kind": "variable",
+									"typeSignature": "string",
+									"optional": true
 								},
 								{
 									"name": "revoked_at",
@@ -150332,11 +150352,6 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "actor_id",
-																		"text": "\"actor_id\""
-																	},
-																	{
-																		"kind": "literal",
 																		"value": "scope_kind",
 																		"text": "\"scope_kind\""
 																	},
@@ -150347,13 +150362,18 @@
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "revoked_by",
-																		"text": "\"revoked_by\""
+																		"value": "granted_by",
+																		"text": "\"granted_by\""
 																	},
 																	{
 																		"kind": "literal",
-																		"value": "granted_by",
-																		"text": "\"granted_by\""
+																		"value": "actor_id",
+																		"text": "\"actor_id\""
+																	},
+																	{
+																		"kind": "literal",
+																		"value": "revoked_by",
+																		"text": "\"revoked_by\""
 																	},
 																	{
 																		"kind": "literal",
@@ -150414,10 +150434,6 @@
 																		},
 																		{
 																			"kind": "other",
-																			"text": "\"actor_id\""
-																		},
-																		{
-																			"kind": "other",
 																			"text": "\"scope_kind\""
 																		},
 																		{
@@ -150426,11 +150442,15 @@
 																		},
 																		{
 																			"kind": "other",
-																			"text": "\"revoked_by\""
+																			"text": "\"granted_by\""
 																		},
 																		{
 																			"kind": "other",
-																			"text": "\"granted_by\""
+																			"text": "\"actor_id\""
+																		},
+																		{
+																			"kind": "other",
+																			"text": "\"revoked_by\""
 																		},
 																		{
 																			"kind": "other",
@@ -150543,12 +150563,6 @@
 									"optional": true
 								},
 								{
-									"name": "seq",
-									"kind": "variable",
-									"typeSignature": "number",
-									"optional": true
-								},
-								{
 									"name": "event_type",
 									"kind": "variable",
 									"typeSignature": "string",
@@ -150563,6 +150577,12 @@
 										"kind": "reference",
 										"name": "AuditOutcome"
 									}
+								},
+								{
+									"name": "seq",
+									"kind": "variable",
+									"typeSignature": "number",
+									"optional": true
 								},
 								{
 									"name": "metadata",
@@ -153803,7 +153823,7 @@
 									"name": "app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides for `AppServerOptions`.",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -153827,6 +153847,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
+															},
+															{
+																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -153839,11 +153864,6 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
-															},
-															{
-																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -156637,7 +156657,7 @@
 									"name": "app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides for `AppServerOptions`.",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -156661,6 +156681,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
+															},
+															{
+																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -156673,11 +156698,6 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
-															},
-															{
-																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -156930,7 +156950,7 @@
 									"name": "rate_limiting_app_options",
 									"kind": "variable",
 									"docComment": "Optional overrides forwarded to `describe_rate_limiting_tests`.",
-									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\" | \"bootstrap\">>",
+									"typeSignature": "Partial<Omit<AppServerOptions, \"backend\" | \"bootstrap\" | \"session_options\" | \"create_route_specs\" | \"rpc_endpoints\">>",
 									"optional": true,
 									"typeInfo": {
 										"kind": "reference",
@@ -156954,6 +156974,11 @@
 															},
 															{
 																"kind": "literal",
+																"value": "bootstrap",
+																"text": "\"bootstrap\""
+															},
+															{
+																"kind": "literal",
 																"value": "session_options",
 																"text": "\"session_options\""
 															},
@@ -156966,11 +156991,6 @@
 																"kind": "literal",
 																"value": "rpc_endpoints",
 																"text": "\"rpc_endpoints\""
-															},
-															{
-																"kind": "literal",
-																"value": "bootstrap",
-																"text": "\"bootstrap\""
 															}
 														]
 													}
@@ -164434,12 +164454,19 @@
 									"optional": true,
 									"description": "CSS width of the fixed `aside` column.",
 									"defaultValue": "'280px'"
+								},
+								{
+									"name": "aside_label",
+									"type": "string",
+									"optional": true,
+									"description": "The stacked toggle's text and the aside's accessible name.",
+									"defaultValue": "'menu'"
 								}
 							],
 							"acceptsChildren": true
 						}
 					],
-					"moduleComment": "Two-column layout — fixed-width `aside` on the left, fluid `children`\ncolumn on the right. Both columns scroll independently."
+					"moduleComment": "Two-column layout - fixed-width `aside` on the left, fluid `children`\ncolumn on the right. Both columns scroll independently.\n\nBelow a threshold of the layout's own width - a container query, not a\nmedia query, so a nested layout decides for itself - the columns stack:\nthe aside collapses behind a toggle button labelled `aside_label`, and\nwhen opened it sits in flow above the content, pushing it down, until\nthe toggle closes it or a navigation does. Opening scrolls the aside\ninto view, under the toggle, when it would land above the view.\n\nWith a bounded height, the stacked layout scrolls as one column and the\ntoggle sticks to its top; under a parent that grows with its content,\nthe page scrolls and the toggle scrolls away with it.\n\nThe threshold matches fuz_css's `sm` breakpoint. Above it the toggle is\n`display: none`. The switch is CSS alone, so the server render shows the\nright form at any width and hydration changes nothing.\n\nThe root is an `inline-size` query container, so its width can't come\nfrom its content: a layout placed where it would shrink to fit (an\ninline-block, an absolutely positioned or floated box without a width,\na flex row item that doesn't grow) collapses to zero width. Give it a\nwidth from its context, as a block or a stretched or growing flex item.\n\nRequires the SvelteKit runtime - it closes the aside from\n`afterNavigate`. Without JS the stacked aside can't be opened, since the\ntoggle is client state; above the threshold it's always shown.\n\nRenders a generic `<aside>` named by `aside_label`; wrap navigation\nlinks in a `<nav>` inside the `aside` snippet.\n\nStyling hooks: `--column_width` (set from `column_width`) and\n`--column_toggle_bg`, the stacked toggle bar's opaque background so\ncontent scrolls under it unseen (default `--shade_00`, the page ground)."
 				},
 				{
 					"path": "ui/ConfirmButton.svelte",
@@ -198160,6 +198187,607 @@
 					]
 				},
 				{
+					"path": "audio_capture.svelte.ts",
+					"declarations": [
+						{
+							"name": "create_level_meter",
+							"kind": "function",
+							"docComment": "A `LevelMeter` over Web Audio: an `AnalyserNode` on the stream, read as the\npeak of its latest samples. It only listens — nothing is routed to the\nspeakers. `null` where there's no `AudioContext`.",
+							"typeSignature": "(stream: MediaStream): LevelMeter | null",
+							"sourceLine": 80,
+							"parameters": [
+								{
+									"name": "stream",
+									"type": "MediaStream"
+								}
+							],
+							"returnType": "LevelMeter | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "reference",
+										"name": "LevelMeter"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						},
+						{
+							"name": "AudioCaptureStatus",
+							"kind": "type",
+							"docComment": "Where a capture is: `starting` while the microphone opens and the sink\nopens, `stopping` while the last chunk is handed over and the sink closes.",
+							"typeSignature": "AudioCaptureStatus",
+							"sourceLine": 25,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "AudioCaptureStatus",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "idle",
+										"text": "\"idle\""
+									},
+									{
+										"kind": "literal",
+										"value": "starting",
+										"text": "\"starting\""
+									},
+									{
+										"kind": "literal",
+										"value": "recording",
+										"text": "\"recording\""
+									},
+									{
+										"kind": "literal",
+										"value": "paused",
+										"text": "\"paused\""
+									},
+									{
+										"kind": "literal",
+										"value": "stopping",
+										"text": "\"stopping\""
+									}
+								]
+							}
+						},
+						{
+							"name": "AUDIO_CAPTURE_TICK_INTERVAL",
+							"kind": "variable",
+							"docComment": "How often `AudioCapture.duration` and `AudioCapture.level` update while the\nmicrophone is open, in milliseconds.",
+							"typeSignature": "100",
+							"sourceLine": 31
+						},
+						{
+							"name": "LevelMeter",
+							"kind": "interface",
+							"docComment": "Reads how loud a live stream is right now.",
+							"typeSignature": "LevelMeter",
+							"sourceLine": 34,
+							"members": [
+								{
+									"name": "read",
+									"kind": "function",
+									"docComment": "The current peak level, 0 (silence) to 1 (full scale).",
+									"typeSignature": "(): number",
+									"returnType": "number"
+								},
+								{
+									"name": "close",
+									"kind": "function",
+									"docComment": "Releases what the meter holds.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								}
+							]
+						},
+						{
+							"name": "AudioCaptureDeps",
+							"kind": "interface",
+							"docComment": "The browser a capture runs in — everything it touches outside itself, so a\ntest can stand in for the microphone and the clock.",
+							"typeSignature": "AudioCaptureDeps",
+							"sourceLine": 45,
+							"members": [
+								{
+									"name": "get_user_media",
+									"kind": "function",
+									"docComment": "`navigator.mediaDevices.getUserMedia`.",
+									"typeSignature": "(constraints: MediaStreamConstraints): Promise<MediaStream>",
+									"parameters": [
+										{
+											"name": "constraints",
+											"type": "MediaStreamConstraints"
+										}
+									],
+									"returnType": "Promise<MediaStream>",
+									"returnTypeInfo": {
+										"kind": "reference",
+										"name": "Promise",
+										"typeArgs": [
+											{
+												"kind": "reference",
+												"name": "MediaStream"
+											}
+										]
+									}
+								},
+								{
+									"name": "create_media_recorder",
+									"kind": "function",
+									"docComment": "`new MediaRecorder(stream, options)`.",
+									"typeSignature": "(stream: MediaStream, options: MediaRecorderOptions): MediaRecorder",
+									"parameters": [
+										{
+											"name": "stream",
+											"type": "MediaStream"
+										},
+										{
+											"name": "options",
+											"type": "MediaRecorderOptions"
+										}
+									],
+									"returnType": "MediaRecorder"
+								},
+								{
+									"name": "is_type_supported",
+									"kind": "function",
+									"docComment": "`MediaRecorder.isTypeSupported` — `false` where there's no `MediaRecorder`.",
+									"typeSignature": "(mime_type: string): boolean",
+									"parameters": [
+										{
+											"name": "mime_type",
+											"type": "string"
+										}
+									],
+									"returnType": "boolean"
+								},
+								{
+									"name": "create_level_meter",
+									"kind": "function",
+									"docComment": "A meter on `stream` (Web Audio), or `null` where it can't be made.",
+									"typeSignature": "(stream: MediaStream): LevelMeter | null",
+									"parameters": [
+										{
+											"name": "stream",
+											"type": "MediaStream"
+										}
+									],
+									"returnType": "LevelMeter | null",
+									"returnTypeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "reference",
+												"name": "LevelMeter"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
+									"name": "has_user_activation",
+									"kind": "function",
+									"docComment": "Whether a user gesture is in effect (`navigator.userActivation.isActive`)\n— `true` in a browser that can't say.",
+									"typeSignature": "(): boolean",
+									"returnType": "boolean"
+								},
+								{
+									"name": "now",
+									"kind": "function",
+									"docComment": "`Date.now`.",
+									"typeSignature": "(): number",
+									"returnType": "number"
+								}
+							]
+						},
+						{
+							"name": "create_audio_capture_deps",
+							"kind": "function",
+							"docComment": "`AudioCaptureDeps` over the real browser, each global read when it's called.",
+							"typeSignature": "(): AudioCaptureDeps",
+							"sourceLine": 64,
+							"returnType": "AudioCaptureDeps"
+						},
+						{
+							"name": "AudioCaptureSink",
+							"kind": "interface",
+							"docComment": "Where a capture's chunks go — a file on a backend, local storage, anywhere.",
+							"typeSignature": "AudioCaptureSink",
+							"sourceLine": 110,
+							"members": [
+								{
+									"name": "write",
+									"kind": "function",
+									"docComment": "Takes the next chunk, after every chunk written before it.",
+									"typeSignature": "(chunk: Blob): void",
+									"parameters": [
+										{
+											"name": "chunk",
+											"type": "Blob"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "close",
+									"kind": "function",
+									"docComment": "Waits for every written chunk to land.",
+									"typeSignature": "(): Promise<void>",
+									"throws": [
+										{
+											"type": "Error",
+											"description": "when they didn't"
+										}
+									],
+									"returnType": "Promise<void>",
+									"returnTypeInfo": {
+										"kind": "reference",
+										"name": "Promise",
+										"typeArgs": [
+											{
+												"kind": "intrinsic",
+												"text": "void"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "AudioCaptureStartOptions",
+							"kind": "interface",
+							"typeSignature": "AudioCaptureStartOptions<TSink>",
+							"sourceLine": 121,
+							"genericParams": [
+								{
+									"name": "TSink",
+									"constraint": "AudioCaptureSink",
+									"defaultType": "AudioCaptureSink"
+								}
+							],
+							"members": [
+								{
+									"name": "chunk_duration",
+									"kind": "variable",
+									"docComment": "How often the browser hands over a chunk, in milliseconds — the most a\nsink can lose when the tab crashes.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "open_sink",
+									"kind": "function",
+									"docComment": "Opens the sink for a capture in `format`, once the microphone is open.\n`fail` ends the capture with a reason, for a sink that breaks while\nchunks are still arriving; it's ignored once the capture has ended.",
+									"typeSignature": "(format: RecordingFormat, fail: (message: string) => void): Promise<TSink>",
+									"throws": [
+										{
+											"type": "Error",
+											"description": "when the sink can't be opened, which ends the start"
+										}
+									],
+									"parameters": [
+										{
+											"name": "format",
+											"type": "RecordingFormat"
+										},
+										{
+											"name": "fail",
+											"type": "(message: string) => void"
+										}
+									],
+									"returnType": "Promise<TSink>",
+									"returnTypeInfo": {
+										"kind": "reference",
+										"name": "Promise",
+										"typeArgs": [
+											{
+												"kind": "other",
+												"text": "TSink"
+											}
+										]
+									}
+								},
+								{
+									"name": "on_fail",
+									"kind": "function",
+									"docComment": "Called when a capture under way breaks and has ended, with why.",
+									"typeSignature": "(message: string): void",
+									"parameters": [
+										{
+											"name": "message",
+											"type": "string"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "on_input_ended",
+									"kind": "function",
+									"docComment": "Called when the microphone's track ends on its own — the device was\nunplugged, or the browser revoked the permission. Typically stops the\ncapture the way its owner normally does.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								}
+							]
+						},
+						{
+							"name": "AudioCaptureStopResult",
+							"kind": "type",
+							"docComment": "What a stop got from the sink: `ok`, or why closing it failed.",
+							"typeSignature": "AudioCaptureStopResult",
+							"sourceLine": 146,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "AudioCaptureStopResult",
+								"members": [
+									{
+										"kind": "intersection",
+										"members": [
+											{
+												"kind": "object",
+												"text": "{ ok: true; }"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "object"
+											}
+										]
+									},
+									{
+										"kind": "intersection",
+										"members": [
+											{
+												"kind": "object",
+												"text": "{ ok: false; }"
+											},
+											{
+												"kind": "object",
+												"text": "{ message: string; }"
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "AudioCaptureOptions",
+							"kind": "interface",
+							"typeSignature": "AudioCaptureOptions",
+							"sourceLine": 148,
+							"members": [
+								{
+									"name": "deps",
+									"kind": "variable",
+									"docComment": "The browser to capture with (default `create_audio_capture_deps()`).",
+									"typeSignature": "AudioCaptureDeps",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "AudioCapture",
+							"kind": "class",
+							"docComment": "Captures the microphone with `MediaRecorder`, handing each chunk to a sink\nas it's recorded, with pause and resume, the duration so far, and a level.\n\nCapture starts only in `start`, and only during a user gesture. `active` is\ntrue the whole time the microphone may be open, for an indicator.",
+							"sourceLine": 160,
+							"members": [
+								{
+									"name": "deps",
+									"kind": "variable",
+									"typeSignature": "AudioCaptureDeps"
+								},
+								{
+									"name": "status",
+									"kind": "variable",
+									"typeSignature": "AudioCaptureStatus",
+									"reactivity": "$state.raw",
+									"typeInfo": {
+										"kind": "union",
+										"alias": "AudioCaptureStatus",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "idle",
+												"text": "\"idle\""
+											},
+											{
+												"kind": "literal",
+												"value": "starting",
+												"text": "\"starting\""
+											},
+											{
+												"kind": "literal",
+												"value": "recording",
+												"text": "\"recording\""
+											},
+											{
+												"kind": "literal",
+												"value": "paused",
+												"text": "\"paused\""
+											},
+											{
+												"kind": "literal",
+												"value": "stopping",
+												"text": "\"stopping\""
+											}
+										]
+									}
+								},
+								{
+									"name": "duration",
+									"kind": "variable",
+									"docComment": "How long the current capture is so far, in milliseconds, not counting\npaused time. Updates every `AUDIO_CAPTURE_TICK_INTERVAL` while recording,\nand keeps its last value once the capture ends.",
+									"typeSignature": "number",
+									"reactivity": "$state.raw"
+								},
+								{
+									"name": "level",
+									"kind": "variable",
+									"docComment": "How loud the microphone is right now, 0 to 1 — for a level meter. Updates\nevery `AUDIO_CAPTURE_TICK_INTERVAL` while the microphone is open (paused\nincluded), and is 0 otherwise or where it can't be measured.",
+									"typeSignature": "number",
+									"reactivity": "$state.raw"
+								},
+								{
+									"name": "active",
+									"kind": "variable",
+									"docComment": "Whether the microphone may be open: any status but `idle`.",
+									"typeSignature": "boolean",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived"
+								},
+								{
+									"name": "constructor",
+									"kind": "constructor",
+									"typeSignature": "(options?: AudioCaptureOptions): AudioCapture",
+									"parameters": [
+										{
+											"name": "options",
+											"type": "AudioCaptureOptions",
+											"defaultValue": "{}"
+										}
+									]
+								},
+								{
+									"name": "start",
+									"kind": "function",
+									"docComment": "Opens the microphone and the sink, and starts recording. Must be called\nfrom a user gesture (a click handler).",
+									"typeSignature": "<TSink extends AudioCaptureSink>(options: AudioCaptureStartOptions<TSink>): Promise<TSink | null>",
+									"throws": [
+										{
+											"type": "Error",
+											"description": "when one is already under way (leaving it untouched), or\nwhen there's no user gesture, the browser can't record, the microphone\ncan't be opened, or the sink can't be opened — each of those after\nclosing whatever the start opened"
+										}
+									],
+									"parameters": [
+										{
+											"name": "options",
+											"type": "AudioCaptureStartOptions<TSink>",
+											"typeInfo": {
+												"kind": "reference",
+												"name": "AudioCaptureStartOptions",
+												"typeArgs": [
+													{
+														"kind": "other",
+														"text": "TSink"
+													}
+												]
+											}
+										}
+									],
+									"returnType": "Promise<TSink | null>",
+									"returnTypeInfo": {
+										"kind": "reference",
+										"name": "Promise",
+										"typeArgs": [
+											{
+												"kind": "union",
+												"members": [
+													{
+														"kind": "other",
+														"text": "TSink"
+													},
+													{
+														"kind": "intrinsic",
+														"text": "null"
+													}
+												]
+											}
+										]
+									},
+									"returnDescription": "the opened sink once recording, or `null` when the capture was\nstopped or disposed before it got there"
+								},
+								{
+									"name": "pause",
+									"kind": "function",
+									"docComment": "Pauses a capture: the microphone stays open, nothing is recorded.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								},
+								{
+									"name": "resume",
+									"kind": "function",
+									"docComment": "Resumes a paused capture.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								},
+								{
+									"name": "stop",
+									"kind": "function",
+									"docComment": "Stops the capture: hands the last chunk to the sink, closes the\nmicrophone, and closes the sink. A capture still starting is abandoned.",
+									"typeSignature": "(): Promise<AudioCaptureStopResult | null>",
+									"returnType": "Promise<AudioCaptureStopResult | null>",
+									"returnTypeInfo": {
+										"kind": "reference",
+										"name": "Promise",
+										"typeArgs": [
+											{
+												"kind": "union",
+												"members": [
+													{
+														"kind": "union",
+														"alias": "AudioCaptureStopResult",
+														"members": [
+															{
+																"kind": "intersection",
+																"members": [
+																	{
+																		"kind": "object",
+																		"text": "{ ok: true; }"
+																	},
+																	{
+																		"kind": "intrinsic",
+																		"text": "object"
+																	}
+																]
+															},
+															{
+																"kind": "intersection",
+																"members": [
+																	{
+																		"kind": "object",
+																		"text": "{ ok: false; }"
+																	},
+																	{
+																		"kind": "object",
+																		"text": "{ message: string; }"
+																	}
+																]
+															}
+														]
+													},
+													{
+														"kind": "intrinsic",
+														"text": "null"
+													}
+												]
+											}
+										]
+									},
+									"returnDescription": "how closing the sink went, or `null` when nothing was being\nrecorded, or the capture failed or was disposed while stopping"
+								},
+								{
+									"name": "dispose",
+									"kind": "function",
+									"docComment": "Ends the capture without closing the sink. The last chunk the browser\nhands over as it stops is still written to it.",
+									"typeSignature": "(): void",
+									"returnType": "void"
+								}
+							]
+						}
+					],
+					"moduleComment": "Microphone capture in the browser, handing each recorded chunk to a sink —\nknowing nothing about where the chunks go or what the app does with them.",
+					"dependencies": [
+						"recording_helpers.ts"
+					],
+					"dependents": [
+						"recorder.svelte.ts"
+					]
+				},
+				{
 					"path": "auth_gate.ts",
 					"declarations": [
 						{
@@ -224436,37 +225064,10 @@
 					"path": "recorder.svelte.ts",
 					"declarations": [
 						{
-							"name": "create_level_meter",
-							"kind": "function",
-							"docComment": "A `LevelMeter` over Web Audio: an `AnalyserNode` on the stream, read as the\npeak of its latest samples. It only listens — nothing is routed to the\nspeakers. `null` where there's no `AudioContext`.",
-							"typeSignature": "(stream: MediaStream): LevelMeter | null",
-							"sourceLine": 88,
-							"parameters": [
-								{
-									"name": "stream",
-									"type": "MediaStream"
-								}
-							],
-							"returnType": "LevelMeter | null",
-							"returnTypeInfo": {
-								"kind": "union",
-								"members": [
-									{
-										"kind": "reference",
-										"name": "LevelMeter"
-									},
-									{
-										"kind": "intrinsic",
-										"text": "null"
-									}
-								]
-							}
-						},
-						{
 							"name": "RecorderJson",
 							"kind": "type",
 							"typeSignature": "{ id: string & $brand<\"Uuid\">; created: string & $brand<\"Datetime\">; updated: string & $brand<\"Datetime\">; chunk_duration: number; transcribe_on_stop: boolean; }",
-							"sourceLine": 24,
+							"sourceLine": 26,
 							"members": [
 								{
 									"name": "id",
@@ -224563,7 +225164,7 @@
 							"name": "RecorderJsonInput",
 							"kind": "type",
 							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; chunk_duration?: number | undefined; transcribe_on_stop?: boolean | undefined; }",
-							"sourceLine": 25,
+							"sourceLine": 27,
 							"members": [
 								{
 									"name": "id",
@@ -224601,166 +225202,15 @@
 							]
 						},
 						{
-							"name": "RecorderStatus",
-							"kind": "type",
-							"docComment": "Where a recording is: `starting` while the microphone opens and the file is\ncreated, `stopping` while the last chunks upload and the file is finalized.",
-							"typeSignature": "RecorderStatus",
-							"sourceLine": 31,
-							"typeInfo": {
-								"kind": "union",
-								"alias": "RecorderStatus",
-								"members": [
-									{
-										"kind": "literal",
-										"value": "starting",
-										"text": "\"starting\""
-									},
-									{
-										"kind": "literal",
-										"value": "idle",
-										"text": "\"idle\""
-									},
-									{
-										"kind": "literal",
-										"value": "recording",
-										"text": "\"recording\""
-									},
-									{
-										"kind": "literal",
-										"value": "paused",
-										"text": "\"paused\""
-									},
-									{
-										"kind": "literal",
-										"value": "stopping",
-										"text": "\"stopping\""
-									}
-								]
-							}
-						},
-						{
-							"name": "RECORDER_TICK_INTERVAL",
-							"kind": "variable",
-							"docComment": "How often `Recorder.duration` and `Recorder.level` update while the\nmicrophone is open, in milliseconds.",
-							"typeSignature": "100",
-							"sourceLine": 37
-						},
-						{
-							"name": "LevelMeter",
-							"kind": "interface",
-							"docComment": "Reads how loud a live stream is right now.",
-							"typeSignature": "LevelMeter",
-							"sourceLine": 40,
-							"members": [
-								{
-									"name": "read",
-									"kind": "function",
-									"docComment": "The current peak level, 0 (silence) to 1 (full scale).",
-									"typeSignature": "(): number",
-									"returnType": "number"
-								},
-								{
-									"name": "close",
-									"kind": "function",
-									"docComment": "Releases what the meter holds.",
-									"typeSignature": "(): void",
-									"returnType": "void"
-								}
-							]
-						},
-						{
 							"name": "RecorderDeps",
 							"kind": "interface",
-							"docComment": "The browser the recorder runs in — everything it touches outside the app,\nso a test can stand in for the microphone and the network.",
+							"docComment": "The browser the recorder runs in — the microphone, and `fetch` for the\nupload — so a test can stand in for both.",
 							"typeSignature": "RecorderDeps",
-							"sourceLine": 51,
+							"sourceLine": 33,
+							"extends": [
+								"AudioCaptureDeps"
+							],
 							"members": [
-								{
-									"name": "get_user_media",
-									"kind": "function",
-									"docComment": "`navigator.mediaDevices.getUserMedia`.",
-									"typeSignature": "(constraints: MediaStreamConstraints): Promise<MediaStream>",
-									"parameters": [
-										{
-											"name": "constraints",
-											"type": "MediaStreamConstraints"
-										}
-									],
-									"returnType": "Promise<MediaStream>",
-									"returnTypeInfo": {
-										"kind": "reference",
-										"name": "Promise",
-										"typeArgs": [
-											{
-												"kind": "reference",
-												"name": "MediaStream"
-											}
-										]
-									}
-								},
-								{
-									"name": "create_media_recorder",
-									"kind": "function",
-									"docComment": "`new MediaRecorder(stream, options)`.",
-									"typeSignature": "(stream: MediaStream, options: MediaRecorderOptions): MediaRecorder",
-									"parameters": [
-										{
-											"name": "stream",
-											"type": "MediaStream"
-										},
-										{
-											"name": "options",
-											"type": "MediaRecorderOptions"
-										}
-									],
-									"returnType": "MediaRecorder"
-								},
-								{
-									"name": "is_type_supported",
-									"kind": "function",
-									"docComment": "`MediaRecorder.isTypeSupported` — `false` where there's no `MediaRecorder`.",
-									"typeSignature": "(mime_type: string): boolean",
-									"parameters": [
-										{
-											"name": "mime_type",
-											"type": "string"
-										}
-									],
-									"returnType": "boolean"
-								},
-								{
-									"name": "create_level_meter",
-									"kind": "function",
-									"docComment": "A meter on `stream` (Web Audio), or `null` where it can't be made.",
-									"typeSignature": "(stream: MediaStream): LevelMeter | null",
-									"parameters": [
-										{
-											"name": "stream",
-											"type": "MediaStream"
-										}
-									],
-									"returnType": "LevelMeter | null",
-									"returnTypeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "LevelMeter"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								},
-								{
-									"name": "has_user_activation",
-									"kind": "function",
-									"docComment": "Whether a user gesture is in effect (`navigator.userActivation.isActive`)\n— `true` in a browser that can't say.",
-									"typeSignature": "(): boolean",
-									"returnType": "boolean"
-								},
 								{
 									"name": "fetch",
 									"kind": "function",
@@ -224787,13 +225237,6 @@
 											}
 										]
 									}
-								},
-								{
-									"name": "now",
-									"kind": "function",
-									"docComment": "`Date.now`.",
-									"typeSignature": "(): number",
-									"returnType": "number"
 								}
 							]
 						},
@@ -224802,14 +225245,14 @@
 							"kind": "function",
 							"docComment": "`RecorderDeps` over the real browser, each global read when it's called.",
 							"typeSignature": "(): RecorderDeps",
-							"sourceLine": 71,
+							"sourceLine": 38,
 							"returnType": "RecorderDeps"
 						},
 						{
 							"name": "RecorderOptions",
 							"kind": "interface",
 							"typeSignature": "RecorderOptions",
-							"sourceLine": 117,
+							"sourceLine": 43,
 							"extends": [
 								"CellOptions<typeof RecorderJson>"
 							],
@@ -224826,8 +225269,8 @@
 						{
 							"name": "Recorder",
 							"kind": "class",
-							"docComment": "Records the microphone to a file on disk, uploading it as it's recorded.\n\nApp-level, so a recording carries on across route changes. The file is\ncreated under its final name and grows as chunks arrive (`ChunkUpload`\nover the backend's byte routes), so a crashed tab loses at most the last\nchunk; stopping uploads the rest and finalizes the file (`media_finalize`)\nso it has a duration and seeks, then — with `transcribe_on_stop` — queues\nits transcription.\n\nCapture starts only in `start`, and only during a user gesture — nothing\nthe backend sends can open the microphone. `active` is true the whole time\nit may be open, for the indicator every page shows.",
-							"sourceLine": 136,
+							"docComment": "Records the microphone to a file on disk, uploading it as it's recorded.\n\nApp-level, so a recording carries on across route changes. `capture` owns\nthe microphone; this owns where the chunks go and what happens after. The\nfile is created under its final name and grows as chunks arrive\n(`ChunkUpload` over the backend's byte routes), so a crashed tab loses at\nmost the last chunk; stopping uploads the rest and finalizes the file\n(`media_finalize`) so it has a duration and seeks, then — with\n`transcribe_on_stop` — queues its transcription.\n\nCapture starts only in `start`, and only during a user gesture — nothing\nthe backend sends can open the microphone. `active` is true the whole time\nit may be open and until the recording is saved, for the indicator every\npage shows.",
+							"sourceLine": 64,
 							"extends": [
 								"Cell<typeof RecorderJson>"
 							],
@@ -224845,46 +225288,12 @@
 									"reactivity": "$state.raw"
 								},
 								{
-									"name": "deps",
+									"name": "capture",
 									"kind": "variable",
-									"typeSignature": "RecorderDeps"
-								},
-								{
-									"name": "status",
-									"kind": "variable",
-									"typeSignature": "RecorderStatus",
-									"reactivity": "$state.raw",
-									"typeInfo": {
-										"kind": "union",
-										"alias": "RecorderStatus",
-										"members": [
-											{
-												"kind": "literal",
-												"value": "starting",
-												"text": "\"starting\""
-											},
-											{
-												"kind": "literal",
-												"value": "idle",
-												"text": "\"idle\""
-											},
-											{
-												"kind": "literal",
-												"value": "recording",
-												"text": "\"recording\""
-											},
-											{
-												"kind": "literal",
-												"value": "paused",
-												"text": "\"paused\""
-											},
-											{
-												"kind": "literal",
-												"value": "stopping",
-												"text": "\"stopping\""
-											}
-										]
-									}
+									"typeSignature": "AudioCapture",
+									"modifiers": [
+										"readonly"
+									]
 								},
 								{
 									"name": "path",
@@ -224954,23 +225363,50 @@
 									"reactivity": "$state.raw"
 								},
 								{
-									"name": "duration",
+									"name": "status",
 									"kind": "variable",
-									"docComment": "How long the current recording is so far, in milliseconds, not counting\npaused time. Updates every `RECORDER_TICK_INTERVAL` while recording.",
-									"typeSignature": "number",
-									"reactivity": "$state.raw"
-								},
-								{
-									"name": "level",
-									"kind": "variable",
-									"docComment": "How loud the microphone is right now, 0 to 1 — for a level meter. Updates\nevery `RECORDER_TICK_INTERVAL` while the microphone is open (paused\nincluded), and is 0 otherwise or where it can't be measured.",
-									"typeSignature": "number",
-									"reactivity": "$state.raw"
+									"docComment": "Where the recording is: the capture's status, and `stopping` until the file is saved.",
+									"typeSignature": "AudioCaptureStatus",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by",
+									"typeInfo": {
+										"kind": "union",
+										"alias": "AudioCaptureStatus",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "idle",
+												"text": "\"idle\""
+											},
+											{
+												"kind": "literal",
+												"value": "starting",
+												"text": "\"starting\""
+											},
+											{
+												"kind": "literal",
+												"value": "recording",
+												"text": "\"recording\""
+											},
+											{
+												"kind": "literal",
+												"value": "paused",
+												"text": "\"paused\""
+											},
+											{
+												"kind": "literal",
+												"value": "stopping",
+												"text": "\"stopping\""
+											}
+										]
+									}
 								},
 								{
 									"name": "active",
 									"kind": "variable",
-									"docComment": "Whether the microphone may be open: any status but `idle`.",
+									"docComment": "Whether the microphone may be open or the recording is still being saved.",
 									"typeSignature": "boolean",
 									"modifiers": [
 										"readonly"
@@ -224996,7 +225432,7 @@
 									"throws": [
 										{
 											"type": "Error",
-											"description": "when one is already under way (leaving it and `error`\nuntouched), or when there's no user gesture, the browser can't record,\nthe microphone can't be opened, or the file can't be created — each of\nthose also left in `error`"
+											"description": "when one is already under way (leaving it and `error`\nuntouched), or when there's no backend to record to, no user gesture,\nthe browser can't record, the microphone can't be opened, or the file\ncan't be created — each of those also left in `error`"
 										}
 									],
 									"parameters": [
@@ -225069,11 +225505,39 @@
 									"docComment": "Ends the recording without finalizing — the session is gone. Chunks the\nuploader already holds, and the last one the browser hands over as it\nstops, are still sent.",
 									"typeSignature": "(): void",
 									"returnType": "void"
+								},
+								{
+									"name": "duration",
+									"kind": "variable",
+									"docComment": "How long the current recording is so far — see `AudioCapture.duration`.",
+									"typeSignature": "number",
+									"modifiers": [
+										"getter"
+									]
+								},
+								{
+									"name": "level",
+									"kind": "variable",
+									"docComment": "How loud the microphone is right now — see `AudioCapture.level`.",
+									"typeSignature": "number",
+									"modifiers": [
+										"getter"
+									]
+								},
+								{
+									"name": "deps",
+									"kind": "variable",
+									"typeSignature": "RecorderDeps",
+									"modifiers": [
+										"getter",
+										"setter"
+									]
 								}
 							]
 						}
 					],
 					"dependencies": [
+						"audio_capture.svelte.ts",
 						"cell.svelte.ts",
 						"cell_types.ts",
 						"chunk_upload.ts",
@@ -225283,6 +225747,7 @@
 					],
 					"moduleComment": "Pure helpers for recording audio in the browser.",
 					"dependents": [
+						"audio_capture.svelte.ts",
 						"DiskfileAudioView.svelte",
 						"JobStatusView.svelte",
 						"recorder.svelte.ts",
