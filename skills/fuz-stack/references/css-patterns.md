@@ -16,7 +16,7 @@ are mono, `<aside>` is a callout, and **block elements space themselves**:
 `p`, `ul`, `ol`, `menu`, `form`, `fieldset`, `table`, `details`, `textarea`,
 `select`, `label`, `pre`, `blockquote`, `aside`, `nav`, `legend` each get
 `margin-bottom: var(--flow_margin, var(--space_lg))` unless `:last-child` or
-`.unstyled`. A stack of paragraphs, a heading over prose, a list under a
+`.unstyled` (`section` takes a larger multiple of it). A stack of paragraphs, a heading over prose, a list under a
 heading — correct rhythm with **zero classes**.
 
 Before adding any class or `<style>`, ask: _what specific gap in the defaults
@@ -98,8 +98,10 @@ When in doubt, leave an existing `<style>` block alone.
 | `<label> .title`                  | Bold, small bottom margin — field label inside a `<label>`                               |
 | `<fieldset>`/`<legend>`           | Column flex layout, larger legend text                                                   |
 
-Low-specificity `:where()` selectors carry all of this, so any class or style
-overrides it regardless of import order.
+Low-specificity `:where()` selectors in `fuz.base`, the lowest of fuz_css's
+cascade layers, carry all of this, so utility classes (`fuz.utilities`) and
+your unlayered styles override it regardless of import order. The exception
+is `[hidden]`, whose `display: none !important` holds.
 
 ## Built-In Class Conventions
 
@@ -115,8 +117,9 @@ State/variant classes authored into the semantic styles (`style.css`):
 | `.unstyled`               | Most elements                                                 | Opts out of opinionated styling, keeps normalizations                                                  |
 
 `<button class="palette_c selected">` is already a "selected destructive
-action". (Size classes `sm`/`md`/`lg` read like conventions but are composites
-that require extraction — see [Composite Classes](#composite-classes).)
+action". (Size classes `sized_sm`/`sized_md`/`sized_lg` read like conventions
+but are composites that require extraction — see
+[Composite Classes](#composite-classes).)
 
 ## Project Setup
 
@@ -143,6 +146,9 @@ The `vite_plugin_fuz_css` Vite plugin generates CSS on demand as the
 import { vite_plugin_fuz_css } from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';
 export default defineConfig({ plugins: [vite_plugin_fuz_css()] });
 ```
+
+It returns several plugin objects (pass them as is), needs Vite 6+, and goes
+after any plugin that rewrites CSS in its `transform` hook.
 
 ```typescript
 // src/app.d.ts
@@ -230,7 +236,7 @@ px); border radii 7 (`xs3`–`xl`); distances 5 (`xs`–`xl`, px absolute widths
   a class family over the opaque shade scale; there is no `--outline_color_NN`
   variable
 - `shadow_alpha_*` (00–100), `border_width_*` (1–9 px), `duration_*` (1–6,
-  0.08s–3s), `hue_*` (`hue_a`–`hue_j` base hues)
+  0.08s–3s), `hue_*` (`hue_a`–`hue_j` base hues, OKLCH angles)
 
 ### Cascade Layers
 
@@ -238,7 +244,10 @@ px); border radii 7 (`xs3`–`xl`); distances 5 (`xs`–`xl`, px absolute widths
 preference mappings — `prefers-reduced-motion` zeroing durations,
 `prefers-contrast: more` bending lightness curves) < `fuz.theme` (theme
 overrides, where `render_theme_style()` renders) < `fuz.utilities` (generated
-classes). Consumers' unlayered styles beat everything. Colors are derived
+classes). Consumers' unlayered styles beat everything except two `!important`
+declarations: `[hidden]`'s `display: none` and the `prefers-reduced-motion`
+reset of the `duration_*` tokens (set a duration on the element that needs
+one). Colors are derived
 OKLCH (curve knobs → ramp stops → color stops, computed in pure CSS).
 
 ### Cascading Variable Pattern
@@ -270,8 +279,6 @@ children inherit: `font_size_lg` → `font-size` + `--font_size`; `color_a_50`
 - **Borders**: `border_radius_xs`, `border_width_2`, `border_color_30`
 - **Shadows**: `shadow_md`, `shadow_top_md`, `shadow_inset_xs`,
   `shadow_alpha_50`, `shadow_color_umbra` (also `_highlight`, `_glow`, `_shroud`)
-- **Hue**: `hue_a`–`hue_j` set `--hue` (an unconsumed consumer hook — nothing
-  in shipped CSS reads it yet)
 
 ### Composite Classes
 
@@ -288,19 +295,20 @@ children inherit: `font_size_lg` → `font-size` + `--font_size`; `color_a_50`
 | `icon_button`            | Square button sized to `--input_height` (flex-shrink: 0)                                              |
 | `selectable`             | Button-like fill with hover/active/selected states                                                    |
 | `clickable`              | Hover/focus/active scale transform effects (includes state styles)                                    |
-| `plain`                  | Transparent border/fill/shadow when not hovered                                                       |
+| `plain`                  | Transparent border/fill/shadow on unselected elements; fill and shadow return on hover                |
 | `chevron`                | Small right-pointing arrow via CSS border trick                                                       |
 | `circular`               | `border-radius: 50%`                                                                                  |
 | `pixelated`              | Crisp pixel-art image rendering                                                                       |
-| `xs`/`sm`/`md`/`lg`/`xl` | **Size composites** — see below                                                                       |
+| `sized_xs`–`sized_xl`    | **Size composites** — see below                                                                       |
+| `mb_flow`/`mt_flow`      | Flow-aware margin that follows `--flow_margin` (size composites)                                      |
 
 **Size composites cascade to a subtree.** Put one on any **container** and it
 rescales that subtree's `--font_size`, `--input_height`, `--icon_size`,
-padding, **and `--flow_margin`** in lockstep — a `sm` panel gets tighter
+padding, **and `--flow_margin`** in lockstep — a `sized_sm` panel gets tighter
 controls, chips, icons, and rhythm together (headings and prose keep their
 sizes — each `hN` re-sets `--font_size` on itself, body text never reads it).
-`md` resets to default inside an already-sized parent. This is how to make a
-whole region denser or roomier.
+`sized_md` resets to default inside an already-sized parent. This is how to
+make a whole region denser or roomier.
 
 **Gotcha**: composites with rulesets (`clickable`, `selectable`, `menuitem`,
 `plain`, `chip`) already include their state styles — `hover:clickable` is
@@ -322,11 +330,12 @@ properties; `calc` needs `~` around `+`/`-`:
 
 More than 2–3 `~` → use a `<style>` block. Custom-property literals
 (`--flow_margin:0`, `--button_shadow:none`) are the general escape hatch onto
-any theme/base variable hook.
+any theme/base variable hook (knobs like `--space_scale` resolve on `:root`,
+so they belong in a theme, not on an element).
 
 ## Modifiers
 
-Prefixes on a literal class, each 1:1 with a pseudo-class or at-rule
+Prefixes on any class, each 1:1 with a pseudo-class or at-rule
 (`hover:` → `:hover`, `disabled:` → `:disabled`, `print:` → `@media print`,
 `before:` → `::before`); the exhaustive registry is fuz_css's `modifiers.ts`.
 
@@ -386,15 +395,20 @@ shorthand (`style:` is invalid on component tags):
 `:root.dark { color-scheme: dark; }` / `:root.light { color-scheme: light; }`);
 persistence and system preference live in fuz_ui's `ThemeState` / `ThemeRoot`.
 
-**Themes**: one registered theme (`base`); low/high contrast are
-`contrast_modifiers` composed via `compose_themes`; shipped-but-unregistered
-exemplars (`necromancer`, `sunset_ember`, `brutalish`, `terminalien` — some
-dark-only via `scheme`) show the range. Custom themes are arrays of
-`StyleVariable` overrides rendered by `render_theme_style()` into the
-`fuz.theme` layer, which beats `fuz.base` by layer order regardless of
-specificity. The generators also take a build-time `theme` option that bakes a
-theme into the bundled CSS with no JS; the runtime `ThemeRoot` path composes on
-top (runtime wins by layer order).
+**Themes**: `default_themes` registers `base` and `ledger`; low/high contrast
+are `contrast_modifiers` composed via `compose_themes`; shipped-but-unregistered
+exemplars under `themes/` (`zine`, `pebble`, `parchment`, `phosphor`,
+`guestbook`, `marquee`, `signage` — phosphor and marquee dark-only via
+`scheme`) show the range. A `Theme` (from `@fuzdev/fuz_css/variable.ts`, a
+strict schema) is a `name`, an optional `summary` for pickers, and
+`StyleVariable` overrides (`variables`). A single-scheme `scheme` stance is
+resolved with `resolve_theme_stance` (`theme_stance.ts`) before runtime
+rendering; the build-time option does that itself. `render_theme_style()`
+renders it into the `fuz.theme` layer, which beats `fuz.base` by layer order
+regardless of specificity. `validate_theme` lints its shape and knobs, and
+`check_theme` gates gamut, ramp monotonicity, and contrast. The generators also take a build-time `theme` option
+that bakes a theme into the bundled CSS with no JS; the runtime `ThemeRoot`
+path composes on top (runtime wins by layer order).
 
 ## Components
 
