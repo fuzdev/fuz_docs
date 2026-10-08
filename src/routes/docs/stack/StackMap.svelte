@@ -484,7 +484,7 @@
 		cursor: grabbing;
 	}
 	.edge {
-		stroke: var(--border_color, #4a4e57);
+		stroke: var(--border_color);
 		stroke-width: 1.5;
 		opacity: 0.5;
 		transition: opacity 0.12s ease;
@@ -506,25 +506,25 @@
 	/* non-ts languages get a distinct ring */
 	.disc.lang-wasm,
 	.disc.lang-rust {
-		stroke: var(--text_color, #cdd2db);
+		stroke: var(--text_color);
 		stroke-dasharray: 3 2;
 	}
 	.node.selected .disc {
-		stroke: var(--text_color, #fff);
+		stroke: var(--text_color);
 		stroke-width: 3;
 		stroke-dasharray: none;
 	}
 	.label {
-		fill: var(--text_color, #cdd2db);
+		fill: var(--text_color);
 		font-size: 12px;
-		font-family: var(--font_family_mono, ui-monospace, monospace);
+		font-family: var(--font_family_mono);
 		user-select: none;
 		pointer-events: none;
 	}
 	.badge {
-		fill: var(--text_color, #cdd2db);
+		fill: var(--text_color);
 		font-size: 9px;
-		font-family: var(--font_family_mono, ui-monospace, monospace);
+		font-family: var(--font_family_mono);
 		text-transform: uppercase;
 		user-select: none;
 		pointer-events: none;
@@ -550,7 +550,7 @@
 		display: inline-block;
 		width: 0.9rem;
 		height: 0.9rem;
-		border-radius: var(--border_radius_xs, 2px);
+		border-radius: var(--border_radius_xs);
 	}
 	.help {
 		opacity: 0.8;

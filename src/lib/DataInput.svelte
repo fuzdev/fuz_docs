@@ -245,7 +245,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		border: 2px dashed var(--border_color, var(--palette_c_50));
+		border: 2px dashed var(--border_color);
 		border-radius: var(--border_radius_sm);
 		transition: border-color 120ms;
 	}
