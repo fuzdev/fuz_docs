@@ -150,7 +150,7 @@ export const stack_nodes: Array<StackNode> = [
 		description:
 			'a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content',
 		layer: 2,
-		fan_in: 10,
+		fan_in: 9,
 		x: 0,
 		y: 720
 	},
@@ -196,7 +196,7 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_app',
 		to: 'fuz_css',
-		kind: 'dev'
+		kind: 'peer'
 	},
 	{
 		from: 'fuz_app',

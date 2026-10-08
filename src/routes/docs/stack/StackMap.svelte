@@ -71,17 +71,17 @@
 
 	/**
 	 * Category → fuz_css color token. Eight distinguishable hues from the design
-	 * system's saturated mid-shade palette (`--color_*_50`).
+	 * system's saturated mid-shade palette (`--palette_*_50`).
 	 */
 	const category_colors: Record<StackCategory, string> = {
-		foundation: 'var(--color_a_50)', // blue
-		build: 'var(--color_f_50)', // brown
-		styling: 'var(--color_g_50)', // pink
-		ui: 'var(--color_d_50)', // purple
-		fullstack: 'var(--color_i_50)', // cyan
-		tooling: 'var(--color_e_50)', // yellow
-		app: 'var(--color_b_50)', // green
-		site: 'var(--color_h_50)' // orange
+		foundation: 'var(--palette_a_50)', // blue
+		build: 'var(--palette_f_50)', // brown
+		styling: 'var(--palette_g_50)', // pink
+		ui: 'var(--palette_d_50)', // purple
+		fullstack: 'var(--palette_i_50)', // cyan
+		tooling: 'var(--palette_e_50)', // yellow
+		app: 'var(--palette_b_50)', // green
+		site: 'var(--palette_h_50)' // orange
 	};
 
 	/** Human-readable legend labels for each category, in display order. */
@@ -435,7 +435,7 @@
 		>
 			<strong>{hovered_node.name}</strong>
 			<p class="description">{hovered_node.description}</p>
-			<small class="color_c">
+			<small>
 				depended on by {dependents_count.get(hovered_node.name) ?? 0} · depends on
 				{dependency_count.get(hovered_node.name) ?? 0}
 			</small>
@@ -458,7 +458,7 @@
 				</span>
 			{/each}
 		</div>
-		<small class="color_c help">
+		<small class="help">
 			drag to pan · scroll to zoom · click a node to trace its dependencies
 		</small>
 	</div>
@@ -500,7 +500,7 @@
 		opacity: 0.2;
 	}
 	.disc {
-		stroke: var(--bg, #0d0e11);
+		stroke: var(--shade_00);
 		stroke-width: 2;
 	}
 	/* non-ts languages get a distinct ring */

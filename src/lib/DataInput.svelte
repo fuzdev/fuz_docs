@@ -189,11 +189,11 @@
 					<p>
 						<strong>{file_name}</strong>
 						{#if file_size !== null}
-							<span class="color_c">({format_bytes(file_size)})</span>
+							<span>({format_bytes(file_size)})</span>
 						{/if}
 					</p>
 				{:else}
-					<p class="color_c">drop a file here or</p>
+					<p>drop a file here or</p>
 				{/if}
 				<button type="button" class="chip" onclick={() => file_input_el?.click()}>
 					choose file
@@ -229,7 +229,7 @@
 
 	<div class="row gap_md">
 		{#if validation_error}
-			<small class="color_e">{validation_error}</small>
+			<small class="negative_60">{validation_error}</small>
 		{/if}
 	</div>
 
@@ -245,11 +245,11 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		border: 2px dashed var(--border_color, var(--color_c_5));
+		border: 2px dashed var(--border_color, var(--palette_c_50));
 		border-radius: var(--border_radius_sm);
 		transition: border-color 120ms;
 	}
 	.drop_zone.dragging {
-		border-color: var(--color_a_5);
+		border-color: var(--palette_a_50);
 	}
 </style>

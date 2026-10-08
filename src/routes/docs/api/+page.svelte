@@ -64,25 +64,25 @@
 		gap: var(--space_xs) var(--space_md);
 		padding: var(--space_md) var(--space_lg);
 		border: var(--border_width) solid var(--border_color);
-		border-radius: var(--border_radius);
+		border-radius: var(--border_radius, var(--border_radius_xs));
 		text-decoration: none;
 	}
 	.package_card:hover {
-		border-color: var(--color_a_5);
-		background: var(--fg_1);
+		border-color: var(--palette_a_50);
+		background: var(--fg_10);
 	}
 	.glyph {
-		font-size: var(--size_xl);
+		font-size: var(--font_size_xl);
 	}
 	.name {
 		font-weight: 700;
 	}
 	.description {
 		flex: 1;
-		color: var(--text_2);
+		color: var(--text_70);
 	}
 	.stats {
-		font-size: var(--size_sm);
-		color: var(--text_3);
+		font-size: var(--font_size_sm);
+		color: var(--text_60);
 	}
 </style>
