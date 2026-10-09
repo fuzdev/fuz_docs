@@ -33611,7 +33611,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.65.2",
+			"version": "0.65.3",
 			"description": "semantic-first CSS framework and design system",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -40720,7 +40720,7 @@
 							"name": "ExtractFileCachedOptions",
 							"kind": "interface",
 							"typeSignature": "ExtractFileCachedOptions",
-							"sourceLine": 22,
+							"sourceLine": 23,
 							"members": [
 								{
 									"name": "deps",
@@ -40795,7 +40795,7 @@
 							"name": "ExtractFileCachedResult",
 							"kind": "interface",
 							"typeSignature": "ExtractFileCachedResult",
-							"sourceLine": 37,
+							"sourceLine": 38,
 							"members": [
 								{
 									"name": "extraction",
@@ -40834,7 +40834,7 @@
 							"kind": "function",
 							"docComment": "Loads the cached extraction when its content hash and configuration key match, otherwise extracts\nfresh. On a miss with caching enabled, `cache_path_to_write` carries the path\nthe caller should write.",
 							"typeSignature": "(options: ExtractFileCachedOptions): Promise<ExtractFileCachedResult>",
-							"sourceLine": 50,
+							"sourceLine": 51,
 							"parameters": [
 								{
 									"name": "options",
@@ -40858,7 +40858,8 @@
 					"dependencies": [
 						"css_cache.ts",
 						"css_class_extractor.ts",
-						"deps.ts"
+						"deps.ts",
+						"file_filter.ts"
 					],
 					"dependents": [
 						"css_extraction_state.ts",
@@ -40915,11 +40916,26 @@
 							"returnDescription": "the package-relative, root-relative, or unchanged path"
 						},
 						{
+							"name": "is_css_file",
+							"kind": "function",
+							"docComment": "Whether a file is CSS, which is scanned for the `var(--*)` references it\nmakes but has no classes or elements to extract.",
+							"typeSignature": "(path: string): boolean",
+							"sourceLine": 56,
+							"parameters": [
+								{
+									"name": "path",
+									"type": "string",
+									"description": "a file id or path"
+								}
+							],
+							"returnType": "boolean"
+						},
+						{
 							"name": "filter_file_default",
 							"kind": "function",
-							"docComment": "Default file filter for CSS class extraction.\nIncludes .svelte, .html, .ts, .js, .tsx, .jsx files.\nExcludes test files (.test.ts, .spec.ts) and generated files (.gen.ts).\nExcludes files in test directories (`test/`, `tests/`, `__tests__/`,\n`__mocks__/`), judged inside the project or the dependency's package (see\n`to_filter_scope`), so a project checked out under a `test/` directory\nstill extracts.",
+							"docComment": "Default file filter for CSS class extraction.\nIncludes .svelte, .html, .ts, .js, .tsx, .jsx files, and .css files for\ntheir variable references (see `is_css_file`) - except a CSS id with a\nquery, like the `Foo.svelte?svelte&type=style&lang.css` id of a Svelte\ncomponent's styles, which its `.svelte` file already covers.\nExcludes test files (.test.ts, .spec.ts) and generated files (.gen.ts).\nExcludes files in test directories (`test/`, `tests/`, `__tests__/`,\n`__mocks__/`), judged inside the project or the dependency's package (see\n`to_filter_scope`), so a project checked out under a `test/` directory\nstill extracts.",
 							"typeSignature": "(path: string, root: string): boolean",
-							"sourceLine": 59,
+							"sourceLine": 70,
 							"parameters": [
 								{
 									"name": "path",
@@ -40936,6 +40952,7 @@
 					"moduleComment": "File filtering utilities for CSS class extraction.",
 					"dependents": [
 						"css_plugin_options.ts",
+						"extract_file_cached.ts",
 						"gen_fuz_css.ts",
 						"vite_plugin_fuz_css.ts"
 					]
@@ -40948,7 +40965,7 @@
 							"kind": "interface",
 							"docComment": "Options for the Gro CSS generator.\nExtends the shared base options with Gro-specific settings.",
 							"typeSignature": "GenFuzCssOptions",
-							"sourceLine": 63,
+							"sourceLine": 74,
 							"extends": [
 								"CssGeneratorBaseOptions"
 							],
@@ -40991,7 +41008,7 @@
 							"name": "gen_fuz_css",
 							"kind": "function",
 							"typeSignature": "(options?: GenFuzCssOptions): Gen",
-							"sourceLine": 87,
+							"sourceLine": 98,
 							"parameters": [
 								{
 									"name": "options",
@@ -46166,9 +46183,9 @@
 						{
 							"name": "zine_theme",
 							"kind": "variable",
-							"docComment": "An exemplar theme: the photocopied zine. Structure comes from line and\nweight alone, since that is all a photocopier reproduces - paper white and\ntoner black with no gray between them, thick opaque borders, square corners,\nno shadows, heavy grotesque headings set tight, links marked by an\nunderline. The three shortest duration tokens are zero, since print\ndoesn't ease. The palette keeps its full chroma, the spot color run over\nthe black plate.\n\nDual-scheme: the dark appearance is the same page run as a negative.\nBuilt from levers only - the palette letters keep their default hues.",
+							"docComment": "An exemplar theme: the photocopied zine. Structure comes from line and\nweight alone, since that is all a photocopier reproduces - paper white and\ntoner black with no gray between them, thick opaque borders, square corners,\nno shadows, heavy grotesque headings set tight, links marked by an\nunderline. The three shortest duration tokens are zero, since print\ndoesn't ease. The palette keeps its full chroma, the spot color run over\nthe black plate.\n\nDual-scheme: the dark appearance is the same page run as a negative, on a\nnear-black ground that stays inside the contrast modifiers' range, so high\ncontrast still deepens it and panels keep a visible fill.\nBuilt from levers only - the palette letters keep their default hues.",
 							"typeSignature": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
-							"sourceLine": 15,
+							"sourceLine": 17,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Theme"
@@ -48520,14 +48537,14 @@
 							"kind": "variable",
 							"docComment": "Banner comment at the top and bottom of generated CSS output.",
 							"typeSignature": "\"/* generated by vite_plugin_fuz_css */\"",
-							"sourceLine": 87
+							"sourceLine": 89
 						},
 						{
 							"name": "to_extraction_id",
 							"kind": "function",
 							"docComment": "Converts a Vite module id to the id its extraction is keyed by, dropping a\nquery made only of Vite's cache-busting parameters - the `v` version hash\nthe dev server gives a dependency's URL and the `t` HMR timestamp. Such an\nid is the file itself, so it's filtered, parsed, cached, and deleted as the\nplain path, sharing one entry with the same file's SSR transform and\npre-scan.\n\nAny other query is kept, because it names a different module than the\nfile: `Foo.svelte?svelte&type=style&lang.css` is the component's CSS, and\n`?raw`, `?url`, and `?worker` ids carry a generated wrapper rather than\nthe file's source.",
 							"typeSignature": "(id: string): string",
-							"sourceLine": 208,
+							"sourceLine": 210,
 							"internalMessage": "Exported for its tests.",
 							"parameters": [
 								{
@@ -48544,7 +48561,7 @@
 							"kind": "interface",
 							"docComment": "Options for the fuz_css Vite plugin.\nExtends the shared base options with Vite-specific options.",
 							"typeSignature": "VitePluginFuzCssOptions",
-							"sourceLine": 221,
+							"sourceLine": 223,
 							"extends": [
 								"CssGeneratorBaseOptions"
 							],
@@ -48580,7 +48597,7 @@
 							"kind": "function",
 							"docComment": "Creates the fuz_css Vite plugin.\n\nExtracts CSS classes from source files during Vite's transform phase\nand generates optimized CSS via the `virtual:fuz.css` virtual module.",
 							"typeSignature": "(options?: VitePluginFuzCssOptions): Plugin<any>[]",
-							"sourceLine": 283,
+							"sourceLine": 285,
 							"parameters": [
 								{
 									"name": "options",
@@ -48605,7 +48622,7 @@
 							"returnDescription": "the plugin as several objects sharing state, to pass to Vite's\n`plugins` together: an `enforce: 'pre'` one that does the extraction, serves\nthe virtual module, and splices the build's CSS ahead of other plugins, a\nbuild-only one positioned after Vite's CSS processing that completes the\nbuild's stylesheets, and a serve-only `enforce: 'post'` one that adds the\nevaluation report to the virtual module's client code"
 						}
 					],
-					"moduleComment": "Vite plugin for fuz_css CSS generation.\n\nUses Vite's transform hook to extract CSS classes from source files\nas they're processed, including node_modules dependencies. In bundled\nmode (the default) it also resolves the base reset and theme variables,\nemitting only the rules, elements, and variables the source actually uses.\nGenerates CSS on-demand via virtual module with HMR support.\n\nIn dev it eagerly pre-scans project sources at server startup so the first\nserved CSS is complete (see `prescan`), and extracts everything else as\nthe dev server transforms it - a pre-bundled dependency by way of the\nsource files its sourcemap lists, or as its bundled code when those can't\nbe read. CSS that changes while a page is still loading can't be\nhot-updated into it, because the virtual module hasn't evaluated yet to\naccept the update. So each client reports when it evaluates the module,\nand the server answers with an update if that client holds code a refetch\nwould replace.\n\nIn build the generated CSS depends on every module's transform, so the\nvirtual module loads as a placeholder rule and the build finishes it\nafterwards. `renderChunk` renders the CSS and restates the placeholder with\na hash of it, so the stylesheet Vite emits - and each chunk whose name\ndepends on that stylesheet's - gets a filename that changes when the\ngenerated CSS does. `generateBundle` then splices the CSS in at the\nplaceholder's position (see `css_placeholder_splice.ts`), in whichever of\ntwo passes the stylesheets exist for. A code-split build has them all by\nthen, so the first pass - at the default order, ahead of every other\nplugin - finishes them and those plugins' `generateBundle` hooks read the\ngenerated CSS. With `build.cssCodeSplit: false` (the `build.lib` default)\nVite emits the single stylesheet in its own `generateBundle`, so a second\npass at `order: 'post'` finishes it. An environment that emits no assets,\nlike a plain `build.ssr`, may have no stylesheet to finish.\n\nThe build's passes and the dev server's evaluation report each need a\ndifferent position in the plugin order, so `vite_plugin_fuz_css` returns\nseveral plugin objects - pass its result to `plugins` as is. List it after\nany plugin that rewrites CSS in its `transform` hook: the build restates\nthe placeholder from the text its build-only object saw, so what a plugin\nlisted later does to the virtual module's CSS (wrapping it in a layer,\nsay) applies in dev and is lost in build. PostCSS and lightningcss always\napply.\n\n@example\n```ts\n// vite.config.ts\nimport {defineConfig} from 'vite';\nimport jsx from 'acorn-jsx';\nimport {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';\n\nexport default defineConfig({\n  plugins: [\n    vite_plugin_fuz_css({\n      acorn_plugins: [jsx()],\n    }),\n  ],\n});\n```",
+					"moduleComment": "Vite plugin for fuz_css CSS generation.\n\nUses Vite's transform hook to extract CSS classes from source files\nas they're processed, including node_modules dependencies. In bundled\nmode (the default) it also resolves the base reset and theme variables,\nemitting only the rules, elements, and variables the source actually uses -\nincluding the `var(--*)` references of imported CSS files, like a\ndependency's stylesheet.\nGenerates CSS on-demand via virtual module with HMR support.\n\nIn dev it eagerly pre-scans project sources at server startup so the first\nserved CSS is complete (see `prescan`), and extracts everything else as\nthe dev server transforms it - a pre-bundled dependency by way of the\nsource files its sourcemap lists, or as its bundled code when those can't\nbe read. CSS that changes while a page is still loading can't be\nhot-updated into it, because the virtual module hasn't evaluated yet to\naccept the update. So each client reports when it evaluates the module,\nand the server answers with an update if that client holds code a refetch\nwould replace.\n\nIn build the generated CSS depends on every module's transform, so the\nvirtual module loads as a placeholder rule and the build finishes it\nafterwards. `renderChunk` renders the CSS and restates the placeholder with\na hash of it, so the stylesheet Vite emits - and each chunk whose name\ndepends on that stylesheet's - gets a filename that changes when the\ngenerated CSS does. `generateBundle` then splices the CSS in at the\nplaceholder's position (see `css_placeholder_splice.ts`), in whichever of\ntwo passes the stylesheets exist for. A code-split build has them all by\nthen, so the first pass - at the default order, ahead of every other\nplugin - finishes them and those plugins' `generateBundle` hooks read the\ngenerated CSS. With `build.cssCodeSplit: false` (the `build.lib` default)\nVite emits the single stylesheet in its own `generateBundle`, so a second\npass at `order: 'post'` finishes it. An environment that emits no assets,\nlike a plain `build.ssr`, may have no stylesheet to finish.\n\nThe build's passes and the dev server's evaluation report each need a\ndifferent position in the plugin order, so `vite_plugin_fuz_css` returns\nseveral plugin objects - pass its result to `plugins` as is. List it after\nany plugin that rewrites CSS in its `transform` hook: the build restates\nthe placeholder from the text its build-only object saw, so what a plugin\nlisted later does to the virtual module's CSS (wrapping it in a layer,\nsay) applies in dev and is lost in build. PostCSS and lightningcss always\napply.\n\n@example\n```ts\n// vite.config.ts\nimport {defineConfig} from 'vite';\nimport jsx from 'acorn-jsx';\nimport {vite_plugin_fuz_css} from '@fuzdev/fuz_css/vite_plugin_fuz_css.ts';\n\nexport default defineConfig({\n  plugins: [\n    vite_plugin_fuz_css({\n      acorn_plugins: [jsx()],\n    }),\n  ],\n});\n```",
 					"dependencies": [
 						"css_cache.ts",
 						"css_extraction_state.ts",
@@ -71210,7 +71227,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.124.0",
+			"version": "0.125.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -78147,9 +78164,8 @@
 								{
 									"name": "action_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter consulted for actions whose spec declares\n`rate_limit: 'ip'` or `'both'`. `null` disables the IP check.\nPer-action gate via `action.spec.rate_limit`. Same limiter is\nshared with the WebSocket action dispatcher — one budget per\naction, not per transport.",
+									"docComment": "Per-IP rate limiter consulted for actions whose spec declares\n`rate_limit: 'ip'` or `'both'`. Required, with no default: pass\n`null` to turn the IP check off, so an unthrottled endpoint is a\nchoice the call site states rather than an option it forgot.\n`create_app_server` passes its own (a default limiter unless\nconfigured). Share one instance with the WebSocket action dispatcher —\none budget per action, not per transport.",
 									"typeSignature": "RateLimiter | null",
-									"optional": true,
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -78167,9 +78183,8 @@
 								{
 									"name": "action_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account rate limiter consulted for actions whose spec declares\n`rate_limit: 'account'` or `'both'`. Keyed on\n`request_context.account.id` (account-grain — billed to the\nauthenticated account regardless of which actor was resolved).\n`null` disables the account check. Same limiter is shared with the\nWebSocket action dispatcher.",
+									"docComment": "Per-account rate limiter consulted for actions whose spec declares\n`rate_limit: 'account'` or `'both'`. Keyed on\n`request_context.account.id` (account-grain — billed to the\nauthenticated account regardless of which actor was resolved).\nRequired, with no default: pass `null` to turn the account check off.\nShare one instance with the WebSocket action dispatcher.",
 									"typeSignature": "RateLimiter | null",
-									"optional": true,
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -78191,7 +78206,7 @@
 							"kind": "function",
 							"docComment": "Single JSON-RPC 2.0 endpoint — the canonical RPC transport binding.\n\nReturns two `RouteSpec` entries (GET + POST on the same path) for\n`apply_route_specs`. The internal dispatcher handles:\n\n1. **Parse envelope** — POST: JSON body as `JsonrpcRequest`. GET: `method`\n   and `params` from query string.\n2. **Lookup method** — find the `RpcAction` by method name.\n3. **Pre-authorization auth** — short-circuit `unauthenticated` when no\n   account is on the request, before any later phase runs.\n4. **Authorization phase** — resolve the acting actor (when the action's\n   auth requires role_grants or its input declares `acting?: ActingActor`)\n   and build the request context. Runs before input validation so\n   role-grant-grain auth checks return 403 before 400 invalid_params;\n   `acting` is read from raw params by `read_acting`, which parses it as\n   a UUID and treats anything else as omitted.\n5. **Post-authorization auth** — enforce role / keeper requirements\n   against the request context.\n6. **Validate params** — parse input against the action's `input` schema.\n7. **Rate limit** — per-action IP / account throttling.\n8. **Dispatch** — acquire DB handle (transaction for mutations, pool for reads),\n   construct `ActionContext`, call handler, return JSON-RPC response.\n\nGET is restricted to `side_effects: false` actions (cacheable reads).\nAll errors use JSON-RPC format: `{jsonrpc, id, error: {code, message, data?}}`.\n\nThe RouteSpecs use `auth: {type: 'none'}` because auth is checked per-action\ninside the dispatcher, and `transaction: false` because transaction scope\nis per-action (mutations get a transaction, reads get pool).",
 							"typeSignature": "(options: CreateRpcEndpointOptions): RouteSpec[]",
-							"sourceLine": 370,
+							"sourceLine": 372,
 							"throws": [
 								{
 									"type": "Error",
@@ -78202,7 +78217,7 @@
 								{
 									"name": "options",
 									"type": "CreateRpcEndpointOptions",
-									"description": "endpoint path, actions, and logger"
+									"description": "endpoint path, actions, logger, and the two action rate limiters"
 								}
 							],
 							"returnType": "RouteSpec[]",
@@ -79541,7 +79556,7 @@
 						{
 							"name": "ConnectionCloser",
 							"kind": "interface",
-							"docComment": "Close live connections by identity.\n\nEach method returns how many connections it closed. Closing is idempotent:\na connection already gone isn't counted, so a handler's close and an audit\nlistener's close on the same revocation compose. Implementations are\nsynchronous.\n\nOne connection that fails to close must not spare the rest: an\nimplementation attempts every matching connection, then throws the first\nerror it met.\n\n`BackendWebsocketTransport` satisfies this structurally, and\n`create_sse_connection_closer` adapts a `SubscriberRegistry`.",
+							"docComment": "Close live connections by identity, or all of them.\n\nEach method returns how many connections it closed. Closing is idempotent:\na connection already gone isn't counted, so a handler's close and an audit\nlistener's close on the same revocation compose. Implementations are\nsynchronous.\n\nOne connection that fails to close must not spare the rest: an\nimplementation attempts every matching connection, then throws the first\nerror it met.\n\n`BackendWebsocketTransport` satisfies this structurally, and\n`create_sse_connection_closer` adapts a `SubscriberRegistry`.",
 							"typeSignature": "ConnectionCloser",
 							"sourceLine": 66,
 							"members": [
@@ -79587,15 +79602,22 @@
 										}
 									],
 									"returnType": "number"
+								},
+								{
+									"name": "close_all_sockets",
+									"kind": "function",
+									"docComment": "Close every connection, whoever opened it — the shutdown close\n`AppServer.close` runs. Not a revocation: a WebSocket gets\n`WS_CLOSE_GOING_AWAY`, so its client reconnects rather than treating\nits credential as revoked.",
+									"typeSignature": "(): number",
+									"returnType": "number"
 								}
 							]
 						},
 						{
 							"name": "ConnectionCloseTarget",
 							"kind": "type",
-							"docComment": "Which connections a revocation closes — the argument of\n`queue_connection_close`, one variant per `ConnectionCloser` method.",
+							"docComment": "Which connections a revocation closes — the argument of\n`queue_connection_close`, one variant per credential close of\n`ConnectionCloser` (`close_all_sockets` is shutdown, never a revocation).",
 							"typeSignature": "ConnectionCloseTarget",
-							"sourceLine": 83,
+							"sourceLine": 91,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "ConnectionCloseTarget",
@@ -79620,7 +79642,7 @@
 							"kind": "function",
 							"docComment": "Close the connections `target` names, now.\n\nA revocation handler calls `queue_connection_close` instead, which runs this\nafter the commit.",
 							"typeSignature": "(closer: ConnectionCloser, target: ConnectionCloseTarget): number",
-							"sourceLine": 96,
+							"sourceLine": 104,
 							"parameters": [
 								{
 									"name": "closer",
@@ -79657,7 +79679,7 @@
 							"kind": "function",
 							"docComment": "Queue a connection close on `ctx`'s post-commit queue, so it runs only after\nthe request's transaction commits and never when the handler throws.\n\nThe one way a revocation handler closes connections — see the module doc for\nwhy an in-transaction revocation must not close inline.\n\nIn a handler with no wrapping transaction a throw still drops the queued\nclose while an autocommit write stays; close with `close_connections`\nstraight after the write there.",
 							"typeSignature": "(ctx: EmitAfterCommitContext, closer: ConnectionCloser, target: ConnectionCloseTarget): void",
-							"sourceLine": 128,
+							"sourceLine": 136,
 							"mutates": {
 								"ctx.post_commit_effects": "appends the close"
 							},
@@ -79703,14 +79725,14 @@
 							"kind": "variable",
 							"docComment": "A `ConnectionCloser` that closes nothing — for a backend with no\nlive-connection surface, where a revocation has nothing to close.",
 							"typeSignature": "ConnectionCloser",
-							"sourceLine": 142
+							"sourceLine": 150
 						},
 						{
 							"name": "RealtimeCloser",
 							"kind": "interface",
-							"docComment": "One `ConnectionCloser` over every live-connection transport of a backend.\n\nEach close fans out to every member and returns the sum of what each\nclosed. A revocation handler holds this rather than one transport, so its\nclose reaches the WebSocket transports and the SSE registries alike.\n\nA member that throws does not stop the fan-out: every member is still\ncalled, and the first error is thrown once they all have been — so the\ncaller (the post-commit flush, an audit listener) logs it.",
+							"docComment": "One `ConnectionCloser` over every live-connection transport of a backend.\n\nEach close fans out to every member and returns the sum of what each\nclosed. A revocation handler holds this rather than one transport, so its\nclose reaches the WebSocket transports and the SSE registries alike, and\n`AppServer.close` runs its `close_all_sockets` to end every live connection\nof the backend at shutdown.\n\nA member that throws does not stop the fan-out: every member is still\ncalled, and the first error is thrown once they all have been — so the\ncaller (the post-commit flush, an audit listener) logs it.",
 							"typeSignature": "RealtimeCloser",
-							"sourceLine": 159,
+							"sourceLine": 170,
 							"extends": [
 								"ConnectionCloser"
 							],
@@ -79735,7 +79757,7 @@
 							"kind": "function",
 							"docComment": "Create an empty `RealtimeCloser`.\n\n`create_app_backend` creates the one on `AppDeps.connection_closer`, and\n`create_app_server` adds each WebSocket transport it mounts and its audit\nstream registry. A consumer that mounts a transport by hand adds it through\nthe `connection_closer` option of `register_ws_endpoint` /\n`create_audit_log_sse`, or with `add`.",
 							"typeSignature": "(): RealtimeCloser",
-							"sourceLine": 179,
+							"sourceLine": 190,
 							"returnType": "RealtimeCloser"
 						}
 					],
@@ -81677,9 +81699,8 @@
 								{
 									"name": "action_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter consulted for actions whose spec declares\n`rate_limit: 'ip'` or `'both'`. `null` (or omitted) disables the\nIP check. Same limiter is shared with the HTTP RPC dispatcher so\none budget covers both transports per action. Resolved at upgrade\ntime and reused for every message on the socket.",
+									"docComment": "Per-IP rate limiter consulted for actions whose spec declares\n`rate_limit: 'ip'` or `'both'`, keyed on the client IP read at upgrade\ntime. Required, with no default: pass `null` to turn the IP check off,\nso an unthrottled socket is a choice the call site states rather than\nan option it forgot. Share one instance with the HTTP RPC dispatcher so\none budget covers both transports per action — `create_app_server`\ndoes, for the endpoints it mounts from `ws_endpoints`.",
 									"typeSignature": "RateLimiter | null",
-									"optional": true,
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -81697,9 +81718,8 @@
 								{
 									"name": "action_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account rate limiter consulted for actions whose spec declares\n`rate_limit: 'account'` or `'both'`. Keyed on\n`request_context.account.id`. `null` (or omitted) disables the\naccount check. Same limiter is shared with the HTTP RPC dispatcher.",
+									"docComment": "Per-account rate limiter consulted for actions whose spec declares\n`rate_limit: 'account'` or `'both'`. Keyed on\n`request_context.account.id`. Required, with no default: pass `null`\nto turn the account check off. Share one instance with the HTTP RPC\ndispatcher.",
 									"typeSignature": "RateLimiter | null",
-									"optional": true,
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -81721,7 +81741,7 @@
 							"kind": "interface",
 							"docComment": "Result of `register_action_ws`.",
 							"typeSignature": "RegisterActionWsResult",
-							"sourceLine": 410,
+							"sourceLine": 413,
 							"members": [
 								{
 									"name": "transport",
@@ -81736,7 +81756,7 @@
 							"kind": "function",
 							"docComment": "Mount a JSON-RPC WebSocket endpoint that dispatches via the shared\n`perform_action` core.\n\nWire behavior:\n- Batch JSON-RPC is rejected (single-message only).\n- Notifications (method + no id) are silently dropped per JSON-RPC spec.\n  Exception: `cancel` notifications abort the matching pending request's\n  `ctx.signal` before bubbling out.\n- Per-message dispatch goes through `perform_action`: pre-authorization\n  auth (401) → authorization phase → post-authorization auth (403) →\n  rate limit (429) → input validation (400) → handler (with transaction\n  wrap iff `spec.side_effects: true`) → DEV output validation.\n- Authorization phase runs **per message** — role_grant changes during a\n  connection lifetime are picked up on the next message without any\n  in-place refresh. Authentication invalidation closes the socket: the\n  revocation handlers through `connection_closer`, and `create_ws_auth_guard`\n  on the audit row.\n- Admission re-reads the credential once, after the handshake: a socket\n  whose session or token was revoked while it was upgrading closes with\n  `WS_CLOSE_SESSION_REVOKED`, and one whose re-check failed with\n  `WS_CLOSE_INTERNAL_ERROR`. Frames sent before admission wait for it.\n- A socket the server has closed dispatches nothing more, whether or not\n  its client answers the close.",
 							"typeSignature": "(options: RegisterActionWsOptions): RegisterActionWsResult",
-							"sourceLine": 449,
+							"sourceLine": 452,
 							"throws": [
 								{
 									"type": "Error",
@@ -83082,39 +83102,53 @@
 							"sourceLine": 51
 						},
 						{
+							"name": "WS_CLOSE_GOING_AWAY",
+							"kind": "variable",
+							"docComment": "WebSocket close code — the server is shutting down (RFC 6455 §7.4.1 \"Going\nAway\"). Sent to every live socket by `close_all_sockets`, which\n`AppServer.close` runs. Not a revocation: the credential is still good, so a\nclient reconnects under its ordinary backoff once a server is back.",
+							"typeSignature": "1001",
+							"sourceLine": 58
+						},
+						{
+							"name": "WS_CLOSE_GOING_AWAY_REASON",
+							"kind": "variable",
+							"docComment": "The close reason sent with `WS_CLOSE_GOING_AWAY`.",
+							"typeSignature": "\"Server shutting down\"",
+							"sourceLine": 60
+						},
+						{
 							"name": "WS_CLOSE_MESSAGE_TOO_BIG",
 							"kind": "variable",
 							"docComment": "WebSocket close code — an inbound message exceeded the receiver's size cap\n(RFC 6455 §7.4.1 \"Message Too Big\").",
 							"typeSignature": "1009",
-							"sourceLine": 56
+							"sourceLine": 65
 						},
 						{
 							"name": "WS_CLOSE_POLICY_VIOLATION",
 							"kind": "variable",
 							"docComment": "WebSocket close code — the server closed a socket that sent too much while\nit was still opening: past `MAX_PRE_ADMISSION_FRAMES` frames or the\n`PRE_ADMISSION_QUEUE_BYTES_FACTOR` byte budget, before its admission and\n`on_socket_open` had completed (RFC 6455 §7.4.1 \"Policy Violation\"). Not a\nrevocation: the client reconnects under its ordinary backoff.",
 							"typeSignature": "1008",
-							"sourceLine": 64
+							"sourceLine": 73
 						},
 						{
 							"name": "WS_CLOSE_INTERNAL_ERROR",
 							"kind": "variable",
 							"docComment": "WebSocket close code — the server hit an unexpected condition (RFC 6455\n§7.4.1 \"Internal Error\").\n\nSent when an upgraded socket can't be admitted because its credential\nre-check itself failed (a database error), when an `on_socket_open` hook\nthrows, and when a frame arrives on a socket whose connection was removed\nfrom the transport without a close (a bare `remove_connection`). The\nhandshake has already answered `101`, so an HTTP `500` is no longer\navailable. Not a revocation: the client's credential may be fine, so it\nreconnects under its ordinary backoff rather than entering its `revoked`\nstate. The twin of the Rust spine's `WS_CLOSE_INTERNAL_ERROR`.",
 							"typeSignature": "1011",
-							"sourceLine": 78
+							"sourceLine": 87
 						},
 						{
 							"name": "DEFAULT_WS_MAX_MESSAGE_BYTES",
 							"kind": "variable",
 							"docComment": "Default cap on one WebSocket message, in UTF-8 bytes — equal to the default\nHTTP body cap (`DEFAULT_MAX_BODY_SIZE`), so one JSON-RPC request is bounded\nthe same on both transports. The server closes the socket on a larger\ninbound message with `WS_CLOSE_MESSAGE_TOO_BIG` (there's no per-message\nerror reply), and `FrontendWebsocketTransport` refuses to send one. The\ntwin of the Rust spine's `DEFAULT_WS_MAX_MESSAGE_BYTES`.",
 							"typeSignature": "number",
-							"sourceLine": 88
+							"sourceLine": 97
 						},
 						{
 							"name": "utf8_length_over",
 							"kind": "function",
 							"docComment": "The UTF-8 byte length of `text` when it exceeds `max_bytes`, else `null`.\nSkips encoding when the UTF-16 length alone rules it out — a code unit\ntakes at most 3 UTF-8 bytes.",
 							"typeSignature": "(text: string, max_bytes: number): number | null",
-							"sourceLine": 101,
+							"sourceLine": 110,
 							"parameters": [
 								{
 									"name": "text",
@@ -83148,7 +83182,7 @@
 							"kind": "function",
 							"docComment": "The UTF-8 byte length of `text`.",
 							"typeSignature": "(text: string): number",
-							"sourceLine": 113,
+							"sourceLine": 122,
 							"parameters": [
 								{
 									"name": "text",
@@ -83163,7 +83197,7 @@
 							"name": "TransportName",
 							"kind": "type",
 							"typeSignature": "string",
-							"sourceLine": 119,
+							"sourceLine": 128,
 							"mergedValue": true
 						},
 						{
@@ -83171,7 +83205,7 @@
 							"kind": "interface",
 							"docComment": "Per-call options accepted by every transport's `send`. Optional and\nextensible — adding a field is non-breaking. Source of truth for the\nshared option shape; `ActionDispatcherSendOptions` and `RpcClientCallOptions`\nextend it.",
 							"typeSignature": "TransportSendOptions",
-							"sourceLine": 127,
+							"sourceLine": 136,
 							"members": [
 								{
 									"name": "signal",
@@ -83193,7 +83227,7 @@
 							"name": "Transport",
 							"kind": "interface",
 							"typeSignature": "Transport",
-							"sourceLine": 150,
+							"sourceLine": 159,
 							"members": [
 								{
 									"name": "transport_name",
@@ -83367,7 +83401,7 @@
 						{
 							"name": "Transports",
 							"kind": "class",
-							"sourceLine": 166,
+							"sourceLine": 175,
 							"members": [
 								{
 									"name": "allow_fallback",
@@ -84104,7 +84138,7 @@
 							"kind": "interface",
 							"docComment": "Auth identity attached to a single WebSocket connection.\n\nOne record per connection. `token_hash` is set for cookie-session\nconnections, `api_token_id` for bearer (`api_token`) connections, and\nboth are null for daemon-token connections (reachable only via\n`BackendWebsocketTransport.close_sockets_for_account`).",
 							"typeSignature": "ConnectionIdentity",
-							"sourceLine": 95,
+							"sourceLine": 97,
 							"members": [
 								{
 									"name": "token_hash",
@@ -84161,7 +84195,7 @@
 							"kind": "interface",
 							"docComment": "Structural capability for transports that can broadcast with a\nper-connection ACL predicate. Named separately from `Transport` so the\nbroadcast API can feature-detect without importing a concrete class.\n\n`ConnectionIdentity` is the auth-gated identity shape used today. When a\nsecond implementation (e.g. SSE backend transport) lands with a\ndifferent identity, consider parameterizing on `TIdentity`.",
 							"typeSignature": "FilterableBroadcastTransport",
-							"sourceLine": 113,
+							"sourceLine": 115,
 							"extends": [
 								"Transport"
 							],
@@ -84193,7 +84227,7 @@
 							"kind": "function",
 							"docComment": "Type guard for `FilterableBroadcastTransport`.",
 							"typeSignature": "(transport: Transport): transport is FilterableBroadcastTransport",
-							"sourceLine": 121,
+							"sourceLine": 123,
 							"parameters": [
 								{
 									"name": "transport",
@@ -84207,14 +84241,14 @@
 							"kind": "variable",
 							"docComment": "Default per-account WebSocket connection cap, applied by\n`BackendWebsocketTransport` unless overridden via\n`BackendWebsocketTransportOptions.max_connections_per_account`.\n\nMatches the account-wide ceiling the audit SSE cap implies (the default\nsession cap, `DEFAULT_MAX_SESSIONS`, times `AUDIT_LOG_SSE_MAX_PER_SCOPE`\nstreams per session) — generous enough that a user's tabs and tools never\nmeet it; only an abusive or leaking client does. The twin of the Rust\nspine's `DEFAULT_MAX_CONNECTIONS_PER_ACCOUNT`.",
 							"typeSignature": "50",
-							"sourceLine": 138
+							"sourceLine": 140
 						},
 						{
 							"name": "BackendWebsocketTransportOptions",
 							"kind": "interface",
 							"docComment": "Options for `BackendWebsocketTransport`.",
 							"typeSignature": "BackendWebsocketTransportOptions",
-							"sourceLine": 141,
+							"sourceLine": 143,
 							"members": [
 								{
 									"name": "max_connections_per_account",
@@ -84262,7 +84296,7 @@
 						{
 							"name": "BackendWebsocketTransport",
 							"kind": "class",
-							"sourceLine": 187,
+							"sourceLine": 189,
 							"implements": [
 								"FilterableBroadcastTransport"
 							],
@@ -84507,7 +84541,7 @@
 								{
 									"name": "remove_connection",
 									"kind": "function",
-									"docComment": "Remove a connection and its auth tracking data, pending or admitted, by\nthe id `register_pending` / `add_connection` returned. Idempotent — safe\nto call after revocation or a cap eviction has already cleaned up, and a\nno-op for an unknown id.\n\nKeyed by id rather than by `WSContext` because a runtime adapter may hand\neach socket event its own context object (`hono/bun` does), so the one a\nclose event carries can't identify the connection.\n\nRemoval only: the socket is not closed and the registered\n`abort_controller` is not aborted — the caller that ends a socket does\nboth.",
+									"docComment": "Remove a connection and its auth tracking data, pending or admitted, by\nthe id `register_pending` / `add_connection` returned. Idempotent — safe\nto call after revocation or a cap eviction has already cleaned up, and a\nno-op for an unknown id.\n\nKeyed by id rather than by `WSContext` because a runtime adapter may hand\neach socket event its own context object (`@hono/bun` does), so the one a\nclose event carries can't identify the connection.\n\nRemoval only: the socket is not closed and the registered\n`abort_controller` is not aborted — the caller that ends a socket does\nboth.",
 									"typeSignature": "(connection_id: string & $brand<\"Uuid\">): void",
 									"mutates": {
 										"this": "deletes the connection's entry from `#connections` and\nsettles its pending peer requests as `connection_gone`"
@@ -84576,6 +84610,23 @@
 											"type": "string"
 										}
 									],
+									"returnType": "number",
+									"returnDescription": "the number of sockets closed"
+								},
+								{
+									"name": "close_all_sockets",
+									"kind": "function",
+									"docComment": "Close every connection, pending or admitted, with `WS_CLOSE_GOING_AWAY` —\nthe shutdown close `AppServer.close` runs. Not a revocation: the client\nreconnects under its ordinary backoff.\n\nEach closed connection is removed and its controller aborted, as a\nrevocation does, so its heartbeat timer stops and nothing more dispatches\non it. A socket whose `close` throws does not stop the loop.",
+									"typeSignature": "(): number",
+									"throws": [
+										{
+											"type": "the",
+											"description": "first error a socket's `close` threw, after every connection was attempted"
+										}
+									],
+									"mutates": {
+										"this": "removes every connection, aborts its registered\ncontroller, and closes its underlying `WSContext` with `WS_CLOSE_GOING_AWAY`"
+									},
 									"returnType": "number",
 									"returnDescription": "the number of sockets closed"
 								},
@@ -84889,7 +84940,7 @@
 							"kind": "interface",
 							"docComment": "Declarative description of a WebSocket endpoint to be auto-mounted by\n`create_app_server`.\n\nSingle source of truth for mount + surface — the same array drives\n`register_ws_endpoint`-style upgrade wiring AND the `surface.ws_endpoints`\nslot emitted into `AppSurface`, so consumers cannot drift their declared\nactions from what dispatch actually serves.",
 							"typeSignature": "WsEndpointSpec",
-							"sourceLine": 33,
+							"sourceLine": 35,
 							"members": [
 								{
 									"name": "path",
@@ -84900,7 +84951,222 @@
 								{
 									"name": "allowed_origins",
 									"kind": "variable",
-									"docComment": "Origin allowlist regexes — typically parsed via `parse_allowed_origins`.\nPassed straight to `verify_request_source` on upgrade.",
+									"docComment": "Origin allowlist regexes for the upgrade — passed straight to\n`verify_request_source`. Defaults to the server's\n`AppServerOptions.allowed_origins`, the list the HTTP routes check.\nSet it only to narrow one endpoint: the auth middleware's origin check\nruns on the upgrade too, so a request reaches the endpoint only when\nits origin passes both lists.",
+									"typeSignature": "readonly RegExp[]",
+									"optional": true,
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "RegExp"
+										},
+										"readonly": true
+									}
+								},
+								{
+									"name": "actions",
+									"kind": "variable",
+									"docComment": "The actions registered on this endpoint. Spread `protocol_actions`\nfrom `actions/protocol.ts` first to complete the\ndisconnect-detection + per-request cancel pairing with the frontend\nclient.",
+									"typeSignature": "readonly Action<{ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; output: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 6 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ....",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "Action",
+											"typeArgs": [
+												{
+													"kind": "reference",
+													"name": "ActionSpecUnion",
+													"module": "actions/action_spec.ts"
+												}
+											]
+										},
+										"readonly": true
+									}
+								},
+								{
+									"name": "required_roles",
+									"kind": "variable",
+									"docComment": "Roles permitted to upgrade — any-of disjunction. Omit (or pass `[]`)\nto skip the upgrade-time role gate; per-action `auth` on each spec\nstill applies at dispatch time via `perform_action`. Pass\n`[ROLE_ADMIN]` for a zap-style admin-only WS endpoint.",
+									"typeSignature": "readonly string[]",
+									"optional": true
+								},
+								{
+									"name": "transport",
+									"kind": "variable",
+									"docComment": "Existing transport to register connections with. Auto-created when\nomitted. Either way the mounted transport is reachable on\n`AppServer.ws_endpoints[path]` for broadcast / fan-out.",
+									"typeSignature": "BackendWebsocketTransport",
+									"optional": true
+								},
+								{
+									"name": "max_connections_per_account",
+									"kind": "variable",
+									"docComment": "Per-account connection cap for the auto-created transport. See\n`RegisterActionWsOptions.max_connections_per_account` — rejected\nalongside `transport`, which carries its own cap.",
+									"typeSignature": "number | null",
+									"optional": true,
+									"defaultValue": "DEFAULT_MAX_CONNECTIONS_PER_ACCOUNT",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
+									"name": "heartbeat",
+									"kind": "variable",
+									"docComment": "Server-side heartbeat policy. Default-on (60s receive-silence\ntimeout). Set `false` only when an upstream stack (TCP keepalive,\nCloudflare idle timeout) already owns disconnect detection.",
+									"typeSignature": "boolean | ServerHeartbeatOptions",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "boolean"
+											},
+											{
+												"kind": "reference",
+												"name": "ServerHeartbeatOptions"
+											}
+										]
+									}
+								},
+								{
+									"name": "artificial_delay",
+									"kind": "variable",
+									"docComment": "Optional per-message delay for testing loading states.",
+									"typeSignature": "number",
+									"optional": true
+								},
+								{
+									"name": "max_message_bytes",
+									"kind": "variable",
+									"docComment": "Cap on one inbound message, in bytes. See\n`RegisterActionWsOptions.max_message_bytes`.",
+									"typeSignature": "number",
+									"optional": true,
+									"defaultValue": "DEFAULT_WS_MAX_MESSAGE_BYTES"
+								},
+								{
+									"name": "on_socket_open",
+									"kind": "function",
+									"docComment": "Called once per socket after the connection is admitted — registered\nand its credential re-checked — and before the first message\ndispatches. See `RegisterActionWsOptions.on_socket_open`.",
+									"typeSignature": "(ctx: SocketOpenContext): void | Promise<void>",
+									"parameters": [
+										{
+											"name": "ctx",
+											"type": "SocketOpenContext"
+										}
+									],
+									"returnType": "void | Promise<void>",
+									"returnTypeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "void"
+											},
+											{
+												"kind": "reference",
+												"name": "Promise",
+												"typeArgs": [
+													{
+														"kind": "intrinsic",
+														"text": "void"
+													}
+												]
+											}
+										]
+									},
+									"optional": true
+								},
+								{
+									"name": "on_socket_close",
+									"kind": "function",
+									"docComment": "Called once per admitted socket on close, after\n`transport.remove_connection`. See\n`RegisterActionWsOptions.on_socket_close`.",
+									"typeSignature": "(ctx: SocketCloseContext): void | Promise<void>",
+									"parameters": [
+										{
+											"name": "ctx",
+											"type": "SocketCloseContext"
+										}
+									],
+									"returnType": "void | Promise<void>",
+									"returnTypeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "void"
+											},
+											{
+												"kind": "reference",
+												"name": "Promise",
+												"typeArgs": [
+													{
+														"kind": "intrinsic",
+														"text": "void"
+													}
+												]
+											}
+										]
+									},
+									"optional": true
+								},
+								{
+									"name": "auth_guard",
+									"kind": "variable",
+									"docComment": "Default `true` — registers `create_ws_auth_guard` against this\nendpoint's transport via `deps.audit.add_listener`, so a revocation's\naudit row closes its sockets. Wiring is deduped by\ntransport **reference identity** (`WeakSet<BackendWebsocketTransport>`),\nso two `WsEndpointSpec`s sharing the exact same instance get a\nsingle listener.\n\nThe guard repeats what the revocation handlers already do: the\ntransport is always in `deps.connection_closer`, whatever this flag\nsays, and the handlers close through it after their commit. Turning the\nguard off leaves those closes in place.\n\n**Shared-transport OR-semantics.** When multiple `WsEndpointSpec`s\nshare one transport, the guard is wired iff **any** of those specs\nhas `auth_guard !== false`. To opt out for a shared transport,\nevery sibling spec must pass `auth_guard: false`. The default is\n\"fail safe\" — easier to enable than disable, and predictable\nregardless of spec order.\n\nReference-identity dedupe means **wrapped or proxied transports\ndedupe as separate entries** — a consumer threading every\ntransport through a tracing / DI / metrics shim will get a fresh\nlistener per shimmed reference, even when the underlying\ntransport is the same. If you wrap or proxy, set `auth_guard:\nfalse` on the duplicate `WsEndpointSpec`s and compose\n`create_ws_auth_guard` against the underlying transport once.\n\nSet `false` when a consumer needs to compose their own callback\nfrom scratch — or to opt out of the auto-wiring entirely.\n\nNOTE: does NOT close sockets on `role_grant_revoke` — that omission\nis deliberate (per-connection role tracking is out of scope). A user\nwhose admin role is revoked keeps their socket open; the next message\ngets `forbidden` from the per-message authorization phase. Consumers\nwanting role-revoke disconnection use `extra_audit_handlers`.",
+									"typeSignature": "boolean",
+									"optional": true
+								},
+								{
+									"name": "extra_audit_handlers",
+									"kind": "variable",
+									"docComment": "Extra audit-event handlers registered via `deps.audit.add_listener`\nAFTER the standard `auth_guard` wiring (when enabled). By the time\nthese run, the standard guard may have already closed sockets. Use\nfor role-revoke disconnection, custom analytics, etc.\n\nNever deduped — consumer-owned; pass the same handler twice and it\nfires twice.",
+									"typeSignature": "readonly AuditEventHandler[]",
+									"optional": true
+								}
+							]
+						},
+						{
+							"name": "ResolvedWsEndpointSpec",
+							"kind": "type",
+							"docComment": "A `WsEndpointSpec` whose `allowed_origins` is resolved — its own, or the server's.",
+							"typeSignature": "ResolvedWsEndpointSpec",
+							"sourceLine": 153,
+							"typeInfo": {
+								"kind": "intersection",
+								"alias": "ResolvedWsEndpointSpec",
+								"members": [
+									{
+										"kind": "reference",
+										"name": "WsEndpointSpec"
+									},
+									{
+										"kind": "object",
+										"text": "{ allowed_origins: readonly RegExp[]; }"
+									}
+								]
+							},
+							"members": [
+								{
+									"name": "path",
+									"kind": "variable",
+									"docComment": "Hono mount path (e.g. `/api/ws`).",
+									"typeSignature": "string"
+								},
+								{
+									"name": "allowed_origins",
+									"kind": "variable",
+									"docComment": "Origin allowlist regexes for the upgrade — passed straight to\n`verify_request_source`. Defaults to the server's\n`AppServerOptions.allowed_origins`, the list the HTTP routes check.\nSet it only to narrow one endpoint: the auth middleware's origin check\nruns on the upgrade too, so a request reaches the endpoint only when\nits origin passes both lists.",
 									"typeSignature": "readonly RegExp[]",
 									"typeInfo": {
 										"kind": "array",
@@ -85083,9 +85349,81 @@
 									"optional": true
 								}
 							]
+						},
+						{
+							"name": "resolve_ws_endpoints",
+							"kind": "function",
+							"docComment": "Fill in the server's `allowed_origins` on each WS endpoint spec that omits\nits own, so every consumer of the resolved list — the mount, the surface —\nreads the effective patterns.",
+							"typeSignature": "(ws_endpoints: readonly WsEndpointSpec[] | undefined, allowed_origins: readonly RegExp[]): ResolvedWsEndpointSpec[] | undefined",
+							"sourceLine": 164,
+							"parameters": [
+								{
+									"name": "ws_endpoints",
+									"type": "readonly WsEndpointSpec[] | undefined",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "array",
+												"element": {
+													"kind": "reference",
+													"name": "WsEndpointSpec"
+												},
+												"readonly": true
+											},
+											{
+												"kind": "intrinsic",
+												"text": "undefined"
+											}
+										]
+									},
+									"description": "the resolved `ws_endpoints` option"
+								},
+								{
+									"name": "allowed_origins",
+									"type": "readonly RegExp[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "RegExp"
+										},
+										"readonly": true
+									},
+									"description": "the server's allowlist, the default"
+								}
+							],
+							"returnType": "ResolvedWsEndpointSpec[] | undefined",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "array",
+										"element": {
+											"kind": "intersection",
+											"alias": "ResolvedWsEndpointSpec",
+											"members": [
+												{
+													"kind": "reference",
+													"name": "WsEndpointSpec"
+												},
+												{
+													"kind": "object",
+													"text": "{ allowed_origins: readonly RegExp[]; }"
+												}
+											]
+										}
+									},
+									{
+										"kind": "intrinsic",
+										"text": "undefined"
+									}
+								]
+							},
+							"returnDescription": "the specs, each with `allowed_origins` set"
 						}
 					],
-					"moduleComment": "`WsEndpointSpec` — the canonical WebSocket endpoint declaration consumed\nby `create_app_server`'s `ws_endpoints` option (mirror of `RpcEndpointSpec`\nfor HTTP RPC).\n\nLives in its own module so both `server/app_server.ts` (which mounts\nendpoints from these specs) and `http/surface.ts` (which threads the\nresolved spec list into surface generation) can import it without a\ncycle between the two.",
+					"moduleComment": "`WsEndpointSpec` — the canonical WebSocket endpoint declaration consumed\nby `create_app_server`'s `ws_endpoints` option (mirror of `RpcEndpointSpec`\nfor HTTP RPC).\n\nAlso `resolve_ws_endpoints`, which fills in the server's `allowed_origins`.\n\nLives in its own module so both `server/app_server.ts` (which mounts\nendpoints from these specs) and `http/surface.ts` (which threads the\nresolved spec list into surface generation) can import it without a\ncycle between the two.",
 					"dependencies": [
 						"actions/action_types.ts",
 						"actions/register_action_ws.ts",
@@ -103340,11 +103678,59 @@
 					"path": "auth/middleware.ts",
 					"declarations": [
 						{
+							"name": "AUTH_MIDDLEWARE_PATH",
+							"kind": "variable",
+							"docComment": "The Hono path pattern the auth middleware stack mounts on by default —\norigin verification, session parsing, request context, bearer and daemon\ntoken auth all run for the paths it matches, and no others.\n\n`create_app_server` mounts the stack here, and refuses at assembly (via\n`assert_endpoint_in_auth_scope`, which `create_test_app_surface_spec` also\nruns) an `rpc_endpoints` or `ws_endpoints` path the pattern does not match (tested\nwith `middleware_applies`, which follows Hono: `'/api/*'` matches `/api`\nand everything under `/api/`): an endpoint outside it would get no\nsession parsing, so every call or upgrade would be unauthenticated.",
+							"typeSignature": "\"/api/*\"",
+							"sourceLine": 29
+						},
+						{
+							"name": "assert_endpoint_in_auth_scope",
+							"kind": "function",
+							"docComment": "Throw when an endpoint path sits outside the auth middleware's scope\n(`AUTH_MIDDLEWARE_PATH`) — there it would get no session or bearer\nparsing, so every call or upgrade would be unauthenticated.\n`middleware_applies` matches the way Hono matches the middleware's pattern.\n\n`create_app_server` calls it for every `rpc_endpoints` and `ws_endpoints`\npath at assembly, and `create_test_app_surface_spec` does the same, so a\nsurface snapshot never records an endpoint the real server refuses.",
+							"typeSignature": "(option: \"rpc_endpoints\" | \"ws_endpoints\", path: string): void",
+							"sourceLine": 45,
+							"throws": [
+								{
+									"type": "Error",
+									"description": "when `path` is outside `AUTH_MIDDLEWARE_PATH`"
+								}
+							],
+							"parameters": [
+								{
+									"name": "option",
+									"type": "\"rpc_endpoints\" | \"ws_endpoints\"",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "rpc_endpoints",
+												"text": "\"rpc_endpoints\""
+											},
+											{
+												"kind": "literal",
+												"value": "ws_endpoints",
+												"text": "\"ws_endpoints\""
+											}
+										]
+									},
+									"description": "the option the path came from, named in the error"
+								},
+								{
+									"name": "path",
+									"type": "string",
+									"description": "the endpoint path to check"
+								}
+							],
+							"returnType": "void"
+						},
+						{
 							"name": "AuthMiddlewareOptions",
 							"kind": "interface",
 							"docComment": "Per-factory configuration for the standard auth middleware stack.",
 							"typeSignature": "AuthMiddlewareOptions",
-							"sourceLine": 19,
+							"sourceLine": 60,
 							"members": [
 								{
 									"name": "allowed_origins",
@@ -103376,7 +103762,7 @@
 								{
 									"name": "path",
 									"kind": "variable",
-									"docComment": "Path pattern for middleware (default: `'/api/*'`).",
+									"docComment": "Path pattern for middleware (default: `AUTH_MIDDLEWARE_PATH`, `'/api/*'`).",
 									"typeSignature": "string",
 									"optional": true
 								},
@@ -103394,7 +103780,7 @@
 							"kind": "function",
 							"docComment": "Create the auth middleware stack.\n\nReturns `[origin, session, request_context, bearer_auth]` middleware specs\nfor the given path pattern. When `daemon_token_state` is provided, appends\na 5th `daemon_token` layer. Apps can append extra entries for non-standard\npaths (e.g., tx's `/tx` binary endpoint).",
 							"typeSignature": "(deps: AppDeps, options: AuthMiddlewareOptions): Promise<MiddlewareSpec[]>",
-							"sourceLine": 40,
+							"sourceLine": 81,
 							"parameters": [
 								{
 									"name": "deps",
@@ -103435,10 +103821,12 @@
 						"auth/session_middleware.ts",
 						"http/error_schemas.ts",
 						"http/middleware_spec.ts",
-						"http/origin.ts"
+						"http/origin.ts",
+						"http/schema_helpers.ts"
 					],
 					"dependents": [
-						"server/app_server.ts"
+						"server/app_server.ts",
+						"testing/stubs.ts"
 					]
 				},
 				{
@@ -128923,6 +129311,7 @@
 						"actions/compile_action_registry.ts",
 						"actions/peer_ping.ts",
 						"actions/perform_action.ts",
+						"auth/middleware.ts",
 						"auth/request_context.ts",
 						"http/route_spec.ts",
 						"http/surface.ts",
@@ -129757,7 +130146,7 @@
 								{
 									"name": "ws_endpoints",
 									"kind": "variable",
-									"docComment": "Mounted WS endpoints (the same array `create_app_server.ws_endpoints`\nauto-mounts). Each entry's actions surface into\n`AppSurface.ws_endpoints[i].methods` for attack-surface tests +\nstartup logging.",
+									"docComment": "Mounted WS endpoints (the same array `create_app_server.ws_endpoints`\nauto-mounts). Each entry's actions surface into\n`AppSurface.ws_endpoints[i].methods` for attack-surface tests +\nstartup logging. Each must carry its effective `allowed_origins` —\n`create_app_server` fills in the server's list where a spec omits it —\nand generation throws on one that doesn't.",
 									"typeSignature": "readonly WsEndpointSpec[]",
 									"optional": true,
 									"typeInfo": {
@@ -129776,7 +130165,7 @@
 							"kind": "function",
 							"docComment": "Collect error schemas from all middleware that applies to a route path.",
 							"typeSignature": "(middleware: MiddlewareSpec[], route_path: string): Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>> | null",
-							"sourceLine": 219,
+							"sourceLine": 238,
 							"parameters": [
 								{
 									"name": "middleware",
@@ -129855,7 +130244,7 @@
 							"kind": "function",
 							"docComment": "Convert env schema to surface entries using `.meta()` metadata.",
 							"typeSignature": "(schema: ZodObject<$ZodLooseShape, $strip>): AppSurfaceEnv[]",
-							"sourceLine": 237,
+							"sourceLine": 256,
 							"parameters": [
 								{
 									"name": "schema",
@@ -129891,7 +130280,7 @@
 							"kind": "function",
 							"docComment": "Convert SSE event specs to surface entries.",
 							"typeSignature": "(event_specs: EventSpec[]): AppSurfaceEvent[]",
-							"sourceLine": 257,
+							"sourceLine": 276,
 							"parameters": [
 								{
 									"name": "event_specs",
@@ -129919,7 +130308,7 @@
 							"kind": "function",
 							"docComment": "Generate a JSON-serializable attack surface from middleware, route specs,\nand optional env/event metadata.",
 							"typeSignature": "(options: GenerateAppSurfaceOptions): AppSurface",
-							"sourceLine": 270,
+							"sourceLine": 289,
 							"parameters": [
 								{
 									"name": "options",
@@ -129933,7 +130322,7 @@
 							"kind": "function",
 							"docComment": "Create an `AppSurfaceSpec` — the surface bundled with its source specs.",
 							"typeSignature": "(options: GenerateAppSurfaceOptions): AppSurfaceSpec",
-							"sourceLine": 392,
+							"sourceLine": 411,
 							"parameters": [
 								{
 									"name": "options",
@@ -130623,11 +131012,34 @@
 							"sourceLine": 100
 						},
 						{
+							"name": "RateLimiterMode",
+							"kind": "type",
+							"docComment": "Whether a server builds the rate limiters it is not handed —\n`AppServerOptions.rate_limiters`.\n\n- `'enforced'` — every limiter left out of the options is a default\n  instance. The only mode a production server uses, and the default.\n- `'disabled_for_testing'` — every limiter left out is `null`, so nothing\n  is throttled. For in-process test apps and test binaries: they drive many\n  round-trips from one address, and the IP buckets are monotone within their\n  window (a success never refunds them, see `RateLimiter.reset`), so a\n  suite's failures pile up until every later call is refused.\n\nA limiter passed explicitly — an instance or `null` — wins over the mode\neither way, so a rate-limit test enables just the limiter it pins. The\ndisabled mode is loud: `create_app_server` adds a surface warning, which\n`log_startup_summary` logs at assembly.\n\nTwin of the Rust spine's `fuz_auth::RateLimiterMode` (`Enforced` /\n`DisabledForTesting`).",
+							"typeSignature": "RateLimiterMode",
+							"sourceLine": 127,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "RateLimiterMode",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "enforced",
+										"text": "\"enforced\""
+									},
+									{
+										"kind": "literal",
+										"value": "disabled_for_testing",
+										"text": "\"disabled_for_testing\""
+									}
+								]
+							}
+						},
+						{
 							"name": "RateLimitResult",
 							"kind": "interface",
 							"docComment": "Result of a rate limit check or record operation.",
 							"typeSignature": "RateLimitResult",
-							"sourceLine": 110,
+							"sourceLine": 132,
 							"members": [
 								{
 									"name": "allowed",
@@ -130652,8 +131064,8 @@
 						{
 							"name": "RateLimiter",
 							"kind": "class",
-							"docComment": "In-memory sliding window rate limiter.\n\nStores an array of timestamps per key. On `check`/`record`, timestamps\noutside the window are pruned. `retry_after` reports seconds until the\noldest active timestamp expires.\n\nThe backing store is an `LruMap` when `options.max_keys` is a positive\nnumber (default `DEFAULT_RATE_LIMITER_MAX_KEYS`) and a plain `Map` when\n`max_keys` is `null`. The `LruMap` path bounds memory under\nkey-enumeration attack at the cost of a slight per-op overhead and the\nLRU trade-off described on `RateLimiterOptions.max_keys`.\n\nParameters that accept `RateLimiter | null` (e.g. `login_ip_rate_limiter`,\n`login_account_rate_limiter`) silently disable rate limiting when `null`\nis passed — no checks are performed and all requests are allowed through.",
-							"sourceLine": 136,
+							"docComment": "In-memory sliding window rate limiter.\n\nStores an array of timestamps per key. On `check`/`record`, timestamps\noutside the window are pruned. `retry_after` reports seconds until the\noldest active timestamp expires.\n\nThe backing store is an `LruMap` when `options.max_keys` is a positive\nnumber (default `DEFAULT_RATE_LIMITER_MAX_KEYS`) and a plain `Map` when\n`max_keys` is `null`. The `LruMap` path bounds memory under\nkey-enumeration attack at the cost of a slight per-op overhead and the\nLRU trade-off described on `RateLimiterOptions.max_keys`.\n\nParameters that accept `RateLimiter | null` (e.g. `login_ip_rate_limiter`,\n`login_account_rate_limiter`) disable rate limiting when `null` is passed —\nno checks are performed and all requests are allowed through.\n`create_app_server` surfaces each disabled limiter as a warning diagnostic.",
+							"sourceLine": 159,
 							"members": [
 								{
 									"name": "options",
@@ -130787,7 +131199,7 @@
 							"kind": "function",
 							"docComment": "Create a `RateLimiter` with sensible defaults for per-IP login protection.",
 							"typeSignature": "(options?: Partial<RateLimiterOptions> | undefined): RateLimiter",
-							"sourceLine": 317,
+							"sourceLine": 340,
 							"parameters": [
 								{
 									"name": "options",
@@ -130813,7 +131225,7 @@
 							"kind": "function",
 							"docComment": "Build a 429 rate-limit-exceeded JSON response with `Retry-After` header.",
 							"typeSignature": "(c: Context<any, any, {}>, retry_after: number): Response",
-							"sourceLine": 328,
+							"sourceLine": 351,
 							"parameters": [
 								{
 									"name": "c",
@@ -131127,9 +131539,9 @@
 						{
 							"name": "create_sse_connection_closer",
 							"kind": "function",
-							"docComment": "Adapt a `SubscriberRegistry` to `ConnectionCloser`, so a revocation handler's\nclose reaches its streams.\n\nEach method is `SubscriberRegistry.close_by_identity` on the id it is given,\nso it closes the streams registered under that id as their `scope` or in\ntheir `groups` — pending registrations included. The audit stream route\nregisters `scope = session hash` and `groups = [account id]`; a route that\nadmits bearer tokens registers the API token id too, and\n`close_sockets_for_token` then reaches it.\n\nTwin of the Rust spine's `SocketRevoker` impl on `SseRegistry`.",
+							"docComment": "Adapt a `SubscriberRegistry` to `ConnectionCloser`, so a revocation handler's\nclose reaches its streams.\n\nEach method is `SubscriberRegistry.close_by_identity` on the id it is given,\nso it closes the streams registered under that id as their `scope` or in\ntheir `groups` — pending registrations included. The audit stream route\nregisters `scope = session hash` and `groups = [account id]`; a route that\nadmits bearer tokens registers the API token id too, and\n`close_sockets_for_token` then reaches it. `close_all_sockets` is\n`SubscriberRegistry.close_all` — every stream, for shutdown.\n\nTwin of the Rust spine's `SocketRevoker` impl on `SseRegistry`.",
 							"typeSignature": "<T>(registry: SubscriberRegistry<T>): ConnectionCloser",
-							"sourceLine": 52,
+							"sourceLine": 53,
 							"genericParams": [
 								{
 									"name": "T"
@@ -131158,7 +131570,7 @@
 							"kind": "function",
 							"docComment": "Create an audit event handler that closes SSE streams on a successful\nrevocation row, dispatching on the event's `RevocationScope`\n(`audit_event_revocation_scopes`, the table `create_ws_auth_guard` reads\ntoo):\n\n- `session` → the stream registered under the revoked session's hash\n  (`metadata.session_id`). Closing all of an account's streams for a\n  single-session revoke would be over-aggressive.\n- `token` → the stream registered under the revoked API token's id\n  (`metadata.token_id`). The audit stream route admits sessions only, so no\n  stream of its own is keyed that way; a consumer route that admits bearers\n  registers the token id and is closed here.\n- `account` → every stream of `target_account_id ?? account_id`.\n- `role` → every stream of the target account, when the revoked role\n  (`metadata.role`) is `required_role`. The WebSocket guard does not act on\n  this scope — per-message dispatch re-authorizes there — but a one-way\n  stream has no later check, so it must close here.\n- `none` → nothing.\n\nOver-closing a one-way feed is cheap: the client reconnects if it is still\nauthorized.\n\nThe registry's subscribers must carry `account_id` as an identity key (in\n`SubscribeOptions.groups`), and the session hash as `scope` for the\nsession-scoped close.",
 							"typeSignature": "<T>(registry: SubscriberRegistry<T>, required_role: string | null, log: Logger): (event: AuditLogEvent) => void",
-							"sourceLine": 94,
+							"sourceLine": 96,
 							"genericParams": [
 								{
 									"name": "T"
@@ -131212,7 +131624,7 @@
 							"kind": "interface",
 							"docComment": "Convenience factory result for audit log SSE.\n\nSatisfies `AuditLogRouteOptions['stream']` and provides the combined\n`on_audit_event` callback (broadcast + guard).",
 							"typeSignature": "AuditLogSse",
-							"sourceLine": 166,
+							"sourceLine": 168,
 							"members": [
 								{
 									"name": "registry",
@@ -131256,7 +131668,7 @@
 							"kind": "variable",
 							"docComment": "SSE event specs for audit log events.\n\nOne spec per `AUDIT_EVENT_TYPES` entry, all sharing the `AuditLogEventJson` params schema.\nPass to `create_app_server`'s `event_specs` for surface generation and DEV validation.",
 							"typeSignature": "EventSpec[]",
-							"sourceLine": 186,
+							"sourceLine": 188,
 							"typeInfo": {
 								"kind": "array",
 								"element": {
@@ -131270,14 +131682,14 @@
 							"kind": "variable",
 							"docComment": "Default max concurrent SSE subscribers per session scope for the audit log.\n\nThe audit log SSE subscribes with `scope = session_hash` and\n`groups = [account_id]`. Only `scope` is capped — so this limits tabs\nper session. An account's total streams across all sessions is bounded\ntransitively by `max_sessions × AUDIT_LOG_SSE_MAX_PER_SCOPE`. 10 tabs\nper session is a comfortable ceiling for normal use; consumers raising\nit above ~50 should consider server-side connection limits.",
 							"typeSignature": "10",
-							"sourceLine": 205
+							"sourceLine": 207
 						},
 						{
 							"name": "create_audit_log_sse",
 							"kind": "function",
 							"docComment": "Create a complete audit log SSE setup with broadcasting, auth guard, and\nconnection closer.\n\nCombines `SubscriberRegistry`, `create_sse_auth_guard`, and the broadcast\ncall into a single object, and adds the registry to `connection_closer`.\nThe result satisfies `AuditLogRouteOptions['stream']`\nand provides the `on_audit_event` listener for the audit emitter.\n\nMost consumers pass `audit_log_sse: true` to `create_app_server` and never\ntouch this directly — the factory builds an `AuditLogSse`, registers\n`audit_sse.on_audit_event` via `backend.deps.audit.add_listener`, and\nexposes it via `AppServerContext.audit_sse`. Reach for the manual path\n(compose inside `audit_factory` body, or\n`audit.add_listener(audit_sse.on_audit_event)` post-assembly) only\nwhen wiring outside `create_app_server`.",
 							"typeSignature": "(options: { role?: string | undefined; log: Logger; connection_closer: RealtimeCloser | null; max_per_scope?: number | null | undefined; }): AuditLogSse",
-							"sourceLine": 248,
+							"sourceLine": 250,
 							"examples": [
 								"```ts\nconst connection_closer = create_realtime_closer();\nconst audit_sse = create_audit_log_sse({log, connection_closer});\n\n// On CreateAppBackendOptions — the same closer, and the listener inside\n// the audit_factory body:\nconnection_closer,\naudit_factory: ({db, log}) => create_audit_emitter({\n  db,\n  log,\n  on_audit_event: audit_sse.on_audit_event,\n}),\n\n// In create_route_specs:\ncreate_audit_log_route_specs({stream: audit_sse});\n\n// In create_app_server options:\nevent_specs: audit_log_event_specs,\n```"
 							],
@@ -131653,6 +132065,23 @@
 											"description": "the identity key to match (checked against `scope` and `groups`)"
 										}
 									],
+									"returnType": "number",
+									"returnDescription": "the number of subscribers closed"
+								},
+								{
+									"name": "close_all",
+									"kind": "function",
+									"docComment": "Force-close every subscriber, pending or admitted — the shutdown close\n`AppServer.close` runs through the registry's `ConnectionCloser`.\n\nA stream whose `close` throws does not stop the loop: every subscriber is\nremoved and closed, and the first error is thrown afterward.",
+									"typeSignature": "(): number",
+									"throws": [
+										{
+											"type": "the",
+											"description": "first error a stream's `close` threw, after every subscriber was attempted"
+										}
+									],
+									"mutates": {
+										"registry": "removes every subscriber and closes its stream"
+									},
 									"returnType": "number",
 									"returnDescription": "the number of subscribers closed"
 								},
@@ -133770,7 +134199,7 @@
 							"kind": "interface",
 							"docComment": "Context passed to `on_effect_error` when a pending effect rejects.",
 							"typeSignature": "EffectErrorContext",
-							"sourceLine": 81,
+							"sourceLine": 83,
 							"members": [
 								{
 									"name": "method",
@@ -133791,7 +134220,7 @@
 							"kind": "type",
 							"docComment": "Bootstrap configuration for `AppServerOptions.bootstrap`.\n\nDiscriminated union over three deployment intents. Distinct from\n`BootstrapRouteOptions` in `auth/bootstrap_routes.ts` — that one is\nper-factory runtime state (mutable `bootstrap_status` ref, rate\nlimiter); this one is the consumer-facing server option that\n`create_app_server` reads at startup to decide whether to mount the\nroutes and where.\n\nThree modes:\n- `disabled` — no route mounted, nothing in `/api/surface`.\n  Equivalent to omitting `bootstrap` entirely; the explicit mode is\n  for documentation and reviewable intent at the wiring layer.\n- `surface_only` — route present, permanent 403 via\n  `check_bootstrap_status`. For tests asserting on the\n  disabled-but-present wire shape.\n- `live` — route mounted, real token verification. Success path\n  reachable. `token_path` is required (non-nullable).",
 							"typeSignature": "BootstrapServerOptions",
-							"sourceLine": 108,
+							"sourceLine": 110,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "BootstrapServerOptions",
@@ -133815,7 +134244,7 @@
 							"name": "BootstrapDisabledOptions",
 							"kind": "interface",
 							"typeSignature": "BootstrapDisabledOptions",
-							"sourceLine": 111,
+							"sourceLine": 113,
 							"members": [
 								{
 									"name": "mode",
@@ -133828,7 +134257,7 @@
 							"name": "BootstrapSurfaceOnlyOptions",
 							"kind": "interface",
 							"typeSignature": "BootstrapSurfaceOnlyOptions",
-							"sourceLine": 115,
+							"sourceLine": 117,
 							"members": [
 								{
 									"name": "mode",
@@ -133848,7 +134277,7 @@
 							"name": "BootstrapLiveOptions",
 							"kind": "interface",
 							"typeSignature": "BootstrapLiveOptions",
-							"sourceLine": 121,
+							"sourceLine": 123,
 							"members": [
 								{
 									"name": "mode",
@@ -133920,7 +134349,7 @@
 							"kind": "interface",
 							"docComment": "Configuration for `create_app_server()`.\n\nRequires a pre-initialized `AppBackend` from `create_app_backend()`.\nTwo explicit steps: init backend then assemble server.",
 							"typeSignature": "AppServerOptions",
-							"sourceLine": 139,
+							"sourceLine": 141,
 							"members": [
 								{
 									"name": "backend",
@@ -133964,9 +134393,32 @@
 									"typeSignature": "{ trusted_proxies: string[]; get_connection_ip: (c: Context<any, any, {}>) => string | undefined; }"
 								},
 								{
+									"name": "rate_limiters",
+									"kind": "variable",
+									"docComment": "What an omitted rate limiter becomes — `'enforced'` (the default) builds\na default instance for each `*_rate_limiter` option left out,\n`'disabled_for_testing'` leaves each of them `null`. An explicit option\n(an instance or `null`) always wins over the mode. The disabled mode adds\none surface warning. Never `'disabled_for_testing'` in production — see\n`RateLimiterMode`.",
+									"typeSignature": "RateLimiterMode",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"alias": "RateLimiterMode",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "enforced",
+												"text": "\"enforced\""
+											},
+											{
+												"kind": "literal",
+												"value": "disabled_for_testing",
+												"text": "\"disabled_for_testing\""
+											}
+										]
+									}
+								},
+								{
 									"name": "login_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for login + password change — the distributed-spray\nbackstop. Omit or `undefined` to use a default limiter (5 attempts per\n15 minutes). Pass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.\n\nOne instance per auth surface, not one shared across all four. These\nbuckets are monotone within their window — a success never refunds them\n(see `RateLimiter.reset`) — so a shared instance let a failure on any\nsurface spend the budget that bounds guessing on every other one, and\nlet one caller's exhaustion deny four routes at once. Pass the same\nlimiter to two of these fields to opt back into a shared budget.",
+									"docComment": "Per-IP rate limiter for login + password change — the distributed-spray\nbackstop. Omit or `undefined` to use a default limiter (5 attempts per\n15 minutes) under `rate_limiters: 'enforced'`, none under\n`'disabled_for_testing'`. Pass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.\n\nOne instance per auth surface, not one shared across all four. These\nbuckets are monotone within their window — a success never refunds them\n(see `RateLimiter.reset`) — so a shared instance let a failure on any\nsurface spend the budget that bounds guessing on every other one, and\nlet one caller's exhaustion deny four routes at once. Pass the same\nlimiter to two of these fields to opt back into a shared budget.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -133986,7 +134438,7 @@
 								{
 									"name": "signup_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for signup. Omit or `undefined` to use a default\nlimiter (5 attempts per 15 minutes). Pass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` because an open-signup deployment\nlets any unauthenticated caller spend it. Also available on\n`AppServerContext` for route factory callbacks.",
+									"docComment": "Per-IP rate limiter for signup. Omit or `undefined` for the mode's\ndefault (5 attempts per 15 minutes under `rate_limiters: 'enforced'`).\nPass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` because an open-signup deployment\nlets any unauthenticated caller spend it. Also available on\n`AppServerContext` for route factory callbacks.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -134006,7 +134458,7 @@
 								{
 									"name": "bootstrap_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for bootstrap. Omit or `undefined` to use a default\nlimiter (5 attempts per 15 minutes). Pass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` so a fumbled bootstrap token can't\nspend the operator's login budget. Wired directly into the factory-managed\nbootstrap route; also on `AppServerContext` for symmetry.",
+									"docComment": "Per-IP rate limiter for bootstrap. Omit or `undefined` for the mode's\ndefault (5 attempts per 15 minutes under `rate_limiters: 'enforced'`).\nPass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` so a fumbled bootstrap token can't\nspend the operator's login budget. Wired directly into the factory-managed\nbootstrap route; also on `AppServerContext` for symmetry.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -134026,7 +134478,7 @@
 								{
 									"name": "login_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account rate limiter for login attempts.\nOmit or `undefined` to use a default limiter (10 attempts per 30 minutes).\nPass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.",
+									"docComment": "Per-account rate limiter for login attempts. Omit or `undefined` for the\nmode's default (10 attempts per 30 minutes under\n`rate_limiters: 'enforced'`). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for route factory callbacks.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -134046,7 +134498,7 @@
 								{
 									"name": "signup_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account rate limiter for signup attempts, keyed by submitted username.\nOmit or `undefined` to use a default limiter (10 attempts per 30 minutes).\nPass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.",
+									"docComment": "Per-account rate limiter for signup attempts, keyed by submitted username.\nOmit or `undefined` for the mode's default (10 attempts per 30 minutes\nunder `rate_limiters: 'enforced'`). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for route factory callbacks.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -134066,7 +134518,7 @@
 								{
 									"name": "action_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for the action dispatchers (HTTP RPC + WebSocket).\nConsulted for actions whose spec declares `rate_limit: 'ip'` or `'both'`.\nSame limiter applies across transports — one budget per action.\nOmit or `undefined` to use a default limiter (600 attempts per\n15 minutes — permissive). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for consumers wiring\n`register_action_ws`.",
+									"docComment": "Per-IP rate limiter for the action dispatchers (HTTP RPC + WebSocket).\nConsulted for actions whose spec declares `rate_limit: 'ip'` or `'both'`.\nSame limiter applies across transports — one budget per action.\nOmit or `undefined` for the mode's default (600 attempts per 15 minutes\n— permissive — under `rate_limiters: 'enforced'`). Pass `null` to\nexplicitly disable.\nThreaded into every endpoint mounted from `rpc_endpoints` and\n`ws_endpoints`; also available on `AppServerContext`.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -134086,7 +134538,7 @@
 								{
 									"name": "action_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-actor rate limiter for the action dispatchers (HTTP RPC + WebSocket).\nConsulted for actions whose spec declares `rate_limit: 'account'` or\n`'both'`. Keyed on `request_context.actor.id` (post-auth).\nOmit or `undefined` to use a default limiter (1200 attempts per\n15 minutes — permissive). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for consumers wiring\n`register_action_ws`.",
+									"docComment": "Per-account rate limiter for the action dispatchers (HTTP RPC +\nWebSocket). Consulted for actions whose spec declares\n`rate_limit: 'account'` or `'both'`. Keyed on the authenticated account's\nid, so every actor and credential of one account shares a budget.\nOmit or `undefined` for the mode's default (1200 attempts per 15 minutes\n— permissive — under `rate_limiters: 'enforced'`). Pass `null` to\nexplicitly disable.\nThreaded into every endpoint mounted from `rpc_endpoints` and\n`ws_endpoints`; also available on `AppServerContext`.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -134185,7 +134637,7 @@
 								{
 									"name": "transform_middleware",
 									"kind": "function",
-									"docComment": "Optional: transform middleware specs before applying.",
+									"docComment": "Optional: transform middleware specs before applying.\n\nThe endpoint auth-scope check (`assert_endpoint_in_auth_scope`) reads\n`AUTH_MIDDLEWARE_PATH`, not the transformed specs — a transform that\nmoves or drops the auth middleware is not followed by it.",
 									"typeSignature": "(specs: MiddlewareSpec[]): MiddlewareSpec[]",
 									"parameters": [
 										{
@@ -134268,7 +134720,7 @@
 								{
 									"name": "rpc_endpoints",
 									"kind": "variable",
-									"docComment": "RPC endpoint specs — single source of truth for both surface generation\n*and* live dispatch. Each entry is mounted via `create_rpc_endpoint`\nagainst the assembled Hono app, so consumers no longer call\n`create_rpc_endpoint` themselves inside `create_route_specs`.\n\nAccepts either an array (evaluated eagerly) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>` (evaluated after the\nserver context is assembled). Use the factory form when action lists\ndepend on `ctx.deps` — e.g. `create_standard_rpc_actions(ctx.deps)`.",
+									"docComment": "RPC endpoint specs — single source of truth for both surface generation\n*and* live dispatch. Each entry is mounted via `create_rpc_endpoint`\nagainst the assembled Hono app, so consumers no longer call\n`create_rpc_endpoint` themselves inside `create_route_specs`.\n\nAccepts either an array (evaluated eagerly) or a factory\n`(ctx: AppServerContext) => Array<RpcEndpointSpec>` (evaluated after the\nserver context is assembled). Use the factory form when action lists\ndepend on `ctx.deps` — e.g. `create_standard_rpc_actions(ctx.deps)`.\n\nEach path must sit inside the auth middleware's scope\n(`AUTH_MIDDLEWARE_PATH`, `'/api/*'`) — assembly throws otherwise, since\nan endpoint outside it would see every caller as unauthenticated.",
 									"typeSignature": "RpcEndpointSpec[] | ((context: AppServerContext) => RpcEndpointSpec[])",
 									"optional": true,
 									"typeInfo": {
@@ -134289,12 +134741,37 @@
 									}
 								},
 								{
-									"name": "upgradeWebSocket",
-									"kind": "variable",
-									"docComment": "Hono adapter's `upgradeWebSocket` helper. Required whenever\n`ws_endpoints` resolves to a non-empty array — `create_app_server`\nthrows at assembly otherwise. Omit (along with `ws_endpoints`)\nwhen the consumer doesn't mount any WS endpoints. The same\nadapter helper services every `WsEndpointSpec` mounted from\n`ws_endpoints` — one adapter per app.\n\nFor Node, `import {upgradeWebSocket} from '@hono/node-ws'`. For\nDeno, `import {upgradeWebSocket} from 'hono/deno'`. Test harnesses\nuse `create_stub_upgrade` from `$lib/testing/ws_round_trip.ts`.",
-									"typeSignature": "UpgradeWebSocket<unknown, any, WSEvents<unknown>>",
-									"optional": true,
-									"typeInfo": {
+									"name": "create_upgrade_websocket",
+									"kind": "function",
+									"docComment": "Returns the Hono runtime adapter's `upgradeWebSocket` helper for the\nassembled app. `create_app_server` calls it once, with the app it\nbuilds (the same instance as `AppServer.app`), after creating the app\nand before mounting `ws_endpoints` — and only when `ws_endpoints`\nresolves non-empty, so it is never called for a server with no\nWebSocket endpoints. Required in that case: assembly throws without it.\nOne helper services every mounted endpoint.\n\nA factory rather than the helper itself because Node's adapter needs\nthe app: `@hono/node-ws` has no module-level helper, only\n`createNodeWebSocket({app})`, and `create_app_server` is what builds\nthe app. Deno and Bun ignore the argument:\n\n```ts\nimport {upgradeWebSocket} from '@hono/deno'; // or '@hono/bun'\ncreate_upgrade_websocket: () => upgradeWebSocket,\n```\n\nNode keeps the adapter so it can attach to the server after `serve()`:\n\n```ts\nlet node_ws: NodeWebSocket | undefined;\nconst server = await create_app_server({\n  ...,\n  create_upgrade_websocket: (app) => (node_ws = createNodeWebSocket({app})).upgradeWebSocket,\n});\nnode_ws?.injectWebSocket(serve({fetch: server.app.fetch, port}));\n```\n\nTest harnesses pass `() => stub.upgradeWebSocket` with\n`create_stub_upgrade` from `testing/ws_round_trip.ts`.",
+									"typeSignature": "(app: Hono<BlankEnv, BlankSchema, \"/\">): UpgradeWebSocket<unknown, any, WSEvents<unknown>>",
+									"parameters": [
+										{
+											"name": "app",
+											"type": "Hono<BlankEnv, BlankSchema, \"/\">",
+											"typeInfo": {
+												"kind": "reference",
+												"name": "Hono",
+												"typeArgs": [
+													{
+														"kind": "reference",
+														"name": "BlankEnv"
+													},
+													{
+														"kind": "reference",
+														"name": "BlankSchema"
+													},
+													{
+														"kind": "literal",
+														"value": "/",
+														"text": "\"/\""
+													}
+												]
+											}
+										}
+									],
+									"returnType": "UpgradeWebSocket<unknown, any, WSEvents<unknown>>",
+									"returnTypeInfo": {
 										"kind": "reference",
 										"name": "UpgradeWebSocket",
 										"typeArgs": [
@@ -134317,12 +134794,13 @@
 												]
 											}
 										]
-									}
+									},
+									"optional": true
 								},
 								{
 									"name": "ws_endpoints",
 									"kind": "variable",
-									"docComment": "WebSocket endpoint specs — single source of truth for both surface\ngeneration *and* live dispatch. Each entry is auto-mounted via\n`register_ws_endpoint` against the assembled Hono app, so\nconsumers no longer call `register_ws_endpoint` themselves.\n\nAccepts either an array (evaluated eagerly) or a factory\n`(ctx: AppServerContext) => ReadonlyArray<WsEndpointSpec>`\n(evaluated after the server context is assembled). Use the factory\nform when action lists depend on `ctx.deps` /\n`ctx.action_*_rate_limiter` — e.g. when spreading\n`create_standard_rpc_actions(ctx.deps, ...)` over WS.\n\nWhen non-empty, `upgradeWebSocket` must be supplied (throws\notherwise). A factory returning `[]` does NOT trip the check —\nfeature-flag gated WS surfaces stay safe.\n\nDuplicate `path` values across two `WsEndpointSpec`s throw at\nmount time (Hono would silently shadow them otherwise).\n\nEvery mounted transport is added to `deps.connection_closer`, so\nthe revocation handlers' post-commit closes reach its sockets —\nunconditionally, since those closes are what ends a revoked\ncredential's connections.\n\nEach spec's `auth_guard?` defaults to `true` — the factory\nregisters `create_ws_auth_guard` against the mounted transport via\n`deps.audit.add_listener`, repeating the close on the audit row.\nWiring is deduped by transport **reference identity** so two specs\nsharing one `BackendWebsocketTransport` instance get a single\nlistener; wrapped / proxied transports dedupe as separate\nentries (set `auth_guard: false` on duplicates and compose\nagainst the underlying transport once).",
+									"docComment": "WebSocket endpoint specs — single source of truth for both surface\ngeneration *and* live dispatch. Each entry is auto-mounted via\n`register_ws_endpoint` against the assembled Hono app, so\nconsumers no longer call `register_ws_endpoint` themselves.\n\nAccepts either an array (evaluated eagerly) or a factory\n`(ctx: AppServerContext) => ReadonlyArray<WsEndpointSpec>`\n(evaluated after the server context is assembled). Use the factory\nform when action lists depend on `ctx.deps` — e.g. when spreading\n`create_standard_rpc_actions(ctx.deps, ...)` over WS.\n\nWhen non-empty, `create_upgrade_websocket` must be supplied (throws\notherwise). A factory returning `[]` does NOT trip the check —\nfeature-flag gated WS surfaces stay safe.\n\nEvery mount gets what the HTTP surface gets: the auth middleware (a\npath outside `AUTH_MIDDLEWARE_PATH` throws at assembly, like\n`rpc_endpoints`), the server's `allowed_origins` unless the spec\nnarrows them, and the same `action_ip_rate_limiter` /\n`action_account_rate_limiter` instances the RPC endpoints charge — one\nbudget per action across both transports. The upgrade routes register\nafter the route specs and before `post_route_middleware` and\n`static_serving`, so neither runs ahead of an upgrade.\n\nDuplicate `path` values across two `WsEndpointSpec`s throw at\nmount time (Hono would silently shadow them otherwise).\n\nEvery mounted transport is added to `deps.connection_closer`, so\nthe revocation handlers' post-commit closes reach its sockets —\nunconditionally, since those closes are what ends a revoked\ncredential's connections.\n\nEach spec's `auth_guard?` defaults to `true` — the factory\nregisters `create_ws_auth_guard` against the mounted transport via\n`deps.audit.add_listener`, repeating the close on the audit row.\nWiring is deduped by transport **reference identity** so two specs\nsharing one `BackendWebsocketTransport` instance get a single\nlistener; wrapped / proxied transports dedupe as separate\nentries (set `auth_guard: false` on duplicates and compose\nagainst the underlying transport once).",
 									"typeSignature": "readonly WsEndpointSpec[] | ((context: AppServerContext) => readonly WsEndpointSpec[])",
 									"optional": true,
 									"typeInfo": {
@@ -134438,7 +134916,7 @@
 							"kind": "interface",
 							"docComment": "Result of `create_app_server()`.",
 							"typeSignature": "AppServer",
-							"sourceLine": 396,
+							"sourceLine": 452,
 							"members": [
 								{
 									"name": "app",
@@ -134537,7 +135015,7 @@
 								{
 									"name": "close",
 									"kind": "function",
-									"docComment": "Shut the server's resources down: stop the auth cleanup schedule when\nthe `auth_cleanup` option started one — waiting for a pass in progress —\nthen close the database connection (`AppBackend.close`). That wait has\nno bound of its own; a shutdown with a deadline races it.",
+									"docComment": "Shut the server's resources down, in order:\n\n1. stop the auth cleanup schedule when the `auth_cleanup` option started\n   one, waiting for a pass in progress — that wait has no bound of its\n   own, so a shutdown with a deadline races it\n2. close every live connection on `deps.connection_closer`\n   (`close_all_sockets`) — each WebSocket with `WS_CLOSE_GOING_AWAY`, each\n   audit stream — including transports supplied through\n   `WsEndpointSpec.transport` or added by hand, since they are registered\n   on the backend's closer and the backend is going away; a close that\n   throws is logged and the shutdown goes on\n3. `dispose` the rate limiters `create_app_server` built for omitted\n   options — never one passed in, which its caller owns\n4. close the database connection (`AppBackend.close`)\n\nIdempotent: a second call settles with the first one's outcome (a failed\nclose is not retried), and concurrent calls share one shutdown.\n\nStop accepting new HTTP connections first — without awaiting the\nlistener's full drain, since live WebSockets hold it open until `close`\nends them — so no new request reaches a closed database.",
 									"typeSignature": "(): Promise<void>",
 									"returnType": "Promise<void>",
 									"returnTypeInfo": {
@@ -134558,7 +135036,7 @@
 							"kind": "function",
 							"docComment": "Assert that `audit_sse` was wired by `create_app_server` and return it\nas a non-null `AuditLogSse`. Throws a labelled error when the\n`audit_log_sse` option was not passed to `create_app_server`.\n\nUse in route factories that depend on factory-managed audit SSE:\n\n```ts\ncreate_route_specs: (ctx) => create_audit_log_route_specs({\n  stream: require_audit_sse(ctx),\n}),\n```\n\nPreferred over `ctx.audit_sse!` — `!` lies to the type system and\nproduces a downstream cannot-read-property crash if a consumer wires\nthe route without enabling the option.",
 							"typeSignature": "(source: { audit_sse: AuditLogSse | null; }): AuditLogSse",
-							"sourceLine": 448,
+							"sourceLine": 521,
 							"parameters": [
 								{
 									"name": "source",
@@ -134572,14 +135050,14 @@
 							"kind": "variable",
 							"docComment": "Default maximum request body size: 1 MiB.",
 							"typeSignature": "number",
-							"sourceLine": 458
+							"sourceLine": 531
 						},
 						{
 							"name": "create_app_server",
 							"kind": "function",
-							"docComment": "Create a fully assembled Hono app with auth, middleware, and routes.\n\nHandles the assembly lifecycle: proxy middleware → auth middleware →\nbootstrap status → route specs → surface generation → Hono app assembly →\nstatic serving. Database migrations belong to the backend lifecycle —\npass `migration_namespaces` to `create_app_backend`.\n\nWhen `audit_log_sse` is set, the SSE registry's listener is registered via\n`backend.deps.audit.add_listener` — no shallow-copy of `AppDeps`. That\nregistry and every WebSocket transport mounted from `ws_endpoints` are added\nto `backend.deps.connection_closer`, so the revocation handlers built from\n`ctx.deps` close their connections with no further wiring. The\n`audit_sse` field on the returned `AppServer` (and the\n`AppServerContext` passed to `create_route_specs`) is non-null in that\ncase; consumers can call `require_audit_sse(ctx)` / `require_audit_sse(server)`\nto assert the invariant.\n\nWhen `auth_cleanup` is set, the auth cleanup schedule starts as the last\nstep of assembly — so an assembly that throws leaves no schedule running —\nand the returned `close` stops it before closing the database.",
+							"docComment": "Create a fully assembled Hono app with auth, middleware, and routes.\n\nHandles the assembly lifecycle: proxy middleware → auth middleware →\nbootstrap status → route specs → surface generation → Hono app assembly →\nstatic serving. Database migrations belong to the backend lifecycle —\npass `migration_namespaces` to `create_app_backend`.\n\nWhen `audit_log_sse` is set, the SSE registry's listener is registered via\n`backend.deps.audit.add_listener` — no shallow-copy of `AppDeps`. That\nregistry and every WebSocket transport mounted from `ws_endpoints` are added\nto `backend.deps.connection_closer`, so the revocation handlers built from\n`ctx.deps` close their connections with no further wiring. The\n`audit_sse` field on the returned `AppServer` (and the\n`AppServerContext` passed to `create_route_specs`) is non-null in that\ncase; consumers can call `require_audit_sse(ctx)` / `require_audit_sse(server)`\nto assert the invariant.\n\nWhen `auth_cleanup` is set, the auth cleanup schedule starts as the last\nstep of assembly — so an assembly that throws leaves no schedule running.\n\nThe returned `close` owns shutdown: it stops that schedule, closes every\nlive connection on the backend's closer, disposes the rate limiters built\nhere, and closes the database (`AppServer.close`).",
 							"typeSignature": "(options: AppServerOptions): Promise<AppServer>",
-							"sourceLine": 484,
+							"sourceLine": 560,
 							"parameters": [
 								{
 									"name": "options",
@@ -134684,7 +135162,7 @@
 								{
 									"name": "login_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP login + password-change rate limiter (from options). `null` when\nnot configured. One instance per auth surface — see\n`AppServerOptions.login_ip_rate_limiter` for why these aren't shared.",
+									"docComment": "Per-IP login + password-change rate limiter. One instance per auth\nsurface — see `AppServerOptions.login_ip_rate_limiter` for why these\naren't shared.\n\nEach limiter here is what `create_app_server` resolved: the instance\nits option passed, else a default instance under\n`rate_limiters: 'enforced'` (the default). `null` when disabled — the\noption was an explicit `null`, or the mode is `'disabled_for_testing'`.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -134703,7 +135181,7 @@
 								{
 									"name": "signup_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP signup rate limiter (from options). `null` when not configured.",
+									"docComment": "Per-IP signup rate limiter. `null` when disabled.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -134722,7 +135200,7 @@
 								{
 									"name": "bootstrap_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP bootstrap rate limiter (from options). `null` when not configured.",
+									"docComment": "Per-IP bootstrap rate limiter. `null` when disabled.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -134741,7 +135219,7 @@
 								{
 									"name": "login_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account login rate limiter (from options). `null` when not configured.",
+									"docComment": "Per-account login rate limiter. `null` when disabled.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -134760,7 +135238,7 @@
 								{
 									"name": "signup_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account signup rate limiter (from options). `null` when not configured.",
+									"docComment": "Per-account signup rate limiter. `null` when disabled.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -134779,7 +135257,7 @@
 								{
 									"name": "action_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP action-dispatcher rate limiter — shared across HTTP RPC + WS. `null` when not configured.",
+									"docComment": "Per-IP action-dispatcher rate limiter — shared across HTTP RPC + WS. `null` when disabled.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -134798,7 +135276,7 @@
 								{
 									"name": "action_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-actor action-dispatcher rate limiter — shared across HTTP RPC + WS. `null` when not configured.",
+									"docComment": "Per-account action-dispatcher rate limiter, keyed on the authenticated\naccount's id — shared across HTTP RPC + WS. `null` when disabled.",
 									"typeSignature": "RateLimiter | null",
 									"typeInfo": {
 										"kind": "union",
@@ -135312,7 +135790,7 @@
 						{
 							"name": "ServeStaticFactory",
 							"kind": "type",
-							"docComment": "Factory function that creates a static file serving middleware.\n\nMatches the signature of `serveStatic` from `hono/deno` and `@hono/node-server/serve-static`.",
+							"docComment": "Factory function that creates a static file serving middleware.\n\nMatches the signature of `serveStatic` from `@hono/deno` and `@hono/node-server/serve-static`.",
 							"typeSignature": "ServeStaticFactory",
 							"sourceLine": 28,
 							"members": [
@@ -136680,9 +137158,32 @@
 									"optional": true
 								},
 								{
+									"name": "rate_limiters",
+									"kind": "variable",
+									"docComment": "What an omitted rate limiter becomes — `'enforced'` (the default) builds\na default instance for each `*_rate_limiter` option left out,\n`'disabled_for_testing'` leaves each of them `null`. An explicit option\n(an instance or `null`) always wins over the mode. The disabled mode adds\none surface warning. Never `'disabled_for_testing'` in production — see\n`RateLimiterMode`.",
+									"typeSignature": "RateLimiterMode",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"alias": "RateLimiterMode",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "enforced",
+												"text": "\"enforced\""
+											},
+											{
+												"kind": "literal",
+												"value": "disabled_for_testing",
+												"text": "\"disabled_for_testing\""
+											}
+										]
+									}
+								},
+								{
 									"name": "login_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for login + password change — the distributed-spray\nbackstop. Omit or `undefined` to use a default limiter (5 attempts per\n15 minutes). Pass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.\n\nOne instance per auth surface, not one shared across all four. These\nbuckets are monotone within their window — a success never refunds them\n(see `RateLimiter.reset`) — so a shared instance let a failure on any\nsurface spend the budget that bounds guessing on every other one, and\nlet one caller's exhaustion deny four routes at once. Pass the same\nlimiter to two of these fields to opt back into a shared budget.",
+									"docComment": "Per-IP rate limiter for login + password change — the distributed-spray\nbackstop. Omit or `undefined` to use a default limiter (5 attempts per\n15 minutes) under `rate_limiters: 'enforced'`, none under\n`'disabled_for_testing'`. Pass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.\n\nOne instance per auth surface, not one shared across all four. These\nbuckets are monotone within their window — a success never refunds them\n(see `RateLimiter.reset`) — so a shared instance let a failure on any\nsurface spend the budget that bounds guessing on every other one, and\nlet one caller's exhaustion deny four routes at once. Pass the same\nlimiter to two of these fields to opt back into a shared budget.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136702,7 +137203,7 @@
 								{
 									"name": "signup_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for signup. Omit or `undefined` to use a default\nlimiter (5 attempts per 15 minutes). Pass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` because an open-signup deployment\nlets any unauthenticated caller spend it. Also available on\n`AppServerContext` for route factory callbacks.",
+									"docComment": "Per-IP rate limiter for signup. Omit or `undefined` for the mode's\ndefault (5 attempts per 15 minutes under `rate_limiters: 'enforced'`).\nPass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` because an open-signup deployment\nlets any unauthenticated caller spend it. Also available on\n`AppServerContext` for route factory callbacks.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136722,7 +137223,7 @@
 								{
 									"name": "bootstrap_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for bootstrap. Omit or `undefined` to use a default\nlimiter (5 attempts per 15 minutes). Pass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` so a fumbled bootstrap token can't\nspend the operator's login budget. Wired directly into the factory-managed\nbootstrap route; also on `AppServerContext` for symmetry.",
+									"docComment": "Per-IP rate limiter for bootstrap. Omit or `undefined` for the mode's\ndefault (5 attempts per 15 minutes under `rate_limiters: 'enforced'`).\nPass `null` to explicitly disable.\nSeparate from `login_ip_rate_limiter` so a fumbled bootstrap token can't\nspend the operator's login budget. Wired directly into the factory-managed\nbootstrap route; also on `AppServerContext` for symmetry.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136742,7 +137243,7 @@
 								{
 									"name": "login_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account rate limiter for login attempts.\nOmit or `undefined` to use a default limiter (10 attempts per 30 minutes).\nPass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.",
+									"docComment": "Per-account rate limiter for login attempts. Omit or `undefined` for the\nmode's default (10 attempts per 30 minutes under\n`rate_limiters: 'enforced'`). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for route factory callbacks.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136762,7 +137263,7 @@
 								{
 									"name": "signup_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-account rate limiter for signup attempts, keyed by submitted username.\nOmit or `undefined` to use a default limiter (10 attempts per 30 minutes).\nPass `null` to explicitly disable rate limiting.\nAlso available on `AppServerContext` for route factory callbacks.",
+									"docComment": "Per-account rate limiter for signup attempts, keyed by submitted username.\nOmit or `undefined` for the mode's default (10 attempts per 30 minutes\nunder `rate_limiters: 'enforced'`). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for route factory callbacks.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136782,7 +137283,7 @@
 								{
 									"name": "action_ip_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-IP rate limiter for the action dispatchers (HTTP RPC + WebSocket).\nConsulted for actions whose spec declares `rate_limit: 'ip'` or `'both'`.\nSame limiter applies across transports — one budget per action.\nOmit or `undefined` to use a default limiter (600 attempts per\n15 minutes — permissive). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for consumers wiring\n`register_action_ws`.",
+									"docComment": "Per-IP rate limiter for the action dispatchers (HTTP RPC + WebSocket).\nConsulted for actions whose spec declares `rate_limit: 'ip'` or `'both'`.\nSame limiter applies across transports — one budget per action.\nOmit or `undefined` for the mode's default (600 attempts per 15 minutes\n— permissive — under `rate_limiters: 'enforced'`). Pass `null` to\nexplicitly disable.\nThreaded into every endpoint mounted from `rpc_endpoints` and\n`ws_endpoints`; also available on `AppServerContext`.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136802,7 +137303,7 @@
 								{
 									"name": "action_account_rate_limiter",
 									"kind": "variable",
-									"docComment": "Per-actor rate limiter for the action dispatchers (HTTP RPC + WebSocket).\nConsulted for actions whose spec declares `rate_limit: 'account'` or\n`'both'`. Keyed on `request_context.actor.id` (post-auth).\nOmit or `undefined` to use a default limiter (1200 attempts per\n15 minutes — permissive). Pass `null` to explicitly disable.\nAlso available on `AppServerContext` for consumers wiring\n`register_action_ws`.",
+									"docComment": "Per-account rate limiter for the action dispatchers (HTTP RPC +\nWebSocket). Consulted for actions whose spec declares\n`rate_limit: 'account'` or `'both'`. Keyed on the authenticated account's\nid, so every actor and credential of one account shares a budget.\nOmit or `undefined` for the mode's default (1200 attempts per 15 minutes\n— permissive — under `rate_limiters: 'enforced'`). Pass `null` to\nexplicitly disable.\nThreaded into every endpoint mounted from `rpc_endpoints` and\n`ws_endpoints`; also available on `AppServerContext`.",
 									"typeSignature": "RateLimiter | null",
 									"optional": true,
 									"typeInfo": {
@@ -136856,7 +137357,7 @@
 								{
 									"name": "transform_middleware",
 									"kind": "function",
-									"docComment": "Optional: transform middleware specs before applying.",
+									"docComment": "Optional: transform middleware specs before applying.\n\nThe endpoint auth-scope check (`assert_endpoint_in_auth_scope`) reads\n`AUTH_MIDDLEWARE_PATH`, not the transformed specs — a transform that\nmoves or drops the auth middleware is not followed by it.",
 									"typeSignature": "(specs: MiddlewareSpec[]): MiddlewareSpec[]",
 									"parameters": [
 										{
@@ -136937,12 +137438,37 @@
 									}
 								},
 								{
-									"name": "upgradeWebSocket",
-									"kind": "variable",
-									"docComment": "Hono adapter's `upgradeWebSocket` helper. Required whenever\n`ws_endpoints` resolves to a non-empty array — `create_app_server`\nthrows at assembly otherwise. Omit (along with `ws_endpoints`)\nwhen the consumer doesn't mount any WS endpoints. The same\nadapter helper services every `WsEndpointSpec` mounted from\n`ws_endpoints` — one adapter per app.\n\nFor Node, `import {upgradeWebSocket} from '@hono/node-ws'`. For\nDeno, `import {upgradeWebSocket} from 'hono/deno'`. Test harnesses\nuse `create_stub_upgrade` from `$lib/testing/ws_round_trip.ts`.",
-									"typeSignature": "UpgradeWebSocket<unknown, any, WSEvents<unknown>>",
-									"optional": true,
-									"typeInfo": {
+									"name": "create_upgrade_websocket",
+									"kind": "function",
+									"docComment": "Returns the Hono runtime adapter's `upgradeWebSocket` helper for the\nassembled app. `create_app_server` calls it once, with the app it\nbuilds (the same instance as `AppServer.app`), after creating the app\nand before mounting `ws_endpoints` — and only when `ws_endpoints`\nresolves non-empty, so it is never called for a server with no\nWebSocket endpoints. Required in that case: assembly throws without it.\nOne helper services every mounted endpoint.\n\nA factory rather than the helper itself because Node's adapter needs\nthe app: `@hono/node-ws` has no module-level helper, only\n`createNodeWebSocket({app})`, and `create_app_server` is what builds\nthe app. Deno and Bun ignore the argument:\n\n```ts\nimport {upgradeWebSocket} from '@hono/deno'; // or '@hono/bun'\ncreate_upgrade_websocket: () => upgradeWebSocket,\n```\n\nNode keeps the adapter so it can attach to the server after `serve()`:\n\n```ts\nlet node_ws: NodeWebSocket | undefined;\nconst server = await create_app_server({\n  ...,\n  create_upgrade_websocket: (app) => (node_ws = createNodeWebSocket({app})).upgradeWebSocket,\n});\nnode_ws?.injectWebSocket(serve({fetch: server.app.fetch, port}));\n```\n\nTest harnesses pass `() => stub.upgradeWebSocket` with\n`create_stub_upgrade` from `testing/ws_round_trip.ts`.",
+									"typeSignature": "(app: Hono<BlankEnv, BlankSchema, \"/\">): UpgradeWebSocket<unknown, any, WSEvents<unknown>>",
+									"parameters": [
+										{
+											"name": "app",
+											"type": "Hono<BlankEnv, BlankSchema, \"/\">",
+											"typeInfo": {
+												"kind": "reference",
+												"name": "Hono",
+												"typeArgs": [
+													{
+														"kind": "reference",
+														"name": "BlankEnv"
+													},
+													{
+														"kind": "reference",
+														"name": "BlankSchema"
+													},
+													{
+														"kind": "literal",
+														"value": "/",
+														"text": "\"/\""
+													}
+												]
+											}
+										}
+									],
+									"returnType": "UpgradeWebSocket<unknown, any, WSEvents<unknown>>",
+									"returnTypeInfo": {
 										"kind": "reference",
 										"name": "UpgradeWebSocket",
 										"typeArgs": [
@@ -136965,12 +137491,13 @@
 												]
 											}
 										]
-									}
+									},
+									"optional": true
 								},
 								{
 									"name": "ws_endpoints",
 									"kind": "variable",
-									"docComment": "WebSocket endpoint specs — single source of truth for both surface\ngeneration *and* live dispatch. Each entry is auto-mounted via\n`register_ws_endpoint` against the assembled Hono app, so\nconsumers no longer call `register_ws_endpoint` themselves.\n\nAccepts either an array (evaluated eagerly) or a factory\n`(ctx: AppServerContext) => ReadonlyArray<WsEndpointSpec>`\n(evaluated after the server context is assembled). Use the factory\nform when action lists depend on `ctx.deps` /\n`ctx.action_*_rate_limiter` — e.g. when spreading\n`create_standard_rpc_actions(ctx.deps, ...)` over WS.\n\nWhen non-empty, `upgradeWebSocket` must be supplied (throws\notherwise). A factory returning `[]` does NOT trip the check —\nfeature-flag gated WS surfaces stay safe.\n\nDuplicate `path` values across two `WsEndpointSpec`s throw at\nmount time (Hono would silently shadow them otherwise).\n\nEvery mounted transport is added to `deps.connection_closer`, so\nthe revocation handlers' post-commit closes reach its sockets —\nunconditionally, since those closes are what ends a revoked\ncredential's connections.\n\nEach spec's `auth_guard?` defaults to `true` — the factory\nregisters `create_ws_auth_guard` against the mounted transport via\n`deps.audit.add_listener`, repeating the close on the audit row.\nWiring is deduped by transport **reference identity** so two specs\nsharing one `BackendWebsocketTransport` instance get a single\nlistener; wrapped / proxied transports dedupe as separate\nentries (set `auth_guard: false` on duplicates and compose\nagainst the underlying transport once).",
+									"docComment": "WebSocket endpoint specs — single source of truth for both surface\ngeneration *and* live dispatch. Each entry is auto-mounted via\n`register_ws_endpoint` against the assembled Hono app, so\nconsumers no longer call `register_ws_endpoint` themselves.\n\nAccepts either an array (evaluated eagerly) or a factory\n`(ctx: AppServerContext) => ReadonlyArray<WsEndpointSpec>`\n(evaluated after the server context is assembled). Use the factory\nform when action lists depend on `ctx.deps` — e.g. when spreading\n`create_standard_rpc_actions(ctx.deps, ...)` over WS.\n\nWhen non-empty, `create_upgrade_websocket` must be supplied (throws\notherwise). A factory returning `[]` does NOT trip the check —\nfeature-flag gated WS surfaces stay safe.\n\nEvery mount gets what the HTTP surface gets: the auth middleware (a\npath outside `AUTH_MIDDLEWARE_PATH` throws at assembly, like\n`rpc_endpoints`), the server's `allowed_origins` unless the spec\nnarrows them, and the same `action_ip_rate_limiter` /\n`action_account_rate_limiter` instances the RPC endpoints charge — one\nbudget per action across both transports. The upgrade routes register\nafter the route specs and before `post_route_middleware` and\n`static_serving`, so neither runs ahead of an upgrade.\n\nDuplicate `path` values across two `WsEndpointSpec`s throw at\nmount time (Hono would silently shadow them otherwise).\n\nEvery mounted transport is added to `deps.connection_closer`, so\nthe revocation handlers' post-commit closes reach its sockets —\nunconditionally, since those closes are what ends a revoked\ncredential's connections.\n\nEach spec's `auth_guard?` defaults to `true` — the factory\nregisters `create_ws_auth_guard` against the mounted transport via\n`deps.audit.add_listener`, repeating the close on the audit row.\nWiring is deduped by transport **reference identity** so two specs\nsharing one `BackendWebsocketTransport` instance get a single\nlistener; wrapped / proxied transports dedupe as separate\nentries (set `auth_guard: false` on duplicates and compose\nagainst the underlying transport once).",
 									"typeSignature": "readonly WsEndpointSpec[] | ((context: AppServerContext) => readonly WsEndpointSpec[])",
 									"optional": true,
 									"typeInfo": {
@@ -137441,7 +137968,7 @@
 								{
 									"name": "cleanup",
 									"kind": "function",
-									"docComment": "Cleanup resources (`AppServer.close`: stops an opted-in auth cleanup schedule, then the backend's `close`).",
+									"docComment": "Cleanup resources — `AppServer.close`: stops an opted-in auth cleanup schedule, closes live connections, disposes the limiters the server built, then the backend's `close`. Idempotent.",
 									"typeSignature": "(): Promise<void>",
 									"returnType": "Promise<void>",
 									"returnTypeInfo": {
@@ -137460,9 +137987,9 @@
 						{
 							"name": "create_test_app",
 							"kind": "function",
-							"docComment": "Create a fully assembled test app with a Hono server, middleware, and routes.\n\nCombines `create_test_app_server` + `create_app_server` into a single call.\nDisables rate limiters and logging by default (test-friendly).\n\nA fresh Hono app is created each call — middleware closures bind to the\nserver's deps (db, keyring), so reuse across servers is unsafe.\nThe expensive resource (PGlite WASM) is cached separately in `testing/db.ts`.",
+							"docComment": "Create a fully assembled test app with a Hono server, middleware, and routes.\n\nCombines `create_test_app_server` + `create_app_server` into a single call.\nDisables every rate limiter (`rate_limiters: 'disabled_for_testing'`) and\nlogging by default (test-friendly). A limiter passed through `app_options`\nwins over the mode, so a rate-limit test enables just the one it pins.\n\nA fresh Hono app is created each call — middleware closures bind to the\nserver's deps (db, keyring), so reuse across servers is unsafe.\nThe expensive resource (PGlite WASM) is cached separately in `testing/db.ts`.",
 							"typeSignature": "(options: CreateTestAppOptions): Promise<TestApp>",
-							"sourceLine": 648,
+							"sourceLine": 650,
 							"parameters": [
 								{
 									"name": "options",
@@ -137787,9 +138314,9 @@
 						{
 							"name": "create_test_app_for_bootstrap",
 							"kind": "function",
-							"docComment": "Create a test app in the pre-bootstrap state for exercising the\nbootstrap success path end-to-end.\n\nSkips the keeper pre-creation `create_test_app` does by default —\n`bootstrap_lock.bootstrapped` stays at `false` and the DB has no\naccounts. The fs stubs return `options.bootstrap_token` when the\nbootstrap handler reads `bootstrap.token_path`, so a `POST /bootstrap`\nwith `{token: bootstrap_token, username, password}` reaches the\nsuccess branch.\n\nPair with `describe_bootstrap_success_tests` for the consumer-runnable\nsuite that drives the full happy path + adjacent assertions on\nobservable state (account exists, audit row emitted, on_bootstrap\ncallback fired).",
+							"docComment": "Create a test app in the pre-bootstrap state for exercising the\nbootstrap success path end-to-end.\n\nSkips the keeper pre-creation `create_test_app` does by default —\n`bootstrap_lock.bootstrapped` stays at `false` and the DB has no\naccounts. The fs stubs return `options.bootstrap_token` when the\nbootstrap handler reads `bootstrap.token_path`, so a `POST /bootstrap`\nwith `{token: bootstrap_token, username, password}` reaches the\nsuccess branch. Rate limiters are disabled the way `create_test_app`\ndisables them — a limiter in `app_options` wins.\n\nPair with `describe_bootstrap_success_tests` for the consumer-runnable\nsuite that drives the full happy path + adjacent assertions on\nobservable state (account exists, audit row emitted, on_bootstrap\ncallback fired).",
 							"typeSignature": "(options: CreateTestAppForBootstrapOptions): Promise<TestAppForBootstrap>",
-							"sourceLine": 817,
+							"sourceLine": 818,
 							"parameters": [
 								{
 									"name": "options",
@@ -139470,48 +139997,30 @@
 					"declarations": [
 						{
 							"name": "RecordedClose",
-							"kind": "interface",
-							"docComment": "Record of a single `ConnectionCloser` method invocation.",
+							"kind": "type",
+							"docComment": "Record of a single `ConnectionCloser` method invocation — a credential\nclose carries the id it was given, `close_all_sockets` (`'all'`) none.",
 							"typeSignature": "RecordedClose",
-							"sourceLine": 8,
-							"members": [
-								{
-									"name": "method",
-									"kind": "variable",
-									"typeSignature": "\"account\" | \"token\" | \"session\"",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "literal",
-												"value": "account",
-												"text": "\"account\""
-											},
-											{
-												"kind": "literal",
-												"value": "token",
-												"text": "\"token\""
-											},
-											{
-												"kind": "literal",
-												"value": "session",
-												"text": "\"session\""
-											}
-										]
+							"sourceLine": 11,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "RecordedClose",
+								"members": [
+									{
+										"kind": "object",
+										"text": "{ method: \"account\" | \"token\" | \"session\"; id: string; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ method: \"all\"; id: null; }"
 									}
-								},
-								{
-									"name": "id",
-									"kind": "variable",
-									"typeSignature": "string"
-								}
-							]
+								]
+							}
 						},
 						{
 							"name": "RecordingCloser",
 							"kind": "interface",
 							"typeSignature": "RecordingCloser",
-							"sourceLine": 13,
+							"sourceLine": 14,
 							"members": [
 								{
 									"name": "closer",
@@ -139525,8 +140034,18 @@
 									"typeInfo": {
 										"kind": "array",
 										"element": {
-											"kind": "reference",
-											"name": "RecordedClose"
+											"kind": "union",
+											"alias": "RecordedClose",
+											"members": [
+												{
+													"kind": "object",
+													"text": "{ method: \"account\" | \"token\" | \"session\"; id: string; }"
+												},
+												{
+													"kind": "object",
+													"text": "{ method: \"all\"; id: null; }"
+												}
+											]
 										}
 									}
 								}
@@ -139537,15 +140056,15 @@
 							"kind": "function",
 							"docComment": "Build a `ConnectionCloser` that records every call into `calls` rather\nthan touching real transports. Each method returns 1 (\"one connection\nclosed\") regardless of whether a real connection exists — handlers\nignore the return value.\n\nTo see a handler's closes, add the closer to the backend's\n`deps.connection_closer` (`RealtimeCloser.add`), or build the action\nfactory's deps with it.",
 							"typeSignature": "(): RecordingCloser",
-							"sourceLine": 28,
+							"sourceLine": 29,
 							"returnType": "RecordingCloser"
 						},
 						{
 							"name": "assert_close_call",
 							"kind": "function",
 							"docComment": "Pin `{method, id}` on a single recorded close call.\n\nThrows via `assert.ok` if `call` is `undefined` — index a recorded\n`calls` array directly (`calls[0]`) and let this helper handle the\nmissing-element case.",
-							"typeSignature": "(call: RecordedClose | undefined, method: \"account\" | \"token\" | \"session\", id: string): void",
-							"sourceLine": 54,
+							"typeSignature": "(call: RecordedClose | undefined, method: \"all\" | \"account\" | \"token\" | \"session\", id: string | null): void",
+							"sourceLine": 59,
 							"parameters": [
 								{
 									"name": "call",
@@ -139554,8 +140073,18 @@
 										"kind": "union",
 										"members": [
 											{
-												"kind": "reference",
-												"name": "RecordedClose"
+												"kind": "union",
+												"alias": "RecordedClose",
+												"members": [
+													{
+														"kind": "object",
+														"text": "{ method: \"account\" | \"token\" | \"session\"; id: string; }"
+													},
+													{
+														"kind": "object",
+														"text": "{ method: \"all\"; id: null; }"
+													}
+												]
 											},
 											{
 												"kind": "intrinsic",
@@ -139566,10 +140095,15 @@
 								},
 								{
 									"name": "method",
-									"type": "\"account\" | \"token\" | \"session\"",
+									"type": "\"all\" | \"account\" | \"token\" | \"session\"",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
+											{
+												"kind": "literal",
+												"value": "all",
+												"text": "\"all\""
+											},
 											{
 												"kind": "literal",
 												"value": "account",
@@ -139590,7 +140124,20 @@
 								},
 								{
 									"name": "id",
-									"type": "string"
+									"type": "string | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
 								}
 							],
 							"returnType": "void"
@@ -147373,7 +147920,7 @@
 							"returnType": "TestingServerAdapter"
 						}
 					],
-					"moduleComment": "Bun runtime adapter for spawnable cross-process test server binaries.\n\nBinds `Bun.serve` and `hono/bun`'s module-level `upgradeWebSocket` +\n`websocket` handler. The shared `testing/cross_backend/testing_server_core.ts` owns the rest.\nThird sibling to `testing/cross_backend/testing_server_node.ts` / `testing/cross_backend/testing_server_deno.ts` —\ntogether the three isolate the JS-runtime axis (Node V8 / Deno V8 / Bun\nJSC) on identical TS surfaces, and the Rust spine binary covers the\ncross-language axis.\n\nNeeds **no extra deps**: `hono/bun` ships with the `hono` peer dep and\n`Bun.serve` is built in (unlike Node, which pulls `@hono/node-server` +\n`@hono/node-ws`). `RuntimeDeps` reuse `create_node_runtime` — Bun\nimplements the `node:fs` / `node:process` surface `RuntimeDeps` +\n`cli/daemon` touch.\n\n`Bun.serve` is declared locally (mirroring `testing/cross_backend/testing_server_deno.ts`'s\n`Deno` declaration) so this module typechecks under fuz_app's Node-based\nconfig without `@types/bun`. It is only ever *run* under Bun.",
+					"moduleComment": "Bun runtime adapter for spawnable cross-process test server binaries.\n\nBinds `Bun.serve` and `@hono/bun`'s module-level `upgradeWebSocket` +\n`websocket` handler. The shared `testing/cross_backend/testing_server_core.ts` owns the rest.\nThird sibling to `testing/cross_backend/testing_server_node.ts` / `testing/cross_backend/testing_server_deno.ts` —\ntogether the three isolate the JS-runtime axis (Node V8 / Deno V8 / Bun\nJSC) on identical TS surfaces, and the Rust spine binary covers the\ncross-language axis.\n\nNeeds the optional `@hono/bun` peer dep (the Bun counterpart to Node's\n`@hono/node-server` + `@hono/node-ws`); `Bun.serve` is built in.\n`RuntimeDeps` reuse `create_node_runtime` — Bun\nimplements the `node:fs` / `node:process` surface `RuntimeDeps` +\n`cli/daemon` touch.\n\n`Bun.serve` is declared locally (mirroring `testing/cross_backend/testing_server_deno.ts`'s\n`Deno` declaration) so this module typechecks under fuz_app's Node-based\nconfig without `@types/bun`. It is only ever *run* under Bun.",
 					"dependencies": [
 						"runtime/node.ts",
 						"testing/assert_dev_env.ts",
@@ -147800,7 +148347,7 @@
 							}
 						}
 					],
-					"moduleComment": "Runtime-agnostic core for spawnable cross-process **test** server\nbinaries.\n\nA test binary mounts a fuz_app-derived surface over a real HTTP socket so\nthe `cross_backend/*` suites (and the cross-impl bench) can drive it the\nsame way they drive the Rust spine. This module owns the runtime-neutral\norchestration — stale-daemon check, daemon-info write, serve, post-serve\nWS attach, graceful drain shutdown — and delegates the runtime-boundary\nprimitives (HTTP serve, WS upgrade construction, signals, pid, exit) to a\n{@link TestingServerAdapter}. The two shipped adapters are\n`testing/cross_backend/testing_server_node.ts` (`@hono/node-server` + `@hono/node-ws`) and\n`testing/cross_backend/testing_server_deno.ts` (`Deno.serve` + `hono/deno`).\n\nThe app itself — routes, RPC, DB, `_testing_reset`, optional WS mount —\nis the caller's {@link StartTestingServerOptions.build_app} seam, so this\ncore stays domain-free. fuz_app's own `testing_spine_server` passes a\nno-domain build; consumers (zzz, fuz_forge) pass their domain build.\n\n**NEVER ships in a release.** This module lives under `cross_backend/` and\nopens with `import '../assert_dev_env.ts';`, which throws on\nproduction-bundle load. The runtime adapters reach for the optional\n`@hono/node-server` / `@hono/node-ws` peer deps; only test binaries import\nthem.",
+					"moduleComment": "Runtime-agnostic core for spawnable cross-process **test** server\nbinaries.\n\nA test binary mounts a fuz_app-derived surface over a real HTTP socket so\nthe `cross_backend/*` suites (and the cross-impl bench) can drive it the\nsame way they drive the Rust spine. This module owns the runtime-neutral\norchestration — stale-daemon check, daemon-info write, serve, post-serve\nWS attach, graceful drain shutdown — and delegates the runtime-boundary\nprimitives (HTTP serve, WS upgrade construction, signals, pid, exit) to a\n{@link TestingServerAdapter}. The two shipped adapters are\n`testing/cross_backend/testing_server_node.ts` (`@hono/node-server` + `@hono/node-ws`) and\n`testing/cross_backend/testing_server_deno.ts` (`Deno.serve` + `@hono/deno`).\n\nThe app itself — routes, RPC, DB, `_testing_reset`, optional WS mount —\nis the caller's {@link StartTestingServerOptions.build_app} seam, so this\ncore stays domain-free. fuz_app's own `testing_spine_server` passes a\nno-domain build; consumers (zzz, fuz_forge) pass their domain build.\n\n**NEVER ships in a release.** This module lives under `cross_backend/` and\nopens with `import '../assert_dev_env.ts';`, which throws on\nproduction-bundle load. The runtime adapters reach for the optional\n`@hono/node-server` / `@hono/node-ws` peer deps; only test binaries import\nthem.",
 					"dependencies": [
 						"cli/daemon.ts",
 						"runtime/deps.ts",
@@ -147820,11 +148367,11 @@
 							"kind": "function",
 							"docComment": "Build the Deno {@link TestingServerAdapter}.",
 							"typeSignature": "(): TestingServerAdapter",
-							"sourceLine": 38,
+							"sourceLine": 39,
 							"returnType": "TestingServerAdapter"
 						}
 					],
-					"moduleComment": "Deno runtime adapter for spawnable cross-process test server binaries.\n\nBinds `Deno.serve` and `hono/deno`'s module-level `upgradeWebSocket`. The\nshared `testing/cross_backend/testing_server_core.ts` owns the rest. Counterpart to\n`testing/cross_backend/testing_server_node.ts` — together they isolate the JS-runtime axis (Deno\nvs Node V8) on identical TS surfaces, and the Rust spine binary covers the\ncross-language axis.\n\n`Deno` globals are declared locally (mirroring `runtime/deno.ts`) so this\nmodule typechecks under fuz_app's Node-based config without a `deno.json`\nor `@types/deno`. It is only ever *run* under Deno.",
+					"moduleComment": "Deno runtime adapter for spawnable cross-process test server binaries.\n\nBinds `Deno.serve` and `@hono/deno`'s module-level `upgradeWebSocket` (the\noptional `@hono/deno` peer dep). The shared\n`testing/cross_backend/testing_server_core.ts` owns the rest. Counterpart to\n`testing/cross_backend/testing_server_node.ts` — together they isolate the JS-runtime axis (Deno\nvs Node V8) on identical TS surfaces, and the Rust spine binary covers the\ncross-language axis.\n\n`Deno` globals are declared locally (mirroring `runtime/deno.ts`) so this\nmodule typechecks under fuz_app's Node-based config without a `deno.json`\nor `@types/deno`. It is only ever *run* under Deno.",
 					"dependencies": [
 						"runtime/deno.ts",
 						"testing/assert_dev_env.ts",
@@ -147843,7 +148390,7 @@
 							"returnType": "TestingServerAdapter"
 						}
 					],
-					"moduleComment": "Node runtime adapter for spawnable cross-process test server binaries.\n\nBinds `@hono/node-server`'s `serve()` and `@hono/node-ws`'s two-phase\n`createNodeWebSocket(app)` / `injectWebSocket(server)`. The shared\n`testing/cross_backend/testing_server_core.ts` owns the rest. A test binary builds this adapter\nand hands it to `start_testing_server` alongside its `build_app` seam.\n\n`@hono/node-server` + `@hono/node-ws` are **optional** peer deps (same\nposture as `ws`) — only test binaries import them; production bundles\nnever reach this module (the `assert_dev_env` guard throws on prod load).",
+					"moduleComment": "Node runtime adapter for spawnable cross-process test server binaries.\n\nBinds `@hono/node-server`'s `serve()` and `@hono/node-ws`'s two-phase\n`createNodeWebSocket({app})` / `injectWebSocket(server)`. The shared\n`testing/cross_backend/testing_server_core.ts` owns the rest. A test binary builds this adapter\nand hands it to `start_testing_server` alongside its `build_app` seam.\n\n`@hono/node-server` + `@hono/node-ws` are **optional** peer deps (same\nposture as `ws`) — only test binaries import them; production bundles\nnever reach this module (the `assert_dev_env` guard throws on prod load).",
 					"dependencies": [
 						"runtime/node.ts",
 						"testing/assert_dev_env.ts",
@@ -148075,9 +148622,9 @@
 						{
 							"name": "ts_spine_bun_backend_config",
 							"kind": "function",
-							"docComment": "`BackendConfig` for the Bun TS spine binary — spawned via `bun run`. Bun\nresolves the entry's relative `.js`→`.ts` source specifiers natively (no\nflag needed — unlike Deno's `--sloppy-imports`, and like Gro's loader on\nthe Node path), and `Bun.serve` + `hono/bun` need no extra deps.",
+							"docComment": "`BackendConfig` for the Bun TS spine binary — spawned via `bun run`. Bun\nresolves the entry's relative `.js`→`.ts` source specifiers natively (no\nflag needed — unlike Deno's `--sloppy-imports`, and like Gro's loader on\nthe Node path). `Bun.serve` is built in; the WS upgrade comes from the\noptional `@hono/bun` peer dep.",
 							"typeSignature": "(options?: TsSpineBackendConfigOptions): BackendConfig",
-							"sourceLine": 151,
+							"sourceLine": 152,
 							"parameters": [
 								{
 									"name": "options",
@@ -148092,7 +148639,7 @@
 							"kind": "function",
 							"docComment": "`BackendConfig` for the Deno TS spine binary. The `--allow-*` set mirrors\nthe cross-process needs (net + read/write for the daemon-token file + env\n+ sys); `--unstable-detect-cjs` matches the ecosystem's Deno test entries.\n\n`--sloppy-imports` is required because the binary imports fuz_app **source**\nvia relative `.js` specifiers (the `src/lib` convention) — Deno resolves\n`.js`→`.ts` only under this flag, whereas Gro's loader (the Node path)\ndoes so natively. (zzz's Deno entry sidesteps it by importing fuz_app as a\nbuilt package; this binary tests live source instead.)",
 							"typeSignature": "(options?: TsSpineBackendConfigOptions): BackendConfig",
-							"sourceLine": 185,
+							"sourceLine": 186,
 							"parameters": [
 								{
 									"name": "options",
@@ -157068,7 +157615,7 @@
 							"kind": "function",
 							"docComment": "Create a Proxy that throws descriptive errors on any property access or method call.\n\nUse for deps that should never be reached during a test. If a test accidentally\ncalls through to a throwing stub, the error message identifies exactly which stub\nwas hit, catching test bugs that would silently pass with `{} as any`.\n\nJS-internal probes (`Symbol`, `then`, `constructor`, `$$typeof`) return\n`undefined` so the proxy doesn't crash framework-level identity checks;\n`toJSON` returns `\"[throwing_stub:label]\"` so accidental serialization\nsurfaces the stub's identity in console output rather than silent `\"{}\"`.",
 							"typeSignature": "<T = any>(label: string): T",
-							"sourceLine": 55,
+							"sourceLine": 56,
 							"genericParams": [
 								{
 									"name": "T",
@@ -157095,7 +157642,7 @@
 							"kind": "function",
 							"docComment": "Create a Proxy where every method access returns a no-op async function.\n\nUse for deps that may be reached during \"correct auth passes guard\" tests\nbut whose return values don't matter. Unlike the explicit method listing,\nthis auto-updates when interfaces change.",
 							"typeSignature": "<T = any>(_label: string, overrides?: Record<string, unknown> | undefined): T",
-							"sourceLine": 88,
+							"sourceLine": 89,
 							"genericParams": [
 								{
 									"name": "T",
@@ -157135,14 +157682,14 @@
 							"kind": "variable",
 							"docComment": "Throwing stub — use for deps that should never be reached.",
 							"typeSignature": "any",
-							"sourceLine": 98
+							"sourceLine": 99
 						},
 						{
 							"name": "create_stub_db",
 							"kind": "function",
 							"docComment": "Create a stub `Db` for handler tests that use `apply_route_specs` with declarative transactions.\n\nReturns a real `Db` instance with:\n- `query` returns empty rows (safety net for unmocked query functions)\n- `query_one` returns undefined\n- `transaction(fn)` calls `fn(db)` synchronously (no real transaction)",
 							"typeSignature": "(): Db",
-							"sourceLine": 108,
+							"sourceLine": 109,
 							"returnType": "Db"
 						},
 						{
@@ -157150,7 +157697,7 @@
 							"kind": "function",
 							"docComment": "Stub handler that returns a 200 response.",
 							"typeSignature": "(): Response",
-							"sourceLine": 115,
+							"sourceLine": 116,
 							"returnType": "Response"
 						},
 						{
@@ -157158,7 +157705,7 @@
 							"kind": "function",
 							"docComment": "Stub middleware that passes through.",
 							"typeSignature": "(_c: any, next: any): Promise<void>",
-							"sourceLine": 118,
+							"sourceLine": 119,
 							"parameters": [
 								{
 									"name": "_c",
@@ -157186,7 +157733,7 @@
 							"kind": "function",
 							"docComment": "Build a no-op `AuditEmitter` for tests that don't assert on audit fan-out.\n\n`emit` / `emit_role_grant_target` are no-ops; `emit_pool` resolves\nimmediately; `notify` is a no-op; `add_listener` throws, so a test that\nwires a listener fails loudly instead of silently never firing\n(`create_recording_audit_emitter` accepts listeners); `listener_count`\nreturns 0. Tests asserting on real audit-row persistence (or on listener\nfan-out) build a real emitter via `create_audit_emitter` against a stub or\nreal DB — `create_test_app` already does this on the test backend.",
 							"typeSignature": "(): AuditEmitter",
-							"sourceLine": 133,
+							"sourceLine": 134,
 							"returnType": "AuditEmitter"
 						},
 						{
@@ -157194,7 +157741,7 @@
 							"kind": "function",
 							"docComment": "Build a no-op `AuditLogSse` for tests that wire `audit_sse` into the\nsurface helper but don't assert on SSE fan-out or subscriber state.\n\n`on_audit_event` is a no-op, so nothing is broadcast; the\n`registry` is a fresh `SubscriberRegistry` instance (call sites that\ninspect `.size` or call `.close_*` see a real registry, so writes are\nisolated per test). Tests that need real SSE plumbing build it via\n`create_audit_log_sse` against `create_test_app`.",
 							"typeSignature": "(): AuditLogSse",
-							"sourceLine": 156,
+							"sourceLine": 157,
 							"returnType": "AuditLogSse"
 						},
 						{
@@ -157202,14 +157749,14 @@
 							"kind": "variable",
 							"docComment": "Stub `AppDeps` for auth surface tests — throws on any method access.",
 							"typeSignature": "AppDeps",
-							"sourceLine": 168
+							"sourceLine": 169
 						},
 						{
 							"name": "create_stub_app_deps",
 							"kind": "function",
 							"docComment": "Create no-op `AppDeps` for auth surface testing.",
 							"typeSignature": "(): AppDeps",
-							"sourceLine": 182,
+							"sourceLine": 183,
 							"returnType": "AppDeps"
 						},
 						{
@@ -157217,7 +157764,7 @@
 							"kind": "function",
 							"docComment": "Create the API middleware stub array matching `create_auth_middleware_specs` output.",
 							"typeSignature": "(options?: { include_daemon_token?: boolean | undefined; } | undefined): MiddlewareSpec[]",
-							"sourceLine": 196,
+							"sourceLine": 197,
 							"parameters": [
 								{
 									"name": "options",
@@ -157239,7 +157786,7 @@
 							"kind": "function",
 							"docComment": "Create a stub `AppServerContext` for attack surface testing.\n\nProvides sensible defaults for all fields. Pass `session_options` since\nit varies per consumer; other fields use stubs/nulls.",
 							"typeSignature": "(session_options: SessionOptions<string>): AppServerContext",
-							"sourceLine": 230,
+							"sourceLine": 231,
 							"parameters": [
 								{
 									"name": "session_options",
@@ -157264,7 +157811,7 @@
 							"kind": "interface",
 							"docComment": "Options for `create_test_app_surface_spec`.",
 							"typeSignature": "CreateTestAppSurfaceSpecOptions",
-							"sourceLine": 257,
+							"sourceLine": 258,
 							"members": [
 								{
 									"name": "session_options",
@@ -157363,7 +157910,7 @@
 								{
 									"name": "ws_endpoints",
 									"kind": "variable",
-									"docComment": "WebSocket endpoint specs for surface generation. Symmetric with\n`create_app_server`'s `ws_endpoints` option — pass the same value\nto both entry points so the attack surface tests see the same WS\nendpoints production auto-mounts. The factory runs once against\nthe stub `AppServerContext` this helper already builds. No\n`upgradeWebSocket` needed — this helper produces an `AppSurfaceSpec`\nonly, never mounts.",
+									"docComment": "WebSocket endpoint specs for surface generation. Symmetric with\n`create_app_server`'s `ws_endpoints` option — pass the same value\nto both entry points so the attack surface tests see the same WS\nendpoints production auto-mounts. The factory runs once against\nthe stub `AppServerContext` this helper already builds. No\n`create_upgrade_websocket` needed — this helper produces an\n`AppSurfaceSpec` only, never mounts.",
 									"typeSignature": "readonly WsEndpointSpec[] | ((ctx: AppServerContext) => readonly WsEndpointSpec[])",
 									"optional": true,
 									"typeInfo": {
@@ -157382,6 +157929,21 @@
 												"text": "(ctx: AppServerContext) => readonly WsEndpointSpec[]"
 											}
 										]
+									}
+								},
+								{
+									"name": "allowed_origins",
+									"kind": "variable",
+									"docComment": "The server's origin allowlist — `AppServerOptions.allowed_origins`.\nRead only as the default for a `ws_endpoints` spec that declares no\n`allowed_origins`, as `create_app_server` does; required when any spec\nomits its own, since surface generation throws on an unresolved one.",
+									"typeSignature": "readonly RegExp[]",
+									"optional": true,
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "RegExp"
+										},
+										"readonly": true
 									}
 								},
 								{
@@ -157442,9 +158004,15 @@
 						{
 							"name": "create_test_app_surface_spec",
 							"kind": "function",
-							"docComment": "Create an `AppSurfaceSpec` for the standard testing suites.\n\nUsed by both in-process and cross-process tests as the schema source —\nthe cross-process-ness lives in the transport + per-test fixture, not\nhere. The on-disk `*_attack_surface.json` snapshot is observability\n(gen-time drift detection via `assert_surface_matches_snapshot`); the\nsuites consume the spec object this function returns, not the JSON\nfile.\n\nMirrors `create_app_server`'s route assembly: consumer routes +\nfactory-managed bootstrap routes + surface generation. If\n`create_app_server` changes how it wires routes, update this helper\nto stay in sync (single source of truth for all consumers).",
+							"docComment": "Create an `AppSurfaceSpec` for the standard testing suites.\n\nUsed by both in-process and cross-process tests as the schema source —\nthe cross-process-ness lives in the transport + per-test fixture, not\nhere. The on-disk `*_attack_surface.json` snapshot is observability\n(gen-time drift detection via `assert_surface_matches_snapshot`); the\nsuites consume the spec object this function returns, not the JSON\nfile.\n\nMirrors `create_app_server`'s route assembly: consumer routes +\nfactory-managed bootstrap routes + surface generation — including its\nrefusal of an `rpc_endpoints` or `ws_endpoints` path outside the auth\nmiddleware's scope (`assert_endpoint_in_auth_scope`). If\n`create_app_server` changes how it wires routes, update this helper\nto stay in sync (single source of truth for all consumers).",
 							"typeSignature": "(options: CreateTestAppSurfaceSpecOptions): AppSurfaceSpec",
-							"sourceLine": 319,
+							"sourceLine": 330,
+							"throws": [
+								{
+									"type": "Error",
+									"description": "when an endpoint path is outside `AUTH_MIDDLEWARE_PATH`"
+								}
+							],
 							"parameters": [
 								{
 									"name": "options",
@@ -157464,6 +158032,7 @@
 						"auth/audit_emitter.ts",
 						"auth/bootstrap_route_schema.ts",
 						"auth/deps.ts",
+						"auth/middleware.ts",
 						"auth/session_cookie.ts",
 						"db/db.ts",
 						"http/error_schemas.ts",
@@ -160160,11 +160729,106 @@
 							}
 						},
 						{
+							"name": "StubUpgradeRecord",
+							"kind": "interface",
+							"docComment": "One upgrade that reached a `create_stub_upgrade` route.",
+							"typeSignature": "StubUpgradeRecord",
+							"sourceLine": 164,
+							"members": [
+								{
+									"name": "c",
+									"kind": "variable",
+									"docComment": "The real Hono `Context` the request carried through the app's\nmiddleware chain — session, request context, client IP, and every\nother value the middleware set.",
+									"typeSignature": "Context<any, any, {}>",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Context",
+										"typeArgs": [
+											{
+												"kind": "intrinsic",
+												"text": "any"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "any"
+											},
+											{
+												"kind": "object",
+												"text": "{}"
+											}
+										]
+									}
+								},
+								{
+									"name": "create_events",
+									"kind": "function",
+									"docComment": "The events factory of the endpoint the upgrade reached.",
+									"typeSignature": "(c: Context<any, any, {}>): WSEvents<unknown> | Promise<WSEvents<unknown>>",
+									"parameters": [
+										{
+											"name": "c",
+											"type": "Context<any, any, {}>",
+											"typeInfo": {
+												"kind": "reference",
+												"name": "Context",
+												"typeArgs": [
+													{
+														"kind": "intrinsic",
+														"text": "any"
+													},
+													{
+														"kind": "intrinsic",
+														"text": "any"
+													},
+													{
+														"kind": "object",
+														"text": "{}"
+													}
+												]
+											}
+										}
+									],
+									"returnType": "WSEvents<unknown> | Promise<WSEvents<unknown>>",
+									"returnTypeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "reference",
+												"name": "WSEvents",
+												"typeArgs": [
+													{
+														"kind": "intrinsic",
+														"text": "unknown"
+													}
+												]
+											},
+											{
+												"kind": "reference",
+												"name": "Promise",
+												"typeArgs": [
+													{
+														"kind": "reference",
+														"name": "WSEvents",
+														"typeArgs": [
+															{
+																"kind": "intrinsic",
+																"text": "unknown"
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								}
+							]
+						},
+						{
 							"name": "StubUpgrade",
 							"kind": "interface",
-							"docComment": "The return of `create_stub_upgrade` — fake `upgradeWebSocket` + factory capture.",
+							"docComment": "The return of `create_stub_upgrade` — fake `upgradeWebSocket` + factory and upgrade capture.",
 							"typeSignature": "StubUpgrade",
-							"sourceLine": 164,
+							"sourceLine": 176,
 							"members": [
 								{
 									"name": "upgradeWebSocket",
@@ -160198,24 +160862,39 @@
 								{
 									"name": "get_create_events",
 									"kind": "function",
+									"docComment": "The events factory of the most recently mounted endpoint, for tests\nthat build events from a hand-made context. Throws when no endpoint\nwas mounted.",
 									"typeSignature": "(): (c: Context<any, any, {}>) => WSEvents<unknown> | Promise<WSEvents<unknown>>",
 									"returnType": "(c: Context<any, any, {}>) => WSEvents<unknown> | Promise<WSEvents<unknown>>"
+								},
+								{
+									"name": "upgrades",
+									"kind": "variable",
+									"docComment": "Every upgrade request that reached a stub route, in arrival order —\nwhat `app.request(path, {headers: {upgrade: 'websocket', ...}})`\nleaves behind once the app's middleware passed it. Build the socket's\nevents with `record.create_events(record.c)`.",
+									"typeSignature": "readonly StubUpgradeRecord[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "StubUpgradeRecord"
+										},
+										"readonly": true
+									}
 								}
 							]
 						},
 						{
 							"name": "create_stub_upgrade",
 							"kind": "function",
-							"docComment": "Build a fake `upgradeWebSocket` that captures the `createEvents`\ncallback. The returned middleware is inert — tests drive\n`createEvents` directly.",
+							"docComment": "Build a fake `upgradeWebSocket` that stands in for a runtime adapter's.\n\nLike the real adapters, the middleware it returns passes a request\nwithout an `Upgrade: websocket` header to `next()`. An upgrade request\nis recorded in `upgrades` — its real `Context` and the endpoint's events\nfactory — and answered `200` with no body (a `Response` cannot carry the\n`101` an adapter answers). No socket is opened: tests drive the recorded\nfactory, so an upgrade sent through `app.request` exercises the app's\nwhole middleware chain — origin, session or bearer, client IP — before\nthe dispatcher sees it.",
 							"typeSignature": "(): StubUpgrade",
-							"sourceLine": 174,
+							"sourceLine": 205,
 							"returnType": "StubUpgrade"
 						},
 						{
 							"name": "MinimalActionEnvironment",
 							"kind": "class",
 							"docComment": "Minimal `ActionEventEnvironment` for tests that instantiate an\n`ActionDispatcher` without pulling in the full runtime. Pre-loads a\nspec map from the supplied list.",
-							"sourceLine": 194,
+							"sourceLine": 234,
 							"implements": [
 								"ActionEventEnvironment"
 							],
@@ -160308,7 +160987,7 @@
 							"kind": "function",
 							"docComment": "Hono types `WSEvents.onMessage` as `() => void | Promise<void>`.\nAwaits only the Promise branch so tests observe full dispatch\n(auth, validation, handler, send).",
 							"typeSignature": "(on_message: (evt: MessageEvent<WSMessageReceive>, ws: WSContext<unknown>) => void, event: MessageEvent<any>, ws: WSContext<unknown>): Promise<...>",
-							"sourceLine": 213,
+							"sourceLine": 253,
 							"parameters": [
 								{
 									"name": "on_message",
@@ -160360,7 +161039,7 @@
 							"kind": "interface",
 							"docComment": "Auth identity for a mock connection.",
 							"typeSignature": "WsConnectIdentity",
-							"sourceLine": 228,
+							"sourceLine": 268,
 							"members": [
 								{
 									"name": "account_id",
@@ -160425,7 +161104,7 @@
 							"kind": "interface",
 							"docComment": "Options for `create_ws_test_harness`.",
 							"typeSignature": "CreateWsTestHarnessOptions",
-							"sourceLine": 246,
+							"sourceLine": 286,
 							"members": [
 								{
 									"name": "actions",
@@ -160620,7 +161299,7 @@
 							"kind": "interface",
 							"docComment": "A harness instance — transport handle + connection factory.",
 							"typeSignature": "WsTestHarness",
-							"sourceLine": 281,
+							"sourceLine": 321,
 							"members": [
 								{
 									"name": "transport",
@@ -160658,7 +161337,7 @@
 							"kind": "function",
 							"docComment": "Create a WebSocket test harness for the given specs + handlers.\n\nRegisters against a throwaway Hono app with a fake\n`upgradeWebSocket`; the captured events factory is invoked per\n`connect()` with a synthesized Hono context carrying the requested\nauth identity. Returned clients drive the real\n`onOpen`/`onMessage`/`onClose` path against a real `WSContext`.",
 							"typeSignature": "(options: CreateWsTestHarnessOptions): WsTestHarness",
-							"sourceLine": 369,
+							"sourceLine": 409,
 							"parameters": [
 								{
 									"name": "options",
@@ -160672,7 +161351,7 @@
 							"kind": "function",
 							"docComment": "Convenience: default identity for keeper-authenticated connections.",
 							"typeSignature": "(): WsConnectIdentity",
-							"sourceLine": 591,
+							"sourceLine": 635,
 							"returnType": "WsConnectIdentity"
 						},
 						{
@@ -160680,7 +161359,7 @@
 							"kind": "function",
 							"docComment": "Wire a typed broadcast API against the harness's transport, matching\nhow a consumer's real backend composes the stack. Returns the typed\nAPI so tests can call `.zap_run_created(...)` / `.workspace_changed(...)`\netc. directly.\n\n```ts\nconst harness = create_ws_test_harness({actions});\nconst broadcast = build_broadcast_api<MyBackendActionsApi>({\n  harness,\n  specs: my_broadcast_action_specs,\n});\nconst client = await harness.connect(keeper_identity());\nawait broadcast.zap_run_created({run_id: '...', ...});\nawait client.wait_for(is_notification('zap_run_created'));\n```",
 							"typeSignature": "<TApi extends object>(options: { harness: WsTestHarness; specs: readonly ({ method: string; initiator: \"frontend\" | \"backend\" | \"both\"; side_effects: boolean; input: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>; ... 7 more ...; rate_limit?: \"both\" | ... 2 more ... | undefined; } | { ...; } | { ...; })[]; }): TApi",
-							"sourceLine": 624,
+							"sourceLine": 668,
 							"genericParams": [
 								{
 									"name": "TApi",
@@ -169988,6 +170667,17 @@
 									"typeSignature": "number"
 								},
 								{
+									"name": "shape_anchor",
+									"kind": "variable",
+									"docComment": "One instance alive for the class's lifetime. V8 holds the hidden class of\nan initialized `Lexer` only through live instances, and `lex_syntax` makes\none per call, so without it a major GC between calls clears the class and\ndiscards every optimized lexer function that embeds it. Every field is\ndeclared here, so this instance's hidden class is the one every lexer has.\nA static rather than a module variable: V8 frees a module variable that no\nfunction reads once the module has evaluated, and bundlers drop an unused\nexport.",
+									"typeSignature": "Lexer",
+									"modifiers": [
+										"static",
+										"readonly"
+									],
+									"internalMessage": ""
+								},
+								{
 									"name": "constructor",
 									"kind": "constructor",
 									"typeSignature": "(capacity?: number): Lexer",
@@ -170078,7 +170768,7 @@
 							"kind": "function",
 							"docComment": "Lexes `text` with `lang`, returning the flat event stream.",
 							"typeSignature": "(text: string, lang: SyntaxLang, langs?: Map<string, SyntaxLang> | undefined, types?: TokenTypeRegistry): LexedSyntax",
-							"sourceLine": 270,
+							"sourceLine": 284,
 							"parameters": [
 								{
 									"name": "text",
@@ -170122,7 +170812,7 @@
 							"kind": "function",
 							"docComment": "Renders a lexed event stream to HTML in one forward pass.\nGap text is copy-escaped; token spans use the precomputed open tags.",
 							"typeSignature": "(lexed: LexedSyntax): string",
-							"sourceLine": 314,
+							"sourceLine": 328,
 							"parameters": [
 								{
 									"name": "lexed",
@@ -170136,7 +170826,7 @@
 							"kind": "interface",
 							"docComment": "A flattened token span, in document order with containers before their\nchildren. Used by fixtures, tests, and range building.",
 							"typeSignature": "SyntaxEventToken",
-							"sourceLine": 351,
+							"sourceLine": 365,
 							"members": [
 								{
 									"name": "type",
@@ -170160,7 +170850,7 @@
 							"kind": "function",
 							"docComment": "Flattens a lexed event stream to `SyntaxEventToken`s in document order\n(containers precede their children).",
 							"typeSignature": "(lexed: LexedSyntax): SyntaxEventToken[]",
-							"sourceLine": 361,
+							"sourceLine": 375,
 							"parameters": [
 								{
 									"name": "lexed",
@@ -170181,7 +170871,7 @@
 							"kind": "function",
 							"docComment": "Validates a lexed event stream's structural invariants, returning a list of\nhuman-readable issues (empty when valid): records well-formed, offsets\nmonotonic and in-bounds, containers balanced.",
 							"typeSignature": "(lexed: LexedSyntax): string[]",
-							"sourceLine": 391,
+							"sourceLine": 405,
 							"parameters": [
 								{
 									"name": "lexed",
@@ -170194,7 +170884,7 @@
 							"name": "is_space",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 467,
+							"sourceLine": 481,
 							"parameters": [
 								{
 									"name": "c",
@@ -170208,7 +170898,7 @@
 							"kind": "function",
 							"docComment": "Case-insensitive ASCII match of `word` (must be lowercase) at\n`text[from..]`, via `code | 0x20` folding — never allocates, unlike\n`toLowerCase()` comparisons.",
 							"typeSignature": "(text: string, from: number, word: string): boolean",
-							"sourceLine": 474,
+							"sourceLine": 488,
 							"parameters": [
 								{
 									"name": "text",
@@ -170229,7 +170919,7 @@
 							"name": "is_digit",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 481,
+							"sourceLine": 495,
 							"parameters": [
 								{
 									"name": "c",
@@ -170242,7 +170932,7 @@
 							"name": "is_upper",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 483,
+							"sourceLine": 497,
 							"parameters": [
 								{
 									"name": "c",
@@ -170255,7 +170945,7 @@
 							"name": "is_ascii_alnum",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 485,
+							"sourceLine": 499,
 							"parameters": [
 								{
 									"name": "c",
@@ -170269,7 +170959,7 @@
 							"kind": "function",
 							"docComment": "A `\\w` word char — ASCII letters, digits, and `_`.",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 491,
+							"sourceLine": 505,
 							"parameters": [
 								{
 									"name": "c",
@@ -170282,7 +170972,7 @@
 							"name": "is_hex_digit",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 493,
+							"sourceLine": 507,
 							"parameters": [
 								{
 									"name": "c",
@@ -170295,7 +170985,7 @@
 							"name": "is_ident_start",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 496,
+							"sourceLine": 510,
 							"parameters": [
 								{
 									"name": "c",
@@ -170308,7 +170998,7 @@
 							"name": "is_ident",
 							"kind": "function",
 							"typeSignature": "(c: number): boolean",
-							"sourceLine": 499,
+							"sourceLine": 513,
 							"parameters": [
 								{
 									"name": "c",
@@ -170322,7 +171012,7 @@
 							"kind": "function",
 							"docComment": "Scans an identifier starting at `from` (assumed to be an identifier start),\nreturning the exclusive end index.",
 							"typeSignature": "(text: string, from: number, end: number): number",
-							"sourceLine": 506,
+							"sourceLine": 520,
 							"parameters": [
 								{
 									"name": "text",
@@ -170344,7 +171034,7 @@
 							"kind": "function",
 							"docComment": "Skips whitespace (including newlines) from `from`, returning the next\nnon-space index.",
 							"typeSignature": "(text: string, from: number, end: number): number",
-							"sourceLine": 516,
+							"sourceLine": 530,
 							"parameters": [
 								{
 									"name": "text",
@@ -170366,7 +171056,7 @@
 							"kind": "function",
 							"docComment": "Trims trailing whitespace from a `[from, to)` span, returning the new\nexclusive end.",
 							"typeSignature": "(text: string, from: number, to: number): number",
-							"sourceLine": 526,
+							"sourceLine": 540,
 							"parameters": [
 								{
 									"name": "text",
@@ -170388,7 +171078,7 @@
 							"kind": "function",
 							"docComment": "Returns the index of the next `\\n` at or after `i` (exclusive end of the\nline's content, excluding a preceding `\\r`), or `end` when there is none.\nUses native `indexOf` — the fast path for line-oriented scans.",
 							"typeSignature": "(text: string, i: number, end: number): number",
-							"sourceLine": 537,
+							"sourceLine": 551,
 							"parameters": [
 								{
 									"name": "text",
@@ -170410,7 +171100,7 @@
 							"kind": "function",
 							"docComment": "Skips a js-style quoted span from the quote at `from` (used inside balanced\nscans), returning the index after the closing quote. Unterminated `'`/`\"`\nstrings stop at the newline; templates (`` ` ``) span lines.",
 							"typeSignature": "(text: string, from: number, end: number, quote: number): number",
-							"sourceLine": 548,
+							"sourceLine": 562,
 							"parameters": [
 								{
 									"name": "text",
@@ -170432,11 +171122,18 @@
 							"returnType": "number"
 						},
 						{
+							"name": "PROBE_NOT_FOUND",
+							"kind": "variable",
+							"docComment": "What `advance_probe` returns when the text has no further occurrence: past\nthe end of any string, since V8 caps string length below it. It is a small\ninteger rather than `Infinity` so probe-cache fields, which start at `-1`,\nnever change representation: a double stored there gives the cache a hidden\nclass that only live caches hold, so a major GC between `lex` calls would\ndiscard every optimized lexer function that embeds it.",
+							"typeSignature": "1073741823",
+							"sourceLine": 582
+						},
+						{
 							"name": "advance_probe",
 							"kind": "function",
-							"docComment": "Returns the cached next occurrence of `ch` at or after `from`, re-probing\nwith `indexOf` only when the cached position has fallen behind. `Infinity`\nwhen the text has no further occurrence — a monotonic probe that keeps\ndelimiter scans linear across a construct that is dense in `ch`.",
+							"docComment": "Returns the cached next occurrence of `ch` at or after `from`, re-probing\nwith `indexOf` only when the cached position has fallen behind.\n`PROBE_NOT_FOUND` when the text has no further occurrence — a monotonic\nprobe that keeps delimiter scans linear across a construct that is dense in\n`ch`.",
 							"typeSignature": "(text: string, cached: number, from: number, ch: string): number",
-							"sourceLine": 566,
+							"sourceLine": 591,
 							"parameters": [
 								{
 									"name": "text",
@@ -170462,7 +171159,7 @@
 							"kind": "function",
 							"docComment": "Finds the matching `}` for the `{` at `i`, skipping js-style strings,\ntemplates, and comments. Returns -1 when unbalanced within the window.",
 							"typeSignature": "(text: string, i: number, end: number): number",
-							"sourceLine": 576,
+							"sourceLine": 601,
 							"parameters": [
 								{
 									"name": "text",
