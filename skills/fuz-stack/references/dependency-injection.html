@@ -15,12 +15,12 @@
 			);
 		</script>
 
-		<link href="/_app/immutable/entry/start.ChcurN2A.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CavKM9Wm.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/start.DQ_hjhq2.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B_YWwN0D.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6dZ7cye.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BwRUArSM.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BDteAc9K.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.B3AwIdCy.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Cjg7z60X.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.DxXN7eyw.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/PPVm8Dsz.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DsnmJJEf.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/B_uuaUPm.js" rel="modulepreload">
@@ -36,24 +36,24 @@
 		<link href="/_app/immutable/chunks/C0j2Cue3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DD9OXbud.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/4VjVyrBj.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.BtvwH7VE.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.CsbJtZwZ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/XMW_M9Fz.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Ba-DM9YH.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BnKbTgr9.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/EV2h73Qx.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DOuC2w6_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BRO6p9yQ.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/ByB1rhy_.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/NUGoFfGr.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BYeplbyM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DIdzPd4X.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Dj776iw4.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DQAlWNsG.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dyu_5ysp.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D6hMk88_.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/qJY-9XID.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/21.BHnfZx32.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DlPES-Kn.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/21.CatGPsEM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/XyvMGhbC.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BmaHVtCv.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/P7hcrz_M.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B0s5Bn50.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/mdg8wnZb.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/AYFKMVp9.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B7oDWui4.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.C_lYjQf_.css" rel="stylesheet">
@@ -162,9 +162,13 @@ capability, not by re-shaping the bundle: the audit emitter's <!--]--><!--[3--><
 <!--]--><!--[3--><!--[-1--><code>add(closer)</code><!--]--><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>create_app_backend</code><!--]--><!--]--><!--[2--> creates the closer empty and
 <!--]--><!--[3--><!--[-1--><code>create_app_server</code><!--]--><!--]--><!--[2--> adds each WebSocket transport it mounts and its audit
 stream registry, so a revocation handler built from the bundle closes on
-every transport the server mounts. A transport mounted by hand passes
-<!--]--><!--[3--><!--[-1--><code>deps.connection_closer</code><!--]--><!--]--><!--[2--> to its mount helper (<!--]--><!--[3--><!--[-1--><code>register_ws_endpoint</code><!--]--><!--]--><!--[2-->,
-<!--]--><!--[3--><!--[-1--><code>create_audit_log_sse</code><!--]--><!--]--><!--[2-->), which adds it.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h2 id="design-principles"><!--[--><!--[2-->Design Principles<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Result returns, never throw<!--]--><!--]--><!----></strong><!--]--><!--[2--> in L1; L0 mirrors the platform and throws.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Stateless capabilities<!--]--><!--]--><!----></strong><!--]--><!--[2--> — mutable state (a <!--]--><!--[3--><!--[-1--><code>bootstrap_status</code><!--]--><!--]--><!--[2--> flag
+every transport the server mounts. Both registrations return a remover
+(Rust: <!--]--><!--[3--><!--[-1--><code>add_listener</code><!--]--><!--]--><!--[2--> returns an id for <!--]--><!--[3--><!--[-1--><code>remove_listener</code><!--]--><!--]--><!--[2-->), and
+<!--]--><!--[3--><!--[-1--><code>create_app_server</code><!--]--><!--]--><!--[2--> runs its removers when assembly throws and on <!--]--><!--[3--><!--[-1--><code>close</code><!--]--><!--]--><!--[2-->, so
+the bundle's emitter and closer end where they started. A transport mounted
+by hand passes <!--]--><!--[3--><!--[-1--><code>deps.connection_closer</code><!--]--><!--]--><!--[2--> to its mount helper
+(<!--]--><!--[3--><!--[-1--><code>register_ws_endpoint</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>create_audit_log_sse</code><!--]--><!--]--><!--[2-->), which adds it permanently —
+or passes <!--]--><!--[3--><!--[-1--><code>null</code><!--]--><!--]--><!--[2--> and adds it itself to hold the remover.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h2 id="design-principles"><!--[--><!--[2-->Design Principles<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Result returns, never throw<!--]--><!--]--><!----></strong><!--]--><!--[2--> in L1; L0 mirrors the platform and throws.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Stateless capabilities<!--]--><!--]--><!----></strong><!--]--><!--[2--> — mutable state (a <!--]--><!--[3--><!--[-1--><code>bootstrap_status</code><!--]--><!--]--><!--[2--> flag
 object) is passed separately, never smuggled into a deps bundle.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Runtime agnosticism<!--]--><!--]--><!----></strong><!--]--><!--[2--> — no module-level env/fs imports in code that might
 run outside one runtime; load via deps. Direct platform imports are for
 platform factory files and explicitly single-runtime modules (document the
@@ -220,15 +224,15 @@ solves with injection. Full treatment: <!--]--><!--[7--><!--[1--><a href="/skill
 			
 			<script>
 				{
-					__sveltekit_14bfzhg = {
+					__sveltekit_1pubwce = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.ChcurN2A.js"),
-						import("/_app/immutable/entry/app.B3AwIdCy.js")
+						import("/_app/immutable/entry/start.DQ_hjhq2.js"),
+						import("/_app/immutable/entry/app.DxXN7eyw.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3, 21],
