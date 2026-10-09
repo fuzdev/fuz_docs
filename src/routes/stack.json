@@ -66,7 +66,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.65.1",
+			"version": "0.65.2",
 			"path": "fuz_css",
 			"description": "semantic-first CSS framework and design system",
 			"glyph": "🪴",
@@ -118,7 +118,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.210.1",
+			"version": "0.210.2",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -147,7 +147,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.123.0",
+			"version": "0.124.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -391,7 +391,7 @@
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.7.0",
+			"version": "0.8.0",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",

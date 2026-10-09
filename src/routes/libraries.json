@@ -33611,7 +33611,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.65.1",
+			"version": "0.65.2",
 			"description": "semantic-first CSS framework and design system",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -55986,7 +55986,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.210.1",
+			"version": "0.210.2",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -71210,7 +71210,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.123.0",
+			"version": "0.124.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -92653,11 +92653,6 @@
 								"members": [
 									{
 										"kind": "literal",
-										"value": "session",
-										"text": "\"session\""
-									},
-									{
-										"kind": "literal",
 										"value": "none",
 										"text": "\"none\""
 									},
@@ -92675,6 +92670,11 @@
 										"kind": "literal",
 										"value": "role",
 										"text": "\"role\""
+									},
+									{
+										"kind": "literal",
+										"value": "session",
+										"text": "\"session\""
 									}
 								]
 							}
@@ -92703,11 +92703,6 @@
 												"members": [
 													{
 														"kind": "literal",
-														"value": "session",
-														"text": "\"session\""
-													},
-													{
-														"kind": "literal",
 														"value": "none",
 														"text": "\"none\""
 													},
@@ -92725,6 +92720,11 @@
 														"kind": "literal",
 														"value": "role",
 														"text": "\"role\""
+													},
+													{
+														"kind": "literal",
+														"value": "session",
+														"text": "\"session\""
 													}
 												]
 											}
@@ -92752,11 +92752,6 @@
 								"members": [
 									{
 										"kind": "literal",
-										"value": "session",
-										"text": "\"session\""
-									},
-									{
-										"kind": "literal",
 										"value": "none",
 										"text": "\"none\""
 									},
@@ -92774,6 +92769,11 @@
 										"kind": "literal",
 										"value": "role",
 										"text": "\"role\""
+									},
+									{
+										"kind": "literal",
+										"value": "session",
+										"text": "\"session\""
 									}
 								]
 							}
@@ -139478,15 +139478,10 @@
 								{
 									"name": "method",
 									"kind": "variable",
-									"typeSignature": "\"session\" | \"account\" | \"token\"",
+									"typeSignature": "\"account\" | \"token\" | \"session\"",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
-											{
-												"kind": "literal",
-												"value": "session",
-												"text": "\"session\""
-											},
 											{
 												"kind": "literal",
 												"value": "account",
@@ -139496,6 +139491,11 @@
 												"kind": "literal",
 												"value": "token",
 												"text": "\"token\""
+											},
+											{
+												"kind": "literal",
+												"value": "session",
+												"text": "\"session\""
 											}
 										]
 									}
@@ -139544,7 +139544,7 @@
 							"name": "assert_close_call",
 							"kind": "function",
 							"docComment": "Pin `{method, id}` on a single recorded close call.\n\nThrows via `assert.ok` if `call` is `undefined` — index a recorded\n`calls` array directly (`calls[0]`) and let this helper handle the\nmissing-element case.",
-							"typeSignature": "(call: RecordedClose | undefined, method: \"session\" | \"account\" | \"token\", id: string): void",
+							"typeSignature": "(call: RecordedClose | undefined, method: \"account\" | \"token\" | \"session\", id: string): void",
 							"sourceLine": 54,
 							"parameters": [
 								{
@@ -139566,15 +139566,10 @@
 								},
 								{
 									"name": "method",
-									"type": "\"session\" | \"account\" | \"token\"",
+									"type": "\"account\" | \"token\" | \"session\"",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
-											{
-												"kind": "literal",
-												"value": "session",
-												"text": "\"session\""
-											},
 											{
 												"kind": "literal",
 												"value": "account",
@@ -139584,6 +139579,11 @@
 												"kind": "literal",
 												"value": "token",
 												"text": "\"token\""
+											},
+											{
+												"kind": "literal",
+												"value": "session",
+												"text": "\"session\""
 											}
 										]
 									}
@@ -147565,11 +147565,11 @@
 									"name": "serve",
 									"kind": "function",
 									"docComment": "Bind `app.fetch` to `port` on `hostname`; return a {@link ServeHandle}.",
-									"typeSignature": "(options: { fetch: (request: Request, Env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }): ServeHandle",
+									"typeSignature": "(options: { fetch: (request: Request, env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }): ServeHandle",
 									"parameters": [
 										{
 											"name": "options",
-											"type": "{ fetch: (request: Request, Env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }"
+											"type": "{ fetch: (request: Request, env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }"
 										}
 									],
 									"returnType": "ServeHandle"
@@ -154862,13 +154862,13 @@
 												"members": [
 													{
 														"kind": "literal",
-														"value": "params",
-														"text": "\"params\""
+														"value": "method",
+														"text": "\"method\""
 													},
 													{
 														"kind": "literal",
-														"value": "method",
-														"text": "\"method\""
+														"value": "params",
+														"text": "\"params\""
 													}
 												]
 											}
@@ -154881,12 +154881,6 @@
 								]
 							},
 							"members": [
-								{
-									"name": "path",
-									"kind": "variable",
-									"docComment": "RPC endpoint path, e.g. `'/api/rpc'`.",
-									"typeSignature": "string"
-								},
 								{
 									"name": "id",
 									"kind": "variable",
@@ -154906,6 +154900,12 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "path",
+									"kind": "variable",
+									"docComment": "RPC endpoint path, e.g. `'/api/rpc'`.",
+									"typeSignature": "string"
 								},
 								{
 									"name": "verb",
@@ -155030,13 +155030,13 @@
 														"members": [
 															{
 																"kind": "literal",
-																"value": "params",
-																"text": "\"params\""
+																"value": "method",
+																"text": "\"method\""
 															},
 															{
 																"kind": "literal",
-																"value": "method",
-																"text": "\"method\""
+																"value": "params",
+																"text": "\"params\""
 															}
 														]
 													}
@@ -164456,17 +164456,17 @@
 									"defaultValue": "'280px'"
 								},
 								{
-									"name": "aside_label",
+									"name": "toggle_label",
 									"type": "string",
 									"optional": true,
-									"description": "The stacked toggle's text and the aside's accessible name.",
+									"description": "The stacked toggle's text.",
 									"defaultValue": "'menu'"
 								}
 							],
 							"acceptsChildren": true
 						}
 					],
-					"moduleComment": "Two-column layout - fixed-width `aside` on the left, fluid `children`\ncolumn on the right. Both columns scroll independently.\n\nBelow a threshold of the layout's own width - a container query, not a\nmedia query, so a nested layout decides for itself - the columns stack:\nthe aside collapses behind a toggle button labelled `aside_label`, and\nwhen opened it sits in flow above the content, pushing it down, until\nthe toggle closes it or a navigation does. Opening scrolls the aside\ninto view, under the toggle, when it would land above the view.\n\nWith a bounded height, the stacked layout scrolls as one column and the\ntoggle sticks to its top; under a parent that grows with its content,\nthe page scrolls and the toggle scrolls away with it.\n\nThe threshold matches fuz_css's `sm` breakpoint. Above it the toggle is\n`display: none`. The switch is CSS alone, so the server render shows the\nright form at any width and hydration changes nothing.\n\nThe root is an `inline-size` query container, so its width can't come\nfrom its content: a layout placed where it would shrink to fit (an\ninline-block, an absolutely positioned or floated box without a width,\na flex row item that doesn't grow) collapses to zero width. Give it a\nwidth from its context, as a block or a stretched or growing flex item.\n\nRequires the SvelteKit runtime - it closes the aside from\n`afterNavigate`. Without JS the stacked aside can't be opened, since the\ntoggle is client state; above the threshold it's always shown.\n\nRenders a generic `<aside>` named by `aside_label`; wrap navigation\nlinks in a `<nav>` inside the `aside` snippet.\n\nStyling hooks: `--column_width` (set from `column_width`) and\n`--column_toggle_bg`, the stacked toggle bar's opaque background so\ncontent scrolls under it unseen (default `--shade_00`, the page ground)."
+					"moduleComment": "Two-column layout - fixed-width `aside` on the left, fluid `children`\ncolumn on the right. Both columns scroll independently.\n\nBelow a threshold of the layout's own width - a container query, not a\nmedia query, so a nested layout decides for itself - the columns stack:\nthe aside collapses behind a toggle button labelled `toggle_label`, and\nwhen opened it sits in flow above the content, pushing it down, until\nthe toggle closes it or a navigation does. Opening scrolls the aside\ninto view, under the toggle, when it would land above the view.\n\nWith a bounded height, the stacked layout scrolls as one column and the\ntoggle sticks to its top; under a parent that grows with its content,\nthe page scrolls and the toggle scrolls away with it.\n\nThe threshold matches fuz_css's `sm` breakpoint. Above it the toggle is\n`display: none`. The switch is CSS alone, so the server render shows the\nright form at any width and hydration changes nothing.\n\nThe root is an `inline-size` query container, so its width can't come\nfrom its content: a layout placed where it would shrink to fit (an\ninline-block, an absolutely positioned or floated box without a width,\na flex row item that doesn't grow) collapses to zero width. Give it a\nwidth from its context, as a block or a stretched or growing flex item.\n\nRequires the SvelteKit runtime - it closes the aside from\n`afterNavigate`. Without JS the stacked aside can't be opened, since the\ntoggle is client state; above the threshold it's always shown.\n\nThe aside column is a plain `<div>`, not a landmark, as with `AppShell`'s\nsidebar: render the landmark inside the `aside` snippet - a\n`<nav aria-label>` for navigation links, or an `<aside aria-label>` for\nother content.\n\nStyling hooks: `--column_width` (set from `column_width`) and\n`--column_toggle_bg`, the stacked toggle bar's opaque background so\ncontent scrolls under it unseen (default `--shade_00`, the page ground)."
 				},
 				{
 					"path": "ui/ConfirmButton.svelte",
@@ -204560,7 +204560,7 @@
 								},
 								{
 									"name": "restore_icon",
-									"type": "string | Snippet<[]> | SvgData",
+									"type": "string | SvgData | Snippet<[]>",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -204570,16 +204570,16 @@
 											},
 											{
 												"kind": "reference",
+												"name": "SvgData"
+											},
+											{
+												"kind": "reference",
 												"name": "Snippet",
 												"typeArgs": [
 													{
 														"kind": "tuple"
 													}
 												]
-											},
-											{
-												"kind": "reference",
-												"name": "SvgData"
 											}
 										]
 									},
@@ -204588,7 +204588,7 @@
 								},
 								{
 									"name": "clear_icon",
-									"type": "string | Snippet<[]> | SvgData",
+									"type": "string | SvgData | Snippet<[]>",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -204598,16 +204598,16 @@
 											},
 											{
 												"kind": "reference",
+												"name": "SvgData"
+											},
+											{
+												"kind": "reference",
 												"name": "Snippet",
 												"typeArgs": [
 													{
 														"kind": "tuple"
 													}
 												]
-											},
-											{
-												"kind": "reference",
-												"name": "SvgData"
 											}
 										]
 									},
@@ -237444,7 +237444,7 @@
 	"svelte-docinfo": {
 		"pkg_json": {
 			"name": "svelte-docinfo",
-			"version": "0.7.0",
+			"version": "0.8.0",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
 			"logo": "logo.svg",
@@ -242132,7 +242132,7 @@
 							"kind": "interface",
 							"docComment": "A parsed entry from package.json exports field.",
 							"typeSignature": "ExportEntry",
-							"sourceLine": 30,
+							"sourceLine": 31,
 							"members": [
 								{
 									"name": "specifier",
@@ -242173,7 +242173,7 @@
 							"kind": "interface",
 							"docComment": "Options for `discoverFromExports`.",
 							"typeSignature": "ExportsDiscoveryOptions",
-							"sourceLine": 42,
+							"sourceLine": 43,
 							"members": [
 								{
 									"name": "projectRoot",
@@ -242209,7 +242209,7 @@
 							"kind": "interface",
 							"docComment": "Result of discovering source files from package.json exports.\n\nSelf-contained: includes both the discovered files and any error diagnostics\n(e.g., files that exist but could not be read).",
 							"typeSignature": "ExportsDiscoveryResult",
-							"sourceLine": 59,
+							"sourceLine": 60,
 							"members": [
 								{
 									"name": "files",
@@ -242253,7 +242253,7 @@
 							"kind": "interface",
 							"docComment": "Result of reading and parsing package.json exports.",
 							"typeSignature": "ParsedExports",
-							"sourceLine": 73,
+							"sourceLine": 74,
 							"members": [
 								{
 									"name": "entries",
@@ -242287,7 +242287,7 @@
 							"kind": "function",
 							"docComment": "Read and parse the exports field from package.json.\n\nHandles all Node.js export formats: strings, objects with conditions,\nnested conditions, fallback arrays (first usable element), null exclusions\n(surfaced on `blocked` for best-match blocking during discovery), and\nwildcard patterns.",
 							"typeSignature": "(projectRoot: string): Promise<ParsedExports>",
-							"sourceLine": 112,
+							"sourceLine": 113,
 							"parameters": [
 								{
 									"name": "projectRoot",
@@ -242313,7 +242313,7 @@
 							"kind": "function",
 							"docComment": "Build a predicate deciding whether an export specifier is blocked, per\nNode's resolution semantics: an exact (starless) key wins outright, else\nthe best-matching wildcard key (`comparePatternKeys`) decides — and when\nthat winner's target is `null`, the subpath is not exported.\n\nBlocking is only observable when blocked keys exist, so this returns\n`null` for the common no-blocked-keys case and callers skip specifier\ncomputation entirely.\n\nExported for consumers reading `ParsedExports.blocked` directly — this is\nthe one implementation of the interpretation rule.",
 							"typeSignature": "(parsed: ParsedExports): ((specifier: string) => boolean) | null",
-							"sourceLine": 259,
+							"sourceLine": 260,
 							"parameters": [
 								{
 									"name": "parsed",
@@ -242340,7 +242340,7 @@
 							"kind": "function",
 							"docComment": "Map a dist file path to its source file path.\n\nReplaces the dist directory prefix with the source directory and maps\nfile extensions based on the export condition.",
 							"typeSignature": "(distPath: string, condition: string, options: { distDir: string; sourceDir: string; }): string | null",
-							"sourceLine": 307,
+							"sourceLine": 308,
 							"parameters": [
 								{
 									"name": "distPath",
@@ -242379,7 +242379,7 @@
 							"kind": "function",
 							"docComment": "Discover source files using package.json exports field.\n\nReads package.json, parses exports, maps dist paths to source paths,\nexpands wildcard patterns, and loads file content.\n\nReturns `{files: null}` when no package.json or no exports field exists,\nsignaling the caller to fall back to glob discovery. Returns `{files: []}`\nwhen exports exist but resolve no source files (likely misconfigured mapping).\n\nFor concrete exports, maps directly to source paths and verifies existence.\nFor wildcard exports, globs the source directory for matching files.\n\nNull-target keys are honored with Node's resolution semantics: a subpath\nwhose most-specific matching key is `null` is not exported, so its file is\nnot discovered — `\"./internal/*\": null` beside the usual `\"./*.js\"`\nwildcards keeps `src/lib/internal/` out of discovery exactly as it keeps\nthe subpaths unresolvable for consumers (the `src/lib/internal/`\nconvention's exports half).",
 							"typeSignature": "(options: ExportsDiscoveryOptions): Promise<ExportsDiscoveryResult>",
-							"sourceLine": 411,
+							"sourceLine": 412,
 							"parameters": [
 								{
 									"name": "options",
@@ -242407,6 +242407,7 @@
 						"diagnostics.ts",
 						"error.ts",
 						"paths.ts",
+						"postprocess.ts",
 						"source-config.ts",
 						"source.ts"
 					],
@@ -242422,7 +242423,7 @@
 							"kind": "function",
 							"docComment": "Load a single source file from disk.\n\nAccepts either relative or absolute paths. Relative paths are resolved against `projectRoot`.",
 							"typeSignature": "(path: string, projectRoot: string): Promise<SourceFileInfo>",
-							"sourceLine": 38,
+							"sourceLine": 39,
 							"examples": [
 								"```ts\nconst file = await loadFile('src/lib/math.ts', process.cwd());\n// {id: '/abs/path/to/src/lib/math.ts', content: '...'}\n```"
 							],
@@ -242462,7 +242463,7 @@
 							"kind": "function",
 							"docComment": "Build an include pattern array from source paths.\n\nEach path becomes a `<path>/**\\/*.{ts,js,svelte,css,json}` glob. Used by\n`discoverSourceFiles` to derive a default `include` from\n`sourceOptions.sourcePaths` when no explicit pattern is supplied — keeps\nthe glob fallback consistent with custom `sourcePaths` instead of silently\ndefaulting to `src/lib`.\n\nThe `''` source path (the whole project root — an explicit `''`, a\nnormalized `'.'`, or a root-crossing include base) derives a bare\n`**\\/*.{...}` glob: prefixing it would produce a leading-slash pattern,\nwhich tinyglobby treats as absolute from the filesystem root.",
 							"typeSignature": "(sourcePaths: readonly string[]): string[]",
-							"sourceLine": 75,
+							"sourceLine": 76,
 							"examples": [
 								"```ts\nderiveIncludePatterns(['packages/foo', 'packages/bar'])\n// => ['packages/foo/**\\/*.{ts,js,svelte,css,json}', 'packages/bar/**\\/*.{ts,js,svelte,css,json}']\n```"
 							],
@@ -242482,7 +242483,7 @@
 							"kind": "interface",
 							"docComment": "Options for `globFiles`.",
 							"typeSignature": "GlobFilesOptions",
-							"sourceLine": 83,
+							"sourceLine": 84,
 							"members": [
 								{
 									"name": "projectRoot",
@@ -242510,7 +242511,7 @@
 							"kind": "function",
 							"docComment": "Discover source files via glob patterns.\n\nThe always-on baseline exclusions (`node_modules` + dot-directories, see\n`baselineExcludesForBase`) apply as glob ignores anchored below each\npattern's static base — so a root-crossing include (`'**\\/*.ts'`) can't\nrake in `node_modules`, while an include rooted in a dot directory\n(`'.hidden/src/**'`) still matches, mirroring `isSource`'s\nmatched-sourcePath relativity.",
 							"typeSignature": "(options: GlobFilesOptions): Promise<SourceFileInfo[]>",
-							"sourceLine": 115,
+							"sourceLine": 116,
 							"examples": [
 								"```ts\nconst files = await globFiles({\n  projectRoot: process.cwd(),\n  include: deriveIncludePatterns(['src/lib']),\n  exclude: DEFAULT_SOURCE_OPTIONS.exclude,\n});\n```"
 							],
@@ -242548,6 +242549,7 @@
 					"dependencies": [
 						"concurrency.ts",
 						"paths.ts",
+						"postprocess.ts",
 						"source-config.ts",
 						"source.ts"
 					],
@@ -243601,11 +243603,14 @@
 					],
 					"dependents": [
 						"analyze-core.ts",
+						"exports.ts",
+						"files.ts",
 						"index.ts",
 						"session.ts",
 						"source-config.ts",
 						"svelte.ts",
-						"typescript-alias-registry.ts"
+						"typescript-alias-registry.ts",
+						"typescript-program.ts"
 					]
 				},
 				{
@@ -243785,9 +243790,9 @@
 						{
 							"name": "AnalysisSession",
 							"kind": "interface",
-							"docComment": "Persistent analysis handle.\n\n**Concurrency**: not safe across overlapping calls. Serialize externally\n(each caller awaits the previous `setFile`/`setFiles` before starting the\nnext). The LS underneath is sync, but the resolver phase awaits I/O for\nasync resolvers (Vite/Rollup), so the session does cross await boundaries.\n\n**Cache-hit semantics**: per-entry, all-or-nothing. The implementation\nmust not split the guarantee across separate caches (e.g. transform-cache\nhit + lex re-run). The match criterion is mode-discriminated:\n\n- lex+resolve mode: `existing.content === incoming.content` AND\n  `existing.resolverIdentity === incoming.resolverIdentity`.\n- pre-resolved mode: `existing.content === incoming.content` AND\n  `arraysShallowEqual(existing.preResolvedDepsSnapshot, incoming.dependencies)`.\n\nMode flips (an entry previously ingested as lex+resolve now arrives with\n`dependencies`, or vice versa) always cache-miss.\n\n**Deferred resolutions**: a cache hit reuses the entry's dependency edges,\nbut an import specifier that resolved to nothing isn't a settled answer —\nits target may be ingested later, and the file that changes then is the\n*dep*, not the importer, so the importer would stay a cache hit with a\nmissing edge. A `setFiles` that adds paths therefore retries the unresolved\nspecifiers of already-owned entries and updates their edges in place,\nretiring any `resolver_failed` that has since resolved. This is the one way\nan entry changes without being re-ingested; it consumes no resolver work for\nfiles whose imports all resolved, and none at all for pre-resolved callers,\nwhose edges are theirs to declare.\n\n**Promise resolution**: `setFile` / `setFiles` resolve only after the\nserial LS push (phase 3) completes for every file in the batch. Awaiting\nthe returned promise is sufficient — no separate flush step.\n\n**Owned ⊇ emitted**: ingest is additive and ungated — any file can be\npushed, and owned entries are served to the checker from memory before the\ndisk fallback, so non-source files (unsaved buffers, virtual-only helpers,\nconfigs) can shape type resolution in the modules that import them.\n`query()` gates the *module set* through `isSource`: only owned files under\n`sourceOptions.sourcePaths` and not matching `exclude` emit a `ModuleJson`.\nThe gate emits no diagnostics — `query()` logs the gated count as info, and\n`list()` reports the full owned set for introspection. By default the\nsession completes the owned set itself: `contextClosure` ingests the\nin-root non-source dependency closure (e.g. `internal/` modules public\nfiles import) so those files are version-tracked rather than pinned at\ntheir first disk read.",
+							"docComment": "Persistent analysis handle.\n\n**Concurrency**: not safe across overlapping calls. Serialize externally\n(each caller awaits the previous `setFile`/`setFiles` before starting the\nnext). The LS underneath is sync, but the resolver phase awaits I/O for\nasync resolvers (Vite/Rollup), so the session does cross await boundaries.\n\n**Cache-hit semantics**: per-entry, all-or-nothing. The implementation\nmust not split the guarantee across separate caches (e.g. transform-cache\nhit + lex re-run). The match criterion is mode-discriminated:\n\n- lex+resolve mode: `existing.content === incoming.content` AND\n  `existing.resolverIdentity === incoming.resolverIdentity`.\n- pre-resolved mode: `existing.content === incoming.content` AND\n  `arraysShallowEqual(existing.preResolvedDepsSnapshot, incoming.dependencies)`.\n\nMode flips (an entry previously ingested as lex+resolve now arrives with\n`dependencies`, or vice versa) always cache-miss.\n\n**Deferred resolutions**: a cache hit reuses the entry's dependency edges,\nbut an import specifier that resolved to nothing isn't a settled answer —\nits target may be ingested later, and the file that changes then is the\n*dep*, not the importer, so the importer would stay a cache hit with a\nmissing edge. A `setFiles` that adds paths therefore retries the unresolved\nspecifiers of already-owned entries and updates their edges in place,\nretiring any `resolver_failed` that has since resolved. This is the one way\nan entry changes without being re-ingested; it consumes no resolver work for\nfiles whose imports all resolved, and none at all for pre-resolved callers,\nwhose edges are theirs to declare.\n\n**Promise resolution**: `setFile` / `setFiles` resolve only after the\nserial LS push (phase 3) completes for every file in the batch. Awaiting\nthe returned promise is sufficient — no separate flush step.\n\n**Owned ⊇ emitted**: ingest is additive and ungated — any file can be\npushed, and owned entries are served to the checker from memory before the\ndisk fallback, so non-source files (unsaved buffers, virtual-only helpers,\nconfigs) can shape type resolution in the modules that import them.\n`query()` gates the *module set* through `isSource`: only owned files under\n`sourceOptions.sourcePaths` and not matching `exclude` emit a `ModuleJson`.\nThe gate emits no diagnostics — `query()` logs the gated count as info, and\n`list()` reports the full owned set for introspection. By default the\nsession completes the owned set itself: `contextClosure` ingests the\nin-root non-source dependency closure (e.g. `internal/` modules public\nfiles import) so those files are version-tracked rather than pinned at\ntheir first disk read.\n\n**Input order**: `query()` analyzes the owned set in `compareStrings` order\nof file ID, and the language-service host returns owned program roots in\nthat order too, so the same files ingested in any order, in one batch or\nacross many `setFile` calls, give identical output from a fresh session.\nAnalysis order matters because TypeScript prints a union with no alias\norigin (`z.enum` members, literal unions) in type-creation order, which\nfollows the order the checker first visits files; root order matters\nbecause it sets the merge order of `declare global`, module augmentations,\nand interface merging. Two limits remain, both from type-creation order:\nan edit to an unrelated file can still reorder such a union's members,\nsince it can change which file first creates a member type, and checker\nwork done through `getProgram()` before the first `query()` on a fresh\nprogram can reorder them in that query's output.",
 							"typeSignature": "AnalysisSession",
-							"sourceLine": 206,
+							"sourceLine": 220,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -243942,7 +243947,7 @@
 								{
 									"name": "getProgram",
 									"kind": "function",
-									"docComment": "The LS-backed `ts.Program`, for incremental consumers doing their own\nchecker work over analyzed declarations (e.g., a docgen provider\nconverting `ts.Type`s into its own structured model).\n\nFreshness caveat: returns whatever the most recent ingest produced —\nthe same reference as the prior call when no file version bumped, else\na fresh program reusing unchanged ASTs via the document registry. A\nretained reference goes stale after any `setFile` / `setFiles` /\n`deleteFile`; re-call after mutating. Subject to the session's\nconcurrency contract above; invalid after `dispose()`.",
+									"docComment": "The LS-backed `ts.Program`, for incremental consumers doing their own\nchecker work over analyzed declarations (e.g., a docgen provider\nconverting `ts.Type`s into its own structured model).\n\nFreshness caveat: returns whatever the most recent ingest produced —\nthe same reference as the prior call when no file version bumped, else\na fresh program reusing unchanged ASTs via the document registry. A\nretained reference goes stale after any `setFile` / `setFiles` /\n`deleteFile`; re-call after mutating. Subject to the session's\nconcurrency contract above; invalid after `dispose()`.\n\nChecker work done before `query()` on a fresh program can reorder\norigin-less unions in that query's output (see \"Input order\" above);\ncall `query()` first.",
 									"typeSignature": "(): Program",
 									"returnType": "Program"
 								},
@@ -243960,7 +243965,7 @@
 							"kind": "interface",
 							"docComment": "Options for `createAnalysisSession`.\n\n`documentRegistry` flows through to the underlying `LanguageService` only.\n`tsconfig` and `compilerOptions` drive the LS's construction-time\n`loadTsconfig` parse — the session's only tsconfig parse. The lazy default\n`ImportResolver` reuses the LS's merged options via `getCompilerOptions()`,\nso module resolution and the checker see the same merge semantics —\nuser-supplied `compilerOptions` override parsed tsconfig keys, but never\nbypass the tsconfig.json file requirement. The parse is a construction-time\nsnapshot: a tsconfig.json edit mid-session is not picked up — create a new\nsession.\n\n`projectRoot` and `virtualFiles` from the LS options shape are excluded —\nthe session derives `projectRoot` from `sourceOptions` and manages\nsvelte2tsx virtuals internally per file.",
 							"typeSignature": "AnalysisSessionOptions",
-							"sourceLine": 284,
+							"sourceLine": 302,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -244016,7 +244021,7 @@
 							"kind": "function",
 							"docComment": "Create a persistent analysis session.",
 							"typeSignature": "(options: AnalysisSessionOptions): AnalysisSession",
-							"sourceLine": 504,
+							"sourceLine": 522,
 							"examples": [
 								"Vite plugin integration\n```ts\nconst session = createAnalysisSession({sourceOptions, resolveImport, log});\nawait session.setFiles(initialFiles);\nconst result = session.query();\n// on watcher events:\nawait session.setFile({id, content});\nawait session.deleteFile(removedId);\nconst next = session.query();\n// on shutdown:\nsession.dispose();\n```",
 								"One-shot via the public wrapper\n```ts\n// Equivalent to `analyze(...)` — the wrapper goes through a session internally\n// (and opts out of the context closure, since its callers supply the inputs).\nconst session = createAnalysisSession({sourceOptions, contextClosure: false});\ntry {\nawait session.setFiles(sourceFiles);\nreturn session.query({onDuplicates: 'throw'});\n} finally {\nsession.dispose();\n}\n```"
@@ -252532,7 +252537,7 @@
 							"kind": "interface",
 							"docComment": "Base configuration shared by every entry point in this module.\n\n`projectRoot` + `tsconfig` + `compilerOptions` together drive `loadTsconfig`,\nwhich is also exposed publicly. `AnalysisProgramOptions` and\n`AnalysisLanguageServiceOptions` extend this with their own fields.",
 							"typeSignature": "LoadTsconfigOptions",
-							"sourceLine": 37,
+							"sourceLine": 38,
 							"members": [
 								{
 									"name": "projectRoot",
@@ -252564,7 +252569,7 @@
 							"kind": "interface",
 							"docComment": "A host-served file entry: content plus optional parser treatment.",
 							"typeSignature": "VirtualFileEntry",
-							"sourceLine": 60,
+							"sourceLine": 61,
 							"members": [
 								{
 									"name": "content",
@@ -252631,7 +252636,7 @@
 							"kind": "interface",
 							"docComment": "Ancestor-directory index over a path set, maintained as the set mutates.\n\nModule resolution probes `directoryExists` before trying file candidates\ninside it (`directoryProbablyExists`): a directory reported absent has\nevery candidate recorded as a failed lookup with `fileExists` never\nconsulted, so a directory that exists only as the prefix of served\nin-memory paths must report present. Refcounted per ancestor so removal is\nexact — O(path depth) per mutation, O(1) per query; a per-probe scan of the\npath set would multiply into resolution's hot path (bare-specifier\nresolution walks many nonexistent ancestor `node_modules` directories per\nimport).\n\nThe index owns its path set, so `add`/`remove` are idempotent and a caller\ncan't skew the refcounts by double-adding or by removing something it never\nadded (which would drop an ancestor still holding live paths). Membership\nbookkeeping therefore stays here rather than in each caller's guard.",
 							"typeSignature": "OwnedDirIndex",
-							"sourceLine": 92,
+							"sourceLine": 93,
 							"internalMessage": "Shared by the one-shot host, the LS host, and the session's\ndependency-resolution host; not a stable API.",
 							"members": [
 								{
@@ -252686,7 +252691,7 @@
 							"kind": "function",
 							"docComment": "Create an empty `OwnedDirIndex`.",
 							"typeSignature": "(): OwnedDirIndex",
-							"sourceLine": 103,
+							"sourceLine": 104,
 							"internalMessage": "",
 							"returnType": "OwnedDirIndex"
 						},
@@ -252695,7 +252700,7 @@
 							"kind": "function",
 							"docComment": "Decorate a compiler host so `virtualFiles` shadow the filesystem —\n`getSourceFile` (honoring per-entry `scriptKind`), `fileExists`, `readFile`,\nand `directoryExists`.\n\nEntries are copied to minimal `{content, scriptKind}` records so the host's\nclosures don't retain larger caller objects (a `SvelteVirtualFile`'s source\nmap, say) for the program's lifetime. The copied map is returned so callers\nlayering module resolution on top (`.svelte` specifier mapping) can key it\noff the same snapshot instead of re-capturing the caller's map. The entry\nset is fixed at decoration time — the returned `ReadonlyMap` and the\ndirectory index are built in the same pass, so no host answer can be served\nfrom a staler view of the set than another (a `LanguageService` is the\nmutable counterpart; see `createAnalysisLanguageService`).",
 							"typeSignature": "(host: CompilerHost, virtualFiles: ReadonlyMap<string, VirtualFileEntry>): ReadonlyMap<string, VirtualFileEntry>",
-							"sourceLine": 156,
+							"sourceLine": 157,
 							"internalMessage": "Shared host decoration for `createAnalysisProgram`; exported for\ntest-side hosts — not a stable API.",
 							"mutates": {
 								"host": "replaces `getSourceFile`, `fileExists`, `readFile`, and\n(when the host defines it) `directoryExists`"
@@ -252746,7 +252751,7 @@
 							"kind": "interface",
 							"docComment": "Options for `createAnalysisProgram`.",
 							"typeSignature": "AnalysisProgramOptions",
-							"sourceLine": 207,
+							"sourceLine": 208,
 							"extends": [
 								"LoadTsconfigOptions"
 							],
@@ -252779,7 +252784,7 @@
 							"kind": "interface",
 							"docComment": "Options for `createAnalysisLanguageService`.",
 							"typeSignature": "AnalysisLanguageServiceOptions",
-							"sourceLine": 225,
+							"sourceLine": 226,
 							"extends": [
 								"AnalysisProgramOptions"
 							],
@@ -252798,7 +252803,7 @@
 							"kind": "interface",
 							"docComment": "Persistent language-service handle that drives a `ts.Program` incrementally.\n\nOwns the LS, document registry, and a `Map<path, {content, version,\nscriptKind}>` of \"owned\" files (real source files + virtuals pushed via\n`setFile`). Files not in the owned map are read from disk on demand by the\nLS host.\n\nEach `setFile(path, entry)` bumps the version when content or script kind\ndiffers from cache, so the next `getProgram()` reparses only the changed\nfile. Calling `getProgram()` with no version bumps returns the same\n`ts.Program` as the previous call (reference-stable when nothing changed).",
 							"typeSignature": "AnalysisLanguageService",
-							"sourceLine": 252,
+							"sourceLine": 253,
 							"seeAlso": [
 								"`createAnalysisSession` in `session.ts` for the high-level API that wraps this with content cache + svelte virtual cache + analysis pipeline."
 							],
@@ -252882,7 +252887,7 @@
 							"kind": "function",
 							"docComment": "Load and parse tsconfig.json into compiler options + initial file list.\n\nShared by `createAnalysisProgram` and `createAnalysisLanguageService` so\ntsconfig-resolution behavior stays identical across the two paths. Also\nuseful directly when a caller needs only `CompilerOptions` (e.g., import\nresolution via `ts.resolveModuleName`) without the cost of building a full\n`ts.Program`.\n\nEach call globs the tsconfig `include` to build `rootFileNames`; reuse the\nresult rather than calling per resolve.",
 							"typeSignature": "(options?: LoadTsconfigOptions | undefined, log?: AnalysisLog | undefined): { compilerOptions: CompilerOptions; rootFileNames: string[]; }",
-							"sourceLine": 319,
+							"sourceLine": 320,
 							"throws": [
 								{
 									"type": "Error",
@@ -252908,7 +252913,7 @@
 							"kind": "function",
 							"docComment": "Create TypeScript program for one-shot analysis.\n\nUse `createAnalysisLanguageService` instead when you need to analyze the\nsame source set multiple times — the LS path reuses parsed ASTs and checker\nstate across calls.",
 							"typeSignature": "(options?: AnalysisProgramOptions | undefined, log?: AnalysisLog | undefined): Program",
-							"sourceLine": 403,
+							"sourceLine": 404,
 							"examples": [
 								"```ts\nconst program = createAnalysisProgram({projectRoot: process.cwd()});\n```"
 							],
@@ -252940,7 +252945,7 @@
 							"kind": "function",
 							"docComment": "Create a persistent language service for incremental analysis.\n\nThe LS owns parsed source ASTs and checker state across calls. Use the\nreturned handle to push file-content updates (`setFile` / `deleteFile`)\nbetween analysis passes; subsequent `getProgram()` calls return either the\nsame `ts.Program` (no changes since last call) or a fresh one that reuses\nunchanged files via the document registry.",
 							"typeSignature": "(options?: AnalysisLanguageServiceOptions | undefined, log?: AnalysisLog | undefined): AnalysisLanguageService",
-							"sourceLine": 451,
+							"sourceLine": 452,
 							"examples": [
 								"```ts\nconst ls = createAnalysisLanguageService({projectRoot});\nls.setFile('/abs/path/to/foo.ts', {content: 'export const x = 1;'});\nconst program = ls.getProgram();\n// ... use program ...\nls.setFile('/abs/path/to/foo.ts', {content: 'export const x = 2;'}); // bumps version\nconst program2 = ls.getProgram(); // fresh program, foo.ts reparsed\nls.dispose();\n```"
 							],
@@ -252972,7 +252977,7 @@
 							"kind": "type",
 							"docComment": "Predicate for determining whether a TypeScript source file is external to the project.\nUsed by external-contribution filtering (`filterDocumentedProperties` and the\nindex/call-signature origin checks) and `externalTypes` attribution to separate\nproject-authored contributions from library/framework ones.\n\nBuilt by `createIsExternalFile`, which defines externality.",
 							"typeSignature": "IsExternalFile",
-							"sourceLine": 612,
+							"sourceLine": 618,
 							"members": [
 								{
 									"name": "(call)",
@@ -252993,7 +252998,7 @@
 							"kind": "function",
 							"docComment": "Create an `IsExternalFile` predicate from `ModuleSourceOptions`.\n\nA file is external if it is:\n- Outside the project root\n- Inside `node_modules/`\n- A `.d.ts` declaration file outside the source root (catches framework-generated\n  declarations like `.svelte-kit/non-ambient.d.ts` while keeping user `.d.ts` files\n  in the source tree)",
 							"typeSignature": "(options: ModuleSourceOptions): IsExternalFile",
-							"sourceLine": 636,
+							"sourceLine": 642,
 							"parameters": [
 								{
 									"name": "options",
@@ -253007,7 +253012,7 @@
 							"kind": "function",
 							"docComment": "Path-string counterpart of `IsExternalFile`, for call sites that hold a\nfile path rather than a `ts.SourceFile` (re-export classification). Same\nrule, with declaration-file suffixes standing in for `isDeclarationFile`.\n\nDeliberately distinct from `isSource`: `isSource` answers \"does this file\nemit a module?\" while this answers \"is this file outside the project?\" —\nan in-root file can fail `isSource` (the `src/lib/internal/` convention,\nuser excludes) while remaining project-local, and conflating the two\nmis-files project-local re-exports as external-package facts.",
 							"typeSignature": "(options: ModuleSourceOptions): (file: string) => boolean",
-							"sourceLine": 658,
+							"sourceLine": 664,
 							"parameters": [
 								{
 									"name": "options",
@@ -253021,6 +253026,7 @@
 					"dependencies": [
 						"log.ts",
 						"paths.ts",
+						"postprocess.ts",
 						"source-config.ts",
 						"source.ts"
 					],
