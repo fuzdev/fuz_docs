@@ -118,7 +118,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.210.2",
+			"version": "0.210.3",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -147,15 +147,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.125.0",
+			"version": "0.127.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"homepage_url": "https://app.fuz.dev/",
 			"published": true,
-			"module_count": 352,
-			"exported_module_count": 350,
-			"export_count": 2119,
+			"module_count": 353,
+			"exported_module_count": 351,
+			"export_count": 2129,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_css",
@@ -175,7 +175,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_code",
-			"version": "0.50.0",
+			"version": "0.51.0",
 			"path": "fuz_code",
 			"description": "syntax styler for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
