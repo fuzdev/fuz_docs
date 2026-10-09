@@ -97,7 +97,7 @@ apart — each is the language-appropriate shape.)
 | Full composite    | `RuntimeDeps`               | extends all small `*Deps`            |
 | Default impl      | `default_{domain}_deps`     | `default_cache_deps`                 |
 | Mock factory      | `create_mock_{domain}_deps` | `create_mock_cache_deps`             |
-| Stub factory      | `stub_{scope}_deps`         | `stub_app_deps`                      |
+| Stub              | `stub_{scope}_deps`         | `stub_password_deps`                 |
 
 Files: `deps.ts` (interfaces) + `deps_defaults.ts` (production defaults) + a
 test-side mock module (fuz_css: `src/test/fixtures/mock_deps.ts`) — fuz_css's
@@ -208,10 +208,10 @@ individual `vi.fn()` for call tracking is fine.
 - **Tracking mock** — `create_tracking_process_deps()` returns
   `{deps, get_spawned_commands}`: a call log exposed via getters next to the deps.
 - **Stubs, two safety levels** (fuz_app `testing/stubs.ts`):
-  `create_throwing_stub<T>(label)` — a Proxy throwing on any access;
-  `stub_app_deps` builds a whole bundle of these. **Prefer this default** — a
-  silent no-op can mask setup mistakes. `create_noop_stub<T>(label)` /
-  `create_stub_app_deps()` for tests where incidental access is fine.
+  `create_throwing_stub<T>(label)` — a Proxy throwing on any access. **Prefer
+  this default** — a silent no-op can mask setup mistakes.
+  `create_noop_stub<T>(label)` / `create_stub_app_deps()` (a whole no-op
+  `AppDeps` bundle) for tests where incidental access is fine.
 - **Observable runtime mock** — `create_mock_runtime(args)` returns full
   `RuntimeDeps` with observable state (`mock_env`, `mock_fs`, `exit_calls`,
   `command_calls`); `exit` throws `MockExitError`. Stub factories accept the
