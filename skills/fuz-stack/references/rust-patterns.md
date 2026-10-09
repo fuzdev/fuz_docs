@@ -210,7 +210,8 @@ tokio::select! {
 axum's `with_graceful_shutdown(shutdown.cancelled())` drains in-flight requests;
 **always bound the drain with a timeout `select!`** — a hung handler otherwise
 keeps the process alive forever (the spine ships
-`fuz_http::serve_with_shutdown` + `DEFAULT_DRAIN_TIMEOUT`). Long-running tasks check the token via `select!` and
+`fuz_http::serve_with_shutdown` + `DEFAULT_DRAIN_TIMEOUT`, which also closes
+live WebSockets and SSE streams — ./rust-spine.md §Daemon lifecycle). Long-running tasks check the token via `select!` and
 every shutdown branch flushes pending work — the reference shape is a
 `Notify`-driven flusher debounced behind the most recent event (so an idle
 daemon doesn't tick), its `select!` carrying a `shutdown.cancelled()` arm that

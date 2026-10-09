@@ -173,7 +173,10 @@ interface; don't leak platform types (node's `SpawnOptions`) through an L1 shape
   every transport the server mounts. Both registrations return a remover
   (Rust: `add_listener` returns an id for `remove_listener`), and
   `create_app_server` runs its removers when assembly throws and on `close`, so
-  the bundle's emitter and closer end where they started. A transport mounted
+  the bundle's emitter and closer end where they started. `close` first runs
+  the closer's `close_all_sockets`, which leaves each member closing — a later
+  WebSocket upgrade or stream is refused at once — so a transport, unlike the
+  bundle, is spent with its server. A transport mounted
   by hand passes `deps.connection_closer` to its mount helper
   (`register_ws_endpoint`, `create_audit_log_sse`), which adds it permanently —
   or passes `null` and adds it itself to hold the remover.

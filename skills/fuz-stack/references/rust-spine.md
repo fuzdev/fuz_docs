@@ -94,8 +94,9 @@ sessions deleted and their connections closed, expired role-grant offers
 audited once — and a disk-CAS consumer adds
 `fuz_fact::spawn_orphan_temp_sweeper(facts_dir, shutdown.clone())`. The shape:
 `run_app` spawns the tasks after the bind (migrations have run, so each
-startup pass can read the schema), serves, then cancels the token — a serve
-error returns without the signal — and awaits every handle before returning.
+startup pass can read the schema), serves, and awaits every handle before
+returning — `serve_with_shutdown` returns with the token cancelled on every
+path, a serve error included, so there is no post-serve `cancel()`.
 Where a consumer splits out a `build_router`, it spawns nothing and returns a
 `BuiltRouter { router, app: Option<App> }` (`None` in boot-only mode) for
 `run_app` to schedule from. `socket_revoker` is the revoker the app's
@@ -167,10 +168,11 @@ magic number.
   connection pending, re-reads the credential
   (`fuz_auth::revalidate_resolved_auth`), and admits — the per-account cap
   evicts only there. A credential revoked mid-upgrade closes with 4001, a
-  failed re-read with 1011, a superseded socket with 4004. A consumer mounting
-  its own long-lived transport follows the same order (`register_pending` /
-  `subscribe_pending` → re-read → `admit`); a pending entry is closeable but
-  receives nothing and counts toward nothing.
+  failed re-read with 1011, a superseded socket with 4004, and an upgrade the
+  shutdown closed or refused with 1001 (§Daemon lifecycle). A consumer
+  mounting its own long-lived transport follows the same order
+  (`register_pending` / `subscribe_pending` → re-read → `admit`); a pending
+  entry is closeable but receives nothing and counts toward nothing.
 - **Migration namespaces compose**: substrate DDL lives in the owning crate
   (`fuz_auth::AUTH_MIGRATIONS`, `fuz_cell::CELL_MIGRATIONS`,
   `fuz_fact::FACT_MIGRATIONS`); the consumer composes them with its own via
@@ -192,9 +194,46 @@ magic number.
    `fuz_sys::signal::shutdown_token()` (`signal` feature); `fuz_http::lifecycle`
    re-exports it — with `spawn_periodic` and the `CancellationToken` type, so
    a consumer names neither `fuz_sys` nor `tokio-util` — and adds
-   `serve_with_shutdown` for axum consumers; `fuzd` (UDS, no axum) calls
+   `serve_with_shutdown(listener, router, token, closer: &dyn ShutdownCloser,
+   drain_timeout)` for axum consumers; `fuzd` (UDS, no axum) calls
    `fuz_sys::signal` directly. This split is why `fuz_sys` (home-agnostic OS
    leaf) and `fuz_home` (`~/.fuz`) are separate.
+   - **Live connections close with the token.** axum's drain sees neither
+     long-lived transport: an SSE body never ends, so the drain waits it out,
+     and an upgraded WebSocket is a detached task the process exits under (the
+     client reads a reset, a browser's 1006). So `closer` is required.
+     `ShutdownCloser` is `close_all_sockets() -> usize` (close every
+     connection, pending or admitted, and refuse every later one; sync,
+     idempotent) plus `wait_closed()` (resolve once the closed connections'
+     own tasks have written their close). `fuz_auth::SocketRevoker:
+     ShutdownCloser`, so a consumer passes the revoker its revocation handlers
+     already hold — `app.socket_revoker().as_ref()`, the `Arc<dyn
+     SocketRevoker>` upcast to `&dyn ShutdownCloser` (`RealtimeRevoker` fans to
+     the WS and SSE registries) — and `NoopShutdownCloser` only in a mode that
+     mounts nothing live (boot-only).
+   - **Order on fire**: close-all (every WebSocket gets `WS_CLOSE_GOING_AWAY`
+     1001 with `WS_CLOSE_GOING_AWAY_REASON`, `"Server shutting down"`; every
+     SSE stream drains what was queued and ends), axum's drain, then
+     `wait_closed` — the wait follows the drain so it covers an upgrade still
+     in flight. One `drain_timeout` from the fire bounds it all
+     (`DEFAULT_DRAIN_TIMEOUT`); reaching it is still `Ok`. `serve_with_shutdown`
+     cancels the token on every return path — a serve error closes and waits
+     (bounded) too, then returns the error — so upkeep stops either way, and
+     consumer teardown (zzz's PTY `kill_all`) runs after it returns.
+   - **Born closed.** The close-all sets each registry closing under the lock
+     it drains with, so a later registration is born closed: an upgrade is
+     refused 1001 before any database work, an SSE `admit` refuses (the route
+     answers the connect comment alone), and no admission landing mid-close
+     reads as revoked. The TS twin (`fuz_app`'s `AppServer.close` →
+     `close_all_sockets`) carries the same closing flag on its WS transport
+     and `SubscriberRegistry`.
+   - **One write budget per WS loop.** Once the close-all fires, a loop's
+     remaining writes (one in progress, the queued frames, the close) share
+     one fixed deadline (`SHUTDOWN_CLOSE_TIMEOUT`, 1 s, private to
+     `fuz_realtime`), so a client that stopped reading can't hold every
+     restart to the drain timeout; a write cut off there ends the loop with no
+     close frame. A stalled SSE reader is not under it — its body runs inside
+     axum's drain, bounded only by `drain_timeout`.
 2. **Client-side CLI lifecycle splits by transport.**
    - `fuzd`'s UDS lifecycle lives in `fuz_daemon`: v2 `daemon.json`
      (`socket_path`, no port), `Hello`-based health over `fuz_client`, a
