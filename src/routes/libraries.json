@@ -2,7 +2,7 @@
 	"fuz_util": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.71.0",
+			"version": "0.72.0",
 			"description": "utility belt for JS",
 			"tagline": "ancient not extinct",
 			"glyph": "🦕",
@@ -3590,15 +3590,15 @@
 											]
 										}
 									}
-								],
-								"readonly": true
+								]
 							}
 						},
 						{
 							"name": "Hue",
 							"kind": "type",
+							"docComment": "A hue angle in degrees, the unit CSS uses for both `hsl()` and `oklch()`.\nConversions return hues in [0, 360) and accept any angle.",
 							"typeSignature": "Hue",
-							"sourceLine": 10,
+							"sourceLine": 14,
 							"typeInfo": {
 								"kind": "intersection",
 								"alias": "Hue",
@@ -3625,7 +3625,7 @@
 							"name": "Saturation",
 							"kind": "type",
 							"typeSignature": "Saturation",
-							"sourceLine": 11,
+							"sourceLine": 15,
 							"typeInfo": {
 								"kind": "intersection",
 								"alias": "Saturation",
@@ -3652,7 +3652,7 @@
 							"name": "Lightness",
 							"kind": "type",
 							"typeSignature": "Lightness",
-							"sourceLine": 12,
+							"sourceLine": 16,
 							"typeInfo": {
 								"kind": "intersection",
 								"alias": "Lightness",
@@ -3679,7 +3679,7 @@
 							"name": "Rgb",
 							"kind": "type",
 							"typeSignature": "Rgb",
-							"sourceLine": 14,
+							"sourceLine": 18,
 							"typeInfo": {
 								"kind": "tuple",
 								"elements": [
@@ -3752,15 +3752,14 @@
 											]
 										}
 									}
-								],
-								"readonly": true
+								]
 							}
 						},
 						{
 							"name": "Red",
 							"kind": "type",
 							"typeSignature": "Red",
-							"sourceLine": 15,
+							"sourceLine": 19,
 							"typeInfo": {
 								"kind": "intersection",
 								"alias": "Red",
@@ -3787,7 +3786,7 @@
 							"name": "Green",
 							"kind": "type",
 							"typeSignature": "Green",
-							"sourceLine": 16,
+							"sourceLine": 20,
 							"typeInfo": {
 								"kind": "intersection",
 								"alias": "Green",
@@ -3814,7 +3813,7 @@
 							"name": "Blue",
 							"kind": "type",
 							"typeSignature": "Blue",
-							"sourceLine": 17,
+							"sourceLine": 21,
 							"typeInfo": {
 								"kind": "intersection",
 								"alias": "Blue",
@@ -3842,7 +3841,7 @@
 							"kind": "function",
 							"docComment": "Converts an RGB color to a hex color.",
 							"typeSignature": "(r: number, g: number, b: number): number",
-							"sourceLine": 22,
+							"sourceLine": 26,
 							"parameters": [
 								{
 									"name": "r",
@@ -3864,7 +3863,7 @@
 							"kind": "function",
 							"docComment": "Converts a hex color to an RGB color.",
 							"typeSignature": "(hex: number): Rgb",
-							"sourceLine": 27,
+							"sourceLine": 31,
 							"parameters": [
 								{
 									"name": "hex",
@@ -3877,7 +3876,7 @@
 							"name": "hex_string_to_rgb",
 							"kind": "function",
 							"typeSignature": "(hex: string): Rgb",
-							"sourceLine": 29,
+							"sourceLine": 33,
 							"parameters": [
 								{
 									"name": "hex",
@@ -3890,7 +3889,7 @@
 							"name": "rgb_to_hex_string",
 							"kind": "function",
 							"typeSignature": "(r: number, g: number, b: number): string",
-							"sourceLine": 35,
+							"sourceLine": 39,
 							"parameters": [
 								{
 									"name": "r",
@@ -3911,7 +3910,7 @@
 							"name": "to_hex_component",
 							"kind": "function",
 							"typeSignature": "(v: number): string",
-							"sourceLine": 38,
+							"sourceLine": 42,
 							"parameters": [
 								{
 									"name": "v",
@@ -3923,9 +3922,9 @@
 						{
 							"name": "rgb_to_hsl",
 							"kind": "function",
-							"docComment": "Converts an RGB color value to HSL. Conversion formula\nadapted from http://wikipedia.org/wiki/HSL_color_space.\nValues r/g/b are in the range [0,255] and\nreturns h/s/l in the range [0,1].",
+							"docComment": "Converts an RGB color value to HSL. Conversion formula\nadapted from http://wikipedia.org/wiki/HSL_color_space.\nValues r/g/b are in the range [0,255] and\nreturns h in degrees [0,360) and s/l in the range [0,1].",
 							"typeSignature": "(r: number, g: number, b: number): Hsl",
-							"sourceLine": 49,
+							"sourceLine": 53,
 							"parameters": [
 								{
 									"name": "r",
@@ -3945,9 +3944,9 @@
 						{
 							"name": "hsl_to_rgb",
 							"kind": "function",
-							"docComment": "Converts an HSL color value to RGB. Conversion formula\nadapted from http://wikipedia.org/wiki/HSL_color_space.\nValues h/s/l are in the range [0,1] and\nreturns r/g/b in the range [0,255].",
+							"docComment": "Converts an HSL color value to RGB. Conversion formula\nadapted from http://wikipedia.org/wiki/HSL_color_space.\nValue h is in degrees (any angle, wrapped), s/l are in the range [0,1],\nand returns r/g/b in the range [0,255].",
 							"typeSignature": "(h: Hue, s: Saturation, l: Lightness): Rgb",
-							"sourceLine": 84,
+							"sourceLine": 88,
 							"parameters": [
 								{
 									"name": "h",
@@ -4030,8 +4029,9 @@
 						{
 							"name": "hue_to_rgb_component",
 							"kind": "function",
+							"docComment": "The HSL-to-RGB channel helper, with the hue `t` as a fraction of a turn.",
 							"typeSignature": "(p: number, q: number, t: number): number",
-							"sourceLine": 98,
+							"sourceLine": 106,
 							"parameters": [
 								{
 									"name": "p",
@@ -4052,7 +4052,7 @@
 							"name": "hsl_to_hex",
 							"kind": "function",
 							"typeSignature": "(h: Hue, s: Saturation, l: Lightness): number",
-							"sourceLine": 106,
+							"sourceLine": 114,
 							"parameters": [
 								{
 									"name": "h",
@@ -4136,7 +4136,7 @@
 							"name": "hsl_to_hex_string",
 							"kind": "function",
 							"typeSignature": "(h: Hue, s: Saturation, l: Lightness): string",
-							"sourceLine": 111,
+							"sourceLine": 119,
 							"parameters": [
 								{
 									"name": "h",
@@ -4220,7 +4220,7 @@
 							"name": "hsl_to_string",
 							"kind": "function",
 							"typeSignature": "(h: Hue, s: Saturation, l: Lightness): string",
-							"sourceLine": 116,
+							"sourceLine": 124,
 							"parameters": [
 								{
 									"name": "h",
@@ -4304,7 +4304,7 @@
 							"name": "hex_string_to_hsl",
 							"kind": "function",
 							"typeSignature": "(hex: string): Hsl",
-							"sourceLine": 119,
+							"sourceLine": 127,
 							"parameters": [
 								{
 									"name": "hex",
@@ -4317,7 +4317,7 @@
 							"name": "parse_hsl_string",
 							"kind": "function",
 							"typeSignature": "(hsl: string): Hsl",
-							"sourceLine": 126,
+							"sourceLine": 134,
 							"parameters": [
 								{
 									"name": "hsl",
@@ -4325,11 +4325,59 @@
 								}
 							],
 							"returnType": "Hsl"
+						},
+						{
+							"name": "parse_hue",
+							"kind": "function",
+							"docComment": "Parses a hue in degrees from a number or a numeric string, with an optional\n`deg` unit. The value is returned as-is, not normalized to [0, 360).",
+							"typeSignature": "(value: unknown): Hue | null",
+							"sourceLine": 149,
+							"parameters": [
+								{
+									"name": "value",
+									"type": "unknown"
+								}
+							],
+							"returnType": "Hue | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intersection",
+										"alias": "Hue",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "reference",
+												"name": "Flavor",
+												"typeArgs": [
+													{
+														"kind": "literal",
+														"value": "Hue",
+														"text": "\"Hue\""
+													}
+												]
+											}
+										]
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							},
+							"returnDescription": "the hue, or `null` for empty, non-numeric, or non-finite input"
 						}
 					],
 					"dependencies": [
 						"maths.ts",
 						"types.ts"
+					],
+					"dependents": [
+						"oklch.ts"
 					]
 				},
 				{
@@ -10655,6 +10703,7 @@
 					"dependents": [
 						"benchmark_format.ts",
 						"colors.ts",
+						"oklch.ts",
 						"timings.ts"
 					]
 				},
@@ -10966,6 +11015,1054 @@
 						"fs.ts",
 						"package_json.ts",
 						"throttle.ts"
+					]
+				},
+				{
+					"path": "oklch.ts",
+					"declarations": [
+						{
+							"name": "Chroma",
+							"kind": "type",
+							"docComment": "OKLCH chroma, 0 or more and unbounded; sRGB colors stay below about 0.37.",
+							"typeSignature": "Chroma",
+							"sourceLine": 20,
+							"typeInfo": {
+								"kind": "intersection",
+								"alias": "Chroma",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "number"
+									},
+									{
+										"kind": "reference",
+										"name": "Flavor",
+										"typeArgs": [
+											{
+												"kind": "literal",
+												"value": "Chroma",
+												"text": "\"Chroma\""
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "Oklch",
+							"kind": "type",
+							"docComment": "A color in OKLCH: lightness in [0, 1], chroma ≥ 0 (unbounded), hue in degrees.",
+							"typeSignature": "Oklch",
+							"sourceLine": 23,
+							"typeInfo": {
+								"kind": "tuple",
+								"elements": [
+									{
+										"name": "lightness",
+										"type": {
+											"kind": "intersection",
+											"alias": "Lightness",
+											"members": [
+												{
+													"kind": "intrinsic",
+													"text": "number"
+												},
+												{
+													"kind": "reference",
+													"name": "Flavor",
+													"typeArgs": [
+														{
+															"kind": "literal",
+															"value": "Lightness",
+															"text": "\"Lightness\""
+														}
+													]
+												}
+											]
+										}
+									},
+									{
+										"name": "chroma",
+										"type": {
+											"kind": "intersection",
+											"alias": "Chroma",
+											"members": [
+												{
+													"kind": "intrinsic",
+													"text": "number"
+												},
+												{
+													"kind": "reference",
+													"name": "Flavor",
+													"typeArgs": [
+														{
+															"kind": "literal",
+															"value": "Chroma",
+															"text": "\"Chroma\""
+														}
+													]
+												}
+											]
+										}
+									},
+									{
+										"name": "hue",
+										"type": {
+											"kind": "intersection",
+											"alias": "Hue",
+											"members": [
+												{
+													"kind": "intrinsic",
+													"text": "number"
+												},
+												{
+													"kind": "reference",
+													"name": "Flavor",
+													"typeArgs": [
+														{
+															"kind": "literal",
+															"value": "Hue",
+															"text": "\"Hue\""
+														}
+													]
+												}
+											]
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "Oklab",
+							"kind": "type",
+							"docComment": "A color in OKLab: lightness in [0, 1], `a`/`b` roughly in [-0.4, 0.4].",
+							"typeSignature": "Oklab",
+							"sourceLine": 26,
+							"typeInfo": {
+								"kind": "tuple",
+								"elements": [
+									{
+										"name": "lightness",
+										"type": {
+											"kind": "intersection",
+											"alias": "Lightness",
+											"members": [
+												{
+													"kind": "intrinsic",
+													"text": "number"
+												},
+												{
+													"kind": "reference",
+													"name": "Flavor",
+													"typeArgs": [
+														{
+															"kind": "literal",
+															"value": "Lightness",
+															"text": "\"Lightness\""
+														}
+													]
+												}
+											]
+										}
+									},
+									{
+										"name": "a",
+										"type": {
+											"kind": "intrinsic",
+											"text": "number"
+										}
+									},
+									{
+										"name": "b",
+										"type": {
+											"kind": "intrinsic",
+											"text": "number"
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "RgbUnit",
+							"kind": "type",
+							"docComment": "An RGB color with components in the unit interval [0, 1].\nValues are gamma-encoded sRGB unless a function documents linear-light.\nOut-of-gamut results are not clamped, so components may fall outside [0, 1].",
+							"typeSignature": "RgbUnit",
+							"sourceLine": 33,
+							"typeInfo": {
+								"kind": "tuple",
+								"elements": [
+									{
+										"name": "r",
+										"type": {
+											"kind": "intrinsic",
+											"text": "number"
+										}
+									},
+									{
+										"name": "g",
+										"type": {
+											"kind": "intrinsic",
+											"text": "number"
+										}
+									},
+									{
+										"name": "b",
+										"type": {
+											"kind": "intrinsic",
+											"text": "number"
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "clamp_oklch",
+							"kind": "function",
+							"docComment": "Clamps an OKLCH color the way the browser clamps a computed `oklch()`:\nlightness to [0, 1] and chroma to 0 or more. Derived values can overshoot\nan end, and the browser renders the clamped color, so anything measuring\nthe rendered color has to clamp too.",
+							"typeSignature": "([lightness, chroma, hue]: readonly [lightness: Lightness, chroma: Chroma, hue: Hue]): Oklch",
+							"sourceLine": 41,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "readonly [lightness: Lightness, chroma: Chroma, hue: Hue]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "chroma",
+												"type": {
+													"kind": "intersection",
+													"alias": "Chroma",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Chroma",
+																	"text": "\"Chroma\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "hue",
+												"type": {
+													"kind": "intersection",
+													"alias": "Hue",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Hue",
+																	"text": "\"Hue\""
+																}
+															]
+														}
+													]
+												}
+											}
+										],
+										"readonly": true
+									}
+								}
+							],
+							"returnType": "Oklch"
+						},
+						{
+							"name": "srgb_component_to_linear",
+							"kind": "function",
+							"docComment": "Converts a gamma-encoded sRGB component in [0, 1] to linear-light.",
+							"typeSignature": "(c: number): number",
+							"sourceLine": 53,
+							"parameters": [
+								{
+									"name": "c",
+									"type": "number"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "linear_component_to_srgb",
+							"kind": "function",
+							"docComment": "Converts a linear-light sRGB component to gamma-encoded in [0, 1].",
+							"typeSignature": "(c: number): number",
+							"sourceLine": 59,
+							"parameters": [
+								{
+									"name": "c",
+									"type": "number"
+								}
+							],
+							"returnType": "number"
+						},
+						{
+							"name": "srgb_to_oklab",
+							"kind": "function",
+							"docComment": "Converts gamma-encoded sRGB to OKLab.",
+							"typeSignature": "([r, g, b]: readonly [r: number, g: number, b: number]): Oklab",
+							"sourceLine": 65,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "readonly [r: number, g: number, b: number]"
+								}
+							],
+							"returnType": "Oklab"
+						},
+						{
+							"name": "oklab_to_srgb",
+							"kind": "function",
+							"docComment": "Converts OKLab to gamma-encoded sRGB.",
+							"typeSignature": "([lightness, a, b]: readonly [lightness: Lightness, a: number, b: number]): RgbUnit",
+							"sourceLine": 106,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "readonly [lightness: Lightness, a: number, b: number]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "a",
+												"type": {
+													"kind": "intrinsic",
+													"text": "number"
+												}
+											},
+											{
+												"name": "b",
+												"type": {
+													"kind": "intrinsic",
+													"text": "number"
+												}
+											}
+										],
+										"readonly": true
+									}
+								}
+							],
+							"returnType": "RgbUnit",
+							"returnDescription": "components that may fall outside [0, 1] when the color is out of gamut"
+						},
+						{
+							"name": "oklab_to_oklch",
+							"kind": "function",
+							"docComment": "Converts OKLab to OKLCH. Hue is normalized to [0, 360); an achromatic color\n(chroma below the float noise of the conversion matrices) gets hue 0.",
+							"typeSignature": "([lightness, a, b]: readonly [lightness: Lightness, a: number, b: number]): Oklch",
+							"sourceLine": 117,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "readonly [lightness: Lightness, a: number, b: number]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "a",
+												"type": {
+													"kind": "intrinsic",
+													"text": "number"
+												}
+											},
+											{
+												"name": "b",
+												"type": {
+													"kind": "intrinsic",
+													"text": "number"
+												}
+											}
+										],
+										"readonly": true
+									}
+								}
+							],
+							"returnType": "Oklch"
+						},
+						{
+							"name": "oklch_to_oklab",
+							"kind": "function",
+							"docComment": "Converts OKLCH to OKLab.",
+							"typeSignature": "([lightness, chroma, hue]: readonly [lightness: Lightness, chroma: Chroma, hue: Hue]): Oklab",
+							"sourceLine": 126,
+							"parameters": [
+								{
+									"name": "__0",
+									"type": "readonly [lightness: Lightness, chroma: Chroma, hue: Hue]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "chroma",
+												"type": {
+													"kind": "intersection",
+													"alias": "Chroma",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Chroma",
+																	"text": "\"Chroma\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "hue",
+												"type": {
+													"kind": "intersection",
+													"alias": "Hue",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Hue",
+																	"text": "\"Hue\""
+																}
+															]
+														}
+													]
+												}
+											}
+										],
+										"readonly": true
+									}
+								}
+							],
+							"returnType": "Oklab"
+						},
+						{
+							"name": "srgb_to_oklch",
+							"kind": "function",
+							"docComment": "Converts gamma-encoded sRGB to OKLCH.",
+							"typeSignature": "(rgb: readonly [r: number, g: number, b: number]): Oklch",
+							"sourceLine": 135,
+							"parameters": [
+								{
+									"name": "rgb",
+									"type": "readonly [r: number, g: number, b: number]"
+								}
+							],
+							"returnType": "Oklch"
+						},
+						{
+							"name": "oklch_to_srgb",
+							"kind": "function",
+							"docComment": "Converts OKLCH to gamma-encoded sRGB.",
+							"typeSignature": "(lch: readonly [lightness: Lightness, chroma: Chroma, hue: Hue]): RgbUnit",
+							"sourceLine": 142,
+							"parameters": [
+								{
+									"name": "lch",
+									"type": "readonly [lightness: Lightness, chroma: Chroma, hue: Hue]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "chroma",
+												"type": {
+													"kind": "intersection",
+													"alias": "Chroma",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Chroma",
+																	"text": "\"Chroma\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "hue",
+												"type": {
+													"kind": "intersection",
+													"alias": "Hue",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Hue",
+																	"text": "\"Hue\""
+																}
+															]
+														}
+													]
+												}
+											}
+										],
+										"readonly": true
+									}
+								}
+							],
+							"returnType": "RgbUnit",
+							"returnDescription": "components that may fall outside [0, 1] when the color is out of gamut"
+						},
+						{
+							"name": "oklch_to_srgb_into",
+							"kind": "function",
+							"docComment": "Converts OKLCH to gamma-encoded sRGB, writing into `out` instead of allocating.\nFor hot loops like per-pixel canvas fills; `out` may be reused across calls.",
+							"typeSignature": "(lch: readonly [lightness: Lightness, chroma: Chroma, hue: Hue], out: RgbUnit): RgbUnit",
+							"sourceLine": 153,
+							"mutates": {
+								"out": "overwrites all three components"
+							},
+							"parameters": [
+								{
+									"name": "lch",
+									"type": "readonly [lightness: Lightness, chroma: Chroma, hue: Hue]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "chroma",
+												"type": {
+													"kind": "intersection",
+													"alias": "Chroma",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Chroma",
+																	"text": "\"Chroma\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "hue",
+												"type": {
+													"kind": "intersection",
+													"alias": "Hue",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Hue",
+																	"text": "\"Hue\""
+																}
+															]
+														}
+													]
+												}
+											}
+										],
+										"readonly": true
+									},
+									"description": "the color to convert"
+								},
+								{
+									"name": "out",
+									"type": "RgbUnit",
+									"description": "the array to write the sRGB components into"
+								}
+							],
+							"returnType": "RgbUnit",
+							"returnDescription": "`out`, with components that may fall outside [0, 1] when the color is out of gamut"
+						},
+						{
+							"name": "oklch_in_srgb_gamut",
+							"kind": "function",
+							"docComment": "Checks whether an OKLCH color converts to sRGB with all components inside [0, 1].\nAllocates nothing, so it's safe in hot loops.",
+							"typeSignature": "(lch: readonly [lightness: Lightness, chroma: Chroma, hue: Hue], epsilon?: number): boolean",
+							"sourceLine": 187,
+							"parameters": [
+								{
+									"name": "lch",
+									"type": "readonly [lightness: Lightness, chroma: Chroma, hue: Hue]",
+									"typeInfo": {
+										"kind": "tuple",
+										"elements": [
+											{
+												"name": "lightness",
+												"type": {
+													"kind": "intersection",
+													"alias": "Lightness",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Lightness",
+																	"text": "\"Lightness\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "chroma",
+												"type": {
+													"kind": "intersection",
+													"alias": "Chroma",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Chroma",
+																	"text": "\"Chroma\""
+																}
+															]
+														}
+													]
+												}
+											},
+											{
+												"name": "hue",
+												"type": {
+													"kind": "intersection",
+													"alias": "Hue",
+													"members": [
+														{
+															"kind": "intrinsic",
+															"text": "number"
+														},
+														{
+															"kind": "reference",
+															"name": "Flavor",
+															"typeArgs": [
+																{
+																	"kind": "literal",
+																	"value": "Hue",
+																	"text": "\"Hue\""
+																}
+															]
+														}
+													]
+												}
+											}
+										],
+										"readonly": true
+									}
+								},
+								{
+									"name": "epsilon",
+									"type": "number",
+									"description": "tolerance for float noise at the gamut boundary",
+									"defaultValue": "GAMUT_EPSILON"
+								}
+							],
+							"returnType": "boolean"
+						},
+						{
+							"name": "oklch_max_srgb_chroma",
+							"kind": "function",
+							"docComment": "Finds the largest chroma at a given OKLCH lightness and hue such that every\nchroma below it is also inside the sRGB gamut. Returns 0 when the lightness\nitself is out of range. Allocates nothing.\n\nThis is deliberately the *safe* maximum for ramps, not the outermost gamut\nintersection: the sRGB gamut is non-convex in OKLab (most visibly near the\nblue primary), so the constant-(L, H) chroma ray can exit and re-enter the\ngamut. A ramp needs the whole `[0, C]` segment representable, so the scan\nstops at the first exit.",
+							"typeSignature": "(lightness: Lightness, hue: Hue, precision?: number): Chroma",
+							"sourceLine": 207,
+							"parameters": [
+								{
+									"name": "lightness",
+									"type": "Lightness",
+									"typeInfo": {
+										"kind": "intersection",
+										"alias": "Lightness",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "reference",
+												"name": "Flavor",
+												"typeArgs": [
+													{
+														"kind": "literal",
+														"value": "Lightness",
+														"text": "\"Lightness\""
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "hue",
+									"type": "Hue",
+									"typeInfo": {
+										"kind": "intersection",
+										"alias": "Hue",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "reference",
+												"name": "Flavor",
+												"typeArgs": [
+													{
+														"kind": "literal",
+														"value": "Hue",
+														"text": "\"Hue\""
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "precision",
+									"type": "number",
+									"description": "terminate when the refinement interval is smaller than this",
+									"defaultValue": "1e-5"
+								}
+							],
+							"returnType": "Chroma",
+							"returnTypeInfo": {
+								"kind": "intersection",
+								"alias": "Chroma",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "number"
+									},
+									{
+										"kind": "reference",
+										"name": "Flavor",
+										"typeArgs": [
+											{
+												"kind": "literal",
+												"value": "Chroma",
+												"text": "\"Chroma\""
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "oklch_to_string",
+							"kind": "function",
+							"docComment": "Renders an OKLCH color as a CSS `oklch()` string, rounding lightness and\nchroma to 4 decimals and hue to 2.",
+							"typeSignature": "(lightness: Lightness, chroma: Chroma, hue: Hue): string",
+							"sourceLine": 242,
+							"parameters": [
+								{
+									"name": "lightness",
+									"type": "Lightness",
+									"typeInfo": {
+										"kind": "intersection",
+										"alias": "Lightness",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "reference",
+												"name": "Flavor",
+												"typeArgs": [
+													{
+														"kind": "literal",
+														"value": "Lightness",
+														"text": "\"Lightness\""
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "chroma",
+									"type": "Chroma",
+									"typeInfo": {
+										"kind": "intersection",
+										"alias": "Chroma",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "reference",
+												"name": "Flavor",
+												"typeArgs": [
+													{
+														"kind": "literal",
+														"value": "Chroma",
+														"text": "\"Chroma\""
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "hue",
+									"type": "Hue",
+									"typeInfo": {
+										"kind": "intersection",
+										"alias": "Hue",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "reference",
+												"name": "Flavor",
+												"typeArgs": [
+													{
+														"kind": "literal",
+														"value": "Hue",
+														"text": "\"Hue\""
+													}
+												]
+											}
+										]
+									}
+								}
+							],
+							"returnType": "string"
+						},
+						{
+							"name": "parse_oklch_string",
+							"kind": "function",
+							"docComment": "Parses a CSS `oklch()` string, with or without the `oklch(` wrapper.\nAccepts percentages, a `deg` hue unit, `none` components (as 0), and\nexponents. The alpha channel is accepted and ignored.",
+							"typeSignature": "(value: string): Oklch",
+							"sourceLine": 265,
+							"throws": [
+								{
+									"type": "Error",
+									"description": "if the string isn't an `oklch()` color"
+								}
+							],
+							"parameters": [
+								{
+									"name": "value",
+									"type": "string"
+								}
+							],
+							"returnType": "Oklch"
+						}
+					],
+					"moduleComment": "OKLCH/OKLab ↔ sRGB conversions, gamut math, and `oklch()` strings.\n\nThe tuple-returning conversions allocate a fresh array per call, which is\nfine for most uses. Per-pixel or per-frame callers (a canvas gamut plane, a\nlive chroma clamp) should use `oklch_to_srgb_into`, which writes into a\ncaller-owned array. The gamut helpers allocate nothing.\n\nMatrices and constants follow css-color-4 and Björn Ottosson's reference\nimplementation.",
+					"dependencies": [
+						"colors.ts",
+						"maths.ts",
+						"types.ts"
 					]
 				},
 				{
@@ -18482,6 +19579,7 @@
 						"colors.ts",
 						"git.ts",
 						"object.ts",
+						"oklch.ts",
 						"path.ts",
 						"random.ts",
 						"url.ts"
@@ -33611,7 +34709,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.65.3",
+			"version": "0.66.0",
 			"description": "semantic-first CSS framework and design system",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -42415,288 +43513,6 @@
 					]
 				},
 				{
-					"path": "oklch.ts",
-					"declarations": [
-						{
-							"name": "Oklch",
-							"kind": "type",
-							"docComment": "A color in OKLCH: lightness in [0, 1], chroma ≥ 0 (unbounded), hue in degrees.",
-							"typeSignature": "Oklch",
-							"sourceLine": 18,
-							"typeInfo": {
-								"kind": "tuple",
-								"elements": [
-									{
-										"name": "lightness",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									},
-									{
-										"name": "chroma",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									},
-									{
-										"name": "hue",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									}
-								]
-							}
-						},
-						{
-							"name": "Oklab",
-							"kind": "type",
-							"docComment": "A color in OKLab: lightness in [0, 1], `a`/`b` roughly in [-0.4, 0.4].",
-							"typeSignature": "Oklab",
-							"sourceLine": 21,
-							"typeInfo": {
-								"kind": "tuple",
-								"elements": [
-									{
-										"name": "lightness",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									},
-									{
-										"name": "a",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									},
-									{
-										"name": "b",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									}
-								]
-							}
-						},
-						{
-							"name": "RgbUnit",
-							"kind": "type",
-							"docComment": "An RGB color with components in the unit interval [0, 1].\nValues are gamma-encoded sRGB unless a function documents linear-light.\nOut-of-gamut results are not clamped, so components may fall outside [0, 1].",
-							"typeSignature": "RgbUnit",
-							"sourceLine": 28,
-							"typeInfo": {
-								"kind": "tuple",
-								"elements": [
-									{
-										"name": "r",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									},
-									{
-										"name": "g",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									},
-									{
-										"name": "b",
-										"type": {
-											"kind": "intrinsic",
-											"text": "number"
-										}
-									}
-								]
-							}
-						},
-						{
-							"name": "clamp_oklch",
-							"kind": "function",
-							"docComment": "Clamps an OKLCH color the way the browser clamps a computed `oklch()`:\nlightness to [0, 1] and chroma to 0 or more. A theme can push a derived\nlightness past an end (`shade_lightness_00: 1.03`), and the browser\nrenders the clamped color, so a gate measuring it has to as well.",
-							"typeSignature": "([lightness, chroma, hue]: Oklch): Oklch",
-							"sourceLine": 36,
-							"parameters": [
-								{
-									"name": "__0",
-									"type": "Oklch"
-								}
-							],
-							"returnType": "Oklch"
-						},
-						{
-							"name": "srgb_component_to_linear",
-							"kind": "function",
-							"docComment": "Converts a gamma-encoded sRGB component in [0, 1] to linear-light.",
-							"typeSignature": "(c: number): number",
-							"sourceLine": 48,
-							"parameters": [
-								{
-									"name": "c",
-									"type": "number"
-								}
-							],
-							"returnType": "number"
-						},
-						{
-							"name": "linear_component_to_srgb",
-							"kind": "function",
-							"docComment": "Converts a linear-light sRGB component to gamma-encoded in [0, 1].",
-							"typeSignature": "(c: number): number",
-							"sourceLine": 54,
-							"parameters": [
-								{
-									"name": "c",
-									"type": "number"
-								}
-							],
-							"returnType": "number"
-						},
-						{
-							"name": "srgb_to_oklab",
-							"kind": "function",
-							"docComment": "Converts gamma-encoded sRGB to OKLab.",
-							"typeSignature": "([r, g, b]: RgbUnit): Oklab",
-							"sourceLine": 60,
-							"parameters": [
-								{
-									"name": "__0",
-									"type": "RgbUnit"
-								}
-							],
-							"returnType": "Oklab"
-						},
-						{
-							"name": "oklab_to_srgb",
-							"kind": "function",
-							"docComment": "Converts OKLab to gamma-encoded sRGB.",
-							"typeSignature": "([lightness, a, b]: Oklab): RgbUnit",
-							"sourceLine": 85,
-							"parameters": [
-								{
-									"name": "__0",
-									"type": "Oklab"
-								}
-							],
-							"returnType": "RgbUnit",
-							"returnDescription": "components that may fall outside [0, 1] when the color is out of gamut"
-						},
-						{
-							"name": "oklab_to_oklch",
-							"kind": "function",
-							"docComment": "Converts OKLab to OKLCH. Hue is normalized to [0, 360); an achromatic color gets hue 0.",
-							"typeSignature": "([lightness, a, b]: Oklab): Oklch",
-							"sourceLine": 104,
-							"parameters": [
-								{
-									"name": "__0",
-									"type": "Oklab"
-								}
-							],
-							"returnType": "Oklch"
-						},
-						{
-							"name": "oklch_to_oklab",
-							"kind": "function",
-							"docComment": "Converts OKLCH to OKLab.",
-							"typeSignature": "([lightness, chroma, hue]: Oklch): Oklab",
-							"sourceLine": 113,
-							"parameters": [
-								{
-									"name": "__0",
-									"type": "Oklch"
-								}
-							],
-							"returnType": "Oklab"
-						},
-						{
-							"name": "srgb_to_oklch",
-							"kind": "function",
-							"docComment": "Converts gamma-encoded sRGB to OKLCH.",
-							"typeSignature": "(rgb: RgbUnit): Oklch",
-							"sourceLine": 122,
-							"parameters": [
-								{
-									"name": "rgb",
-									"type": "RgbUnit"
-								}
-							],
-							"returnType": "Oklch"
-						},
-						{
-							"name": "oklch_to_srgb",
-							"kind": "function",
-							"docComment": "Converts OKLCH to gamma-encoded sRGB.",
-							"typeSignature": "(lch: Oklch): RgbUnit",
-							"sourceLine": 129,
-							"parameters": [
-								{
-									"name": "lch",
-									"type": "Oklch"
-								}
-							],
-							"returnType": "RgbUnit",
-							"returnDescription": "components that may fall outside [0, 1] when the color is out of gamut"
-						},
-						{
-							"name": "oklch_in_srgb_gamut",
-							"kind": "function",
-							"docComment": "Checks whether an OKLCH color converts to sRGB with all components inside [0, 1].",
-							"typeSignature": "(lch: Oklch, epsilon?: number): boolean",
-							"sourceLine": 136,
-							"parameters": [
-								{
-									"name": "lch",
-									"type": "Oklch"
-								},
-								{
-									"name": "epsilon",
-									"type": "number",
-									"description": "tolerance for float noise at the gamut boundary",
-									"defaultValue": "1e-6"
-								}
-							],
-							"returnType": "boolean"
-						},
-						{
-							"name": "oklch_max_srgb_chroma",
-							"kind": "function",
-							"docComment": "Finds the largest chroma at a given OKLCH lightness and hue such that every\nchroma below it is also inside the sRGB gamut. Returns 0 when the lightness\nitself is out of range.\n\nThis is deliberately the *safe* maximum for ramps, not the outermost gamut\nintersection: the sRGB gamut is non-convex in OKLab (most visibly near the\nblue primary), so the constant-(L, H) chroma ray can exit and re-enter the\ngamut. A ramp needs the whole `[0, C]` segment representable, so the scan\nstops at the first exit.",
-							"typeSignature": "(lightness: number, hue: number, precision?: number): number",
-							"sourceLine": 156,
-							"parameters": [
-								{
-									"name": "lightness",
-									"type": "number"
-								},
-								{
-									"name": "hue",
-									"type": "number"
-								},
-								{
-									"name": "precision",
-									"type": "number",
-									"description": "terminate when the refinement interval is smaller than this",
-									"defaultValue": "1e-5"
-								}
-							],
-							"returnType": "number"
-						}
-					],
-					"moduleComment": "OKLCH/OKLab ↔ sRGB conversions and gamut math.\n\nThe shipped CSS never needs this module - fuz_css output stays pure\n`oklch()`/`calc()`. It exists for design time: the theme gates\n(`theme_check.ts`) and tests assert that color stops are inside the sRGB\ngamut and meet the contrast gates (see `wcag.ts`). Display tooling (like\nthe docs site's color swatches) may also import the conversions, which are\nkept public as a complete OKLCH/OKLab ↔ sRGB surface.\n\nMatrices and constants follow css-color-4 and Björn Ottosson's reference\nimplementation.",
-					"dependents": [
-						"ramps.ts",
-						"theme_check.ts",
-						"wcag.ts"
-					]
-				},
-				{
 					"path": "ramps.ts",
 					"declarations": [
 						{
@@ -42704,7 +43520,7 @@
 							"kind": "interface",
 							"docComment": "Knobs for a pow-curve lightness ramp. The endpoints are the ramp's own\n00/100 stops, so light and dark schemes differ only in values, never in\nformula - no direction flag needed.",
 							"typeSignature": "LightnessRampKnobs",
-							"sourceLine": 41,
+							"sourceLine": 42,
 							"members": [
 								{
 									"name": "lightness_00",
@@ -42731,7 +43547,7 @@
 							"kind": "interface",
 							"docComment": "Knobs for the symmetric mid-peaked chroma curve,\n`C(t) = min + (max - min) * pow(4t(1-t), curve)`.\nThe curve expresses the *request*; rendered stops are clamped by\n`PALETTE_CHROMA_CAPS` per stop, and `--chroma_scale` multiplies above the\nclamp (so vivid themes can knowingly push past the caps and gamut-clip).",
 							"typeSignature": "ChromaRampKnobs",
-							"sourceLine": 57,
+							"sourceLine": 58,
 							"members": [
 								{
 									"name": "chroma_min",
@@ -42758,7 +43574,7 @@
 							"kind": "variable",
 							"docComment": "OKLCH hue angles for the palette slots.",
 							"typeSignature": "Readonly<Record<\"a\" | \"b\" | \"c\" | \"d\" | \"e\" | \"f\" | \"g\" | \"h\" | \"i\" | \"j\", number>>",
-							"sourceLine": 67,
+							"sourceLine": 68,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -42785,7 +43601,7 @@
 							"kind": "variable",
 							"docComment": "Per-slot chroma multipliers (`--palette_X_chroma_scale`), the palette's\nchroma-character knobs. Each multiplies its slot's chroma under the global\n`--chroma_scale` (multiplicative, so the slot's character is preserved at\nany global setting); values at or below 1 stay inside the worst-hue gamut\ncaps by construction, above 1 knowingly clips like the global knob. The\nbrown slot ships muted because brown is low-chroma dark orange - no hue\nangle renders it at full palette chroma.",
 							"typeSignature": "Readonly<Record<\"a\" | \"b\" | \"c\" | \"d\" | \"e\" | \"f\" | \"g\" | \"h\" | \"i\" | \"j\", number>>",
-							"sourceLine": 89,
+							"sourceLine": 90,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -42812,7 +43628,7 @@
 							"kind": "variable",
 							"docComment": "Fitted lightness knobs for the palette (`palette_X_NN`) ramps.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", Readonly<LightnessRampKnobs>>>",
-							"sourceLine": 103,
+							"sourceLine": 104,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -42845,7 +43661,7 @@
 							"kind": "variable",
 							"docComment": "Fitted lightness knobs for the shade (surface) ramps.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", Readonly<LightnessRampKnobs>>>",
-							"sourceLine": 111,
+							"sourceLine": 112,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -42878,7 +43694,7 @@
 							"kind": "variable",
 							"docComment": "Fitted lightness knobs for the text ramps.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", Readonly<LightnessRampKnobs>>>",
-							"sourceLine": 119,
+							"sourceLine": 120,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -42911,7 +43727,7 @@
 							"kind": "variable",
 							"docComment": "The lightness ramp knobs by family, for lookups keyed on a `RampFamily`.",
 							"typeSignature": "Readonly<Record<RampFamily, Readonly<Record<\"dark\" | \"light\", Readonly<LightnessRampKnobs>>>>>",
-							"sourceLine": 127,
+							"sourceLine": 128,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -42977,7 +43793,7 @@
 							"kind": "variable",
 							"docComment": "Fitted chroma-curve knobs for the palette ramps. `curve` renders as the\nsingle `--chroma_curve`, which the neutral scales share; `chroma_min` and\n`chroma_max` are the palette's own.\n\nFitted so the requested curve hugs the effective post-clamp chroma instead\nof sitting above the caps through the mid-range - turning the knobs down\nresponds immediately. Turning `chroma_max` up remains cap-clamped by\ndesign; `--chroma_scale` is the push-past-the-gamut knob. The residual vs\nthe HSL palette this fit ports is small (mean ΔEOK ≈ 0.005 light / 0.003\ndark) except light stop 30 (−0.028 C): the symmetric mid-peaked model\ncan't reach the light cap envelope's peak there - recovering it would\ntake an asymmetric shape (a peak-position knob).",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", Readonly<ChromaRampKnobs>>>",
-							"sourceLine": 149,
+							"sourceLine": 150,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43010,7 +43826,7 @@
 							"kind": "variable",
 							"docComment": "Peak chroma of the neutral (shade/text) scales. The neutral rides the\npalette's chroma shape scaled to this peak: strong tint at mid lightness,\nnearly untinted near white and black.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", number>>",
-							"sourceLine": 167,
+							"sourceLine": 168,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43037,14 +43853,14 @@
 							"kind": "variable",
 							"docComment": "The ground's own chroma (`--shade_chroma_00`), added to the `shade_00`\nstop's shaped chroma. The chroma shape is 0 at the endpoints, so without\nit the page ground is untinted whatever `neutral_chroma` says; a theme\nwhose identity is a tinted page (paper, a lit night) sets it. 0 keeps the\ndefault ground neutral.",
 							"typeSignature": "0",
-							"sourceLine": 179
+							"sourceLine": 180
 						},
 						{
 							"name": "is_neutral_ground",
 							"kind": "function",
 							"docComment": "Whether a neutral stop is the page ground - the one stop\n`--shade_chroma_00` tints, shared by the emitter and both numeric twins.",
 							"typeSignature": "(family: \"text\" | \"shade\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): boolean",
-							"sourceLine": 185,
+							"sourceLine": 186,
 							"parameters": [
 								{
 									"name": "family",
@@ -43080,7 +43896,7 @@
 							"name": "ShadowTint",
 							"kind": "type",
 							"typeSignature": "ShadowTint",
-							"sourceLine": 190,
+							"sourceLine": 191,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "ShadowTint",
@@ -43103,7 +43919,7 @@
 							"kind": "variable",
 							"docComment": "Fitted neutral-hued tints for the shadow color endpoints: `bright` is the\nlight-scheme highlight and glow, `dim` the dark-scheme umbra and glow. Each\nrenders on `--hue_neutral`, so a retinted neutral recolors shadows with\nthe surfaces.",
 							"typeSignature": "Readonly<Record<ShadowTint, Readonly<{ lightness: number; chroma: number; }>>>",
-							"sourceLine": 198,
+							"sourceLine": 199,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43148,7 +43964,7 @@
 							"kind": "function",
 							"docComment": "Renders a `SHADOW_TINTS` entry as `oklch()` on the neutral hue.",
 							"typeSignature": "(tint: ShadowTint): string",
-							"sourceLine": 206,
+							"sourceLine": 207,
 							"parameters": [
 								{
 									"name": "tint",
@@ -43178,7 +43994,7 @@
 							"kind": "variable",
 							"docComment": "OKLCH lightness of the border color family (`--border_color_lightness`),\nfitted from the HSL palette. Sits mid-ramp so borders read against both\nthe page background and fills.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", number>>",
-							"sourceLine": 216,
+							"sourceLine": 217,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43205,7 +44021,7 @@
 							"kind": "variable",
 							"docComment": "The border family's chroma as a multiple of `--neutral_chroma` - borders\ncarry a stronger tint than surfaces so they read at low alpha. In CSS this\nis `--border_color_chroma: calc(var(--neutral_chroma) * <multiple>)`.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", number>>",
-							"sourceLine": 226,
+							"sourceLine": 227,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43232,7 +44048,7 @@
 							"kind": "variable",
 							"docComment": "Alpha (in %) of each border color stop. A perceptually-uniform curve -\nsmall gaps at the low end, large at the high end - boosted at the low end\nin dark mode where borders are less visible against dark backgrounds.\nStop 00 renders `transparent` and stop 100 opaque.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", Readonly<Record<\"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", number>>>>",
-							"sourceLine": 237,
+							"sourceLine": 238,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43275,7 +44091,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of the border family (without alpha).",
 							"typeSignature": "(scheme: \"dark\" | \"light\"): Oklch",
-							"sourceLine": 275,
+							"sourceLine": 276,
 							"parameters": [
 								{
 									"name": "scheme",
@@ -43293,7 +44109,7 @@
 							"kind": "variable",
 							"docComment": "Worst-hue safe chroma caps per stop: the largest chroma at that stop's\ndefault lightness that stays inside sRGB for every default hue (see `oklch_max_srgb_chroma` for the non-convexity caveat). Computed\nat design time from `PALETTE_HUES` + `PALETTE_LIGHTNESS_KNOBS`, floored to\nstay conservative; a drift test recomputes them from the color math.",
 							"typeSignature": "Readonly<Record<\"dark\" | \"light\", Readonly<Record<\"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", number>>>>",
-							"sourceLine": 287,
+							"sourceLine": 288,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Readonly",
@@ -43336,7 +44152,7 @@
 							"kind": "function",
 							"docComment": "Evaluates a lightness ramp at a stop.",
 							"typeSignature": "(knobs: LightnessRampKnobs, stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): number",
-							"sourceLine": 325,
+							"sourceLine": 326,
 							"parameters": [
 								{
 									"name": "knobs",
@@ -43358,7 +44174,7 @@
 							"kind": "function",
 							"docComment": "Evaluates the normalized chroma shape `pow(4t(1-t), curve)` at a stop -\n0 at the endpoints, 1 at the midpoint. The endpoint/midpoint guards mirror\n`render_chroma_shape_css`'s exact-literal short-circuits, keeping the twins\ntotal for any curve (JS would otherwise yield `0 ** 0 === 1`).",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", curve: number): number",
-							"sourceLine": 336,
+							"sourceLine": 337,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43380,7 +44196,7 @@
 							"kind": "function",
 							"docComment": "Evaluates the palette chroma at a stop: the knob curve clamped by that\nstop's worst-hue cap. The `--chroma_scale` multipliers apply above the\nclamp, in `ramp_color_oklch`. Defaults for a scheme come from\n`PALETTE_CHROMA_KNOBS[scheme]` and `PALETTE_CHROMA_CAPS[scheme][stop]`.",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", knobs: ChromaRampKnobs, cap: number): number",
-							"sourceLine": 350,
+							"sourceLine": 351,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43406,7 +44222,7 @@
 							"kind": "function",
 							"docComment": "The palette chroma for a resolved chroma shape: the knob range at that\nshape, clamped by the stop's cap - the arithmetic `ramp_chroma` and\n`ThemeResolver` share, the resolver supplying a shape a theme may\nhave pinned (`--chroma_shape_NN`).",
 							"typeSignature": "(shape: number, chroma_min: number, chroma_max: number, cap: number): number",
-							"sourceLine": 368,
+							"sourceLine": 369,
 							"parameters": [
 								{
 									"name": "shape",
@@ -43432,7 +44248,7 @@
 							"kind": "function",
 							"docComment": "Combines resolved palette-ramp inputs into a color stop's OKLCH - the one\nformula behind `--palette_X_NN`/`--<intent>_NN` (`chroma * chroma_scale *\nslot multiplier` at the ramp lightness), shared by the default twins below\nand `check_theme`'s theme-resolved gates so the two can't drift. Clamped\nas the browser clamps the `oklch()` it renders.",
 							"typeSignature": "(lightness: number, chroma: number, hue: number, chroma_scale?: number, slot_chroma_scale?: number): Oklch",
-							"sourceLine": 382,
+							"sourceLine": 383,
 							"parameters": [
 								{
 									"name": "lightness",
@@ -43464,7 +44280,7 @@
 							"kind": "function",
 							"docComment": "Combines resolved neutral-scale inputs into a shade/text stop's OKLCH: the\npeak `neutral_chroma` scaled by the shared chroma shape, plus the ground's\nown chroma for `shade_00` (`ground_chroma`, 0 elsewhere). The neutral twin\nof `ramp_color_oklch`, shared with `check_theme` for the same reason.",
 							"typeSignature": "(lightness: number, neutral_chroma: number, chroma_shape: number, hue: number, ground_chroma?: number): Oklch",
-							"sourceLine": 396,
+							"sourceLine": 397,
 							"parameters": [
 								{
 									"name": "lightness",
@@ -43495,7 +44311,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of a palette stop (`--palette_X_NN`).",
 							"typeSignature": "(letter: \"a\" | \"b\" | \"c\" | \"d\" | \"e\" | \"f\" | \"g\" | \"h\" | \"i\" | \"j\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"dark\" | \"light\"): Oklch",
-							"sourceLine": 407,
+							"sourceLine": 408,
 							"parameters": [
 								{
 									"name": "letter",
@@ -43529,7 +44345,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of a shade stop (`--shade_NN`).",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"dark\" | \"light\"): Oklch",
-							"sourceLine": 423,
+							"sourceLine": 424,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43555,7 +44371,7 @@
 							"kind": "function",
 							"docComment": "Computes the default OKLCH color of a text stop (`--text_NN`).",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"dark\" | \"light\"): Oklch",
-							"sourceLine": 435,
+							"sourceLine": 436,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43581,7 +44397,7 @@
 							"kind": "function",
 							"docComment": "Computes the worst-hue safe chroma cap at one lightness: the minimum\n`oklch_max_srgb_chroma` across the hues, floored to 4 decimals to stay\nconservative (the browser clips anything past it). The generalization of\nthe baked `PALETTE_CHROMA_CAPS` to an arbitrary hue set and lightness - a\ntheme's compile step calls it with each stop's own resolved lightness to\ndetect where the baked worst-hue envelope no longer fits.",
 							"typeSignature": "(hues: readonly number[], lightness: number): number",
-							"sourceLine": 454,
+							"sourceLine": 455,
 							"parameters": [
 								{
 									"name": "hues",
@@ -43601,7 +44417,7 @@
 							"kind": "type",
 							"docComment": "The lightness ramp families and their CSS variable name prefixes.",
 							"typeSignature": "RampFamily",
-							"sourceLine": 475,
+							"sourceLine": 476,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "RampFamily",
@@ -43629,7 +44445,7 @@
 							"kind": "function",
 							"docComment": "Renders the derived default of an intermediate lightness ramp stop, e.g.\n`--palette_lightness_30: calc(var(--palette_lightness_00) + (var(--palette_lightness_100) - var(--palette_lightness_00)) * pow(0.3, var(--palette_lightness_curve)))`.\nStops 00/100 are the endpoint knobs themselves and have no derived form.",
 							"typeSignature": "(family: RampFamily, stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 484,
+							"sourceLine": 485,
 							"parameters": [
 								{
 									"name": "family",
@@ -43672,7 +44488,7 @@
 							"kind": "function",
 							"docComment": "Renders the normalized chroma shape of a stop, shared by the palette chroma\nramp and the neutral scales: `pow(4t(1-t), --chroma_curve)`.\nExactly 0 at the endpoints and 1 at the midpoint.",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 498,
+							"sourceLine": 499,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43690,7 +44506,7 @@
 							"kind": "function",
 							"docComment": "Renders the capped default of a palette chroma ramp stop: the knob curve\nclamped by a worst-hue gamut cap - the baked per-scheme\n`PALETTE_CHROMA_CAPS` for the defaults, or one the theme compile step\nrecomputed. `--chroma_scale` multiplies outside this clamp, at the color\nstops.",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", cap: number): string",
-							"sourceLine": 514,
+							"sourceLine": 515,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43712,7 +44528,7 @@
 							"kind": "function",
 							"docComment": "Renders a color derived from the palette ramps at a stop for a hue slot -\nthe shared template behind palette stops and intent stops (`--accent_50`\nrenders with `var(--hue_accent)`). Both slot references are built from the\nslot name, so the hue (`--hue_<slot>`) and its chroma-character multiplier\n(`--palette_X_chroma_scale`/`--<intent>_chroma_scale`) stay paired in the\nemitted CSS by construction.",
 							"typeSignature": "(slot: \"a\" | \"b\" | \"c\" | \"d\" | \"e\" | \"f\" | \"g\" | \"h\" | \"i\" | \"j\" | \"accent\" | \"positive\" | \"negative\" | \"caution\" | \"info\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | ... 4 more ... | \"100\", alpha?: string | undefined): string",
-							"sourceLine": 532,
+							"sourceLine": 533,
 							"parameters": [
 								{
 									"name": "slot",
@@ -43821,7 +44637,7 @@
 							"kind": "function",
 							"docComment": "Renders the derived default of a neutral (shade/text) stop. The neutral\nrides the palette's chroma shape scaled by the `--neutral_chroma` peak;\nthe ground (`shade_00`) adds its own `--shade_chroma_00`, since the shape\nis 0 there.",
 							"typeSignature": "(family: \"text\" | \"shade\", stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\"): string",
-							"sourceLine": 551,
+							"sourceLine": 552,
 							"parameters": [
 								{
 									"name": "family",
@@ -43858,7 +44674,7 @@
 							"kind": "function",
 							"docComment": "Renders the derived default of a border color stop (`--border_color_NN`):\nthe border family's color at the stop's alpha from `BORDER_COLOR_ALPHAS`.\nThe color part is scheme-agnostic - the flip lives in the referenced knobs\n- so stops whose alpha matches across schemes render identically and\n`variables.ts` declares them single-slot.",
 							"typeSignature": "(stop: \"00\" | \"05\" | \"10\" | \"20\" | \"30\" | \"40\" | \"50\" | \"60\" | \"70\" | \"80\" | \"90\" | \"95\" | \"100\", scheme: \"dark\" | \"light\"): string",
-							"sourceLine": 566,
+							"sourceLine": 567,
 							"parameters": [
 								{
 									"name": "stop",
@@ -43882,7 +44698,6 @@
 					],
 					"moduleComment": "The derived color system's ramp model and fitted default knob values.\n\nThis is the numeric single source of truth for the OKLCH palette: the same\nconstants and formulas that `variables.ts` renders as pure-CSS\n`calc()`/`pow()`/`oklch()` defaults, evaluated here in TypeScript so\ndesign-time tests and the theme gates (`theme_check.ts`) can reason about\nthe palette without a browser.\n\nThe knob values were fitted against the pre-OKLCH HSL palette to minimize\nthe perceptual delta of the port. Model shapes:\n\n- lightness: `L(t) = L00 + (L100 - L00) * pow(t, curve)` with `t = stop/100`\n  - the endpoint knobs literally are stops 00/100, so the dark scheme flips\n  direction purely through knob values, and pinning an endpoint stop and\n  turning a knob are the same act\n- chroma: `C(t) = min + (max - min) * pow(4t(1-t), curve)`, a symmetric\n  mid-peaked curve, clamped per stop by the worst-hue gamut caps below\n- the neutral scale rides the same chroma shape scaled by a single knob",
 					"dependencies": [
-						"oklch.ts",
 						"variable_data.ts"
 					],
 					"dependents": [
@@ -45357,7 +46172,6 @@
 					],
 					"moduleComment": "The numeric-twin accessibility gates and the compile step for the derived\nOKLCH color system, over the resolution core in `theme_resolver.ts`:\n\n- `check_theme` evaluates the gamut, ramp-monotonicity, and contrast gates\n  against an arbitrary theme (the base theme's defaults included), reusing\n  the `ramps.ts` numeric twin, `oklch.ts` conversions, and `wcag.ts`\n  ratios. It is report-only and never throws.\n- `compile_theme` recomputes the per-stop worst-hue chroma caps for a\n  theme's own hues and the palette lightness each stop resolves to, emits\n  `palette_chroma_NN` overrides where the baked caps no longer fit, then\n  re-checks and lints with `validate_theme` (`theme_validate.ts`).",
 					"dependencies": [
-						"oklch.ts",
 						"ramps.ts",
 						"theme.ts",
 						"theme_resolver.ts",
@@ -47556,16 +48370,11 @@
 						{
 							"name": "BorderWidthVariant",
 							"kind": "type",
-							"typeSignature": "3 | 6 | 1 | 5 | 7 | 4 | 2 | 8 | 9",
+							"typeSignature": "6 | 1 | 3 | 5 | 7 | 4 | 2 | 8 | 9",
 							"sourceLine": 305,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
-									{
-										"kind": "literal",
-										"value": 3,
-										"text": "3"
-									},
 									{
 										"kind": "literal",
 										"value": 6,
@@ -47575,6 +48384,11 @@
 										"kind": "literal",
 										"value": 1,
 										"text": "1"
+									},
+									{
+										"kind": "literal",
+										"value": 3,
+										"text": "3"
 									},
 									{
 										"kind": "literal",
@@ -47918,16 +48732,11 @@
 						{
 							"name": "DurationVariant",
 							"kind": "type",
-							"typeSignature": "3 | 6 | 1 | 5 | 4 | 2",
+							"typeSignature": "6 | 1 | 3 | 5 | 4 | 2",
 							"sourceLine": 369,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
-									{
-										"kind": "literal",
-										"value": 3,
-										"text": "3"
-									},
 									{
 										"kind": "literal",
 										"value": 6,
@@ -47937,6 +48746,11 @@
 										"kind": "literal",
 										"value": 1,
 										"text": "1"
+									},
+									{
+										"kind": "literal",
+										"value": 3,
+										"text": "3"
 									},
 									{
 										"kind": "literal",
@@ -47966,7 +48780,7 @@
 							"name": "DURATIONS",
 							"kind": "variable",
 							"docComment": "Transition durations in seconds, from a UI beat to a slow ambient sweep.",
-							"typeSignature": "Readonly<Record<3 | 6 | 1 | 5 | 4 | 2, number>>",
+							"typeSignature": "Readonly<Record<6 | 1 | 3 | 5 | 4 | 2, number>>",
 							"sourceLine": 373,
 							"typeInfo": {
 								"kind": "reference",
@@ -48652,7 +49466,7 @@
 							"kind": "function",
 							"docComment": "Computes WCAG 2.x relative luminance of a gamma-encoded sRGB color.",
 							"typeSignature": "([r, g, b]: RgbUnit): number",
-							"sourceLine": 16,
+							"sourceLine": 17,
 							"parameters": [
 								{
 									"name": "__0",
@@ -48666,7 +49480,7 @@
 							"kind": "function",
 							"docComment": "Computes the WCAG 2.x contrast ratio between two gamma-encoded sRGB colors,\nin [1, 21] regardless of argument order.",
 							"typeSignature": "(a: RgbUnit, b: RgbUnit): number",
-							"sourceLine": 25,
+							"sourceLine": 26,
 							"parameters": [
 								{
 									"name": "a",
@@ -48680,10 +49494,7 @@
 							"returnType": "number"
 						}
 					],
-					"moduleComment": "WCAG 2.x relative luminance and contrast ratio.\n\nDesign-time and test use only, like `oklch.ts` - these power the contrast\ngates that assert readable default pairings (body text on surfaces, links,\nfocus outlines) across the derived palette.",
-					"dependencies": [
-						"oklch.ts"
-					],
+					"moduleComment": "WCAG 2.x relative luminance and contrast ratio.\n\nDesign-time and test use only, like the OKLCH conversions from\n`@fuzdev/fuz_util/oklch.ts` - these power the contrast gates that assert\nreadable default pairings (body text on surfaces, links, focus outlines)\nacross the derived palette.",
 					"dependents": [
 						"theme_check.ts"
 					]
@@ -56003,7 +56814,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.210.3",
+			"version": "0.212.0",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -56136,7 +56947,8 @@
 											}
 										]
 									},
-									"optional": true
+									"optional": true,
+									"description": "A decorative icon, hidden from assistive tech: a string, or a snippet given the\nstatus's icon. Defaults to the status's icon, and `null` or an empty string is none."
 								},
 								{
 									"name": "button_attrs",
@@ -56217,20 +57029,7 @@
 								{
 									"name": "icon",
 									"kind": "variable",
-									"typeSignature": "string | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "intrinsic",
-												"text": "string"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
+									"typeSignature": "string"
 								}
 							]
 						},
@@ -56716,6 +57515,12 @@
 									"description": "Prefixed with a slash and relative to the base path.\n`null` means none and `undefined` is detected from the current url."
 								},
 								{
+									"name": "root_path",
+									"type": "string",
+									"optional": true,
+									"description": "Where the root link goes, prefixed with a slash and relative to the base path,\ne.g. `'/docs'` on a home page, where linking to the root would link to itself.\nDefaults to the root."
+								},
+								{
 									"name": "base_path",
 									"type": "string",
 									"optional": true,
@@ -56760,47 +57565,614 @@
 									"name": "href",
 									"type": "string",
 									"optional": true,
-									"description": "Renders the card as an `<a>` when provided."
+									"description": "Renders the card as an `<a>`, marked `selected` while it leads to the current\npage, ignoring a trailing slash, the query, and the hash."
 								},
 								{
 									"name": "tag",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "align",
-									"type": "\"left\" | \"right\" | \"above\" | \"below\"",
+									"type": "keyof HTMLElementTagNameMap",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
 											{
 												"kind": "literal",
-												"value": "left",
-												"text": "\"left\""
+												"value": "object",
+												"text": "\"object\""
 											},
 											{
 												"kind": "literal",
-												"value": "right",
-												"text": "\"right\""
+												"value": "h2",
+												"text": "\"h2\""
 											},
 											{
 												"kind": "literal",
-												"value": "above",
-												"text": "\"above\""
+												"value": "h3",
+												"text": "\"h3\""
 											},
 											{
 												"kind": "literal",
-												"value": "below",
-												"text": "\"below\""
+												"value": "h4",
+												"text": "\"h4\""
+											},
+											{
+												"kind": "literal",
+												"value": "title",
+												"text": "\"title\""
+											},
+											{
+												"kind": "literal",
+												"value": "map",
+												"text": "\"map\""
+											},
+											{
+												"kind": "literal",
+												"value": "output",
+												"text": "\"output\""
+											},
+											{
+												"kind": "literal",
+												"value": "input",
+												"text": "\"input\""
+											},
+											{
+												"kind": "literal",
+												"value": "button",
+												"text": "\"button\""
+											},
+											{
+												"kind": "literal",
+												"value": "div",
+												"text": "\"div\""
+											},
+											{
+												"kind": "literal",
+												"value": "a",
+												"text": "\"a\""
+											},
+											{
+												"kind": "literal",
+												"value": "abbr",
+												"text": "\"abbr\""
+											},
+											{
+												"kind": "literal",
+												"value": "address",
+												"text": "\"address\""
+											},
+											{
+												"kind": "literal",
+												"value": "area",
+												"text": "\"area\""
+											},
+											{
+												"kind": "literal",
+												"value": "article",
+												"text": "\"article\""
+											},
+											{
+												"kind": "literal",
+												"value": "aside",
+												"text": "\"aside\""
+											},
+											{
+												"kind": "literal",
+												"value": "audio",
+												"text": "\"audio\""
+											},
+											{
+												"kind": "literal",
+												"value": "b",
+												"text": "\"b\""
+											},
+											{
+												"kind": "literal",
+												"value": "base",
+												"text": "\"base\""
+											},
+											{
+												"kind": "literal",
+												"value": "bdi",
+												"text": "\"bdi\""
+											},
+											{
+												"kind": "literal",
+												"value": "bdo",
+												"text": "\"bdo\""
+											},
+											{
+												"kind": "literal",
+												"value": "blockquote",
+												"text": "\"blockquote\""
+											},
+											{
+												"kind": "literal",
+												"value": "body",
+												"text": "\"body\""
+											},
+											{
+												"kind": "literal",
+												"value": "br",
+												"text": "\"br\""
+											},
+											{
+												"kind": "literal",
+												"value": "canvas",
+												"text": "\"canvas\""
+											},
+											{
+												"kind": "literal",
+												"value": "caption",
+												"text": "\"caption\""
+											},
+											{
+												"kind": "literal",
+												"value": "cite",
+												"text": "\"cite\""
+											},
+											{
+												"kind": "literal",
+												"value": "code",
+												"text": "\"code\""
+											},
+											{
+												"kind": "literal",
+												"value": "col",
+												"text": "\"col\""
+											},
+											{
+												"kind": "literal",
+												"value": "colgroup",
+												"text": "\"colgroup\""
+											},
+											{
+												"kind": "literal",
+												"value": "data",
+												"text": "\"data\""
+											},
+											{
+												"kind": "literal",
+												"value": "datalist",
+												"text": "\"datalist\""
+											},
+											{
+												"kind": "literal",
+												"value": "dd",
+												"text": "\"dd\""
+											},
+											{
+												"kind": "literal",
+												"value": "del",
+												"text": "\"del\""
+											},
+											{
+												"kind": "literal",
+												"value": "details",
+												"text": "\"details\""
+											},
+											{
+												"kind": "literal",
+												"value": "dfn",
+												"text": "\"dfn\""
+											},
+											{
+												"kind": "literal",
+												"value": "dialog",
+												"text": "\"dialog\""
+											},
+											{
+												"kind": "literal",
+												"value": "dl",
+												"text": "\"dl\""
+											},
+											{
+												"kind": "literal",
+												"value": "dt",
+												"text": "\"dt\""
+											},
+											{
+												"kind": "literal",
+												"value": "em",
+												"text": "\"em\""
+											},
+											{
+												"kind": "literal",
+												"value": "embed",
+												"text": "\"embed\""
+											},
+											{
+												"kind": "literal",
+												"value": "fieldset",
+												"text": "\"fieldset\""
+											},
+											{
+												"kind": "literal",
+												"value": "figcaption",
+												"text": "\"figcaption\""
+											},
+											{
+												"kind": "literal",
+												"value": "figure",
+												"text": "\"figure\""
+											},
+											{
+												"kind": "literal",
+												"value": "footer",
+												"text": "\"footer\""
+											},
+											{
+												"kind": "literal",
+												"value": "form",
+												"text": "\"form\""
+											},
+											{
+												"kind": "literal",
+												"value": "h1",
+												"text": "\"h1\""
+											},
+											{
+												"kind": "literal",
+												"value": "h5",
+												"text": "\"h5\""
+											},
+											{
+												"kind": "literal",
+												"value": "h6",
+												"text": "\"h6\""
+											},
+											{
+												"kind": "literal",
+												"value": "head",
+												"text": "\"head\""
+											},
+											{
+												"kind": "literal",
+												"value": "header",
+												"text": "\"header\""
+											},
+											{
+												"kind": "literal",
+												"value": "hgroup",
+												"text": "\"hgroup\""
+											},
+											{
+												"kind": "literal",
+												"value": "hr",
+												"text": "\"hr\""
+											},
+											{
+												"kind": "literal",
+												"value": "html",
+												"text": "\"html\""
+											},
+											{
+												"kind": "literal",
+												"value": "i",
+												"text": "\"i\""
+											},
+											{
+												"kind": "literal",
+												"value": "iframe",
+												"text": "\"iframe\""
+											},
+											{
+												"kind": "literal",
+												"value": "img",
+												"text": "\"img\""
+											},
+											{
+												"kind": "literal",
+												"value": "ins",
+												"text": "\"ins\""
+											},
+											{
+												"kind": "literal",
+												"value": "kbd",
+												"text": "\"kbd\""
+											},
+											{
+												"kind": "literal",
+												"value": "label",
+												"text": "\"label\""
+											},
+											{
+												"kind": "literal",
+												"value": "legend",
+												"text": "\"legend\""
+											},
+											{
+												"kind": "literal",
+												"value": "li",
+												"text": "\"li\""
+											},
+											{
+												"kind": "literal",
+												"value": "link",
+												"text": "\"link\""
+											},
+											{
+												"kind": "literal",
+												"value": "main",
+												"text": "\"main\""
+											},
+											{
+												"kind": "literal",
+												"value": "mark",
+												"text": "\"mark\""
+											},
+											{
+												"kind": "literal",
+												"value": "menu",
+												"text": "\"menu\""
+											},
+											{
+												"kind": "literal",
+												"value": "meta",
+												"text": "\"meta\""
+											},
+											{
+												"kind": "literal",
+												"value": "meter",
+												"text": "\"meter\""
+											},
+											{
+												"kind": "literal",
+												"value": "nav",
+												"text": "\"nav\""
+											},
+											{
+												"kind": "literal",
+												"value": "noscript",
+												"text": "\"noscript\""
+											},
+											{
+												"kind": "literal",
+												"value": "ol",
+												"text": "\"ol\""
+											},
+											{
+												"kind": "literal",
+												"value": "optgroup",
+												"text": "\"optgroup\""
+											},
+											{
+												"kind": "literal",
+												"value": "option",
+												"text": "\"option\""
+											},
+											{
+												"kind": "literal",
+												"value": "p",
+												"text": "\"p\""
+											},
+											{
+												"kind": "literal",
+												"value": "picture",
+												"text": "\"picture\""
+											},
+											{
+												"kind": "literal",
+												"value": "pre",
+												"text": "\"pre\""
+											},
+											{
+												"kind": "literal",
+												"value": "progress",
+												"text": "\"progress\""
+											},
+											{
+												"kind": "literal",
+												"value": "q",
+												"text": "\"q\""
+											},
+											{
+												"kind": "literal",
+												"value": "rp",
+												"text": "\"rp\""
+											},
+											{
+												"kind": "literal",
+												"value": "rt",
+												"text": "\"rt\""
+											},
+											{
+												"kind": "literal",
+												"value": "ruby",
+												"text": "\"ruby\""
+											},
+											{
+												"kind": "literal",
+												"value": "s",
+												"text": "\"s\""
+											},
+											{
+												"kind": "literal",
+												"value": "samp",
+												"text": "\"samp\""
+											},
+											{
+												"kind": "literal",
+												"value": "script",
+												"text": "\"script\""
+											},
+											{
+												"kind": "literal",
+												"value": "search",
+												"text": "\"search\""
+											},
+											{
+												"kind": "literal",
+												"value": "section",
+												"text": "\"section\""
+											},
+											{
+												"kind": "literal",
+												"value": "select",
+												"text": "\"select\""
+											},
+											{
+												"kind": "literal",
+												"value": "slot",
+												"text": "\"slot\""
+											},
+											{
+												"kind": "literal",
+												"value": "small",
+												"text": "\"small\""
+											},
+											{
+												"kind": "literal",
+												"value": "source",
+												"text": "\"source\""
+											},
+											{
+												"kind": "literal",
+												"value": "span",
+												"text": "\"span\""
+											},
+											{
+												"kind": "literal",
+												"value": "strong",
+												"text": "\"strong\""
+											},
+											{
+												"kind": "literal",
+												"value": "style",
+												"text": "\"style\""
+											},
+											{
+												"kind": "literal",
+												"value": "sub",
+												"text": "\"sub\""
+											},
+											{
+												"kind": "literal",
+												"value": "summary",
+												"text": "\"summary\""
+											},
+											{
+												"kind": "literal",
+												"value": "sup",
+												"text": "\"sup\""
+											},
+											{
+												"kind": "literal",
+												"value": "table",
+												"text": "\"table\""
+											},
+											{
+												"kind": "literal",
+												"value": "tbody",
+												"text": "\"tbody\""
+											},
+											{
+												"kind": "literal",
+												"value": "td",
+												"text": "\"td\""
+											},
+											{
+												"kind": "literal",
+												"value": "template",
+												"text": "\"template\""
+											},
+											{
+												"kind": "literal",
+												"value": "textarea",
+												"text": "\"textarea\""
+											},
+											{
+												"kind": "literal",
+												"value": "tfoot",
+												"text": "\"tfoot\""
+											},
+											{
+												"kind": "literal",
+												"value": "th",
+												"text": "\"th\""
+											},
+											{
+												"kind": "literal",
+												"value": "thead",
+												"text": "\"thead\""
+											},
+											{
+												"kind": "literal",
+												"value": "time",
+												"text": "\"time\""
+											},
+											{
+												"kind": "literal",
+												"value": "tr",
+												"text": "\"tr\""
+											},
+											{
+												"kind": "literal",
+												"value": "track",
+												"text": "\"track\""
+											},
+											{
+												"kind": "literal",
+												"value": "u",
+												"text": "\"u\""
+											},
+											{
+												"kind": "literal",
+												"value": "ul",
+												"text": "\"ul\""
+											},
+											{
+												"kind": "literal",
+												"value": "var",
+												"text": "\"var\""
+											},
+											{
+												"kind": "literal",
+												"value": "video",
+												"text": "\"video\""
+											},
+											{
+												"kind": "literal",
+												"value": "wbr",
+												"text": "\"wbr\""
 											}
 										]
 									},
 									"optional": true,
-									"defaultValue": "'left'"
+									"description": "The element to render, defaulting to `a` with an `href` and `div` without."
+								},
+								{
+									"name": "align",
+									"type": "\"top\" | \"start\" | \"end\" | \"bottom\"",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "top",
+												"text": "\"top\""
+											},
+											{
+												"kind": "literal",
+												"value": "start",
+												"text": "\"start\""
+											},
+											{
+												"kind": "literal",
+												"value": "end",
+												"text": "\"end\""
+											},
+											{
+												"kind": "literal",
+												"value": "bottom",
+												"text": "\"bottom\""
+											}
+										]
+									},
+									"optional": true,
+									"description": "The card's layout: where the icon sits, at the inline start or end beside the\ncontent or above or below it, and how the content aligns, toward the end for\n`end` and centered for `top` and `bottom`.",
+									"defaultValue": "'start'"
 								},
 								{
 									"name": "icon",
-									"type": "string | Snippet<[]>",
+									"type": "string | Snippet<[]> | null",
 									"typeInfo": {
 										"kind": "union",
 										"members": [
@@ -56816,10 +58188,15 @@
 														"kind": "tuple"
 													}
 												]
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
 											}
 										]
 									},
-									"optional": true
+									"optional": true,
+									"description": "A decorative icon, hidden from assistive tech: a string like an emoji or a glyph,\nor a snippet for anything else. None when absent, null, or empty."
 								},
 								{
 									"name": "a_attrs",
@@ -56834,6 +58211,9 @@
 							],
 							"acceptsChildren": true
 						}
+					],
+					"dependencies": [
+						"page_helpers.ts"
 					]
 				},
 				{
@@ -59337,6 +60717,7 @@
 						"contextmenu_state.svelte.ts",
 						"ContextmenuIcon.svelte",
 						"icons.ts",
+						"page_helpers.ts",
 						"Svg.svelte",
 						"svg.ts"
 					],
@@ -64229,6 +65610,30 @@
 									}
 								},
 								{
+									"name": "primary_nav",
+									"type": "Snippet<[]>",
+									"optional": true,
+									"description": "Rendered in the primary nav after the breadcrumb, at its end, e.g. links to the\nsite's other sections."
+								},
+								{
+									"name": "secondary_nav_header",
+									"type": "Snippet<[]>",
+									"optional": true,
+									"description": "Rendered above the tome menu in the secondary nav, in the sidebar and in the\nmenu dialog of narrow screens, where the primary nav has little room."
+								},
+								{
+									"name": "secondary_nav_footer",
+									"type": "Snippet<[]>",
+									"optional": true,
+									"description": "Rendered below the tome menu in the secondary nav, in the sidebar and in the menu dialog."
+								},
+								{
+									"name": "footer",
+									"type": "Snippet<[]>",
+									"optional": true,
+									"description": "Replaces the default footer, a `DocsFooter` with the site's repo and a link to\nfuz.dev, e.g. for a site that isn't part of the Fuz stack."
+								},
+								{
 									"name": "children",
 									"type": "Snippet<[]>"
 								}
@@ -65547,6 +66952,18 @@
 											"name": "Tome"
 										}
 									}
+								},
+								{
+									"name": "header",
+									"type": "Snippet<[]>",
+									"optional": true,
+									"description": "Rendered above the menu, e.g. links to the site's other sections."
+								},
+								{
+									"name": "footer",
+									"type": "Snippet<[]>",
+									"optional": true,
+									"description": "Rendered below the menu."
 								},
 								{
 									"name": "sidebar",
@@ -68268,6 +69685,37 @@
 						"DocsLink.svelte",
 						"DocsTertiaryNav.svelte",
 						"LibraryDetail.svelte"
+					]
+				},
+				{
+					"path": "page_helpers.ts",
+					"declarations": [
+						{
+							"name": "href_is_current_page",
+							"kind": "function",
+							"docComment": "Whether `href` leads to the page at `url`: the same origin and pathname, with a\ntrailing slash, the query, and the hash ignored. A relative `href` resolves\nagainst `url`, as a browser resolves it.",
+							"typeSignature": "(href: string, url: URL): boolean",
+							"sourceLine": 20,
+							"parameters": [
+								{
+									"name": "href",
+									"type": "string",
+									"description": "a link's `href`, absolute or relative"
+								},
+								{
+									"name": "url",
+									"type": "URL",
+									"description": "the current page's url, e.g. `page.url`"
+								}
+							],
+							"returnType": "boolean",
+							"returnDescription": "`false` for an `href` that isn't a valid url"
+						}
+					],
+					"moduleComment": "Helpers for relating links to the current page.",
+					"dependents": [
+						"Card.svelte",
+						"ContextmenuLinkEntry.svelte"
 					]
 				},
 				{
@@ -71227,7 +72675,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.129.0",
+			"version": "0.130.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -84157,7 +85605,7 @@
 							"kind": "interface",
 							"docComment": "Auth identity attached to a single WebSocket connection.\n\nOne record per connection. `token_hash` is set for cookie-session\nconnections, `api_token_id` for bearer (`api_token`) connections, and\nboth are null for daemon-token connections (reachable only via\n`BackendWebsocketTransport.close_sockets_for_account`).",
 							"typeSignature": "ConnectionIdentity",
-							"sourceLine": 112,
+							"sourceLine": 113,
 							"members": [
 								{
 									"name": "token_hash",
@@ -84214,7 +85662,7 @@
 							"kind": "interface",
 							"docComment": "Structural capability for transports that can broadcast with a\nper-connection ACL predicate. Named separately from `Transport` so the\nbroadcast API can feature-detect without importing a concrete class.\n\n`ConnectionIdentity` is the auth-gated identity shape used today. When a\nsecond implementation (e.g. SSE backend transport) lands with a\ndifferent identity, consider parameterizing on `TIdentity`.",
 							"typeSignature": "FilterableBroadcastTransport",
-							"sourceLine": 130,
+							"sourceLine": 131,
 							"extends": [
 								"Transport"
 							],
@@ -84246,7 +85694,7 @@
 							"kind": "function",
 							"docComment": "Type guard for `FilterableBroadcastTransport`.",
 							"typeSignature": "(transport: Transport): transport is FilterableBroadcastTransport",
-							"sourceLine": 138,
+							"sourceLine": 139,
 							"parameters": [
 								{
 									"name": "transport",
@@ -84260,14 +85708,14 @@
 							"kind": "variable",
 							"docComment": "Default per-account WebSocket connection cap, applied by\n`BackendWebsocketTransport` unless overridden via\n`BackendWebsocketTransportOptions.max_connections_per_account`.\n\nMatches the account-wide ceiling the audit SSE cap implies (the default\nsession cap, `DEFAULT_MAX_SESSIONS`, times `AUDIT_LOG_SSE_MAX_PER_SCOPE`\nstreams per session) — generous enough that a user's tabs and tools never\nmeet it; only an abusive or leaking client does. The twin of the Rust\nspine's `DEFAULT_MAX_CONNECTIONS_PER_ACCOUNT`.",
 							"typeSignature": "50",
-							"sourceLine": 155
+							"sourceLine": 156
 						},
 						{
 							"name": "BackendWebsocketTransportOptions",
 							"kind": "interface",
 							"docComment": "Options for `BackendWebsocketTransport`.",
 							"typeSignature": "BackendWebsocketTransportOptions",
-							"sourceLine": 158,
+							"sourceLine": 159,
 							"members": [
 								{
 									"name": "max_connections_per_account",
@@ -84315,7 +85763,7 @@
 						{
 							"name": "BackendWebsocketTransport",
 							"kind": "class",
-							"sourceLine": 204,
+							"sourceLine": 205,
 							"implements": [
 								"FilterableBroadcastTransport"
 							],
@@ -84941,7 +86389,7 @@
 							]
 						}
 					],
-					"moduleComment": "Backend WebSocket transport — manages server-side WebSocket connections\nwith session tracking, revocation support, a per-account connection cap,\nand two-phase registration.\n\n## Two-phase registration\n\nAn upgrade resolves its credential before the socket exists, and every\nrevocation closes the connections *registered* under the revoked\ncredential. A one-step registration therefore has a window: a revocation\nlanding between the credential check and the insert closes nothing, and the\nupgrade is admitted on a dead credential — for the socket's lifetime, since\nper-message dispatch never re-reads the session or token.\n\nRegistration is split to close it:\n\n1. `BackendWebsocketTransport.register_pending` inserts the entry\n   **un-admitted**. It is closeable from that instant — `close_sockets_for_*`\n   match pending entries deliberately — and is otherwise inert: it evicts\n   nothing, the cap does not count it, no broadcast / `send_to_account` /\n   `request_connection` reaches it, and the count accessors and\n   `is_registered` do not see it (`get_pending_connection_count` does).\n2. The caller re-checks the credential against the database\n   (`revalidate_resolved_auth` in `auth/resolved_auth.ts`).\n3. `BackendWebsocketTransport.admit` flips the entry to admitted — or\n   refuses when a revocation closed it in the meantime, evicting nothing.\n   The cap's eviction happens here, so a connection that is never admitted\n   never closes a live one, and any number of pending registrations on one\n   account leave its admitted connections alone.\n\nA revocation whose close ran **after** step 1 finds the entry, pending or\nadmitted, and closes it; one that **committed before** step 2 is seen by the\nre-read, which refuses. Nothing is delivered to a pending entry rather than\nqueued for it, so a refusal never has to promise that a queue a revoked\ncredential would have read is dropped unread, and a broadcast's returned\ncount names only connections that can receive it. The cost is a slightly\nwider blind spot at connect: a server-initiated message sent between the\nhandshake and admission — one credential re-check later — is not delivered,\njust as one sent before the handshake is not.\n\n`add_connection` stays as the one-step form (register and admit together)\nfor a connection with no revocable credential behind it — tests and\nharnesses that register a socket directly. An upgrade that authenticated a session or token\nuses the two-phase form. The twin of the Rust `fuz_realtime`\n`ConnectionRegistry`.\n\n## Shutdown\n\n`close_all_sockets` — the close `AppServer.close` runs — closes every\nconnection, pending or admitted, with `WS_CLOSE_GOING_AWAY`, and leaves the\ntransport **closing**: from then on every registration is born closed. A\n`register_pending` or `add_connection` inserts nothing — it aborts the\ncaller's controller and closes the socket with `WS_CLOSE_GOING_AWAY` at once\n— so an upgrade still in flight when the server shuts down is closed rather\nthan outliving it. An upgrade registered before the close-all is closed by\nit; one registered after is born closed; none is admitted. The flag is set\nin the same synchronous step that closes the live connections, so an `admit`\nthat finds its entry gone and reads `is_closing()` sees the shutdown, never\na revocation. Closing is permanent: a closed transport hosts no further\nconnections.",
+					"moduleComment": "Backend WebSocket transport — manages server-side WebSocket connections\nwith session tracking, revocation support, a per-account connection cap,\nand two-phase registration.\n\n## Two-phase registration\n\nAn upgrade resolves its credential before the socket exists, and every\nrevocation closes the connections *registered* under the revoked\ncredential. A one-step registration therefore has a window: a revocation\nlanding between the credential check and the insert closes nothing, and the\nupgrade is admitted on a dead credential — for the socket's lifetime, since\nper-message dispatch never re-reads the session or token.\n\nRegistration is split to close it:\n\n1. `BackendWebsocketTransport.register_pending` inserts the entry\n   **un-admitted**. It is closeable from that instant — `close_sockets_for_*`\n   match pending entries deliberately — and is otherwise inert: it evicts\n   nothing, the cap does not count it, no broadcast / `send_to_account` /\n   `request_connection` reaches it, and the count accessors and\n   `is_registered` do not see it (`get_pending_connection_count` does).\n2. The caller re-checks the credential against the database\n   (`revalidate_resolved_auth` in `auth/resolved_auth.ts`).\n3. `BackendWebsocketTransport.admit` flips the entry to admitted — or\n   refuses when a revocation closed it in the meantime, evicting nothing.\n   The cap's eviction happens here, so a connection that is never admitted\n   never closes a live one, and any number of pending registrations on one\n   account leave its admitted connections alone.\n\nA revocation whose close ran **after** step 1 finds the entry, pending or\nadmitted, and closes it; one that **committed before** step 2 is seen by the\nre-read, which refuses. Nothing is delivered to a pending entry rather than\nqueued for it, so a refusal never has to promise that a queue a revoked\ncredential would have read is dropped unread, and a broadcast's returned\ncount names only connections that can receive it. The cost is a slightly\nwider blind spot at connect: a server-initiated message sent between the\nhandshake and admission — one credential re-check later — is not delivered,\njust as one sent before the handshake is not.\n\n`add_connection` stays as the one-step form (register and admit together)\nfor a connection with no revocable credential behind it — tests and\nharnesses that register a socket directly. An upgrade that authenticated a session or token\nuses the two-phase form. The twin of the Rust `fuz_realtime`\n`ConnectionRegistry`.\n\n## Shutdown\n\n`close_all_sockets` — the close `AppServer.close` runs — closes every\nconnection, pending or admitted, with `WS_CLOSE_GOING_AWAY`, and leaves the\ntransport **closing**: from then on every registration is born closed. A\n`register_pending` or `add_connection` inserts nothing — it aborts the\ncaller's controller and closes the socket with `WS_CLOSE_GOING_AWAY` at once\n— so an upgrade still in flight when the server shuts down is closed rather\nthan outliving it. An upgrade registered before the close-all is closed by\nit; one registered after is born closed; none is admitted. The flag is set\nin the same synchronous step that closes the live connections, so an `admit`\nthat finds its entry gone and reads `is_closing()` sees the shutdown — a\nshutdown is never read as a revocation (a revocation the shutdown overtook\nreads as the shutdown). Closing is permanent: a closed transport hosts no\nfurther connections.",
 					"dependencies": [
 						"actions/peer_request.ts",
 						"actions/transports.ts",
@@ -148984,11 +150432,11 @@
 									"name": "serve",
 									"kind": "function",
 									"docComment": "Bind `app.fetch` to `port` on `hostname`; return a `ServeHandle`.",
-									"typeSignature": "(options: { fetch: (request: Request, env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }): ServeHandle",
+									"typeSignature": "(options: { fetch: (request: Request, Env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }): ServeHandle",
 									"parameters": [
 										{
 											"name": "options",
-											"type": "{ fetch: (request: Request, env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }"
+											"type": "{ fetch: (request: Request, Env?: unknown, executionCtx?: ExecutionContext | undefined) => Response | Promise<Response>; port: number; hostname: string; }"
 										}
 									],
 									"returnType": "ServeHandle"
@@ -207171,9 +208619,10 @@
 								},
 								{
 									"name": "save_shortcut",
-									"type": "\"focused\" | \"page\"",
+									"type": "SaveShortcutScope",
 									"typeInfo": {
 										"kind": "union",
+										"alias": "SaveShortcutScope",
 										"members": [
 											{
 												"kind": "literal",
@@ -207188,7 +208637,7 @@
 										]
 									},
 									"optional": true,
-									"description": "Where Ctrl+S / Cmd+S triggers `onsave`: `'focused'` only while this\neditor's textarea has focus, `'page'` from anywhere on the page unless a\nfocused editor handles it first. Use `'page'` only for the one main\neditor of a page.",
+									"description": "Where Ctrl+S / Cmd+S triggers `onsave` — see `SaveShortcutScope`.",
 									"defaultValue": "'focused'"
 								}
 							],
@@ -207199,7 +208648,8 @@
 						"ClearRestoreButton.svelte",
 						"ContentStats.svelte",
 						"helpers.ts",
-						"Icon.svelte"
+						"Icon.svelte",
+						"save_shortcut.ts"
 					],
 					"dependents": [
 						"ChatThread.svelte",
@@ -207765,7 +209215,7 @@
 								{
 									"name": "deleted_on_disk",
 									"kind": "variable",
-									"docComment": "The file is gone from disk, but this diskfile is kept because a tab holds\nunsaved edits for it. Transient client state, not serialized — cleared\nwhen the path reappears on disk.",
+									"docComment": "The file is gone from disk, but this diskfile is kept because a tab holds\nunsaved edits for it. Transient client state, not serialized — cleared\nwhen the path reappears on disk. Set it through\n`Diskfiles.set_deleted_on_disk`, which keeps the index's directories in step.",
 									"typeSignature": "boolean",
 									"reactivity": "$state.raw"
 								},
@@ -207975,7 +209425,7 @@
 							"name": "DiskfileSchema",
 							"kind": "variable",
 							"typeSignature": "ZodCustom<Diskfile, Diskfile>",
-							"sourceLine": 65,
+							"sourceLine": 66,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "ZodCustom",
@@ -208010,6 +209460,7 @@
 						"DiskfileExplorer.svelte",
 						"DiskfileInfo.svelte",
 						"DiskfileListitem.svelte",
+						"DiskfileMarkdownView.svelte",
 						"DiskfilePartView.svelte",
 						"DiskfilePickerDialog.svelte",
 						"diskfiles.svelte.ts",
@@ -208024,9 +209475,9 @@
 						{
 							"name": "DiskfileContentKind",
 							"kind": "type",
-							"docComment": "`audio` gets the player, `transcript` (a transcription's sidecar) the\nsegment view, and `other` the text editor.",
+							"docComment": "`audio` gets the player, `transcript` (a transcription's sidecar) the\nsegment view, `markdown` the source beside its preview, and `other` the\ntext editor.",
 							"typeSignature": "DiskfileContentKind",
-							"sourceLine": 14,
+							"sourceLine": 16,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "DiskfileContentKind",
@@ -208043,6 +209494,11 @@
 									},
 									{
 										"kind": "literal",
+										"value": "markdown",
+										"text": "\"markdown\""
+									},
+									{
+										"kind": "literal",
 										"value": "other",
 										"text": "\"other\""
 									}
@@ -208054,7 +209510,24 @@
 							"kind": "variable",
 							"docComment": "Extensions viewed as audio. Each is one the backend serves with a media\ntype (twin of `media_content_type` in `zzz_server`'s `file_bytes.rs`), so\nan `<audio>` element can play it from the byte route. `webm` is here\nbecause that's what a recording is; a `.webm` holding video plays as its\naudio track.",
 							"typeSignature": "ReadonlySet<string>",
-							"sourceLine": 23,
+							"sourceLine": 25,
+							"typeInfo": {
+								"kind": "reference",
+								"name": "ReadonlySet",
+								"typeArgs": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									}
+								]
+							}
+						},
+						{
+							"name": "MARKDOWN_EXTENSIONS",
+							"kind": "variable",
+							"docComment": "Extensions viewed as markdown.",
+							"typeSignature": "ReadonlySet<string>",
+							"sourceLine": 39,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "ReadonlySet",
@@ -208071,7 +209544,7 @@
 							"kind": "function",
 							"docComment": "The content kind of the file at `path`, by its extension (case-insensitive).",
 							"typeSignature": "(path: string): DiskfileContentKind",
-							"sourceLine": 41,
+							"sourceLine": 46,
 							"parameters": [
 								{
 									"name": "path",
@@ -208096,6 +209569,11 @@
 									},
 									{
 										"kind": "literal",
+										"value": "markdown",
+										"text": "\"markdown\""
+									},
+									{
+										"kind": "literal",
 										"value": "other",
 										"text": "\"other\""
 									}
@@ -208105,9 +209583,12 @@
 					],
 					"moduleComment": "What a file is, as far as picking a view for it goes — from its extension\nalone, since the file index says nothing about a file's type.",
 					"dependencies": [
+						"path_lang.ts",
 						"transcript_types.ts"
 					],
 					"dependents": [
+						"DiskfileContextmenu.svelte",
+						"diskfiles.svelte.ts",
 						"DiskfileView.svelte"
 					]
 				},
@@ -208119,28 +209600,28 @@
 							"kind": "variable",
 							"docComment": "Label of the history entry holding a file's draft.",
 							"typeSignature": "\"Unsaved edit\"",
-							"sourceLine": 14
+							"sourceLine": 15
 						},
 						{
 							"name": "HISTORY_LABEL_DISK_CHANGE",
 							"kind": "variable",
 							"docComment": "Label of a history entry recording a disk state.",
 							"typeSignature": "\"Disk change\"",
-							"sourceLine": 16
+							"sourceLine": 17
 						},
 						{
 							"name": "HISTORY_LABEL_DISCARDED_EDIT",
 							"kind": "variable",
 							"docComment": "Label of a draft set aside unsaved (see `DiskfileEditorState`).",
 							"typeSignature": "\"Discarded edit\"",
-							"sourceLine": 18
+							"sourceLine": 19
 						},
 						{
 							"name": "DiskfileSaveOptions",
 							"kind": "interface",
 							"docComment": "Options for `DiskfileEditorState.save_changes`.",
 							"typeSignature": "DiskfileSaveOptions",
-							"sourceLine": 62,
+							"sourceLine": 63,
 							"members": [
 								{
 									"name": "overwrite",
@@ -208155,7 +209636,7 @@
 							"name": "DiskfileEditorState",
 							"kind": "class",
 							"docComment": "The editing state of one file, shared by every view of it — the `/files`\neditor, file-part editors, tabs — and kept while none is mounted, like a\nVS Code text model. Get it with `Diskfiles.get_editor_state`, which creates\nit on first use and keeps it until the diskfile is removed; views never\nown it.\n\nIt holds the file's `DiskfileHistory`, and records every change of the\nfile's content on disk into it (`Diskfiles.upsert` calls\n`check_disk_changes`), whether or not an editor shows it:\n\n- The editor shows the selected history entry (`current_content`), or the\n  disk content when none is selected. A clean editor follows the disk.\n- Editing keeps the file's one draft: a single unsaved-edit entry, updated\n  in place and re-dated on each edit. Editing from another entry (an older\n  state picked from the history) starts a new draft and sets the old one\n  aside as a discarded-edit entry, so its text stays restorable.\n- When the disk changes under a draft, or under a picked entry, the edit is\n  kept and `has_conflict` is set: saving stops until the user chooses to\n  overwrite (`save_changes({overwrite: true})`) or reload from disk\n  (`discard_draft`). Our own save's broadcast never counts — the disk\n  then holds the edit, which settles it. The check is frontend-only: an\n  external write landing after the backend received our save but before\n  its broadcast reached us isn't seen as a conflict.",
-							"sourceLine": 95,
+							"sourceLine": 96,
 							"members": [
 								{
 									"name": "app",
@@ -208264,6 +209745,63 @@
 									}
 								},
 								{
+									"name": "markdown_view_mode_choice",
+									"kind": "variable",
+									"docComment": "The markdown view's mode the user chose for this file, `null` until they\nchoose one. Kept with the rest of the file's editing state, so it lasts\nacross tab switches and reopening for as long as the app keeps the file\n(in memory, like its drafts). See `markdown_view_mode`.",
+									"typeSignature": "MarkdownViewMode | null",
+									"reactivity": "$state.raw",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "union",
+												"alias": "MarkdownViewMode",
+												"members": [
+													{
+														"kind": "literal",
+														"value": "split",
+														"text": "\"split\""
+													},
+													{
+														"kind": "literal",
+														"value": "preview",
+														"text": "\"preview\""
+													},
+													{
+														"kind": "literal",
+														"value": "source",
+														"text": "\"source\""
+													}
+												]
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
+									"name": "markdown_pending_fragment",
+									"kind": "variable",
+									"docComment": "The id of a heading the markdown view reveals once it shows this file,\nthen clears — set by following a link with a `#fragment` here from\nanother file (`Diskfiles.open_path`).",
+									"typeSignature": "string | null",
+									"reactivity": "$state.raw",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
 									"name": "original_content",
 									"kind": "variable",
 									"typeSignature": "string | null",
@@ -208307,6 +209845,37 @@
 										"readonly"
 									],
 									"reactivity": "$derived"
+								},
+								{
+									"name": "markdown_view_mode",
+									"kind": "variable",
+									"docComment": "The mode the markdown view shows this file in: the user's choice, else\n`split`, or `preview` while the content isn't loaded (read-only).",
+									"typeSignature": "MarkdownViewMode",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived",
+									"typeInfo": {
+										"kind": "union",
+										"alias": "MarkdownViewMode",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "split",
+												"text": "\"split\""
+											},
+											{
+												"kind": "literal",
+												"value": "preview",
+												"text": "\"preview\""
+											},
+											{
+												"kind": "literal",
+												"value": "source",
+												"text": "\"source\""
+											}
+										]
+									}
 								},
 								{
 									"name": "has_changes",
@@ -208737,7 +210306,8 @@
 						"diskfile_history.svelte.ts",
 						"diskfile_types.ts",
 						"frontend.svelte.ts",
-						"helpers.ts"
+						"helpers.ts",
+						"markdown_view_mode.ts"
 					],
 					"dependents": [
 						"DiskfileActions.svelte",
@@ -208824,11 +210394,31 @@
 							"returnDescription": "`path` relative to `parent` if it's inside it, else `path`"
 						},
 						{
+							"name": "to_file_directories",
+							"kind": "function",
+							"docComment": "The directories holding the file at `path`, each with a trailing `/`:\nevery ancestor from its parent up to its root `source_dir`, inclusive,\ninnermost first — none when `path` isn't under `source_dir`. The file\nindex lists only files, so a folder exists for it exactly when it holds one.",
+							"typeSignature": "(path: string, source_dir: string): string[]",
+							"sourceLine": 79,
+							"parameters": [
+								{
+									"name": "path",
+									"type": "string",
+									"description": "an indexed file's path"
+								},
+								{
+									"name": "source_dir",
+									"type": "string",
+									"description": "the root it's indexed under, with a trailing `/`"
+								}
+							],
+							"returnType": "string[]"
+						},
+						{
 							"name": "disknode_to_diskfile_json",
 							"kind": "function",
 							"docComment": "Converts a `SerializableDisknode` to the `DiskfileJson` format.",
 							"typeSignature": "(disknode: { id: string & $brand<\"DiskfilePath\">; source_dir: string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">; contents: string | null; ctime: number | null; mtime: number | null; dependents: [...][]; dependencies: [...][]; }, existing_id?: string & $brand<...>): { ...; }",
-							"sourceLine": 76,
+							"sourceLine": 97,
 							"parameters": [
 								{
 									"name": "disknode",
@@ -208860,13 +210450,13 @@
 							"name": "SUPPORTED_CODE_FILETYPE_MATCHER",
 							"kind": "variable",
 							"typeSignature": "RegExp",
-							"sourceLine": 98
+							"sourceLine": 119
 						},
 						{
 							"name": "has_dependencies",
 							"kind": "function",
 							"typeSignature": "(diskfile: Diskfile): boolean",
-							"sourceLine": 99,
+							"sourceLine": 120,
 							"parameters": [
 								{
 									"name": "diskfile",
@@ -208880,7 +210470,7 @@
 							"kind": "function",
 							"docComment": "Parses a name entered for a new file or folder, a path relative to\n`Diskfiles.new_files_dir` (`sub/name.ts` creates any missing folders).\nLeading whitespace and slashes are dropped, as is trailing whitespace —\nlike a pasted name's stray space or newline, they're almost never meant.\nWhitespace inside the name is kept, including around an inner `/`. Empty,\n`.`, and `..` segments are left for the backend to normalize\n(`sub/../a.txt` creates `a.txt`). Refused: a blank or whitespace-only name;\none that normalizes to the directory itself (`sub/..`); a whitespace-only\nsegment (it would create a folder named by whitespace); a `..` that climbs\nout of the directory; and for a file, a last segment that's empty, `.`, or\n`..` (`x/`, `x/.`, `x/y/..`), which names a folder, not a file.",
 							"typeSignature": "(name: string, kind: \"file\" | \"folder\"): Result<{ value: string; }, { message: string; }>",
-							"sourceLine": 121,
+							"sourceLine": 142,
 							"parameters": [
 								{
 									"name": "name",
@@ -208948,7 +210538,7 @@
 							"kind": "function",
 							"docComment": "Asks for a name and creates a file or folder of that name in\n`Diskfiles.new_files_dir` (see `Diskfiles.create_file` and\n`Diskfiles.create_directory`), alerting on failure — including a name\n`parse_new_diskfile_name` refuses, such as a whitespace-only one — with\nthe name first (`couldn't create file a.txt: <reason>`). A backend failure\nis already logged by its action handler. Cancelling or entering an empty\nname does nothing.",
 							"typeSignature": "(diskfiles: Diskfiles, kind: \"file\" | \"folder\"): Promise<void>",
-							"sourceLine": 180,
+							"sourceLine": 201,
 							"parameters": [
 								{
 									"name": "diskfiles",
@@ -208993,7 +210583,7 @@
 							"kind": "function",
 							"docComment": "Deletes `diskfile` on disk (see `Diskfiles.delete`), alerting on failure\nwith its path first (`couldn't delete a.txt: <backend message>`), like\n`prompt_create_diskfile`. The failure is already logged by the action handler.",
 							"typeSignature": "(diskfiles: Diskfiles, diskfile: Diskfile): Promise<boolean>",
-							"sourceLine": 204,
+							"sourceLine": 225,
 							"parameters": [
 								{
 									"name": "diskfiles",
@@ -209024,7 +210614,7 @@
 							"kind": "function",
 							"docComment": "Handles `beforeunload`: while any file has unsaved changes\n(`Diskfiles.has_unsaved_changes`), asks the browser to confirm leaving the\npage, since drafts live only in memory.",
 							"typeSignature": "(event: BeforeUnloadEvent, diskfiles: Diskfiles | undefined): void",
-							"sourceLine": 227,
+							"sourceLine": 248,
 							"mutates": {
 								"event": "cancels it (`preventDefault` plus the legacy `returnValue`) to ask for confirmation"
 							},
@@ -209072,6 +210662,7 @@
 						"DiskfileEditorView.svelte",
 						"DiskfileExplorer.svelte",
 						"DiskfileInfo.svelte",
+						"DiskfileMarkdownView.svelte",
 						"diskfiles.svelte.ts",
 						"DiskfileTranscriptView.svelte",
 						"PartEditorForDiskfile.svelte",
@@ -211680,6 +213271,7 @@
 					],
 					"dependents": [
 						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte",
 						"PartEditorForDiskfile.svelte"
 					]
 				},
@@ -211772,6 +213364,7 @@
 					],
 					"dependents": [
 						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte",
 						"PartEditorForDiskfile.svelte"
 					]
 				},
@@ -211815,13 +213408,16 @@
 					"dependencies": [
 						"ContextmenuEntryCopyToClipboard.svelte",
 						"diskfile.svelte.ts",
+						"diskfile_content_kind.ts",
 						"diskfile_helpers.ts",
-						"frontend.svelte.ts"
+						"frontend.svelte.ts",
+						"markdown_view_mode.ts"
 					],
 					"dependents": [
 						"DiskfileAudioView.svelte",
 						"DiskfileEditorView.svelte",
 						"DiskfileListitem.svelte",
+						"DiskfileMarkdownView.svelte",
 						"DiskfileTabListitem.svelte",
 						"DiskfileTranscriptView.svelte"
 					]
@@ -211849,7 +213445,8 @@
 						"list_helpers.ts"
 					],
 					"dependents": [
-						"DiskfileEditorView.svelte"
+						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
@@ -211952,6 +213549,7 @@
 					],
 					"dependents": [
 						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte",
 						"PartEditorForDiskfile.svelte"
 					]
 				},
@@ -211983,7 +213581,8 @@
 						"Icon.svelte"
 					],
 					"dependents": [
-						"DiskfileEditorView.svelte"
+						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
@@ -212041,6 +213640,54 @@
 					"dependents": [
 						"DiskfileExplorer.svelte",
 						"DiskfilePickerDialog.svelte"
+					]
+				},
+				{
+					"path": "DiskfileMarkdownView.svelte",
+					"declarations": [
+						{
+							"name": "DiskfileMarkdownView",
+							"kind": "component",
+							"sourceLine": 1,
+							"props": [
+								{
+									"name": "diskfile",
+									"type": "Diskfile"
+								},
+								{
+									"name": "onmodified",
+									"type": "(diskfile_id: string & $brand<\"Uuid\">) => void",
+									"optional": true
+								}
+							]
+						}
+					],
+					"dependencies": [
+						"diskfile.svelte.ts",
+						"diskfile_helpers.ts",
+						"DiskfileActions.svelte",
+						"DiskfileConflictNotice.svelte",
+						"DiskfileContextmenu.svelte",
+						"DiskfileEditorNav.svelte",
+						"DiskfileHistoryView.svelte",
+						"DiskfileInfo.svelte",
+						"DiskfilePartView.svelte",
+						"ErrorMessage.svelte",
+						"frontend.svelte.ts",
+						"helpers.ts",
+						"Icon.svelte",
+						"markdown_links.ts",
+						"markdown_view_mode.ts",
+						"MarkdownBrokenLinks.svelte",
+						"MarkdownOutline.svelte",
+						"MarkdownPreview.svelte",
+						"path_lang.ts",
+						"save_shortcut.ts",
+						"SourceEditor.svelte",
+						"TutorialForDiskfiles.svelte"
+					],
+					"dependents": [
+						"DiskfileView.svelte"
 					]
 				},
 				{
@@ -212111,7 +213758,8 @@
 						"PartSummary.svelte"
 					],
 					"dependents": [
-						"DiskfileEditorView.svelte"
+						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
@@ -212236,7 +213884,7 @@
 							"name": "DiskfilesJson",
 							"kind": "type",
 							"typeSignature": "{ id: string & $brand<\"Uuid\">; created: string & $brand<\"Datetime\">; updated: string & $brand<\"Datetime\">; diskfiles: { id: string & $brand<\"Uuid\">; ... 7 more ...; dependencies: [...][]; }[]; selected_file_id: (string & $brand<...>) | null; }",
-							"sourceLine": 40,
+							"sourceLine": 43,
 							"members": [
 								{
 									"name": "id",
@@ -212368,7 +214016,7 @@
 							"name": "DiskfilesJsonInput",
 							"kind": "type",
 							"typeSignature": "{ id?: string | undefined; created?: string | undefined; updated?: string | undefined; diskfiles?: { path: string; source_dir: string; id?: string | undefined; created?: string | undefined; ... 4 more ...; dependencies?: [...][] | undefined; }[] | undefined; selected_file_id?: string | ... 1 more ... | undefined; }",
-							"sourceLine": 41,
+							"sourceLine": 44,
 							"members": [
 								{
 									"name": "id",
@@ -212428,7 +214076,7 @@
 							"name": "DiskfilesOptions",
 							"kind": "interface",
 							"typeSignature": "DiskfilesOptions",
-							"sourceLine": 43,
+							"sourceLine": 46,
 							"extends": [
 								"CellOptions<typeof DiskfilesJson>"
 							]
@@ -212438,7 +214086,7 @@
 							"kind": "interface",
 							"docComment": "Records the paths `filer_change` touches while a file-tree snapshot is in flight.",
 							"typeSignature": "DiskfileChangeTracker",
-							"sourceLine": 46,
+							"sourceLine": 49,
 							"members": [
 								{
 									"name": "paths",
@@ -212471,7 +214119,7 @@
 						{
 							"name": "Diskfiles",
 							"kind": "class",
-							"sourceLine": 53,
+							"sourceLine": 56,
 							"extends": [
 								"Cell<typeof DiskfilesJson>"
 							],
@@ -212937,6 +214585,88 @@
 									}
 								},
 								{
+									"name": "indexed_roots",
+									"kind": "variable",
+									"docComment": "The directories the file index covers, each with a trailing `/`: the app\ndirectory, the scoped dirs, and the open workspaces.",
+									"typeSignature": "readonly (string & $brand<\"DiskfilePath\"> & $brand<\"DiskfileDirectoryPath\">)[]",
+									"modifiers": [
+										"readonly"
+									],
+									"reactivity": "$derived.by",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "DiskfileDirectoryPath"
+										},
+										"readonly": true
+									}
+								},
+								{
+									"name": "directory_paths",
+									"kind": "variable",
+									"docComment": "The directories holding a file on disk, each with a trailing `/` —\nchanging only as a directory gains its first file or loses its last.",
+									"typeSignature": "ReadonlySet<string>",
+									"modifiers": [
+										"readonly"
+									],
+									"typeInfo": {
+										"kind": "reference",
+										"name": "ReadonlySet",
+										"typeArgs": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											}
+										]
+									}
+								},
+								{
+									"name": "set_deleted_on_disk",
+									"kind": "function",
+									"docComment": "Marks `diskfile` gone from disk, or back — the one writer of\n`Diskfile.deleted_on_disk` besides `upsert`, so `directory_paths` stays\nin step.",
+									"typeSignature": "(diskfile: Diskfile, deleted_on_disk: boolean): void",
+									"parameters": [
+										{
+											"name": "diskfile",
+											"type": "Diskfile"
+										},
+										{
+											"name": "deleted_on_disk",
+											"type": "boolean"
+										}
+									],
+									"returnType": "void"
+								},
+								{
+									"name": "link_index",
+									"kind": "variable",
+									"docComment": "The file index as markdown links see it, for telling a link's target\nexists — reactive, so a check in a `$derived` follows the index.",
+									"typeSignature": "MarkdownLinkIndex",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "open_path",
+									"kind": "function",
+									"docComment": "Opens the file at `path` in a tab, as a preview unless `open_not_preview`\n(see `select`) — only a file on disk in the index. A markdown file's\nmarkdown view then reveals the heading `fragment` names (see\n`DiskfileEditorState.markdown_pending_fragment`).",
+									"typeSignature": "(path: string, options?: { fragment?: string | null | undefined; open_not_preview?: boolean | undefined; } | undefined): boolean",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string"
+										},
+										{
+											"name": "options",
+											"type": "{ fragment?: string | null | undefined; open_not_preview?: boolean | undefined; }",
+											"optional": true
+										}
+									],
+									"returnType": "boolean",
+									"returnDescription": "whether a file was opened"
+								},
+								{
 									"name": "create_file",
 									"kind": "function",
 									"docComment": "Creates a new file in `new_files_dir` — never overwriting one: the\nbackend's `diskfile_create` creates the final name exclusively, so an\nexisting file (indexed or not) is left untouched. The new file is\nselected and opened in a permanent tab, like VS Code's new file — now if\nits `filer_change` already arrived, else when it does.",
@@ -213175,12 +214905,14 @@
 						"cell_helpers.ts",
 						"cell_types.ts",
 						"diskfile.svelte.ts",
+						"diskfile_content_kind.ts",
 						"diskfile_editor_state.svelte.ts",
 						"diskfile_helpers.ts",
 						"diskfile_types.ts",
 						"diskfiles_editor.svelte.ts",
 						"indexed_collection.svelte.ts",
 						"indexed_collection_helpers.svelte.ts",
+						"markdown_links.ts",
 						"reactive_helpers.svelte.ts"
 					],
 					"dependents": [
@@ -213831,6 +215563,7 @@
 						"diskfile_content_kind.ts",
 						"DiskfileAudioView.svelte",
 						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte",
 						"DiskfileTranscriptView.svelte"
 					],
 					"dependents": [
@@ -213913,6 +215646,7 @@
 						"DashboardChats.svelte",
 						"DashboardDiskfiles.svelte",
 						"DiskfileActions.svelte",
+						"DiskfileMarkdownView.svelte",
 						"PartEditorForDiskfile.svelte"
 					]
 				},
@@ -215682,6 +217416,7 @@
 						"DiskfileExplorer.svelte",
 						"DiskfileInfo.svelte",
 						"DiskfileListitem.svelte",
+						"DiskfileMarkdownView.svelte",
 						"DiskfilePartView.svelte",
 						"DiskfilePickerDialog.svelte",
 						"DiskfileTabListitem.svelte",
@@ -215690,6 +217425,7 @@
 						"FrontendRoot.svelte",
 						"JobStatusView.svelte",
 						"MainDialog.svelte",
+						"MarkdownPreview.svelte",
 						"ModelDetail.svelte",
 						"ModelPicker.svelte",
 						"ModelPickerDialog.svelte",
@@ -216178,6 +217914,7 @@
 						"diskfile.svelte.ts",
 						"diskfile_editor_state.svelte.ts",
 						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte",
 						"part.svelte.ts",
 						"PartEditorForDiskfile.svelte",
 						"parts.svelte.ts",
@@ -216239,6 +217976,7 @@
 						"DiskfileExplorer.svelte",
 						"DiskfileInfo.svelte",
 						"DiskfileListitem.svelte",
+						"DiskfileMarkdownView.svelte",
 						"DiskfileMetrics.svelte",
 						"DiskfileTabListitem.svelte",
 						"DiskfileTranscriptView.svelte",
@@ -219328,6 +221066,1666 @@
 					],
 					"dependents": [
 						"FrontendRoot.svelte"
+					]
+				},
+				{
+					"path": "markdown_links.ts",
+					"declarations": [
+						{
+							"name": "MarkdownLinkTarget",
+							"kind": "type",
+							"docComment": "Where a link in a markdown file leads:\n\n- `external` — an `http:` or `https:` URL, left to the browser\n- `fragment` — a heading in the same document (`#id`, decoded)\n- `path` — an absolute path on disk, with `directory` when the link names\n  a folder (a trailing `/`, or a last segment of `.` or `..`), its decoded\n  `#fragment` if any, and `root_relative` when it was written `/…`\n- `inert` — nothing to follow: empty, query-only, another scheme,\n  protocol-relative, malformed, climbing past its root, or relative with\n  no file to resolve against",
+							"typeSignature": "MarkdownLinkTarget",
+							"sourceLine": 32,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "MarkdownLinkTarget",
+								"members": [
+									{
+										"kind": "object",
+										"text": "{ kind: \"external\"; href: string; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"fragment\"; fragment: string; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"path\"; path: string; directory: boolean; fragment: string | null; root_relative: boolean; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"inert\"; }"
+									}
+								]
+							}
+						},
+						{
+							"name": "ResolveMarkdownLinkOptions",
+							"kind": "interface",
+							"typeSignature": "ResolveMarkdownLinkOptions",
+							"sourceLine": 44,
+							"members": [
+								{
+									"name": "file_path",
+									"kind": "variable",
+									"docComment": "The absolute path of the file the link is in — without it, every path link is `inert`.",
+									"typeSignature": "string | null",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
+									"name": "root_dir",
+									"kind": "variable",
+									"docComment": "The directory (with a trailing `/`) a root-relative link resolves\nagainst — see `to_root_dir`. Without it, root-relative links are `inert`.",
+									"typeSignature": "string | null",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "resolve_markdown_link",
+							"kind": "function",
+							"docComment": "Resolves `href`, a link's reference in a markdown file, to where it leads\n(see `MarkdownLinkTarget`). A path link drops its `?query`, keeps its\n`#fragment`, has each segment percent-decoded, and is normalized: `.` and\nempty segments vanish and `..` climbs, but never above `/` — or above\n`root_dir` for a root-relative link — which makes it `inert`. An escape\nthat decodes to `/` or a NUL is `inert` too, since it would change the\npath's shape.",
+							"typeSignature": "(href: string, options?: ResolveMarkdownLinkOptions): MarkdownLinkTarget",
+							"sourceLine": 77,
+							"parameters": [
+								{
+									"name": "href",
+									"type": "string",
+									"description": "the link's reference as written (an `<a>`'s `href` attribute)"
+								},
+								{
+									"name": "options",
+									"type": "ResolveMarkdownLinkOptions",
+									"description": "the file the link is in, and the root a root-relative link resolves against",
+									"defaultValue": "{}"
+								}
+							],
+							"returnType": "MarkdownLinkTarget",
+							"returnTypeInfo": {
+								"kind": "union",
+								"alias": "MarkdownLinkTarget",
+								"members": [
+									{
+										"kind": "object",
+										"text": "{ kind: \"external\"; href: string; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"fragment\"; fragment: string; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"path\"; path: string; directory: boolean; fragment: string | null; root_relative: boolean; }"
+									},
+									{
+										"kind": "object",
+										"text": "{ kind: \"inert\"; }"
+									}
+								]
+							}
+						},
+						{
+							"name": "to_root_dir",
+							"kind": "function",
+							"docComment": "The innermost of `roots` (directories with a trailing `/`) holding `path`,\nor `null` when none does — the directory a root-relative link in the file\nat `path` resolves against.",
+							"typeSignature": "(path: string, roots: readonly string[]): string | null",
+							"sourceLine": 153,
+							"parameters": [
+								{
+									"name": "path",
+									"type": "string",
+									"description": "an absolute path"
+								},
+								{
+									"name": "roots",
+									"type": "readonly string[]",
+									"description": "the open directories, each with a trailing `/`"
+								}
+							],
+							"returnType": "string | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						},
+						{
+							"name": "MarkdownLinkIndex",
+							"kind": "interface",
+							"docComment": "What the file index knows — the files and folders under its roots — for\ntelling a link's target exists, is missing, or is out of sight.",
+							"typeSignature": "MarkdownLinkIndex",
+							"sourceLine": 165,
+							"members": [
+								{
+									"name": "has_file",
+									"kind": "function",
+									"docComment": "Whether a file is indexed at `path`.",
+									"typeSignature": "(path: string): boolean",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string"
+										}
+									],
+									"returnType": "boolean"
+								},
+								{
+									"name": "has_directory",
+									"kind": "function",
+									"docComment": "Whether an indexed file sits somewhere under `path`, a directory with a trailing `/`.",
+									"typeSignature": "(path: string): boolean",
+									"parameters": [
+										{
+											"name": "path",
+											"type": "string"
+										}
+									],
+									"returnType": "boolean"
+								},
+								{
+									"name": "roots",
+									"kind": "variable",
+									"docComment": "The directories the index covers, each with a trailing `/`.",
+									"typeSignature": "readonly string[]",
+									"modifiers": [
+										"readonly"
+									]
+								}
+							]
+						},
+						{
+							"name": "FILE_INDEX_IGNORED_DIR_NAMES",
+							"kind": "variable",
+							"docComment": "Directory names the file index never enters, wherever they appear under a\nroot — the backend filer's default ignores (`DEFAULT_IGNORED_DIRS` in\n`crates/zzz_server/src/filer.rs`, which a test holds this to). A link into\none is `skipped`, not `broken`.",
+							"typeSignature": "ReadonlySet<string>",
+							"sourceLine": 180,
+							"typeInfo": {
+								"kind": "reference",
+								"name": "ReadonlySet",
+								"typeArgs": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									}
+								]
+							}
+						},
+						{
+							"name": "FILE_INDEX_TEMP_FILE_PREFIX",
+							"kind": "variable",
+							"docComment": "The prefix of the backend's staging files, which the index never lists\n(`TEMP_FILE_PREFIX` in `crates/zzz_server/src/scoped_fs.rs`, which a test\nholds this to).",
+							"typeSignature": "\".zzz-tmp-\"",
+							"sourceLine": 194
+						},
+						{
+							"name": "MarkdownLinkStatus",
+							"kind": "type",
+							"docComment": "How a path link stands against the file index:\n\n- `file` / `directory` — it names an indexed file, or a folder holding one\n- `broken` — it's inside a root the index covers, where the index would\n  list it, yet nothing is there\n- the index can't say (see `MarkdownLinkMark`'s `unknown`):\n  - `outside` — outside every root the index covers\n  - `skipped` — inside a folder the index never enters\n    (`FILE_INDEX_IGNORED_DIR_NAMES`)\n  - `root_relative` — written `/…` and not found from the workspace's\n    root, which may not be the repository's",
+							"typeSignature": "MarkdownLinkStatus",
+							"sourceLine": 209,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "MarkdownLinkStatus",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "file",
+										"text": "\"file\""
+									},
+									{
+										"kind": "literal",
+										"value": "directory",
+										"text": "\"directory\""
+									},
+									{
+										"kind": "literal",
+										"value": "broken",
+										"text": "\"broken\""
+									},
+									{
+										"kind": "literal",
+										"value": "outside",
+										"text": "\"outside\""
+									},
+									{
+										"kind": "literal",
+										"value": "skipped",
+										"text": "\"skipped\""
+									},
+									{
+										"kind": "literal",
+										"value": "root_relative",
+										"text": "\"root_relative\""
+									}
+								]
+							}
+						},
+						{
+							"name": "to_markdown_link_status",
+							"kind": "function",
+							"docComment": "Checks a path link's target against the file index (see\n`MarkdownLinkStatus`). A folder holding no indexed file — say an empty\none — reads as missing, since the index lists only files.",
+							"typeSignature": "(target: { kind: \"path\"; path: string; directory: boolean; fragment: string | null; root_relative: boolean; }, index: MarkdownLinkIndex): MarkdownLinkStatus",
+							"sourceLine": 220,
+							"parameters": [
+								{
+									"name": "target",
+									"type": "{ kind: \"path\"; path: string; directory: boolean; fragment: string | null; root_relative: boolean; }",
+									"description": "a resolved path link"
+								},
+								{
+									"name": "index",
+									"type": "MarkdownLinkIndex",
+									"description": "what the file index knows"
+								}
+							],
+							"returnType": "MarkdownLinkStatus",
+							"returnTypeInfo": {
+								"kind": "union",
+								"alias": "MarkdownLinkStatus",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "file",
+										"text": "\"file\""
+									},
+									{
+										"kind": "literal",
+										"value": "directory",
+										"text": "\"directory\""
+									},
+									{
+										"kind": "literal",
+										"value": "broken",
+										"text": "\"broken\""
+									},
+									{
+										"kind": "literal",
+										"value": "outside",
+										"text": "\"outside\""
+									},
+									{
+										"kind": "literal",
+										"value": "skipped",
+										"text": "\"skipped\""
+									},
+									{
+										"kind": "literal",
+										"value": "root_relative",
+										"text": "\"root_relative\""
+									}
+								]
+							}
+						},
+						{
+							"name": "MarkdownLinkMark",
+							"kind": "type",
+							"docComment": "How the preview marks a link: `broken` when the index says its target is\nmissing, `unknown` when the index can't see where it points.",
+							"typeSignature": "MarkdownLinkMark",
+							"sourceLine": 246,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "MarkdownLinkMark",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "unknown",
+										"text": "\"unknown\""
+									},
+									{
+										"kind": "literal",
+										"value": "broken",
+										"text": "\"broken\""
+									}
+								]
+							}
+						},
+						{
+							"name": "to_markdown_link_mark",
+							"kind": "function",
+							"docComment": "The mark for a link with `status`, or `null` for one that needs none.",
+							"typeSignature": "(status: MarkdownLinkStatus | null): MarkdownLinkMark | null",
+							"sourceLine": 253,
+							"parameters": [
+								{
+									"name": "status",
+									"type": "MarkdownLinkStatus | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "union",
+												"alias": "MarkdownLinkStatus",
+												"members": [
+													{
+														"kind": "literal",
+														"value": "file",
+														"text": "\"file\""
+													},
+													{
+														"kind": "literal",
+														"value": "directory",
+														"text": "\"directory\""
+													},
+													{
+														"kind": "literal",
+														"value": "broken",
+														"text": "\"broken\""
+													},
+													{
+														"kind": "literal",
+														"value": "outside",
+														"text": "\"outside\""
+													},
+													{
+														"kind": "literal",
+														"value": "skipped",
+														"text": "\"skipped\""
+													},
+													{
+														"kind": "literal",
+														"value": "root_relative",
+														"text": "\"root_relative\""
+													}
+												]
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"description": "the link's status, `null` when it wasn't checked"
+								}
+							],
+							"returnType": "MarkdownLinkMark | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "union",
+										"alias": "MarkdownLinkMark",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "unknown",
+												"text": "\"unknown\""
+											},
+											{
+												"kind": "literal",
+												"value": "broken",
+												"text": "\"broken\""
+											}
+										]
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						},
+						{
+							"name": "MARKDOWN_DIRECTORY_INDEX_NAMES",
+							"kind": "variable",
+							"docComment": "The names a folder link opens, first found wins — a repository host shows the README.",
+							"typeSignature": "readonly string[]",
+							"sourceLine": 269
+						},
+						{
+							"name": "to_directory_readme_path",
+							"kind": "function",
+							"docComment": "The README a link to the folder at `dir_path` opens, or `null` when the\nindex has none there (see `MARKDOWN_DIRECTORY_INDEX_NAMES`).",
+							"typeSignature": "(dir_path: string, index: MarkdownLinkIndex): string | null",
+							"sourceLine": 282,
+							"parameters": [
+								{
+									"name": "dir_path",
+									"type": "string",
+									"description": "the folder, with a trailing `/`"
+								},
+								{
+									"name": "index",
+									"type": "MarkdownLinkIndex",
+									"description": "what the file index knows"
+								}
+							],
+							"returnType": "string | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						},
+						{
+							"name": "to_mdz_plain_text",
+							"kind": "function",
+							"docComment": "The plain text of `nodes`, formatting dropped.",
+							"typeSignature": "(nodes: readonly MdzNode[]): string",
+							"sourceLine": 313,
+							"parameters": [
+								{
+									"name": "nodes",
+									"type": "readonly MdzNode[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "union",
+											"alias": "MdzNode",
+											"members": [
+												{
+													"kind": "reference",
+													"name": "MdzNodeText"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCode"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCodeblock"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBold"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeItalic"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeStrikethrough"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeLink"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeParagraph"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHr"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHeading"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeList"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeListItem"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBlockquote"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTable"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableRow"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableCell"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeElement"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeComponent"
+												}
+											]
+										},
+										"readonly": true
+									}
+								}
+							],
+							"returnType": "string"
+						},
+						{
+							"name": "MarkdownHeading",
+							"kind": "interface",
+							"docComment": "A heading in a markdown document, for an outline.",
+							"typeSignature": "MarkdownHeading",
+							"sourceLine": 326,
+							"members": [
+								{
+									"name": "level",
+									"kind": "variable",
+									"typeSignature": "6 | 2 | 1 | 4 | 3 | 5",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "literal",
+												"value": 6,
+												"text": "6"
+											},
+											{
+												"kind": "literal",
+												"value": 2,
+												"text": "2"
+											},
+											{
+												"kind": "literal",
+												"value": 1,
+												"text": "1"
+											},
+											{
+												"kind": "literal",
+												"value": 4,
+												"text": "4"
+											},
+											{
+												"kind": "literal",
+												"value": 3,
+												"text": "3"
+											},
+											{
+												"kind": "literal",
+												"value": 5,
+												"text": "5"
+											}
+										]
+									}
+								},
+								{
+									"name": "id",
+									"kind": "variable",
+									"docComment": "The slug a `#fragment` names it by — `''` when its text has none.",
+									"typeSignature": "string"
+								},
+								{
+									"name": "text",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"docComment": "Where its source starts, a UTF-16 offset into the document.",
+									"typeSignature": "number"
+								}
+							]
+						},
+						{
+							"name": "to_markdown_headings",
+							"kind": "function",
+							"docComment": "The document's headings in rendered order, those in blockquotes included —\nthe `i`th is the preview's `i`th `h1`–`h6`.",
+							"typeSignature": "(nodes: readonly MdzNode[]): MarkdownHeading[]",
+							"sourceLine": 341,
+							"parameters": [
+								{
+									"name": "nodes",
+									"type": "readonly MdzNode[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "union",
+											"alias": "MdzNode",
+											"members": [
+												{
+													"kind": "reference",
+													"name": "MdzNodeText"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCode"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCodeblock"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBold"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeItalic"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeStrikethrough"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeLink"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeParagraph"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHr"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHeading"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeList"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeListItem"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBlockquote"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTable"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableRow"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableCell"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeElement"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeComponent"
+												}
+											]
+										},
+										"readonly": true
+									},
+									"description": "the document, parsed by `mdz_parse`"
+								}
+							],
+							"returnType": "MarkdownHeading[]",
+							"returnTypeInfo": {
+								"kind": "array",
+								"element": {
+									"kind": "reference",
+									"name": "MarkdownHeading"
+								}
+							}
+						},
+						{
+							"name": "MarkdownLink",
+							"kind": "interface",
+							"docComment": "A link in a markdown document, resolved.",
+							"typeSignature": "MarkdownLink",
+							"sourceLine": 357,
+							"members": [
+								{
+									"name": "reference",
+									"kind": "variable",
+									"docComment": "The reference as written — the rendered `<a>`'s `href`, unless mdz\nrewrote a root-relative one (see `query_markdown_link_anchors`).",
+									"typeSignature": "string"
+								},
+								{
+									"name": "text",
+									"kind": "variable",
+									"typeSignature": "string"
+								},
+								{
+									"name": "start",
+									"kind": "variable",
+									"docComment": "Where its source starts, a UTF-16 offset into the document.",
+									"typeSignature": "number"
+								},
+								{
+									"name": "target",
+									"kind": "variable",
+									"typeSignature": "MarkdownLinkTarget",
+									"typeInfo": {
+										"kind": "union",
+										"alias": "MarkdownLinkTarget",
+										"members": [
+											{
+												"kind": "object",
+												"text": "{ kind: \"external\"; href: string; }"
+											},
+											{
+												"kind": "object",
+												"text": "{ kind: \"fragment\"; fragment: string; }"
+											},
+											{
+												"kind": "object",
+												"text": "{ kind: \"path\"; path: string; directory: boolean; fragment: string | null; root_relative: boolean; }"
+											},
+											{
+												"kind": "object",
+												"text": "{ kind: \"inert\"; }"
+											}
+										]
+									}
+								},
+								{
+									"name": "status",
+									"kind": "variable",
+									"docComment": "For a path link checked against an index, how it stands; else `null`.",
+									"typeSignature": "MarkdownLinkStatus | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "union",
+												"alias": "MarkdownLinkStatus",
+												"members": [
+													{
+														"kind": "literal",
+														"value": "file",
+														"text": "\"file\""
+													},
+													{
+														"kind": "literal",
+														"value": "directory",
+														"text": "\"directory\""
+													},
+													{
+														"kind": "literal",
+														"value": "broken",
+														"text": "\"broken\""
+													},
+													{
+														"kind": "literal",
+														"value": "outside",
+														"text": "\"outside\""
+													},
+													{
+														"kind": "literal",
+														"value": "skipped",
+														"text": "\"skipped\""
+													},
+													{
+														"kind": "literal",
+														"value": "root_relative",
+														"text": "\"root_relative\""
+													}
+												]
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "ToMarkdownLinksOptions",
+							"kind": "interface",
+							"typeSignature": "ToMarkdownLinksOptions",
+							"sourceLine": 371,
+							"members": [
+								{
+									"name": "file_path",
+									"kind": "variable",
+									"docComment": "The absolute path of the document's file — without it, path links are `inert`.",
+									"typeSignature": "string | null",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								},
+								{
+									"name": "index",
+									"kind": "variable",
+									"docComment": "What the file index knows; without it, nothing gets a `status`.",
+									"typeSignature": "MarkdownLinkIndex | null",
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "reference",
+												"name": "MarkdownLinkIndex"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "to_markdown_links",
+							"kind": "function",
+							"docComment": "The document's links that render as `<a>` elements (mdz renders an unsafe\nreference as plain text), in rendered order, each resolved against\n`file_path` and checked against `index`. A root-relative link resolves\nagainst the innermost of the index's roots holding the file.",
+							"typeSignature": "(nodes: readonly MdzNode[], options?: ToMarkdownLinksOptions): MarkdownLink[]",
+							"sourceLine": 387,
+							"parameters": [
+								{
+									"name": "nodes",
+									"type": "readonly MdzNode[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "union",
+											"alias": "MdzNode",
+											"members": [
+												{
+													"kind": "reference",
+													"name": "MdzNodeText"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCode"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCodeblock"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBold"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeItalic"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeStrikethrough"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeLink"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeParagraph"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHr"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHeading"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeList"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeListItem"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBlockquote"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTable"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableRow"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableCell"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeElement"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeComponent"
+												}
+											]
+										},
+										"readonly": true
+									},
+									"description": "the document, parsed by `mdz_parse`"
+								},
+								{
+									"name": "options",
+									"type": "ToMarkdownLinksOptions",
+									"description": "the document's file and the file index",
+									"defaultValue": "{}"
+								}
+							],
+							"returnType": "MarkdownLink[]",
+							"returnTypeInfo": {
+								"kind": "array",
+								"element": {
+									"kind": "reference",
+									"name": "MarkdownLink"
+								}
+							}
+						},
+						{
+							"name": "query_markdown_link_anchors",
+							"kind": "function",
+							"docComment": "The rendered `<a>` of each of `links` inside `container`, matched by\ndocument order — the `i`th anchor with an `href` is the `i`th link — or\n`null` when the counts disagree, so no link is paired with another's\nanchor. Order, not `href`, because mdz renders a root-relative reference\nthrough SvelteKit's `resolve`, which can rewrite it (`/a//b.md` renders\n`/a/b.md`). Assumes mdz renders every anchor in `container`, which holds\nwhile no mdz context injects components that render their own.",
+							"typeSignature": "(container: ParentNode, links: readonly MarkdownLink[]): HTMLAnchorElement[] | null",
+							"sourceLine": 423,
+							"parameters": [
+								{
+									"name": "container",
+									"type": "ParentNode",
+									"description": "the element mdz rendered the document into"
+								},
+								{
+									"name": "links",
+									"type": "readonly MarkdownLink[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "MarkdownLink"
+										},
+										"readonly": true
+									},
+									"description": "the document's links, from `to_markdown_links`"
+								}
+							],
+							"returnType": "HTMLAnchorElement[] | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "HTMLAnchorElement"
+										}
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						},
+						{
+							"name": "to_markdown_link_title",
+							"kind": "function",
+							"docComment": "The title a link shows on hover to say how it stands, or `null` for a link\nthat needs none.",
+							"typeSignature": "(link: MarkdownLink, readme_path?: string | null): string | null",
+							"sourceLine": 441,
+							"parameters": [
+								{
+									"name": "link",
+									"type": "MarkdownLink",
+									"description": "a resolved link"
+								},
+								{
+									"name": "readme_path",
+									"type": "string | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"description": "for a folder link, the README it opens, if any",
+									"defaultValue": "null"
+								}
+							],
+							"returnType": "string | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						}
+					],
+					"moduleComment": "Links and headings in rendered markdown, for `MarkdownPreview` and the\nmarkdown view's drawer — pure functions over mdz's parsed nodes, with no\napp state, plus the one DOM query matching links to their rendered anchors.\n\nA link in a file resolves against the file's path, the way a repository\nhost reads it: `./x.md`, `../y/z.md`, and `x.md` against the file's\ndirectory, and a root-relative `/docs/x.md` against the root of the open\ndirectory holding the file (the workspace, which is usually the\nrepository). Whether the result exists is the file index's call\n(`MarkdownLinkIndex`), and what the index can't see is `unknown`, never\n`broken`.",
+					"dependents": [
+						"DiskfileMarkdownView.svelte",
+						"diskfiles.svelte.ts",
+						"MarkdownBrokenLinks.svelte",
+						"MarkdownOutline.svelte",
+						"MarkdownPreview.svelte"
+					]
+				},
+				{
+					"path": "markdown_view_mode.ts",
+					"declarations": [
+						{
+							"name": "MarkdownViewMode",
+							"kind": "type",
+							"docComment": "`split` shows the source beside its preview, `preview` the rendered\nmarkdown alone, and `source` the source alone.",
+							"typeSignature": "MarkdownViewMode",
+							"sourceLine": 11,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "MarkdownViewMode",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "split",
+										"text": "\"split\""
+									},
+									{
+										"kind": "literal",
+										"value": "preview",
+										"text": "\"preview\""
+									},
+									{
+										"kind": "literal",
+										"value": "source",
+										"text": "\"source\""
+									}
+								]
+							}
+						},
+						{
+							"name": "MARKDOWN_VIEW_MODES",
+							"kind": "variable",
+							"docComment": "The markdown view's modes, in the order the UI offers them.",
+							"typeSignature": "readonly MarkdownViewMode[]",
+							"sourceLine": 14,
+							"typeInfo": {
+								"kind": "array",
+								"element": {
+									"kind": "union",
+									"alias": "MarkdownViewMode",
+									"members": [
+										{
+											"kind": "literal",
+											"value": "split",
+											"text": "\"split\""
+										},
+										{
+											"kind": "literal",
+											"value": "preview",
+											"text": "\"preview\""
+										},
+										{
+											"kind": "literal",
+											"value": "source",
+											"text": "\"source\""
+										}
+									]
+								},
+								"readonly": true
+							}
+						},
+						{
+							"name": "MARKDOWN_VIEW_MODE_LABELS",
+							"kind": "variable",
+							"docComment": "What each mode is called in the UI.",
+							"typeSignature": "Readonly<Record<MarkdownViewMode, string>>",
+							"sourceLine": 17,
+							"typeInfo": {
+								"kind": "reference",
+								"name": "Readonly",
+								"typeArgs": [
+									{
+										"kind": "reference",
+										"name": "Record",
+										"typeArgs": [
+											{
+												"kind": "union",
+												"alias": "MarkdownViewMode",
+												"members": [
+													{
+														"kind": "literal",
+														"value": "split",
+														"text": "\"split\""
+													},
+													{
+														"kind": "literal",
+														"value": "preview",
+														"text": "\"preview\""
+													},
+													{
+														"kind": "literal",
+														"value": "source",
+														"text": "\"source\""
+													}
+												]
+											},
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "to_default_markdown_view_mode",
+							"kind": "function",
+							"docComment": "The mode a file opens in until one is chosen: `preview` where its content\nis read-only (not loaded), else `split`.",
+							"typeSignature": "(content_loaded: boolean): MarkdownViewMode",
+							"sourceLine": 29,
+							"parameters": [
+								{
+									"name": "content_loaded",
+									"type": "boolean",
+									"description": "whether the file's content was loaded, so it can be edited"
+								}
+							],
+							"returnType": "MarkdownViewMode",
+							"returnTypeInfo": {
+								"kind": "union",
+								"alias": "MarkdownViewMode",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "split",
+										"text": "\"split\""
+									},
+									{
+										"kind": "literal",
+										"value": "preview",
+										"text": "\"preview\""
+									},
+									{
+										"kind": "literal",
+										"value": "source",
+										"text": "\"source\""
+									}
+								]
+							}
+						},
+						{
+							"name": "MARKDOWN_VIEW_MODE_SHORTCUTS",
+							"kind": "variable",
+							"docComment": "Each mode's keyboard shortcut, Ctrl+Shift with its position in\n`MARKDOWN_VIEW_MODES` — as shown in the UI.",
+							"typeSignature": "Readonly<Record<MarkdownViewMode, string>>",
+							"sourceLine": 36,
+							"typeInfo": {
+								"kind": "reference",
+								"name": "Readonly",
+								"typeArgs": [
+									{
+										"kind": "reference",
+										"name": "Record",
+										"typeArgs": [
+											{
+												"kind": "union",
+												"alias": "MarkdownViewMode",
+												"members": [
+													{
+														"kind": "literal",
+														"value": "split",
+														"text": "\"split\""
+													},
+													{
+														"kind": "literal",
+														"value": "preview",
+														"text": "\"preview\""
+													},
+													{
+														"kind": "literal",
+														"value": "source",
+														"text": "\"source\""
+													}
+												]
+											},
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "to_markdown_view_mode_for_shortcut",
+							"kind": "function",
+							"docComment": "The mode a keydown switches the markdown view to, or `null` when it isn't\none of `MARKDOWN_VIEW_MODE_SHORTCUTS`. Matches the physical digit key\n(`event.code`), since Shift turns the digit into a layout's symbol, and\ntakes Ctrl on every platform — Cmd+Shift+3 is a macOS screenshot. Ctrl+Shift\ntypes no character, so taking it from a textarea loses no input.",
+							"typeSignature": "(event: Pick<KeyboardEvent, \"code\" | \"ctrlKey\" | \"shiftKey\" | \"altKey\" | \"metaKey\">): MarkdownViewMode | null",
+							"sourceLine": 51,
+							"parameters": [
+								{
+									"name": "event",
+									"type": "Pick<KeyboardEvent, \"code\" | \"ctrlKey\" | \"shiftKey\" | \"altKey\" | \"metaKey\">",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Pick",
+										"typeArgs": [
+											{
+												"kind": "reference",
+												"name": "KeyboardEvent"
+											},
+											{
+												"kind": "union",
+												"members": [
+													{
+														"kind": "literal",
+														"value": "code",
+														"text": "\"code\""
+													},
+													{
+														"kind": "literal",
+														"value": "ctrlKey",
+														"text": "\"ctrlKey\""
+													},
+													{
+														"kind": "literal",
+														"value": "shiftKey",
+														"text": "\"shiftKey\""
+													},
+													{
+														"kind": "literal",
+														"value": "altKey",
+														"text": "\"altKey\""
+													},
+													{
+														"kind": "literal",
+														"value": "metaKey",
+														"text": "\"metaKey\""
+													}
+												]
+											}
+										]
+									},
+									"description": "the keydown event"
+								}
+							],
+							"returnType": "MarkdownViewMode | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "union",
+										"alias": "MarkdownViewMode",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "split",
+												"text": "\"split\""
+											},
+											{
+												"kind": "literal",
+												"value": "preview",
+												"text": "\"preview\""
+											},
+											{
+												"kind": "literal",
+												"value": "source",
+												"text": "\"source\""
+											}
+										]
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						}
+					],
+					"moduleComment": "The layouts of the markdown file view (`DiskfileMarkdownView`).",
+					"dependents": [
+						"diskfile_editor_state.svelte.ts",
+						"DiskfileContextmenu.svelte",
+						"DiskfileMarkdownView.svelte"
+					]
+				},
+				{
+					"path": "MarkdownBrokenLinks.svelte",
+					"declarations": [
+						{
+							"name": "MarkdownBrokenLinks",
+							"kind": "component",
+							"sourceLine": 1,
+							"props": [
+								{
+									"name": "links",
+									"type": "readonly MarkdownLink[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "MarkdownLink"
+										},
+										"readonly": true
+									},
+									"description": "The document's links, from `to_markdown_links`; only the broken ones are listed."
+								},
+								{
+									"name": "onselect",
+									"type": "(index: number, link: MarkdownLink) => void",
+									"description": "Called with the link's position in `links` when it's clicked."
+								}
+							]
+						}
+					],
+					"moduleComment": "A markdown document's broken links — relative paths the file index says\nare missing — each a button.",
+					"dependencies": [
+						"markdown_links.ts"
+					],
+					"dependents": [
+						"DiskfileMarkdownView.svelte"
+					]
+				},
+				{
+					"path": "MarkdownOutline.svelte",
+					"declarations": [
+						{
+							"name": "MarkdownOutline",
+							"kind": "component",
+							"sourceLine": 1,
+							"props": [
+								{
+									"name": "headings",
+									"type": "readonly MarkdownHeading[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "MarkdownHeading"
+										},
+										"readonly": true
+									},
+									"description": "The document's headings, from `to_markdown_headings`."
+								},
+								{
+									"name": "onselect",
+									"type": "(index: number, heading: MarkdownHeading) => void",
+									"description": "Called with the heading's position in `headings` when it's clicked."
+								}
+							]
+						}
+					],
+					"moduleComment": "A markdown document's outline: its headings, indented by level, each a\nbutton.",
+					"dependencies": [
+						"markdown_links.ts"
+					],
+					"dependents": [
+						"DiskfileMarkdownView.svelte"
+					]
+				},
+				{
+					"path": "MarkdownPreview.svelte",
+					"declarations": [
+						{
+							"name": "MarkdownPreview",
+							"kind": "component",
+							"sourceLine": 1,
+							"props": [
+								{
+									"name": "path",
+									"type": "string | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true,
+									"description": "The absolute path of the file rendered — without it, relative links are inert."
+								},
+								{
+									"name": "focus_key",
+									"type": "string | number | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true,
+									"description": "Focuses the preview when `pending_element_to_focus_key` equals it, then clears that."
+								},
+								{
+									"name": "pending_element_to_focus_key",
+									"type": "string | number | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true,
+									"bindable": true
+								},
+								{
+									"name": "attrs",
+									"type": "HTMLAttributes<HTMLDivElement>",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "HTMLAttributes",
+										"typeArgs": [
+											{
+												"kind": "reference",
+												"name": "HTMLDivElement"
+											}
+										]
+									},
+									"optional": true,
+									"description": "Attributes for the scroll container."
+								},
+								{
+									"name": "content",
+									"type": "string",
+									"optional": true,
+									"description": "The markdown source to render."
+								},
+								{
+									"name": "nodes",
+									"type": "MdzNode[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "union",
+											"alias": "MdzNode",
+											"members": [
+												{
+													"kind": "reference",
+													"name": "MdzNodeText"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCode"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeCodeblock"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBold"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeItalic"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeStrikethrough"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeLink"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeParagraph"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHr"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeHeading"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeList"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeListItem"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeBlockquote"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTable"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableRow"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeTableCell"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeElement"
+												},
+												{
+													"kind": "reference",
+													"name": "MdzNodeComponent"
+												}
+											]
+										}
+									},
+									"optional": true
+								},
+								{
+									"name": "links",
+									"type": "readonly MarkdownLink[]",
+									"typeInfo": {
+										"kind": "array",
+										"element": {
+											"kind": "reference",
+											"name": "MarkdownLink"
+										},
+										"readonly": true
+									},
+									"optional": true
+								}
+							]
+						}
+					],
+					"moduleComment": "Rendered markdown, read-only — a file's content, or any markdown\nstring. Scrolls on its own, so it can sit beside an editor; it takes\nfocus like an editor does (`focus_key`), so arrow keys scroll it.\n\nIts links never navigate the app. An external link opens in a new tab,\nan in-document `#fragment` scrolls the preview, and — given the file's\n`path` — a relative link opens the indexed file it names in a tab (see\n`markdown_links.ts`), a preview tab on a plain click and a kept tab on a\nmiddle- or Ctrl/Cmd-click; a link to a folder opens its README. Links\nthe file index says are missing are marked broken, and ones it can't\nsee marked unknown, each with a title saying why. Anything else —\nwithout a `path`, any relative link — does nothing.",
+					"dependencies": [
+						"frontend.svelte.ts",
+						"markdown_links.ts"
+					],
+					"dependents": [
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
@@ -223888,6 +227286,93 @@
 					"dependents": [
 						"DashboardPrompts.svelte",
 						"PartContextmenu.svelte"
+					]
+				},
+				{
+					"path": "path_lang.ts",
+					"declarations": [
+						{
+							"name": "to_path_extension",
+							"kind": "function",
+							"docComment": "The extension of the file at `path`, lowercased and without the dot: the\ntext after the last `.` of its last segment, `null` when that segment has\nno `.`. A dotfile's name is its extension (`.bashrc` → `bashrc`), and a\ntrailing dot gives `''`.",
+							"typeSignature": "(path: string): string | null",
+							"sourceLine": 17,
+							"parameters": [
+								{
+									"name": "path",
+									"type": "string",
+									"description": "the file's path or name"
+								}
+							],
+							"returnType": "string | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						},
+						{
+							"name": "LANG_BY_EXTENSION",
+							"kind": "variable",
+							"docComment": "File extensions (lowercase, without the dot) and the fuz_code language each\nis highlighted as — a primary id registered on fuz_code's\n`syntax_styler_global`. JavaScript is highlighted by the TypeScript lexer\n(it registers `js` as an alias); JSX and TSX are left out, since that lexer\ndoesn't read their markup.",
+							"typeSignature": "ReadonlyMap<string, string>",
+							"sourceLine": 30,
+							"typeInfo": {
+								"kind": "reference",
+								"name": "ReadonlyMap",
+								"typeArgs": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									}
+								]
+							}
+						},
+						{
+							"name": "lang_for_path",
+							"kind": "function",
+							"docComment": "The fuz_code language to highlight the file at `path` as, by its extension\n(case-insensitive), or `null` when there's none — which disables\nhighlighting.",
+							"typeSignature": "(path: string): string | null",
+							"sourceLine": 58,
+							"parameters": [
+								{
+									"name": "path",
+									"type": "string",
+									"description": "the file's path or name"
+								}
+							],
+							"returnType": "string | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							}
+						}
+					],
+					"moduleComment": "Which syntax a file is written in, from its path — for highlighting source\nwith fuz_code. Like `diskfile_content_kind.ts`, it reads the extension\nalone, since the file index says nothing about a file's type.",
+					"dependents": [
+						"diskfile_content_kind.ts",
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
@@ -229425,6 +232910,80 @@
 					]
 				},
 				{
+					"path": "save_shortcut.ts",
+					"declarations": [
+						{
+							"name": "SaveShortcutScope",
+							"kind": "type",
+							"docComment": "Where an editor's save shortcut triggers its save: `'focused'` only while\nits textarea has focus, `'page'` from anywhere on the page unless a focused\neditor handles it first. Use `'page'` only for the one main editor of a page.",
+							"typeSignature": "SaveShortcutScope",
+							"sourceLine": 15,
+							"typeInfo": {
+								"kind": "union",
+								"alias": "SaveShortcutScope",
+								"members": [
+									{
+										"kind": "literal",
+										"value": "focused",
+										"text": "\"focused\""
+									},
+									{
+										"kind": "literal",
+										"value": "page",
+										"text": "\"page\""
+									}
+								]
+							}
+						},
+						{
+							"name": "handle_save_shortcut_keydown",
+							"kind": "function",
+							"docComment": "Calls `save` on Ctrl+S / Cmd+S (case-insensitive, without Alt), swallowing\nthe event so the browser's save dialog never opens and a page-level\nlistener never saves a different editor than the focused one. An event a\nhandler already took (`defaultPrevented`) is ignored, and a held key saves\nonce per press.",
+							"typeSignature": "(event: KeyboardEvent, save: (() => void) | null | undefined): void",
+							"sourceLine": 28,
+							"mutates": {
+								"event": "swallowed (`preventDefault` + `stopImmediatePropagation`) when it's the shortcut"
+							},
+							"parameters": [
+								{
+									"name": "event",
+									"type": "KeyboardEvent",
+									"description": "the keydown event"
+								},
+								{
+									"name": "save",
+									"type": "(() => void) | null | undefined",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "function",
+												"text": "() => void"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "undefined"
+											}
+										]
+									},
+									"description": "the editor's save, or nullish to let the event through untouched"
+								}
+							],
+							"returnType": "void"
+						}
+					],
+					"moduleComment": "The editors' save shortcut, Ctrl+S / Cmd+S — shared by `ContentEditor` and\n`SourceEditor` so both save the same way.",
+					"dependents": [
+						"ContentEditor.svelte",
+						"DiskfileMarkdownView.svelte",
+						"SourceEditor.svelte"
+					]
+				},
+				{
 					"path": "scrollable.svelte.ts",
 					"declarations": [
 						{
@@ -231049,6 +234608,172 @@
 						"DiskfileExplorer.svelte",
 						"Picker.svelte",
 						"PromptList.svelte"
+					]
+				},
+				{
+					"path": "SourceEditor.svelte",
+					"declarations": [
+						{
+							"name": "SourceEditor",
+							"kind": "component",
+							"sourceLine": 1,
+							"props": [
+								{
+									"name": "value",
+									"type": "string",
+									"description": "The source text.",
+									"bindable": true
+								},
+								{
+									"name": "lang",
+									"type": "string | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true,
+									"description": "The fuz_code language to highlight as — a language registered on\n`syntax_styler_global`, like `lang_for_path` returns; `null` disables\nhighlighting.",
+									"defaultValue": "null"
+								},
+								{
+									"name": "readonly",
+									"type": "boolean",
+									"optional": true,
+									"defaultValue": "false"
+								},
+								{
+									"name": "placeholder",
+									"type": "string | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true
+								},
+								{
+									"name": "focus_key",
+									"type": "string | number | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true,
+									"description": "Focuses the textarea when `pending_element_to_focus_key` equals it, then clears that."
+								},
+								{
+									"name": "pending_element_to_focus_key",
+									"type": "string | number | null",
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "number"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									},
+									"optional": true,
+									"bindable": true
+								},
+								{
+									"name": "onsave",
+									"type": "(value: string) => void",
+									"optional": true,
+									"description": "Called with the value on Ctrl+S / Cmd+S — see `save_shortcut`."
+								},
+								{
+									"name": "save_shortcut",
+									"type": "SaveShortcutScope",
+									"typeInfo": {
+										"kind": "union",
+										"alias": "SaveShortcutScope",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "focused",
+												"text": "\"focused\""
+											},
+											{
+												"kind": "literal",
+												"value": "page",
+												"text": "\"page\""
+											}
+										]
+									},
+									"optional": true,
+									"description": "Where Ctrl+S / Cmd+S triggers `onsave` — see `SaveShortcutScope`.",
+									"defaultValue": "'focused'"
+								},
+								{
+									"name": "attrs",
+									"type": "HTMLTextareaAttributes",
+									"optional": true,
+									"description": "Attributes for the `<textarea>`."
+								},
+								{
+									"name": "wrapper_attrs",
+									"type": "HTMLAttributes<HTMLDivElement>",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "HTMLAttributes",
+										"typeArgs": [
+											{
+												"kind": "reference",
+												"name": "HTMLDivElement"
+											}
+										]
+									},
+									"optional": true,
+									"description": "Attributes for `CodeTextarea`'s wrapper `<div>`, the box the textarea fills."
+								}
+							]
+						}
+					],
+					"moduleComment": "A basic source editor: fuz_code's `CodeTextarea`, a textarea highlighted\nas `lang`, plus the editors' save shortcut and focus handling. The\nprimitive richer editing builds on — stats, clear / restore, and paste\nstay `ContentEditor`'s.",
+					"dependencies": [
+						"save_shortcut.ts"
+					],
+					"dependents": [
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
@@ -237676,7 +241401,8 @@
 						"helpers.ts"
 					],
 					"dependents": [
-						"DiskfileEditorView.svelte"
+						"DiskfileEditorView.svelte",
+						"DiskfileMarkdownView.svelte"
 					]
 				},
 				{
