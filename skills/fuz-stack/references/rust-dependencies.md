@@ -57,6 +57,7 @@ few approved crates are pinned at the member-crate level rather than the root:
 | `tokio-util`           | `CancellationToken`, `TaskTracker`                                                                                               |
 | `axum`                 | HTTP server (on hyper)                                                                                                           |
 | `axum-extra`           | axum extras (typed headers, cookies)                                                                                             |
+| `hyper` / `hyper-util` | HTTP/1 connection serving under axum — used directly where the server owns connection lifecycles (cutting stalled ones at shutdown) |
 | `tower` / `tower-http` | Service middleware                                                                                                               |
 | `tungstenite`          | WebSocket protocol types — `fuz_realtime` downcasts axum's `tungstenite::Error` (pinned to axum's version)                       |
 | `reqwest`              | HTTP client                                                                                                                      |

@@ -225,7 +225,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.31.0",
+			"version": "0.32.0",
 			"path": "fuz_blog",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",

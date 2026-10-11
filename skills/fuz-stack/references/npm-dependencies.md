@@ -90,6 +90,8 @@ fuz_util — not stack utilities; don't add them to app code.)
 | `hono`                 | HTTP server framework            |
 | `@hono/node-server`    | Hono Node adapter                |
 | `@hono/node-ws`        | Hono Node WebSocket adapter      |
+| `@hono/bun`            | Hono Bun adapter                 |
+| `@hono/deno`           | Hono Deno adapter                |
 | `@node-rs/argon2`      | Argon2 password hashing (native) |
 | `ws`                   | WebSocket implementation         |
 

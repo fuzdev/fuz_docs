@@ -176298,7 +176298,7 @@
 	"fuz_blog": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.31.0",
+			"version": "0.32.0",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",
 			"logo": "logo.svg",
