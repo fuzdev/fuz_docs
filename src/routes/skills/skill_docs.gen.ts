@@ -188,7 +188,7 @@ ${svelte_banner}
 <script lang="ts">
 	import {resolve} from '$app/paths';
 
-	import {skills} from '$routes/skills/skills_manifest.ts';
+	import {skills} from '#routes/skills/skills_manifest.ts';
 
 	const skill = skills.find((s) => s.name === '${skill_name}')!;
 </script>

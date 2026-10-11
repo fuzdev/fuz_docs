@@ -99,10 +99,10 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	import { stack_nodes, stack_edges } from './stack_graph.ts';
-	import type { StackNode, StackEdge, StackCategory } from '$lib/stack_graph_types.ts';
+	import type { StackNode, StackEdge, StackCategory } from '#lib/stack_graph_types.ts';
 
 	// Camera (`$state` not raw so in-place `.tx`/`.ty`/`.scale` mutations stay reactive).
 	let camera: Viewport = $state({ scale: 1, tx: 0, ty: 0 });

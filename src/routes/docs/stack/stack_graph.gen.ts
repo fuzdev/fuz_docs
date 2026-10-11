@@ -2,14 +2,14 @@ import type { Gen } from '@fuzdev/gro/gen.ts';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { compute_stack_layout, type StackNodeInput } from '$lib/stack_layout.ts';
+import { compute_stack_layout, type StackNodeInput } from '#lib/stack_layout.ts';
 import type {
 	StackCategory,
 	StackEdge,
 	StackEdgeKind,
 	StackLanguage
-} from '$lib/stack_graph_types.ts';
-import { stack_repos } from '$lib/stack_repos.ts';
+} from '#lib/stack_graph_types.ts';
+import { stack_repos } from '#lib/stack_repos.ts';
 
 // Sibling repos live one level up from the fuz_docs repo root (the gen runs from
 // the repo root, so `process.cwd()` is the fuz_docs repo root and the workspace is its parent).
@@ -195,9 +195,9 @@ export type {
 	StackCategory,
 	StackLanguage,
 	StackEdgeKind,
-} from '$lib/stack_graph_types.ts';
+} from '#lib/stack_graph_types.ts';
 
-import type {StackNode, StackEdge} from '$lib/stack_graph_types.ts';
+import type {StackNode, StackEdge} from '#lib/stack_graph_types.ts';
 
 /** All public stack repos as positioned graph nodes, sorted by name. */
 export const stack_nodes: Array<StackNode> = ${JSON.stringify(sorted_nodes, null, '\t')};

@@ -82,25 +82,33 @@ never `.js`-for-a-`.ts`-file, and pick the alias by **whether the module
 ships**:
 
 - **`src/lib` (ships as `dist`) → relative only** (`./sibling.ts`). The build
-  rewrites `.ts`→`.js` into `dist`. Aliases break here: `$lib`/`$routes`
-  (Vite-only) and `#lib`/`#routes` (resolve to `./src/lib/*`, absent from the
-  tarball since `"files": ["dist"]`) give consumers `ERR_MODULE_NOT_FOUND`.
+  rewrites `.ts`→`.js` into `dist` (svelte-package 3 also rewrites `#` imports
+  to relative ones, but `dist` is kept free of subpath imports by convention, and
+  gro's dist tooling assumes it). The hard reason is generated and injected code:
+  `#lib`/`#routes` resolve against whichever package imports them, so a
+  preprocessor's injected import or a generator's output that lands in a
+  consumer would point at the consumer's `src/lib` — that code uses the package
+  name (`@fuzdev/<pkg>/…`), never `#lib`.
 - **Everything else → `#lib/*` / `#routes/*`** package.json subpath imports
   (`"imports": {"#lib/*": "./src/lib/*"}`): routes, tests, and
   spawn-outside-Vite entries (Deno/Node servers, benchmarks, `gro run`
   scripts). One mechanism resolves across Vite, Node, Bun, Deno, and Gro's
-  loader. `$lib`/`$routes` are retired (Vite-only: a raw `deno run` fails
-  `Import "$lib/…" not a dependency`); outside `src/lib`, `$lib` remains common
-  in existing code while `#lib` rolls out.
+  loader. SvelteKit 3 removed `$lib`, and `$routes` was a config `alias`
+  (deprecated in kit 3), so neither is built in.
 - **Cross-package** `@fuzdev/<pkg>/sub.ts` resolves via the target's `exports`
   `.js`/`.ts` mirror to its `dist`. Packages without subpath exports
   (`@fuzdev/blake3-wasm`) are imported by bare name.
 
-`$app`/`$env` stay (virtual modules). `@ryanatkn/eslint-config` warns on
-`$lib`/`$routes`/`#lib`/`#routes` inside `src/lib`, covering `import`/`export`
-declarations and `import type` but **not** inline `import('#lib/…')` type
-positions (base `no-restricted-imports` doesn't visit `TSImportType`) — catch
-those in review.
+`$app/*` stays (virtual modules). Env goes through `$app/env/public` /
+`$app/env/private`, exporting only the vars declared in `src/env.ts` with
+`defineEnvVars` from `@sveltejs/kit/env` (kit 3 has no `PUBLIC_` prefix rule);
+`$env/*` and `$app/environment` are deprecated re-exports — use
+`$app/env/public|private` and `$app/env`. `@ryanatkn/eslint-config` warns on
+`$lib`/`$routes` everywhere and on `#lib`/`#routes` inside `src/lib`, covering
+`import`/`export` declarations and `import type` but **not** inline
+`import('#lib/…')` type positions (base `no-restricted-imports` doesn't visit
+`TSImportType`) — svelte-package rewrites those in `dist`, but keep them out of
+`src/lib` in review.
 
 ## Web-rendered caveat
 

@@ -65,9 +65,10 @@ section navigation), `DOCS_PATH_DEFAULT` / `DOCS_PATH` / `DOCS_API_PATH`.
 
 ## Setting Up Docs in a Project
 
-Examples use the `#routes`/`#lib` subpath aliases — the target convention,
-declared in `package.json` `imports` (fuz_app does today; fuz_ui and fuz_css
-still use `$lib`/`$routes`).
+Examples use the `#routes`/`#lib` subpath imports, declared in `package.json`
+`imports` (SvelteKit 3 has no `$lib`). SvelteKit's own config goes in the
+`sveltekit({...})` plugin options in `vite.config.ts` (there's no
+`svelte.config.js`).
 
 ### 1. Vite plugins and ambient types
 
@@ -76,6 +77,29 @@ still use `$lib`/`$routes`).
 import svelte_docinfo from 'svelte-docinfo/vite.js';
 import { vite_plugin_pkg_json } from '@fuzdev/fuz_ui/vite_plugin_pkg_json.ts';
 export default defineConfig({ plugins: [sveltekit(), svelte_docinfo(), vite_plugin_pkg_json()] });
+```
+
+**Vite self-alias, for a library that a dependency imports back.** When an
+installed dependency imports the library being built (fuz_ui's `dist` imports
+`@fuzdev/fuz_code/Code.svelte` and `@fuzdev/mdz/mdz_contexts.ts`), it resolves
+the name through `node_modules` — to nothing, or to a separate published copy —
+never to the source being built. So the site build either fails or, when the
+published copy is installed as a peer, silently runs two module instances (which
+breaks shared contexts). Point the name at the source with a plain Vite alias —
+not SvelteKit's deprecated `alias` — and only where a dependency actually imports
+it (`grep -rl "@fuzdev/<self>/" node_modules/@fuzdev/*/dist`):
+
+```typescript
+// fuz_code's vite.config.ts (`fileURLToPath` from `node:url`)
+resolve: {
+	// fuz_ui's `dist` imports `@fuzdev/fuz_code/Code.svelte`, so point it at the source
+	alias: [
+		{
+			find: /^@fuzdev\/fuz_code\//,
+			replacement: fileURLToPath(new URL('./src/lib/', import.meta.url))
+		}
+	]
+}
 ```
 
 ```typescript

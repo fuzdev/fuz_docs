@@ -4,7 +4,7 @@
 	import { hash_sha1, hash_sha256, hash_sha384, hash_sha512 } from '@fuzdev/fuz_util/hash.ts';
 	import { to_hex } from '@fuzdev/fuz_util/hex.ts';
 
-	import DataInput from '$lib/DataInput.svelte';
+	import DataInput from '#lib/DataInput.svelte';
 
 	type Algorithm = 'BLAKE3' | 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 

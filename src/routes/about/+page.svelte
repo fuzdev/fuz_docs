@@ -7,7 +7,7 @@
 	import EcosystemLinksPanel from '@fuzdev/fuz_ui/EcosystemLinksPanel.svelte';
 	import Breadcrumb from '@fuzdev/fuz_ui/Breadcrumb.svelte';
 
-	import { library_json } from '$routes/library.ts';
+	import { library_json } from '#routes/library.ts';
 
 	const library = new Library(library_json, '/fuz_docs');
 	library_context.set(() => library);

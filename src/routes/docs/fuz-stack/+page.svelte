@@ -7,7 +7,7 @@
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
 	import { tome_get_by_slug } from '@fuzdev/fuz_ui/tome.ts';
 
-	import { skills } from '$routes/skills/skills_manifest.ts';
+	import { skills } from '#routes/skills/skills_manifest.ts';
 
 	const tome = tome_get_by_slug('fuz-stack');
 

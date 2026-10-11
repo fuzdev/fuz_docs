@@ -4,7 +4,7 @@
 	import TomeSectionHeader from '@fuzdev/fuz_ui/TomeSectionHeader.svelte';
 	import { tome_get_by_slug } from '@fuzdev/fuz_ui/tome.ts';
 
-	import { stack } from '$routes/stack.ts';
+	import { stack } from '#routes/stack.ts';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	import StackMap from './StackMap.svelte';

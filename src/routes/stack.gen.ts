@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join } from 'node:path';
 
-import { stack_repos } from '$lib/stack_repos.ts';
+import { stack_repos } from '#lib/stack_repos.ts';
 
 const DEV_DIR = join(process.env.HOME!, 'dev');
 

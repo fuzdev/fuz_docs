@@ -9,6 +9,8 @@
 	const input_modes: Array<InputMode> = ['text', 'file', 'hex', 'base64'];
 
 	let {
+		// write-only bindable output, which the rule reads as unused
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		value = $bindable(null),
 		input_mode = $bindable('text'),
 		children,

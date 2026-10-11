@@ -2,8 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import { Library, library_context } from '@fuzdev/fuz_ui/library.svelte.ts';
 
-	import SidebarLayout from '$routes/SidebarLayout.svelte';
-	import { library_json } from '$routes/library.ts';
+	import SidebarLayout from '#routes/SidebarLayout.svelte';
+	import { library_json } from '#routes/library.ts';
 
 	const { children }: { children: Snippet } = $props();
 

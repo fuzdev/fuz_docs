@@ -3,11 +3,11 @@
 		"rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
 		"cargo": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
 		"node": "v24.14.1",
-		"svelte": "5.56.2",
-		"sveltekit": "2.70.2",
-		"typescript": "5.9.3",
-		"gro": "0.213.0",
-		"vitest": "5.0.0"
+		"svelte": "5.57.2",
+		"sveltekit": "3.0.1",
+		"typescript": "6.0.3",
+		"gro": "0.214.0",
+		"vitest": "5.0.3"
 	},
 	"libraries": [
 		{
@@ -38,15 +38,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.213.0",
+			"version": "0.214.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
 			"homepage_url": "https://gro.fuz.dev/",
 			"published": true,
-			"module_count": 82,
-			"exported_module_count": 60,
-			"export_count": 352,
+			"module_count": 80,
+			"exported_module_count": 58,
+			"export_count": 348,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util"
@@ -66,7 +66,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.66.0",
+			"version": "0.66.1",
 			"path": "fuz_css",
 			"description": "semantic-first CSS framework and design system",
 			"glyph": "🪴",
@@ -93,7 +93,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/mdz",
-			"version": "0.3.0",
+			"version": "0.4.0",
 			"path": "mdz",
 			"description": "a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content",
 			"glyph": "📝",
@@ -118,7 +118,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.212.0",
+			"version": "0.213.0",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -147,7 +147,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.130.0",
+			"version": "0.131.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -256,7 +256,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_mastodon",
-			"version": "0.43.0",
+			"version": "0.44.0",
 			"path": "fuz_mastodon",
 			"description": "Mastodon components and helpers for Svelte, SvelteKit, and Fuz",
 			"glyph": "🦣",
@@ -284,7 +284,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_repos",
-			"version": "0.81.0",
+			"version": "0.82.0",
 			"path": "fuz_repos",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
@@ -391,7 +391,7 @@
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.8.0",
+			"version": "0.8.1",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",

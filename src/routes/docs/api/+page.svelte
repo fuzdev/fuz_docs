@@ -5,8 +5,8 @@
 	import { tome_get_by_slug } from '@fuzdev/fuz_ui/tome.ts';
 	import { resolve } from '$app/paths';
 
-	import { stack } from '$routes/stack.ts';
-	import { libraries_map } from '$routes/libraries.ts';
+	import { stack } from '#routes/stack.ts';
+	import { libraries_map } from '#routes/libraries.ts';
 
 	const tome = tome_get_by_slug('api');
 
@@ -32,7 +32,10 @@
 		<ul class="packages">
 			{#each packages_with_docs as pkg (pkg.name)}
 				<li>
-					<a class="package_card" href={resolve(`/docs/api/${pkg.path}`)}>
+					<a
+						class="package_card"
+						href={resolve('/docs/api/[...module_path]', { module_path: pkg.path })}
+					>
 						<span class="glyph">{pkg.glyph}</span>
 						<span class="name">{pkg.name}</span>
 						<span class="description">{pkg.description}</span>
