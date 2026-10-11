@@ -358,7 +358,7 @@ Tests in `src/test/`, mirroring `lib/`. `assert` from vitest, chosen for type
 narrowing (`assert(x instanceof Error)` narrows; `expect(...).toBeInstanceOf`
 doesn't). Custom helpers are `assert_*`. `describe` blocks (one or two
 levels), `test()` not `it()`. Split suites by aspect:
-`{module}.{aspect}.test.ts`; DB tests use `.db.test.ts` to share one PGlite
+`{module}.{aspect}.test.ts`; DB tests use `.db.test.ts` to share one WASM database
 instance via vitest `projects`. Parsers/transformers use fixtures under
 `src/test/fixtures/<feature>/<case>/` — **never hand-edit `expected.json`**;
 regenerate via `gro src/test/fixtures/<feature>/update`. See

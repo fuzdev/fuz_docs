@@ -108,10 +108,19 @@ the vitest projects split below.
 Any test using a `Db` instance uses `.db.test.ts`, with `.db` immediately
 before `.test.ts` (`foo.integration.db.test.ts`). Vitest `projects` run all DB
 tests in one worker (`isolate: false` + `fileParallelism: false`) sharing one
-PGlite WASM instance (~500–700ms cold start saved per file); non-DB tests stay
-parallel. `create_pglite_factory` instances in the same worker share the
-instance via module-level cache and reset the schema
-(`DROP SCHEMA public CASCADE`) instead of paying cold start.
+WASM database instance per driver (a cold start saved per file); non-DB tests
+stay parallel. The default factory (`create_default_db_factory`, pglet-wasm —
+install `@fuzdev/pglet-wasm` as a devDependency) and `create_pglite_factory`
+share their instance via a module-level cache; every factory, pg included,
+resets the schema (`DROP SCHEMA public CASCADE`) per `create()`, so
+`init_schema` only migrates.
+
+To switch the default driver for a run, call `set_default_db_factory` (e.g.
+with `create_pglite_factory`) from a `setupFiles` entry on the `db` project —
+it is read when a factory is built, so it must run before any test module
+imports. fuz_app's own switch is `FUZ_TEST_DB_DEFAULT`; its `unit` project
+installs a refusing default factory so a DB test missing the `.db.test.ts`
+suffix fails loudly.
 
 ```typescript
 // vite.config.ts (simplified from fuz_app)
@@ -159,13 +168,13 @@ in `afterEach`.
 Consumers create a `db_fixture.ts` from fuz_app's factories:
 
 ```typescript
-// src/test/db_fixture.ts (fuz_app's own also wires pglet + pglet-wasm factories)
+// src/test/db_fixture.ts (fuz_app's own runs four drivers: pglite, pg, pglet-server, pglet-wasm)
 const init_schema = async (db: Db): Promise<void> => {
 	await run_migrations(db, [auth_migration_ns]);
 };
-export const pglite_factory = create_pglite_factory(init_schema);
+export const default_factory = create_default_db_factory(init_schema);
 export const pg_factory = create_pg_factory(init_schema, process.env.TEST_DATABASE_URL);
-export const db_factories = [pglite_factory, pg_factory];
+export const db_factories = [default_factory, pg_factory];
 log_db_factory_status(db_factories);
 export const describe_db = create_describe_db(db_factories, auth_integration_truncate_tables);
 ```
@@ -309,7 +318,8 @@ describe.skipIf(SKIP)('vite plugin examples', () => { ... });
 | Flag                              | Repo         | Purpose                                           |
 | --------------------------------- | ------------ | ------------------------------------------------- |
 | `SKIP_EXAMPLE_TESTS`              | fuz_css      | Skip slow Vite plugin integration tests           |
-| `TEST_DATABASE_URL`               | fuz_app      | Enable PostgreSQL tests (PGlite always runs)      |
+| `TEST_DATABASE_URL`               | fuz_app      | Enable PostgreSQL tests (the default always runs) |
+| `FUZ_TEST_DB_DEFAULT`             | fuz_app      | Default driver: `pglet-wasm`, `pglite`, `pglet-server` |
 | `FUZ_TEST_CROSS_BACKEND`          | fuz_app, zzz | Enable the `cross_backend_*` vitest projects      |
 | `FUZ_TESTING_RUST_SPINE_STUB_BIN` | fuz_app      | Path to the Rust spine stub binary for cross runs |
 
@@ -341,7 +351,7 @@ and skip groups whose config is absent. The roster is fuz_app inventory
 **WebSocket round-trip tests** run **in-process** — no HTTP server, no Deno —
 driving the real dispatcher and transport so per-action auth, validation,
 `ctx.notify`, and broadcast fan-out run through real code. DB-backed WS tests
-use `.db.test.ts` and the shared PGlite factory; non-DB WS tests build a fresh
+use `.db.test.ts` and the shared default factory; non-DB WS tests build a fresh
 harness per test with ad-hoc action specs. A real-upgrade (cross-process) test
 that waits for a server-initiated message, or needs connections registered in a
 known order, opens through `create_admitted_ws_transport`
