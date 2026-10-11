@@ -249,7 +249,9 @@ export const task: Task = {
 
 Run one feature: `gro src/test/fixtures/mdz/update`. A parent
 `src/test/fixtures/update.task.ts` can fan out via `invoke_task` —
-svelte-docinfo's runs `tsdoc`/`ts`/`svelte`; its `svelte` child goes through
+svelte-docinfo's runs `tsdoc`/`ts`/`svelte` by path name
+(`'src/test/fixtures/ts/update'`), which type-check through its
+`src/gro_tasks.gen.ts` task registry (./task-patterns.md); its `svelte` child goes through
 the shared `runUpdateTask` with a `processAll` hook
 (`analyzeSvelteFixtureModules`), building one shared TS program across
 fixtures since Svelte type analysis needs a shared checker.

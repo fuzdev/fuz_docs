@@ -62,6 +62,27 @@ bypasses override resolution — tighter coupling, rarely wanted. CLI args forwa
 to composed tasks via `--` sections: `gro check -- gro test --coverage` forwards
 `--coverage` to `test`; multiple `--` sections target different sub-tasks.
 
+**Typed names and args**: `InvokeTask` checks a literal name against
+`TaskRegistry` and args against the input type of the task module's exported
+`Args` schema — defaulted args optional, the rest required. Gro's builtins
+(and their `gro/` names) are typed out of the box; a project types its own
+tasks with a genfile that writes a `ProjectTasks` augmentation, project names
+shadowing builtins like runtime resolution:
+
+```typescript
+// src/gro_tasks.gen.ts → src/gro_tasks.ts
+import { gen_task_registry } from '@fuzdev/gro/task_registry.ts';
+
+export const gen = gen_task_registry;
+```
+
+Names are the ones `gro` lists — path-form for tasks outside `src/lib/`
+(`'src/test/fixtures/ts/update'`). A name widened to `string` (dynamic, a
+`./` or absolute path, a directory) opts out with loose args. A task without
+an exported `Args` accepts any args, so export the schema. `gro dev`
+regenerates on task add/change but not delete — run `gro gen` after removing
+a task (`gro gen --check` in `gro check` catches it).
+
 ## Error Handling
 
 | Error type    | Stack trace | Gro logs message | Use when                              |
@@ -80,11 +101,16 @@ gro's compiled builtins under `gro/dist/`, which the loader also discovers.
 
 A local task with a builtin's name overrides it (`src/lib/test.task.ts`
 overrides `test`); reach the builtin as `gro gro/test`. The common override
-wraps the builtin:
+wraps the builtin, sharing its `Args` schema so the passed-through `args`
+type-check against it (untyped `args` can fail with "no properties in common"):
 
 ```typescript
-export const task: Task = {
+import type { Task } from '@fuzdev/gro';
+import { Args } from '@fuzdev/gro/test.task.ts';
+
+export const task: Task<Args> = {
 	summary: 'run tests with custom setup',
+	Args,
 	run: async ({ invoke_task, args }) => {
 		// setup
 		await invoke_task('gro/test', args);
