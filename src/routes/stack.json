@@ -38,15 +38,15 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.214.0",
+			"version": "0.216.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
 			"homepage_url": "https://gro.fuz.dev/",
 			"published": true,
-			"module_count": 80,
-			"exported_module_count": 58,
-			"export_count": 348,
+			"module_count": 83,
+			"exported_module_count": 60,
+			"export_count": 363,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_util"
@@ -153,9 +153,9 @@
 			"glyph": "🗝",
 			"homepage_url": "https://app.fuz.dev/",
 			"published": true,
-			"module_count": 355,
-			"exported_module_count": 353,
-			"export_count": 2142,
+			"module_count": 357,
+			"exported_module_count": 355,
+			"export_count": 2148,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_css",
@@ -284,7 +284,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_repos",
-			"version": "0.82.0",
+			"version": "0.83.0",
 			"path": "fuz_repos",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
@@ -292,7 +292,7 @@
 			"published": true,
 			"module_count": 54,
 			"exported_module_count": 48,
-			"export_count": 264,
+			"export_count": 265,
 			"peer_dependencies": [
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
@@ -376,8 +376,7 @@
 				"@fuzdev/fuz_util"
 			],
 			"runtime_dependencies": [
-				"@fuzdev/blake3-wasm",
-				"@fuzdev/gro"
+				"@fuzdev/blake3-wasm"
 			],
 			"dev_dependencies": [
 				"@fuzdev/fuz_app",
@@ -385,13 +384,14 @@
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
+				"@fuzdev/gro",
 				"@fuzdev/mdz"
 			]
 		},
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.8.1",
+			"version": "0.9.0",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
@@ -541,8 +541,7 @@
 			"@fuzdev/blake3-wasm",
 			"@fuzdev/fuz_app",
 			"@fuzdev/fuz_ui",
-			"@fuzdev/fuz_util",
-			"@fuzdev/gro"
+			"@fuzdev/fuz_util"
 		],
 		"svelte-docinfo": []
 	}

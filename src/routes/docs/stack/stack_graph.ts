@@ -741,7 +741,7 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'zzz',
 		to: 'gro',
-		kind: 'prod'
+		kind: 'dev'
 	},
 	{
 		from: 'zzz',

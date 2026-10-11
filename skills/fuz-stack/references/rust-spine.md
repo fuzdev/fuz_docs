@@ -25,7 +25,8 @@ repo's concern):
   (the `~/.fuz` layer), `fuz_crypto` (Ed25519 verify, `ContentHash`, canonical
   JSON), `fuz_eval` (sandboxed one-shot Deno eval). HTTP/DB-free by enforced
   rule.
-- **HTTP spine** — `fuz_http` (JSON-RPC envelope, IP/origin, lifecycle),
+- **HTTP spine** — `fuz_http` (JSON-RPC envelope, IP/origin/host, the CORS
+  simple-request gate, lifecycle),
   `fuz_db` (pool + migrations, `status`), `fuz_auth` (keyring, sessions,
   `PasswordHasher`, bootstrap, audit, `spawn_auth_cleanup`), `fuz_actions`
   (dispatch + `consumer_lifecycle`, `admit_upgrade`), `fuz_realtime` (WS/SSE
@@ -140,6 +141,14 @@ magic number.
   (unset → loopback is fine), missing/weak cookie keys, a failed
   `ActionRegistry::compile()` (an empty-registry fallback would answer
   `method_not_found` to everything).
+- **Browser gates**: `SameSite=Strict` keeps other sites out but not other
+  ports on the same host, so the spine's JSON handlers refuse a `POST` with no
+  `Content-Type` or a form / text one (415 — a request a browser sends
+  cross-origin with no preflight). A loopback daemon (zzz is the exemplar)
+  also wraps its whole router in `fuz_http::host_layer` (DNS rebinding) and,
+  when it takes no form uploads, `simple_request_layer`, and lists exact
+  origins — the origin allowlist is the only gate on the never-preflighted
+  WebSocket upgrade, so `http://localhost:*` admits every local page.
 - **Booleans** via `fuz_sys::env::parse_stringbool` (the `z.stringbool()`
   closed set; unknown values error).
 - **Secret-shaped names** carry the `SECRET_*` prefix — one contract across TS
