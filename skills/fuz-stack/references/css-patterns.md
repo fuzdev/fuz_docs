@@ -53,7 +53,12 @@ most-used family and literal flex classes (`display:flex`, `flex:1`,
 the rest, and rungs 1–5 vs rung 6. Same for text: `<small>` over
 `font-size: var(--font_size_sm)`, `<aside>` over a hand-built callout.
 Never hand-write a `rem` font size: fuz_css sets a 62.5% root, so `0.85rem`
-renders ~8.5px — smaller than the `--font_size_sm` text around it.
+renders ~8.5px — smaller than the `--font_size_sm` text around it. Every other
+`rem` length in a rule or a container query scales the same way (`16rem` is
+160px), but a `@media` query's `rem` is the browser's initial 16px, which is
+why the breakpoint modifiers below read `40rem` for 640px. Prefer tokens; when a
+hand-written length is unavoidable, pick its unit knowing which of the two it
+gets.
 
 ### Direction matters — don't churn `<style>` into class soup
 
@@ -302,7 +307,8 @@ children inherit: `font_size_lg` → `font-size` + `--font_size`; `color_a_50`
 | `sized_xs`–`sized_xl`    | **Size composites** — see below                                                                       |
 | `mb_flow`/`mt_flow`      | Flow-aware margin that follows `--flow_margin` (size composites)                                      |
 
-**Size composites cascade to a subtree.** Put one on any **container** and it
+**Size composites cascade to a subtree.** Put one on any **container** (or a
+single element, such as a row of secondary buttons) and it
 rescales that subtree's `--font_size`, `--input_height`, `--icon_size`,
 padding, **and `--flow_margin`** in lockstep — a `sized_sm` panel gets tighter
 controls, chips, icons, and rhythm together (headings and prose keep their
@@ -329,7 +335,8 @@ properties; `calc` needs `~` around `+`/`-`:
 ```
 
 More than 2–3 `~` → use a `<style>` block. Custom-property literals
-(`--flow_margin:0`, `--button_shadow:none`) are the general escape hatch onto
+(`--flow_margin:0`, `--button_shadow:none`, `--button_min_height:0` for a
+button shorter than the input height) are the general escape hatch onto
 any theme/base variable hook (knobs like `--space_scale` resolve on `:root`,
 so they belong in a theme, not on an element).
 
