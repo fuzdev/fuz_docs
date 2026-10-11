@@ -1,12 +1,12 @@
 {
 	"toolchain": {
-		"rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
-		"cargo": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+		"rustc": "rustc 1.94.1 (e408947bf 2026-03-25)",
+		"cargo": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
 		"node": "v24.14.1",
 		"svelte": "5.57.2",
 		"sveltekit": "3.0.1",
 		"typescript": "6.0.3",
-		"gro": "0.214.0",
+		"gro": "0.216.0",
 		"vitest": "5.0.3"
 	},
 	"libraries": [
@@ -147,7 +147,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.132.0",
+			"version": "0.132.1",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -155,7 +155,7 @@
 			"published": true,
 			"module_count": 357,
 			"exported_module_count": 355,
-			"export_count": 2148,
+			"export_count": 2150,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_css",

@@ -73670,7 +73670,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.132.0",
+			"version": "0.132.1",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -126848,11 +126848,31 @@
 							"mergedValue": true
 						},
 						{
+							"name": "UnsupportedContentTypeError",
+							"kind": "type",
+							"docComment": "Unsupported content type error — returned when a `POST` route refuses the request's `Content-Type`.",
+							"typeSignature": "{ [x: string]: unknown; error: \"unsupported_content_type\"; }",
+							"sourceLine": 311,
+							"members": [
+								{
+									"name": "error",
+									"kind": "variable",
+									"typeSignature": "\"unsupported_content_type\""
+								},
+								{
+									"name": "[key: string]",
+									"kind": "variable",
+									"typeSignature": "unknown"
+								}
+							],
+							"mergedValue": true
+						},
+						{
 							"name": "ForeignKeyError",
 							"kind": "type",
 							"docComment": "Foreign key violation error — returned when a delete is blocked by references.",
 							"typeSignature": "{ [x: string]: unknown; error: \"foreign_key_violation\"; }",
-							"sourceLine": 311,
+							"sourceLine": 317,
 							"members": [
 								{
 									"name": "error",
@@ -126872,7 +126892,7 @@
 							"kind": "type",
 							"docComment": "Authorization-phase failure shapes. Surfaced when the dispatcher's\n`apply_authorization_phase` rejects a request before the handler runs —\nthe route is acting-aware (input declares `acting?: ActingActor` or\nauth requires role_grants), but actor resolution failed.\n\n400: `actor_required` (with `available[]`) for unspecified-actor on\na multi-actor account; `actor_not_on_account` for a supplied actor\nid that doesn't belong to the authenticated account.\n\n500: `no_actors_on_account` for a signup-invariant violation (the\nactor list enumerated empty); `account_vanished` for a torn-read\nrace (account/actor row deleted between credential validation and\nthe dispatcher's follow-up read).\n\nUsed by `derive_error_schemas` when `auth.actor !== 'none'` so the\nmerged error surface matches what the dispatcher actually emits.",
 							"typeSignature": "{ [x: string]: unknown; error: \"actor_required\"; available: { [x: string]: unknown; id: string; name: string; }[]; }",
-							"sourceLine": 335,
+							"sourceLine": 341,
 							"members": [
 								{
 									"name": "error",
@@ -126896,7 +126916,7 @@
 							"name": "ActorNotOnAccountError",
 							"kind": "type",
 							"typeSignature": "{ [x: string]: unknown; error: \"actor_not_on_account\"; }",
-							"sourceLine": 340,
+							"sourceLine": 346,
 							"members": [
 								{
 									"name": "error",
@@ -126915,7 +126935,7 @@
 							"name": "NoActorsOnAccountError",
 							"kind": "type",
 							"typeSignature": "{ [x: string]: unknown; error: \"no_actors_on_account\"; }",
-							"sourceLine": 345,
+							"sourceLine": 351,
 							"members": [
 								{
 									"name": "error",
@@ -126934,7 +126954,7 @@
 							"name": "AccountVanishedError",
 							"kind": "type",
 							"typeSignature": "{ [x: string]: unknown; error: \"account_vanished\"; }",
-							"sourceLine": 350,
+							"sourceLine": 356,
 							"members": [
 								{
 									"name": "error",
@@ -126954,7 +126974,7 @@
 							"kind": "type",
 							"docComment": "Error schema map — maps HTTP status codes to Zod schemas.\n\nUsed on `RouteSpec.errors` and internally by `derive_error_schemas`.",
 							"typeSignature": "Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>>",
-							"sourceLine": 357,
+							"sourceLine": 363,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Partial",
@@ -127049,7 +127069,7 @@
 							"kind": "type",
 							"docComment": "Rate limit key type — declares what a route or RPC action's rate limiter\nis keyed on.\n\n- `'ip'` — per-IP rate limiting (login, bootstrap, password change, signup)\n- `'account'` — per-account rate limiting. On REST auth routes the key is\n  the submitted identifier (login). On RPC actions (post-auth) the key is\n  the resolved actor id (`request_context.actor.id`) — separate namespace.\n- `'both'` — both keys.",
 							"typeSignature": "\"both\" | \"account\" | \"ip\"",
-							"sourceLine": 370,
+							"sourceLine": 376,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -127075,9 +127095,9 @@
 						{
 							"name": "DeriveErrorSchemasOptions",
 							"kind": "interface",
-							"docComment": "Derive error schemas from a route's auth requirement, input schema, and rate limit config.\n\nReturns the error schemas that middleware will auto-produce for this route.\nRoute handlers can declare additional error schemas via `RouteSpec.errors`;\nexplicit entries override auto-derived ones for the same status code.\n\nDerivation rules under the new flat-record auth shape:\n- **Has input / params / query schema**: 400 (`ValidationError`).\n- **`auth.account === 'required'`** or **`auth.actor === 'required'`**: 401\n  (`ApiError`) — pre-authorization 401 fires when the credential isn't there.\n  `'optional'` does not derive 401.\n- **`auth.roles?.length`**: 403 (`PermissionError` carrying `required_roles`).\n- **`auth.credential_types?.length`**: 403 (`CredentialTypeRequiredError`\n  carrying `required_credential_types` — symmetric with `PermissionError`).\n  Today the only credential gate is keeper; future gates reuse the literal.\n- **`auth.required_scope`**: 403 (`TokenScopeRequiredError` carrying\n  `required_scope`) — the refusal `require_token_scope` emits.\n  A route declaring more than one of these three gates derives the union\n  of their shapes, since any of them can be the one that answers.\n- **`auth.actor !== 'none'`** (`'optional'` or `'required'`): extends 400\n  with `ActorRequiredError` / `ActorNotOnAccountError` and adds 500 union\n  of `NoActorsOnAccountError` / `AccountVanishedError`. The dispatcher's\n  authorization phase emits these whenever it tries to resolve an actor.\n- **rate_limit**: 429 (`RateLimitError` with `retry_after`).\n- **checks_content_type**: 415 (`ApiError`, `unsupported_content_type`) —\n  every `POST` route (see `is_post_content_type_refused` in\n  `http/simple_request.ts`).",
+							"docComment": "Derive error schemas from a route's auth requirement, input schema, and rate limit config.\n\nReturns the error schemas that middleware will auto-produce for this route.\nRoute handlers can declare additional error schemas via `RouteSpec.errors`;\nexplicit entries override auto-derived ones for the same status code.\n\nDerivation rules under the new flat-record auth shape:\n- **Has input / params / query schema**: 400 (`ValidationError`).\n- **`auth.account === 'required'`** or **`auth.actor === 'required'`**: 401\n  (`ApiError`) — pre-authorization 401 fires when the credential isn't there.\n  `'optional'` does not derive 401.\n- **`auth.roles?.length`**: 403 (`PermissionError` carrying `required_roles`).\n- **`auth.credential_types?.length`**: 403 (`CredentialTypeRequiredError`\n  carrying `required_credential_types` — symmetric with `PermissionError`).\n  Today the only credential gate is keeper; future gates reuse the literal.\n- **`auth.required_scope`**: 403 (`TokenScopeRequiredError` carrying\n  `required_scope`) — the refusal `require_token_scope` emits.\n  A route declaring more than one of these three gates derives the union\n  of their shapes, since any of them can be the one that answers.\n- **`auth.actor !== 'none'`** (`'optional'` or `'required'`): extends 400\n  with `ActorRequiredError` / `ActorNotOnAccountError` and adds 500 union\n  of `NoActorsOnAccountError` / `AccountVanishedError`. The dispatcher's\n  authorization phase emits these whenever it tries to resolve an actor.\n- **rate_limit**: 429 (`RateLimitError` with `retry_after`).\n- **checks_content_type**: 415 (`UnsupportedContentTypeError`) —\n  every `POST` route (see `is_post_content_type_refused` in\n  `http/simple_request.ts`).",
 							"typeSignature": "DeriveErrorSchemasOptions",
-							"sourceLine": 401,
+							"sourceLine": 407,
 							"members": [
 								{
 									"name": "auth",
@@ -127128,7 +127148,7 @@
 							"name": "derive_error_schemas",
 							"kind": "function",
 							"typeSignature": "({ auth, has_input, has_params, has_query, rate_limit, checks_content_type }: DeriveErrorSchemasOptions): Partial<Record<number, ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>>>",
-							"sourceLine": 410,
+							"sourceLine": 416,
 							"parameters": [
 								{
 									"name": "__0",
@@ -139214,7 +139234,7 @@
 							"kind": "interface",
 							"docComment": "Configuration for `describe_standard_admin_integration_tests`.",
 							"typeSignature": "StandardAdminIntegrationTestOptions",
-							"sourceLine": 86,
+							"sourceLine": 87,
 							"members": [
 								{
 									"name": "setup_test",
@@ -139298,7 +139318,7 @@
 							"kind": "function",
 							"docComment": "Standard admin integration test suite for fuz_app admin routes.\n\nExercises account listing, role_grant grant/revoke (via RPC), session\nmanagement, token management, audit log reads, admin-to-admin\nisolation, and 401/403 error-coverage on the admin REST surface.\nOutput-schema conformance is not in scope — see the module docstring\nfor the suites that cover it.",
 							"typeSignature": "(options: StandardAdminIntegrationTestOptions): void",
-							"sourceLine": 146,
+							"sourceLine": 147,
 							"throws": [
 								{
 									"type": "Error",
@@ -139330,6 +139350,7 @@
 						"testing/integration_helpers.ts",
 						"testing/role_grant_helpers.ts",
 						"testing/rpc_helpers.ts",
+						"testing/schema_generators.ts",
 						"testing/test_credentials.ts"
 					],
 					"dependents": [
@@ -139345,7 +139366,7 @@
 							"kind": "function",
 							"docComment": "Generate adversarial 404 response validation tests.\n\nFor each route with `params` + 404 in `error_schemas`:\n1. Creates a stub handler returning 404 with the declared error code\n2. Fires a request with valid-format params (nil UUIDs for UUID params)\n3. Validates response status is 404\n4. Validates response body matches the declared 404 Zod schema",
 							"typeSignature": "(options: AdversarialTestOptions): void",
-							"sourceLine": 55,
+							"sourceLine": 59,
 							"parameters": [
 								{
 									"name": "options",
@@ -139547,7 +139568,7 @@
 							"kind": "function",
 							"docComment": "Generate adversarial test cases for a route's input schema.\n\nProduces focused, non-redundant cases:\n- Whole-body: send array instead of object, extra unknown key\n- Missing required fields (without defaults)\n- One wrong-type value per field\n- Null for required non-nullable fields\n- One format violation per constrained field",
 							"typeSignature": "(input_schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): InputTestCase[]",
-							"sourceLine": 114,
+							"sourceLine": 119,
 							"throws": [
 								{
 									"type": "Error",
@@ -139602,7 +139623,7 @@
 							"kind": "function",
 							"docComment": "Generate adversarial test cases for a route's params schema.\n\nParams are always strings from URL segments. Only generates cases for\nformat-constrained fields (uuid, pattern) since unconstrained string\nparams accept any string value.",
 							"typeSignature": "(params_schema: ZodObject<$ZodLooseShape, $strip>): ParamsTestCase[]",
-							"sourceLine": 323,
+							"sourceLine": 328,
 							"parameters": [
 								{
 									"name": "params_schema",
@@ -139637,7 +139658,7 @@
 							"kind": "function",
 							"docComment": "Generate adversarial test cases for a route's query schema.\n\nQuery params are always strings from the URL. Generates cases for:\n- Missing required fields\n- Format violations on constrained fields (uuid, pattern)",
 							"typeSignature": "(query_schema: ZodObject<$ZodLooseShape, $strip>): QueryTestCase[]",
-							"sourceLine": 365,
+							"sourceLine": 370,
 							"parameters": [
 								{
 									"name": "query_schema",
@@ -139672,7 +139693,7 @@
 							"kind": "function",
 							"docComment": "Generate adversarial input validation test suites.\n\nTests input body validation and params validation for all routes.\nUses correct auth credentials so auth guards pass and validation\nmiddleware is actually exercised.",
 							"typeSignature": "(options: AdversarialTestOptions): void",
-							"sourceLine": 437,
+							"sourceLine": 442,
 							"parameters": [
 								{
 									"name": "options",
@@ -150917,6 +150938,13 @@
 									"optional": true
 								},
 								{
+									"name": "data_exposure_skip_routes",
+									"kind": "variable",
+									"docComment": "Forwarded to `describe_data_exposure_tests` as `skip_routes`\n(`'METHOD /path'` keys), as the in-process bundle's consumers pass it\ndirectly.",
+									"typeSignature": "string[]",
+									"optional": true
+								},
+								{
 									"name": "rpc_success_fixtures",
 									"kind": "variable",
 									"docComment": "Forwarded to `describe_rpc_round_trip_tests` as `success_fixtures`\n(method name → async params factory). Drives a populated **success**\nbody for referential RPC reads (`*_get`, `*_log`) the nil-id round-trip\ncan only ever error on, and validates it against the method's `output`\nschema on each backend — the success-shape parity check. See\n`RpcRoundTripTestOptions.success_fixtures`.",
@@ -150965,7 +150993,7 @@
 							"kind": "function",
 							"docComment": "Run the cross-process standard test bundle — integration, admin (when\n`roles` provided), round trip, RPC round trip, data exposure. See the\nmodule doc for the suites omitted from this bundle and why.",
 							"typeSignature": "(options: StandardCrossProcessTestOptions): void",
-							"sourceLine": 134,
+							"sourceLine": 140,
 							"parameters": [
 								{
 									"name": "options",
@@ -153174,7 +153202,7 @@
 							"kind": "function",
 							"docComment": "Recursively collect all property names from a JSON Schema.\n\nWalks `properties`, `items`, `allOf`/`anyOf`/`oneOf`, and\n`additionalProperties` to find every declared field name at any depth.",
 							"typeSignature": "(schema: unknown): Set<string>",
-							"sourceLine": 44,
+							"sourceLine": 48,
 							"parameters": [
 								{
 									"name": "schema",
@@ -153198,7 +153226,7 @@
 							"kind": "function",
 							"docComment": "Assert that no output schema in the surface contains sensitive field names.",
 							"typeSignature": "(surface: AppSurface, sensitive_fields?: readonly string[]): void",
-							"sourceLine": 74,
+							"sourceLine": 78,
 							"parameters": [
 								{
 									"name": "surface",
@@ -153217,7 +153245,7 @@
 							"kind": "function",
 							"docComment": "Assert that non-admin route output schemas don't contain admin-only fields.",
 							"typeSignature": "(surface: AppSurface, admin_only_fields?: readonly string[]): void",
-							"sourceLine": 93,
+							"sourceLine": 97,
 							"parameters": [
 								{
 									"name": "surface",
@@ -153236,7 +153264,7 @@
 							"kind": "interface",
 							"docComment": "Options for `describe_data_exposure_tests`.",
 							"typeSignature": "DataExposureTestOptions",
-							"sourceLine": 117,
+							"sourceLine": 121,
 							"members": [
 								{
 									"name": "setup_test",
@@ -153289,7 +153317,7 @@
 							"kind": "function",
 							"docComment": "Composable data exposure test suite.\n\nThree test groups:\n1. Schema-level — walk JSON Schema output/error schemas for sensitive field names\n2. Runtime — fire real requests and check response bodies against blocklists\n3. Cross-privilege — admin routes return 403 for non-admin, error responses\n   contain no sensitive fields",
 							"typeSignature": "(options: DataExposureTestOptions): void",
-							"sourceLine": 142,
+							"sourceLine": 146,
 							"parameters": [
 								{
 									"name": "options",
@@ -158300,7 +158328,7 @@
 							"kind": "interface",
 							"docComment": "Options for `describe_round_trip_validation`.",
 							"typeSignature": "RoundTripTestOptions",
-							"sourceLine": 33,
+							"sourceLine": 37,
 							"members": [
 								{
 									"name": "setup_test",
@@ -158391,7 +158419,7 @@
 							"kind": "function",
 							"docComment": "Run schema-driven round-trip validation tests.\n\nFor each route:\n1. Resolve URL with valid params\n2. Generate a valid request body (or use override)\n3. Pick auth headers matching the route's auth requirement\n4. Fire the request through `fixture.transport` and validate the response\n\nSSE routes are skipped by Content-Type sniff. Routes returning non-2xx\nwith valid input are still validated against their declared error schemas.",
 							"typeSignature": "(options: RoundTripTestOptions): void",
-							"sourceLine": 82,
+							"sourceLine": 86,
 							"parameters": [
 								{
 									"name": "options",
@@ -159788,11 +159816,26 @@
 							"returnType": "unknown"
 						},
 						{
+							"name": "to_route_content_type",
+							"kind": "function",
+							"docComment": "The `Content-Type` a well-formed request to a route sends: `application/json`,\nor `application/octet-stream` for a `raw_body` route. Every `POST` route\nrefuses anything else with 415 before its other gates run (see\n`http/simple_request.ts`), so a probe of those gates must send it, body or\nnot. Other methods don't check it, so sending it there is harmless.",
+							"typeSignature": "(route: { raw_body?: boolean | undefined; }): string",
+							"sourceLine": 269,
+							"parameters": [
+								{
+									"name": "route",
+									"type": "{ raw_body?: boolean | undefined; }",
+									"description": "the route spec or surface route (reads `raw_body`)"
+								}
+							],
+							"returnType": "string"
+						},
+						{
 							"name": "resolve_valid_path",
 							"kind": "function",
 							"docComment": "Resolve a route path with valid-ish param values so params validation passes.\nUsed when testing input on routes that also have params.\n\nWithout a params schema (or for a param the schema doesn't name) each\n`:name` becomes `test_<name>` — fine for an unconstrained segment. With\none, `test_<name>` is still preferred wherever the field schema accepts\nit, because the param name in the URL is what makes a failure message\nreadable. Only a segment that refuses it falls through: a `uuid` param\ntakes the nil UUID (the fast path — by far the most common shape), and\nanything else is synthesized by `generate_valid_string`, so a\nformat-constrained segment (a `blake3:…` fact hash, a `tok_…` id)\nresolves to a value its schema accepts instead of a `test_<name>` that\n400s before the route's real gates run.\n\nThe synthesized value is percent-encoded, and a value containing `/` is\nrefused (it would silently add a path segment and route elsewhere) —\nboth fall back to `test_<name>`.",
 							"typeSignature": "(path: string, params_schema?: ZodObject<$ZodLooseShape, $strip> | undefined): string",
-							"sourceLine": 279,
+							"sourceLine": 291,
 							"parameters": [
 								{
 									"name": "path",
@@ -159825,7 +159868,7 @@
 							"kind": "function",
 							"docComment": "Generate a valid request body for a route's input schema.",
 							"typeSignature": "(input_schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): Record<string, unknown> | undefined",
-							"sourceLine": 307,
+							"sourceLine": 319,
 							"throws": [
 								{
 									"type": "Error",
@@ -159899,6 +159942,7 @@
 						"testing/assert_dev_env.ts"
 					],
 					"dependents": [
+						"testing/admin_integration.ts",
 						"testing/adversarial_404.ts",
 						"testing/adversarial_input.ts",
 						"testing/attack_surface.ts",
