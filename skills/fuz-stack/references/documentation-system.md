@@ -17,7 +17,8 @@ package.json → vite_plugin_pkg_json  → virtual:pkg.json (pkg_json)       ┘
 
 - **`svelte-docinfo`** (standalone package) analyzes TS/JS/Svelte via the
   TypeScript compiler API: declarations, TSDoc tags, re-exports merged into
-  `alsoExportedFrom`, module sorting, flat-namespace duplicate checks. Its API
+  `alsoExportedFrom`, module sorting, and an opt-in flat-namespace duplicate
+  check (`onDuplicates`, which fuz projects set to `'throw'`). Its API
   is camelCase (it targets the broad Svelte ecosystem). Its Vite plugin
   exposes `modules` and `diagnostics` (a union of kinds: tag problems like
   `misplaced_tag`, `duplicate_declaration`, `alias_lost`, transform and
@@ -76,7 +77,9 @@ Examples use the `#routes`/`#lib` subpath imports, declared in `package.json`
 // vite.config.ts
 import svelte_docinfo from 'svelte-docinfo/vite.js';
 import { vite_plugin_pkg_json } from '@fuzdev/fuz_ui/vite_plugin_pkg_json.ts';
-export default defineConfig({ plugins: [sveltekit(), svelte_docinfo(), vite_plugin_pkg_json()] });
+export default defineConfig({
+	plugins: [sveltekit(), svelte_docinfo({ onDuplicates: 'throw' }), vite_plugin_pkg_json()]
+});
 ```
 
 **Vite self-alias, for a library that a dependency imports back.** When an

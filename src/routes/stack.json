@@ -391,7 +391,7 @@
 		{
 			"kind": "package",
 			"name": "svelte-docinfo",
-			"version": "0.9.0",
+			"version": "0.10.0",
 			"path": "svelte-docinfo",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
@@ -399,7 +399,7 @@
 			"published": true,
 			"module_count": 34,
 			"exported_module_count": 32,
-			"export_count": 258,
+			"export_count": 256,
 			"peer_dependencies": [],
 			"runtime_dependencies": [],
 			"dev_dependencies": [

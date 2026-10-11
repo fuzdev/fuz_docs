@@ -244425,7 +244425,7 @@
 	"svelte-docinfo": {
 		"pkg_json": {
 			"name": "svelte-docinfo",
-			"version": "0.9.0",
+			"version": "0.10.0",
 			"description": "static analysis for TypeScript and Svelte",
 			"glyph": "📜",
 			"logo": "logo.svg",
@@ -244461,71 +244461,11 @@
 					"path": "analyze-core.ts",
 					"declarations": [
 						{
-							"name": "OnDuplicatesCallback",
-							"kind": "type",
-							"docComment": "Custom callback for handling duplicate declaration names.\n\nUse the `'throw'` or `'warn'` shortcuts on `onDuplicates` for the common\ncases. Pass a function to fully control reporting.",
-							"typeSignature": "OnDuplicatesCallback",
-							"sourceLine": 83,
-							"alsoExportedFrom": [
-								"index.ts"
-							],
-							"members": [
-								{
-									"name": "(call)",
-									"kind": "function",
-									"typeSignature": "(duplicates: Map<string, DuplicateDeclaration[]>, log: Pick<AnalysisLog, \"error\">): void",
-									"parameters": [
-										{
-											"name": "duplicates",
-											"type": "Map<string, DuplicateDeclaration[]>",
-											"typeInfo": {
-												"kind": "reference",
-												"name": "Map",
-												"typeArgs": [
-													{
-														"kind": "intrinsic",
-														"text": "string"
-													},
-													{
-														"kind": "array",
-														"element": {
-															"kind": "reference",
-															"name": "DuplicateDeclaration"
-														}
-													}
-												]
-											}
-										},
-										{
-											"name": "log",
-											"type": "Pick<AnalysisLog, \"error\">",
-											"typeInfo": {
-												"kind": "reference",
-												"name": "Pick",
-												"typeArgs": [
-													{
-														"kind": "reference",
-														"name": "AnalysisLog"
-													},
-													{
-														"kind": "literal",
-														"value": "error",
-														"text": "\"error\""
-													}
-												]
-											}
-										}
-									],
-									"returnType": "void"
-								}
-							]
-						},
-						{
 							"name": "OnDuplicates",
 							"kind": "type",
-							"docComment": "Behavior selector for duplicate declaration names across modules.\n\n- `'throw'` — throw an `Error` listing every duplicate (strict flat-namespace enforcement)\n- `'warn'` — log to `log.error` and continue\n- `OnDuplicatesCallback` — custom handler\n\nOmitted entirely: no dispatch runs, but a `duplicate_declaration` diagnostic\nis still emitted into the diagnostics array for every collision (the diagnostic\nis the data; this option is the action).\n\n**`'throw'` trade-off**: the throw fires after diagnostics are emitted but\nbefore the result is returned, so `'throw'` callers never reach the\ndiagnostics array. Callers that want fail-fast *and* diagnostic access\nshould omit `onDuplicates` and inspect themselves:\n\n```ts\nconst result = await analyze({...});\nif (hasErrors(result.diagnostics)) throw new Error('analysis errors');\n```\n\nOr use an `OnDuplicatesCallback` and stash the data before throwing.",
+							"docComment": "Opt-in check that declaration names are unique across modules.\n\nFor packages that keep a flat export namespace, where every exported name\nis unique across the whole package. Most packages don't, and two modules\nexporting the same name is ordinary, so the check is off by default:\nomitted, duplicate detection doesn't run and nothing is reported.\n\nEvery mode emits a `duplicate_declaration` diagnostic per colliding name:\n\n- `'diagnostic'` — the diagnostics only\n- `'warn'` — also log the collisions to `log.warn` and continue\n- `'throw'` — also throw an `Error` listing every duplicate\n\nThe throw fires before the result is returned, so `'throw'` callers never\nreach the diagnostics array. For custom handling, use `'diagnostic'` and\nread the records with `byKind(diagnostics, 'duplicate_declaration')`.",
 							"typeSignature": "OnDuplicates",
-							"sourceLine": 111,
+							"sourceLine": 90,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -244534,87 +244474,29 @@
 								"alias": "OnDuplicates",
 								"members": [
 									{
-										"kind": "function",
-										"text": "OnDuplicatesCallback"
-									},
-									{
 										"kind": "literal",
-										"value": "throw",
-										"text": "\"throw\""
+										"value": "diagnostic",
+										"text": "\"diagnostic\""
 									},
 									{
 										"kind": "literal",
 										"value": "warn",
 										"text": "\"warn\""
+									},
+									{
+										"kind": "literal",
+										"value": "throw",
+										"text": "\"throw\""
 									}
 								]
 							}
-						},
-						{
-							"name": "throwOnDuplicates",
-							"kind": "function",
-							"docComment": "Convenience `OnDuplicatesCallback` that throws on any duplicate.",
-							"typeSignature": "(duplicates: Map<string, DuplicateDeclaration[]>, log: Pick<AnalysisLog, \"error\">): void",
-							"sourceLine": 118,
-							"throws": [
-								{
-									"type": "Error",
-									"description": "listing every duplicate name and module location"
-								}
-							],
-							"alsoExportedFrom": [
-								"index.ts"
-							],
-							"parameters": [
-								{
-									"name": "duplicates",
-									"type": "Map<string, DuplicateDeclaration[]>",
-									"typeInfo": {
-										"kind": "reference",
-										"name": "Map",
-										"typeArgs": [
-											{
-												"kind": "intrinsic",
-												"text": "string"
-											},
-											{
-												"kind": "array",
-												"element": {
-													"kind": "reference",
-													"name": "DuplicateDeclaration"
-												}
-											}
-										]
-									}
-								},
-								{
-									"name": "log",
-									"type": "Pick<AnalysisLog, \"error\">",
-									"typeInfo": {
-										"kind": "reference",
-										"name": "Pick",
-										"typeArgs": [
-											{
-												"kind": "reference",
-												"name": "AnalysisLog"
-											},
-											{
-												"kind": "literal",
-												"value": "error",
-												"text": "\"error\""
-											}
-										]
-									}
-								}
-							],
-							"returnType": "void"
 						},
 						{
 							"name": "AnalyzeResultJson",
 							"kind": "type",
 							"docComment": "Result of `analyze`, `analyzeFromFiles`, and `AnalysisSession.query`.\n\nModules sorted alphabetically by `path`. Diagnostics are query-time\n(analysis-pass) diagnostics only when produced by `session.query`; one-shot\nwrappers concatenate ingest + query diagnostics into this same array.\n\n## Schema-validated round-trip\n\nThe envelope is a Zod schema (`AnalyzeResultJson`) — both fields default to\n`[]`, so `JSON.stringify(result, compactReplacer)` strips empty arrays on\nthe wire and `AnalyzeResultJson.parse(JSON.parse(json))` restores them.\nConsumers programmatically ingesting analysis JSON should parse through the\nschema to get defaults restored; raw-JSON consumers (e.g., `jq`) treat\nmissing keys as null-equivalent (`jq '.diagnostics | length'` returns `0`\non `{}`) and don't need the parse step.\n\nConstruction sites (one-shot wrappers, `session.query`) hand back hand-built\nobjects without re-running `.parse()` — the inner `modules` and\n`diagnostics` arrays are already Zod-validated upstream, and the envelope\nschema is the type contract, not a validation gate.\n\nSee `AnalyzeResultJsonWire` for the serialized input-side shape published on\n`virtual:svelte-docinfo`.",
 							"typeSignature": "{ modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceL...",
-							"sourceLine": 225,
+							"sourceLine": 187,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -244653,7 +244535,7 @@
 							"kind": "interface",
 							"docComment": "Serialized wire shape of an analysis result, as published by the Vite plugin\non `virtual:svelte-docinfo` — the input-side counterpart to\n`AnalyzeResultJson` (the validated output of `.parse()`).\n\nThe two fields are deliberately asymmetric:\n\n- `modules` is `ModuleJsonInput` (the `z.input` of `ModuleJson`) because the\n  plugin runs it through `compactReplacer`, which strips `.default([])`\n  arrays and `.default(false)` booleans. Default-bearing fields therefore\n  arrive `undefined`.\n- `diagnostics` is the output `Diagnostic` — the plugin serializes it\n  without the replacer, and `Diagnostic` has no defaults to strip, so the\n  array is always present and the shape matches runtime exactly.\n\nConsumers restore defaults by parsing through `AnalyzeResultJson`.\n\nNote this describes the Vite virtual module specifically. The CLI runs the\nwhole envelope through `compactReplacer`, so its JSON may additionally omit\nan empty `diagnostics` array — CLI consumers should parse through\n`AnalyzeResultJson` rather than assume this shape.",
 							"typeSignature": "AnalyzeResultJsonWire",
-							"sourceLine": 249,
+							"sourceLine": 211,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -244689,7 +244571,7 @@
 							"kind": "function",
 							"docComment": "Analyze a single non-Svelte source file and extract module metadata — the\nper-module dispatcher behind `analyzeCore`.\n\nDispatches on file type:\n- TypeScript/JS → `analyzeTypescriptModule`\n- CSS/JSON → minimal module (no declarations, dependency tracking only)\n- Svelte → `module_skipped: requires_program` (callers using session API\n  should not reach this path; the session pre-handles Svelte)\n\nReturns `undefined` when the file is skipped; the diagnostic is added to\n`diagnostics` so the caller can keep iterating.\n\n`alsoExportedFrom` on returned declarations is always empty from this path —\ncross-module re-export resolution requires all modules (`mergeReExports`\nconsumes the returned module's `reExports` in phase 2).\n\n`aliasRegistry` is optional at this boundary: direct callers assembling\nmodules themselves get written-name recovery only, while `analyzeCore`\npasses the registry its pre-pass built (see `buildAliasRegistry`).",
 							"typeSignature": "(sourceFile: SourceFileInfo & { dependents?: readonly string[] | undefined; }, program: Program, options: ModuleSourceOptions, diagnostics: ({ symbolName: string; ... 5 more ...; column?: number | undefined; } | ... 14 more ... | { ...; })[], log?: AnalysisLog | undefined, aliasRegistry?: AliasRegistry | undefined): { ...; } | undefined",
-							"sourceLine": 322,
+							"sourceLine": 284,
 							"internalMessage": "Importable from `svelte-docinfo/analyze-core.js` for tests and\npower users; not stable API.",
 							"parameters": [
 								{
@@ -244759,7 +244641,7 @@
 							"kind": "interface",
 							"docComment": "Inputs to `analyzeCore`. The caller (one-shot wrapper or session.query)\nis responsible for normalizing `sourceOptions`, obtaining the program,\nand pre-transforming Svelte files into `svelteVirtualFiles`.\n\n`transformFailedIds` carries the IDs of `.svelte` files whose svelte2tsx\ntransform threw at ingest. The dispatch synthesizes a placeholder\n`ModuleJson` (`partial: true`, empty declarations) for each so consumers\nsee the file's existence in `modules` even though analysis couldn't run.\nIdentifying these via a sibling Set keeps `svelteVirtualFiles` a clean\n\"files we can analyze\" map; the failure side-channel doesn't pollute it.",
 							"typeSignature": "AnalyzeCoreInputs",
-							"sourceLine": 412,
+							"sourceLine": 374,
 							"members": [
 								{
 									"name": "sourceFiles",
@@ -244845,18 +244727,19 @@
 										"alias": "OnDuplicates",
 										"members": [
 											{
-												"kind": "function",
-												"text": "OnDuplicatesCallback"
-											},
-											{
 												"kind": "literal",
-												"value": "throw",
-												"text": "\"throw\""
+												"value": "diagnostic",
+												"text": "\"diagnostic\""
 											},
 											{
 												"kind": "literal",
 												"value": "warn",
 												"text": "\"warn\""
+											},
+											{
+												"kind": "literal",
+												"value": "throw",
+												"text": "\"throw\""
 											}
 										]
 									}
@@ -244874,7 +244757,7 @@
 							"kind": "function",
 							"docComment": "Run the two-phase analysis loop on pre-prepared inputs. The orchestrator\nbehind `session.query`, and so behind the one-shot wrappers, which query a\nsingle-use session.\n\nRuns the alias-registry pre-pass (`buildAliasRegistry`) over the emitted\nset, then phase 1: per-file dispatch (TS / Svelte / CSS / JSON /\nplaceholder for transform-failed Svelte), plus gated Svelte canonicals\nanalyzed as fill context. Phase 2: re-export merge, component-alias fill,\nsort, duplicate detection, and module-path normalization in printed types\n(`normalizeModulePathsInTypes`), then `finalizeDiagnostics`.\n\nDependents are read from `sourceFile.dependents` via `extractDependencies`;\n`analyzeCore` does not compute them. `session.query` runs\n`computeDependents` on the emitted set before invoking this.",
 							"typeSignature": "(inputs: AnalyzeCoreInputs): { modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]; diagnostics: ({ ...; } | ... 14 more ... | { ...; })[]; }",
-							"sourceLine": 499,
+							"sourceLine": 461,
 							"internalMessage": "Importable from `svelte-docinfo/analyze-core.js` for tests and\npower users; not stable API.",
 							"parameters": [
 								{
@@ -244893,7 +244776,7 @@
 							"kind": "function",
 							"docComment": "Run the diagnostic boundary passes in their required order: virtual\nposition remap first (`remapVirtualDiagnosticPositions`), then path\nnormalization (`normalizeDiagnosticPaths` — it strips the virtual suffix\nthe remap matches `file` against, so the reverse order silently keeps\nvirtual positions). The one call for callers assembling modules themselves\nthrough `analyzeModule` / `analyzeSvelteModule`; using it makes the\nordering unrepresentable instead of a contract to remember. Omit\n`virtualFiles` when no Svelte virtuals are in play.",
 							"typeSignature": "(diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | { functionName: string; ... 5 more ...; column?: number | undefined; } | ... 13 more ... | { ...; })[], options: { ...; }): void",
-							"sourceLine": 657,
+							"sourceLine": 616,
 							"mutates": {
 								"diagnostics": "rewrites positions, `file`, and `message`"
 							},
@@ -244921,7 +244804,7 @@
 							"kind": "function",
 							"docComment": "Normalize the paths a `Diagnostic` carries to project-root-relative form,\nin place.\n\nProducers inside the analysis pipeline can write absolute paths or virtual\npaths (svelte2tsx output like `Foo.svelte.__svelte2tsx__.ts`). This pass\ncollapses both to the public contract: a path relative to `projectRoot`\nwith no leading slash and no `./` prefix. A file outside the root gets the\n`../` form, matching module paths in printed type text — so the documented\n\"rejoin with `projectRoot` to get an absolute path\" holds for it too.\n\n`message` gets the same treatment as `file`, by textual substitution. A\nmessage is free-form, and not every path in one comes from a field this\npass can see — `import_parse_failed` wraps an es-module-lexer error that\nembeds the file name itself. Scrubbing here means the contract holds for\nthe whole record rather than one field, so a producer can't reintroduce an\nabsolute path through prose.\n\nExposed for build-tool integrations that bypass the session and collect\ntheir own discovery/dep diagnostics — they need the same normalization to\nmatch the public contract. **Hand it absolute paths.** An already-relative\n`file` is left alone (relativizing it would resolve against `cwd`), so this\npass can only correct the absolute form — a relative path on a base other\nthan the project root passes through and ships as-is.",
 							"typeSignature": "(diagnostics: ({ symbolName: string; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"type_extraction_failed\"; line?: number | undefined; column?: number | undefined; } | { functionName: string; ... 5 more ...; column?: number | undefined; } | ... 13 more ... | { ...; })[], projectRoot: string): void",
-							"sourceLine": 696,
+							"sourceLine": 655,
 							"seeAlso": [
 								"`finalizeDiagnostics` — when Svelte virtuals are in play, the position remap must run before this pass (it strips the suffix the remap matches on)"
 							],
@@ -244952,7 +244835,7 @@
 							"kind": "function",
 							"docComment": "Normalize the absolute module paths TypeScript embeds in printed type text,\nin place.\n\nThe checker prints a module object as `typeof import(\"<absolute path>\")`,\nwhich reaches output through every checker-printed field — `typeSignature`\non declarations and members, `returnType`, and the `text` of a\n`TypeJson` node (a module object is a terminal `other` node, never a\n`reference`). Left alone it makes output machine-dependent (two checkouts\nof the same source produce different bytes), publishes local filesystem\npaths on any site that renders `typeSignature`, and exposes the svelte2tsx\nvirtual suffix that `stripVirtualSuffix` exists to hide. A written\n`import('./x').T` annotation resolves to the type's own name and never\ncarries a path.\n\nA path that resolves to a module in this output is rewritten to that\nmodule's `ModuleJson.path`, so the string doubles as a lookup key: a\nconsumer linkifies with `modules.find((m) => m.path === s)` and reads a miss\nas \"not a module here.\" See `createModulePathNormalizer` for the remaining\ntiers. The string's shape doesn't distinguish them (`sub/nested.ts` and\n`pkg/index.d.ts` look alike) — the lookup does, which keeps `sourceRoot` out\nof the output envelope.\n\nRuns as a whole-output pass rather than at the ~20 `typeToString` /\n`signatureToString` call sites, so a new printing site can't miss it.",
 							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[], options: ModuleSourceOptions, program: Program): void",
-							"sourceLine": 991,
+							"sourceLine": 950,
 							"mutates": {
 								"modules": "rewrites printed type text on declarations and members"
 							},
@@ -244980,7 +244863,7 @@
 							"returnType": "void"
 						}
 					],
-					"moduleComment": "Pure two-phase analysis orchestrator.\n\nSeparate from `analyze.ts` so `session.ts` (which needs the orchestrator)\nand `analyze.ts` (which needs the session) both import downward into this\nmodule without a cycle.\n\nPublic surface:\n\n- `analyzeCore` — runs phase 1 module dispatch + phase 2 re-export merge,\n  returns `AnalyzeResultJson`. Caller supplies pre-prepared inputs (program,\n  svelte virtuals, transform-failed IDs).\n- `analyzeModule` — the per-module dispatcher for non-Svelte files (TS / CSS /\n  JSON; Svelte needs `analyzeSvelteModule`). `@internal`; exposed for tests\n  and power users via the subpath.\n- `AnalyzeResultJson` / `AnalyzeResultJsonWire` / `OnDuplicates` /\n  `OnDuplicatesCallback` — shared types surfaced through the main barrel\n  directly from this module.\n- `throwOnDuplicates` — convenience callback paired with `OnDuplicates`.\n- `finalizeDiagnostics` — the diagnostic boundary passes (virtual position\n  remap, then path normalization) in their required order; the one call for\n  callers assembling modules themselves.\n- `normalizeDiagnosticPaths` — boundary helper for build-tool integrations\n  that bypass the session and collect their own diagnostics.\n- `normalizeModulePathsInTypes` — output pass rewriting the absolute module\n  paths the checker embeds in printed type text. Runs inside `analyzeCore`;\n  exposed for the same reason as `normalizeDiagnosticPaths`, so a caller\n  assembling modules itself through `analyzeModule` can meet the same\n  output contract.\n\nThe barrel-surfaced schemas, types, and `throwOnDuplicates` are stable API.\nEverything else is subpath-only; `analyzeCore` and `analyzeModule` are\n`@internal`.",
+					"moduleComment": "Pure two-phase analysis orchestrator.\n\nSeparate from `analyze.ts` so `session.ts` (which needs the orchestrator)\nand `analyze.ts` (which needs the session) both import downward into this\nmodule without a cycle.\n\nPublic surface:\n\n- `analyzeCore` — runs phase 1 module dispatch + phase 2 re-export merge,\n  returns `AnalyzeResultJson`. Caller supplies pre-prepared inputs (program,\n  svelte virtuals, transform-failed IDs).\n- `analyzeModule` — the per-module dispatcher for non-Svelte files (TS / CSS /\n  JSON; Svelte needs `analyzeSvelteModule`). `@internal`; exposed for tests\n  and power users via the subpath.\n- `AnalyzeResultJson` / `AnalyzeResultJsonWire` / `OnDuplicates` — shared\n  types surfaced through the main barrel directly from this module.\n- `finalizeDiagnostics` — the diagnostic boundary passes (virtual position\n  remap, then path normalization) in their required order; the one call for\n  callers assembling modules themselves.\n- `normalizeDiagnosticPaths` — boundary helper for build-tool integrations\n  that bypass the session and collect their own diagnostics.\n- `normalizeModulePathsInTypes` — output pass rewriting the absolute module\n  paths the checker embeds in printed type text. Runs inside `analyzeCore`;\n  exposed for the same reason as `normalizeDiagnosticPaths`, so a caller\n  assembling modules itself through `analyzeModule` can meet the same\n  output contract.\n\nThe barrel-surfaced schemas and types are stable API.\nEverything else is subpath-only; `analyzeCore` and `analyzeModule` are\n`@internal`.",
 					"dependencies": [
 						"declaration-build.ts",
 						"diagnostics.ts",
@@ -245040,7 +244923,7 @@
 								{
 									"name": "onDuplicates",
 									"kind": "variable",
-									"docComment": "Behavior when duplicate declaration names are found across modules.",
+									"docComment": "Opt-in check that declaration names are unique across modules (see `OnDuplicates`).",
 									"typeSignature": "OnDuplicates",
 									"optional": true,
 									"typeInfo": {
@@ -245048,18 +244931,19 @@
 										"alias": "OnDuplicates",
 										"members": [
 											{
-												"kind": "function",
-												"text": "OnDuplicatesCallback"
-											},
-											{
 												"kind": "literal",
-												"value": "throw",
-												"text": "\"throw\""
+												"value": "diagnostic",
+												"text": "\"diagnostic\""
 											},
 											{
 												"kind": "literal",
 												"value": "warn",
 												"text": "\"warn\""
+											},
+											{
+												"kind": "literal",
+												"value": "throw",
+												"text": "\"throw\""
 											}
 										]
 									}
@@ -245188,7 +245072,7 @@
 								{
 									"name": "onDuplicates",
 									"kind": "variable",
-									"docComment": "Behavior when duplicate declaration names are found across modules.",
+									"docComment": "Opt-in check that declaration names are unique across modules (see `OnDuplicates`).",
 									"typeSignature": "OnDuplicates",
 									"optional": true,
 									"typeInfo": {
@@ -245196,18 +245080,19 @@
 										"alias": "OnDuplicates",
 										"members": [
 											{
-												"kind": "function",
-												"text": "OnDuplicatesCallback"
-											},
-											{
 												"kind": "literal",
-												"value": "throw",
-												"text": "\"throw\""
+												"value": "diagnostic",
+												"text": "\"diagnostic\""
 											},
 											{
 												"kind": "literal",
 												"value": "warn",
 												"text": "\"warn\""
+											},
+											{
+												"kind": "literal",
+												"value": "throw",
+												"text": "\"throw\""
 											}
 										]
 									}
@@ -245377,7 +245262,7 @@
 							"kind": "interface",
 							"docComment": "CLI options parsed from command line arguments.",
 							"typeSignature": "CliOptions",
-							"sourceLine": 53,
+							"sourceLine": 56,
 							"members": [
 								{
 									"name": "include",
@@ -245459,12 +245344,29 @@
 								{
 									"name": "onDuplicates",
 									"kind": "variable",
-									"docComment": "Behavior when duplicate declaration names are found across modules\n(undefined = emit `duplicate_declaration` diagnostic, no dispatch).\n\nDuplicate detection always runs regardless of this option — the diagnostic\nis the data, this option is the dispatch action.",
-									"typeSignature": "\"throw\" | \"warn\"",
+									"docComment": "Opt-in check that declaration names are unique across modules (see\n`OnDuplicates`). Undefined skips the check.",
+									"typeSignature": "OnDuplicates",
 									"optional": true,
 									"typeInfo": {
-										"kind": "reference",
-										"name": "OnDuplicatesFlag"
+										"kind": "union",
+										"alias": "OnDuplicates",
+										"members": [
+											{
+												"kind": "literal",
+												"value": "diagnostic",
+												"text": "\"diagnostic\""
+											},
+											{
+												"kind": "literal",
+												"value": "warn",
+												"text": "\"warn\""
+											},
+											{
+												"kind": "literal",
+												"value": "throw",
+												"text": "\"throw\""
+											}
+										]
 									}
 								},
 								{
@@ -248190,7 +248092,7 @@
 						{
 							"name": "DuplicateDeclarationDiagnostic",
 							"kind": "type",
-							"docComment": "A declaration `name` appears in more than one module.\n\nLibrary docs assume a flat namespace — two modules exporting the same name\ncollide when consumers `import {name}`. Emitted at `warning` severity so\nthe analysis result remains usable; consumers who want it fatal can promote\nvia `onDuplicates: 'throw'` or by inspecting the diagnostic. The default\nslot (`name === 'default'`) is excluded — every module owns its own.",
+							"docComment": "A declaration `name` appears in more than one module.\n\nOpt-in: emitted only when `onDuplicates` is set, for packages that keep a\nflat export namespace (see `OnDuplicates`). Emitted at `warning` severity\nso the analysis result remains usable; `onDuplicates: 'throw'` makes it\nfatal. The default slot (`name === 'default'`) is excluded — every module\nowns its own.",
 							"typeSignature": "{ declarationName: string; modules: string[]; file: string; message: string; severity: \"error\" | \"warning\"; kind: \"duplicate_declaration\"; line?: number | undefined; column?: number | undefined; }",
 							"sourceLine": 371,
 							"members": [
@@ -249561,7 +249463,7 @@
 							"name": "AnalysisLog",
 							"module": "log.ts",
 							"typeOnly": true,
-							"sourceLine": 125
+							"sourceLine": 120
 						},
 						{
 							"name": "AnalysisSession",
@@ -249617,7 +249519,7 @@
 						{
 							"name": "byKind",
 							"module": "diagnostics.ts",
-							"sourceLine": 119
+							"sourceLine": 114
 						},
 						{
 							"name": "ClassDeclarationJson",
@@ -249677,51 +249579,45 @@
 						{
 							"name": "deriveIncludePatterns",
 							"module": "files.ts",
-							"sourceLine": 101
+							"sourceLine": 96
 						},
 						{
 							"name": "Diagnostic",
 							"module": "diagnostics.ts",
-							"sourceLine": 123
+							"sourceLine": 118
 						},
 						{
 							"name": "DiagnosticKind",
 							"module": "diagnostics.ts",
-							"sourceLine": 122
+							"sourceLine": 117
 						},
 						{
 							"name": "DiagnosticSeverity",
 							"module": "diagnostics.ts",
-							"sourceLine": 121
+							"sourceLine": 116
 						},
 						{
 							"name": "discoverSourceFiles",
 							"module": "discovery.ts",
-							"sourceLine": 105
+							"sourceLine": 100
 						},
 						{
 							"name": "DiscoverSourceFilesOptions",
 							"module": "discovery.ts",
 							"typeOnly": true,
-							"sourceLine": 108
+							"sourceLine": 103
 						},
 						{
 							"name": "DiscoverSourceFilesResult",
 							"module": "discovery.ts",
 							"typeOnly": true,
-							"sourceLine": 109
+							"sourceLine": 104
 						},
 						{
 							"name": "Discovery",
 							"module": "discovery.ts",
 							"typeOnly": true,
-							"sourceLine": 107
-						},
-						{
-							"name": "DuplicateDeclaration",
-							"module": "postprocess.ts",
-							"typeOnly": true,
-							"sourceLine": 97
+							"sourceLine": 102
 						},
 						{
 							"name": "EnumDeclarationJson",
@@ -249731,7 +249627,7 @@
 						{
 							"name": "errorsOf",
 							"module": "diagnostics.ts",
-							"sourceLine": 117
+							"sourceLine": 112
 						},
 						{
 							"name": "ExcludeOption",
@@ -249743,13 +249639,13 @@
 							"name": "ExportSurface",
 							"module": "postprocess.ts",
 							"typeOnly": true,
-							"sourceLine": 97
+							"sourceLine": 92
 						},
 						{
 							"name": "ExportSurfaceEntry",
 							"module": "postprocess.ts",
 							"typeOnly": true,
-							"sourceLine": 97
+							"sourceLine": 92
 						},
 						{
 							"name": "ExternalReExportJson",
@@ -249757,14 +249653,9 @@
 							"sourceLine": 58
 						},
 						{
-							"name": "findDuplicates",
-							"module": "postprocess.ts",
-							"sourceLine": 92
-						},
-						{
 							"name": "formatDiagnostic",
 							"module": "diagnostics.ts",
-							"sourceLine": 120
+							"sourceLine": 115
 						},
 						{
 							"name": "FunctionDeclarationJson",
@@ -249799,12 +249690,12 @@
 						{
 							"name": "hasErrors",
 							"module": "diagnostics.ts",
-							"sourceLine": 115
+							"sourceLine": 110
 						},
 						{
 							"name": "hasWarnings",
 							"module": "diagnostics.ts",
-							"sourceLine": 116
+							"sourceLine": 111
 						},
 						{
 							"name": "ImportResolver",
@@ -249835,7 +249726,7 @@
 						{
 							"name": "mergeReExports",
 							"module": "postprocess.ts",
-							"sourceLine": 93
+							"sourceLine": 91
 						},
 						{
 							"name": "ModuleJson",
@@ -249860,12 +249751,6 @@
 						},
 						{
 							"name": "OnDuplicates",
-							"module": "analyze-core.ts",
-							"typeOnly": true,
-							"sourceLine": 17
-						},
-						{
-							"name": "OnDuplicatesCallback",
 							"module": "analyze-core.ts",
 							"typeOnly": true,
 							"sourceLine": 17
@@ -249899,12 +249784,12 @@
 						{
 							"name": "resolveComponentAliases",
 							"module": "postprocess.ts",
-							"sourceLine": 94
+							"sourceLine": 91
 						},
 						{
 							"name": "resolveExportSurface",
 							"module": "postprocess.ts",
-							"sourceLine": 95
+							"sourceLine": 91
 						},
 						{
 							"name": "ResolveImport",
@@ -249960,11 +249845,6 @@
 							"sourceLine": 86
 						},
 						{
-							"name": "throwOnDuplicates",
-							"module": "analyze-core.ts",
-							"sourceLine": 16
-						},
-						{
 							"name": "TupleElementJson",
 							"module": "types.ts",
 							"sourceLine": 39
@@ -250008,7 +249888,7 @@
 						{
 							"name": "warningsOf",
 							"module": "diagnostics.ts",
-							"sourceLine": 118
+							"sourceLine": 113
 						}
 					]
 				},
@@ -250158,9 +250038,6 @@
 							"docComment": "A duplicate declaration with its full metadata and module path.",
 							"typeSignature": "DuplicateDeclaration",
 							"sourceLine": 70,
-							"alsoExportedFrom": [
-								"index.ts"
-							],
 							"members": [
 								{
 									"name": "declaration",
@@ -250183,14 +250060,11 @@
 						{
 							"name": "findDuplicates",
 							"kind": "function",
-							"docComment": "Find duplicate declaration names across modules.\n\nA duplicate is two *different things* sharing a name in the flat namespace.\nOccurrences are compared by canonical identity — `aliasOf` chains are\nresolved first, so an alias and its canonical (or two aliases of the same\ncanonical) are one thing, not a collision. Documenting a same-name re-export\n(which synthesizes an alias) or re-exporting a component under its own name\n(`export {default as Foo} from './Foo.svelte'`) therefore doesn't flag.\nWhen a name does flag, all occurrences are reported, aliases included.\n\nCallers can decide how to handle duplicates (throw, warn, ignore).",
+							"docComment": "Find duplicate declaration names across modules.\n\nA duplicate is two *different things* sharing a name in the flat namespace.\nOccurrences are compared by canonical identity — `aliasOf` chains are\nresolved first, so an alias and its canonical (or two aliases of the same\ncanonical) are one thing, not a collision. Documenting a same-name re-export\n(which synthesizes an alias) or re-exporting a component under its own name\n(`export {default as Foo} from './Foo.svelte'`) therefore doesn't flag.\nWhen a name does flag, all occurrences are reported, aliases included.\n\nThe analysis entry points run this only under the opt-in `onDuplicates`.",
 							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): Map<...>",
-							"sourceLine": 149,
+							"sourceLine": 141,
 							"examples": [
-								"```ts\nconst duplicates = findDuplicates(modules);\nif (duplicates.size > 0) {\n  for (const [name, occurrences] of duplicates) {\n    console.error(`\"${name}\" found in:`);\n    for (const {declaration, module} of occurrences) {\n      console.error(`  - ${module}:${declaration.sourceLine} (${declaration.kind})`);\n    }\n  }\n  throw new Error(`Found ${duplicates.size} duplicate declaration names`);\n}\n```"
-							],
-							"alsoExportedFrom": [
-								"index.ts"
+								"```ts\nconst duplicates = findDuplicates(modules);\nduplicates.get('parse'); // [{declaration, module: 'a.ts'}, {declaration, module: 'b.ts'}]\n```"
 							],
 							"parameters": [
 								{
@@ -250230,7 +250104,7 @@
 							"kind": "function",
 							"docComment": "Case-insensitive string comparator for deterministic output ordering.\n\nCase-folded comparison first (so `Analyze` and `analyze` sort together\ninstead of all uppercase before all lowercase), then a code-unit tiebreak —\nso equal-ignoring-case strings still compare unequal and the result is an\nexact total order. Unlike `localeCompare` (host-locale/ICU-dependent, so\nbyte-identical input can serialize in different orders on different\nmachines), both passes use Unicode default mappings only and are\nenvironment-independent. All output ordering goes through this comparator —\nnever bare `localeCompare` or default `Array.prototype.sort`.",
 							"typeSignature": "(a: string, b: string): number",
-							"sourceLine": 205,
+							"sourceLine": 197,
 							"parameters": [
 								{
 									"name": "a",
@@ -250248,7 +250122,7 @@
 							"kind": "function",
 							"docComment": "Sort modules alphabetically by path for deterministic output and cleaner diffs.\n\nCase-insensitive order (`compareStrings`) so the output is environment-independent.",
 							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): { ...; }[]",
-							"sourceLine": 221,
+							"sourceLine": 213,
 							"parameters": [
 								{
 									"name": "modules",
@@ -250278,7 +250152,7 @@
 							"kind": "function",
 							"docComment": "Build `alsoExportedFrom` arrays from the modules' forward re-export edges.\n\nEach module carries its same-name re-export edges as `ModuleJson.reExports`\n(collected in phase 1); this phase-2 pass inverts them onto the canonical\ndeclarations so both directions of the same fact are queryable. Edges whose\ncanonical module or declaration is absent from `modules` are skipped — the\nforward entry remains without a back-link (see `ReExportJson` for the\npresence caveats).\n\nComponent-only fields on renamed component aliases (`props`,\n`acceptsChildren`, etc.) are populated separately by `resolveComponentAliases`\n— call it after this function. They split because they touch disjoint fields\nand have different inputs.\n\nPure: the input array and its objects are never mutated. Modules and\ndeclarations that gain no back-link flow through `===`-equal (structural\nsharing), so a re-run over already-merged output returns the same object\nreferences. New re-exporters union with existing `alsoExportedFrom` entries\n(deduped + sorted), keeping repeated merges idempotent by content.",
 							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[]): { ...; }[]",
-							"sourceLine": 264,
+							"sourceLine": 256,
 							"examples": [
 								"```ts\n// helpers.ts exports: foo, bar\n// index.ts does: export {foo, bar} from './helpers.js'\n// (so index.ts's ModuleJson carries reExports:\n//   [{name: 'foo', module: 'helpers.ts'}, {name: 'bar', module: 'helpers.ts'}])\n//\nconst merged = mergeReExports(modules);\n// - helpers.ts foo declaration gets: alsoExportedFrom: ['index.ts']\n// - helpers.ts bar declaration gets: alsoExportedFrom: ['index.ts']\n```"
 							],
@@ -250314,7 +250188,7 @@
 							"kind": "function",
 							"docComment": "Copy props/acceptsChildren/lang/etc. from canonical component declarations\nonto synthesized component-aliased declarations.\n\nRenamed Svelte component re-exports (`export {default as Foo} from './X.svelte'`)\nare emitted as `kind: 'component'` placeholders by `analyzeExports`, with `aliasOf`\npointing at the canonical. The canonical's component-specific fields are only\navailable after `analyzeSvelteModule` synthesizes the canonical declaration, so\nthe copy happens here in phase 2 once all modules are analyzed.\n\nCall this *after* `mergeReExports` — both walk the same modules array but\nread/write disjoint fields, so order between them only matters for clarity.\n\nPure: the input array and its objects are never mutated. Aliases with a\nresolvable canonical are replaced by filled copies (canonical field values\nare shared by reference, not cloned); everything else flows through\n`===`-equal.\n\nDoc-comment fields fill gaps only: local doc fields applied to the alias\nbefore phase 2 (from JSDoc on the re-export statement) stick.",
 							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[], contextModules?: readonly { ...; }[]): { ...; }[]",
-							"sourceLine": 334,
+							"sourceLine": 326,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -250361,7 +250235,7 @@
 							"kind": "function",
 							"docComment": "Compute bidirectional dependencies from source files.\n\nIf file A has file B in its `dependencies`, file B gets file A in its\n`dependents`. Dependents are derived solely from the forward `dependencies`\nedges within `files` (`SourceFileInfo` carries no `dependents` field);\nedges to files outside the set are ignored.\n\nReturns new `SourceFileInfo` objects when computed dependents exist or when\npaths needed posixification; otherwise the original input objects flow\nthrough `===`-equal (fast path for session callers, who already pass POSIX\npaths and may have no inferable dependents for a given file).",
 							"typeSignature": "(files: readonly SourceFileInfo[]): (SourceFileInfo & { dependents?: readonly string[] | undefined; })[]",
-							"sourceLine": 423,
+							"sourceLine": 415,
 							"examples": [
 								"```ts\n// Input: Calculator.svelte has dependencies: [math.ts]\n// Output: Calculator.svelte has dependencies: [math.ts]\n//         math.ts has dependents: [Calculator.svelte]\nconst filesWithBidirectional = computeDependents(files);\n```"
 							],
@@ -250404,7 +250278,7 @@
 							"kind": "interface",
 							"docComment": "One name on a module's resolved export surface.",
 							"typeSignature": "ExportSurfaceEntry",
-							"sourceLine": 486,
+							"sourceLine": 478,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -250499,7 +250373,7 @@
 							"kind": "interface",
 							"docComment": "A module's resolved export surface — see `resolveExportSurface`.",
 							"typeSignature": "ExportSurface",
-							"sourceLine": 516,
+							"sourceLine": 508,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -250536,7 +250410,7 @@
 							"kind": "function",
 							"docComment": "Resolve a module's full export surface from the analyzed model, applying\nES module semantics to star exports.\n\nCombines the module's own `declarations` (including synthesized aliases),\n`reExports` edges, `externalReExports`, and transitively-resolved\n`starExports` into one deduped, name-sorted list. The ES rules applied to\nstar projection:\n\n- explicit exports (declarations, edges, externals) shadow star-projected\n  names\n- a name projected by two stars that resolve to *different* canonicals is\n  ambiguous and excluded (same canonical through a diamond is included\n  once)\n- `default` is never star-projected — including canonical Svelte component\n  declarations, which represent their file's default export. (Caveat: a\n  star-projected re-export edge whose canonical is a component is treated\n  as a default-slot re-export and skipped; a `<script module>` const\n  sharing the component's exact name would be skipped with it.)\n\nA Position-3 alias and its `reExports` edge are the same fact — the\ndeclaration entry wins, inheriting the edge's `typeOnly`.\n\nCyclic star graphs terminate by contributing nothing along the back-edge\n(an approximation of ES fixpoint resolution — fine in practice). Surfaces\nresolved inside a cycle are path-relative and not memoized, so sibling\nstar paths resolve independently rather than inheriting them. Star\ntargets missing from `modules` are reported in `unresolvedStarExports`\nrather than guessed at; `externalStarExports` aggregates external star\nspecifiers reachable from the module, whose names are unknowable.",
 							"typeSignature": "(modules: { path: string; declarations: ({ kind: \"function\"; parameters: { name: string; type: string; optional: boolean; rest: boolean; typeInfo?: TypeJson | undefined; description?: string | undefined; defaultValue?: string | undefined; propertyDescriptions?: Record<...> | undefined; }[]; ... 19 more ...; sourceLine?: number | undefined; } | ... 7 more ... | { ...; })[]; ... 7 more ...; moduleComment?: string | undefined; }[], path: string): ExportSurface | null",
-							"sourceLine": 579,
+							"sourceLine": 571,
 							"alsoExportedFrom": [
 								"index.ts"
 							],
@@ -250576,7 +250450,7 @@
 							"returnDescription": "the resolved surface, or `null` when `path` isn't in `modules`"
 						}
 					],
-					"moduleComment": "Post-processing for analyzed library metadata.\n\nThese functions transform analysis results after module-level analysis is complete:\n\n1. **Validation** — `findDuplicates` checks flat namespace constraints\n2. **Transformation** — `mergeReExports` resolves re-export relationships,\n   `resolveComponentAliases` fills component aliases from their canonicals,\n   `computeDependents` builds bidirectional dependency graphs\n3. **Output** — `sortModules` prepares deterministic output (`compareStrings`\n   is the one comparator for all output ordering)\n4. **Queries** — `resolveExportSurface` combines a module's declarations and\n   re-export facts into its full export surface\n\nEvery function here is pure — transformation passes return new arrays with\nstructural sharing (unchanged objects flow through `===`-equal) and never\nmutate their input.\n\n@see `analyze-core.ts` for the phase-2 pipeline that runs these",
+					"moduleComment": "Post-processing for analyzed library metadata.\n\nThese functions transform analysis results after module-level analysis is complete:\n\n1. **Validation** — `findDuplicates` checks the opt-in flat-namespace constraint\n2. **Transformation** — `mergeReExports` resolves re-export relationships,\n   `resolveComponentAliases` fills component aliases from their canonicals,\n   `computeDependents` builds bidirectional dependency graphs\n3. **Output** — `sortModules` prepares deterministic output (`compareStrings`\n   is the one comparator for all output ordering)\n4. **Queries** — `resolveExportSurface` combines a module's declarations and\n   re-export facts into its full export surface\n\nEvery function here is pure — transformation passes return new arrays with\nstructural sharing (unchanged objects flow through `===`-equal) and never\nmutate their input.\n\n@see `analyze-core.ts` for the phase-2 pipeline that runs these",
 					"dependencies": [
 						"paths.ts",
 						"source.ts",
@@ -250735,7 +250609,7 @@
 								{
 									"name": "onDuplicates",
 									"kind": "variable",
-									"docComment": "Behavior when duplicate declaration names are found across modules.",
+									"docComment": "Opt-in check that declaration names are unique across modules (see `OnDuplicates`).",
 									"typeSignature": "OnDuplicates",
 									"optional": true,
 									"typeInfo": {
@@ -250743,18 +250617,19 @@
 										"alias": "OnDuplicates",
 										"members": [
 											{
-												"kind": "function",
-												"text": "OnDuplicatesCallback"
-											},
-											{
 												"kind": "literal",
-												"value": "throw",
-												"text": "\"throw\""
+												"value": "diagnostic",
+												"text": "\"diagnostic\""
 											},
 											{
 												"kind": "literal",
 												"value": "warn",
 												"text": "\"warn\""
+											},
+											{
+												"kind": "literal",
+												"value": "throw",
+												"text": "\"throw\""
 											}
 										]
 									}
@@ -251005,7 +250880,7 @@
 							"sourceLine": 522,
 							"examples": [
 								"Vite plugin integration\n```ts\nconst session = createAnalysisSession({sourceOptions, resolveImport, log});\nawait session.setFiles(initialFiles);\nconst result = session.query();\n// on watcher events:\nawait session.setFile({id, content});\nawait session.deleteFile(removedId);\nconst next = session.query();\n// on shutdown:\nsession.dispose();\n```",
-								"One-shot via the public wrapper\n```ts\n// Equivalent to `analyze(...)` — the wrapper goes through a session internally\n// (and opts out of the context closure, since its callers supply the inputs).\nconst session = createAnalysisSession({sourceOptions, contextClosure: false});\ntry {\nawait session.setFiles(sourceFiles);\nreturn session.query({onDuplicates: 'throw'});\n} finally {\nsession.dispose();\n}\n```"
+								"One-shot via the public wrapper\n```ts\n// Equivalent to `analyze(...)` — the wrapper goes through a session internally\n// (and opts out of the context closure, since its callers supply the inputs).\nconst session = createAnalysisSession({sourceOptions, contextClosure: false});\ntry {\nawait session.setFiles(sourceFiles);\nreturn session.query();\n} finally {\nsession.dispose();\n}\n```"
 							],
 							"alsoExportedFrom": [
 								"index.ts"
@@ -260155,7 +260030,7 @@
 								{
 									"name": "onDuplicates",
 									"kind": "variable",
-									"docComment": "Behavior when duplicate declaration names are found across modules.",
+									"docComment": "Opt-in check that declaration names are unique across modules (see `OnDuplicates`).",
 									"typeSignature": "OnDuplicates",
 									"optional": true,
 									"typeInfo": {
@@ -260163,18 +260038,19 @@
 										"alias": "OnDuplicates",
 										"members": [
 											{
-												"kind": "function",
-												"text": "OnDuplicatesCallback"
-											},
-											{
 												"kind": "literal",
-												"value": "throw",
-												"text": "\"throw\""
+												"value": "diagnostic",
+												"text": "\"diagnostic\""
 											},
 											{
 												"kind": "literal",
 												"value": "warn",
 												"text": "\"warn\""
+											},
+											{
+												"kind": "literal",
+												"value": "throw",
+												"text": "\"throw\""
 											}
 										]
 									}
