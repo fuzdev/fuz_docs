@@ -210,8 +210,9 @@ tokio::select! {
 axum's `with_graceful_shutdown(shutdown.cancelled())` drains in-flight requests;
 **always bound the drain with a timeout `select!`** — a hung handler otherwise
 keeps the process alive forever (the spine ships
-`fuz_http::serve_with_shutdown` + `DEFAULT_DRAIN_TIMEOUT`, which also closes
-live WebSockets and SSE streams — ./rust-spine.md §Daemon lifecycle). Long-running tasks check the token via `select!` and
+`fuz_http::serve_with_shutdown` + `DEFAULT_DRAIN_TIMEOUT` — its own accept
+loop, which also closes live WebSockets and SSE streams and cuts a connection
+whose client stopped reading — ./rust-spine.md §Daemon lifecycle). Long-running tasks check the token via `select!` and
 every shutdown branch flushes pending work — the reference shape is a
 `Notify`-driven flusher debounced behind the most recent event (so an idle
 daemon doesn't tick), its `select!` carrying a `shutdown.cancelled()` arm that
@@ -549,23 +550,47 @@ unsafe in edition 2024, so this works under `unsafe_code = "forbid"`.
 ### Sandboxed one-shot eval
 
 Executable config (a TS builder run under `deno`) evaluates through
-`fuz_eval::eval_module(&EvalRequest)`: `deno run --no-prompt` with **no**
-net/env/write, a caller-chosen `ReadScope` (`Scoped(dir)` or `Unrestricted`), a
-wall-clock timeout + kill, the wrapper piped over stdin. Don't re-roll the
-spawn. Policy belongs to the caller — zap passes `Unrestricted` under a
-first-party trust model (configs resolve imports from anywhere up the tree);
-net/env/write walls remain. zap's wrapper also enforces **determinism by
-construction**: `Date.now` / `Math.random` / `performance.now` /
-`crypto.randomUUID` / no-arg `new Date()` throw, and `console.log/info/debug`
-reroute to stderr so stdout stays pure JSON — the plan must be a
-content-addressed fact. The ingredients are shared `fuz_eval` exports
-(`DETERMINISM_STUBS_JS`, `CONSOLE_TO_STDERR_JS`,
-`build_extract_export_wrapper(name, stubs)` — injection-safe, export name
-JSON-encoded into bracket notation) — a simple consumer composes these; a rich
-wrapper (zap's builder) composes the constants directly. Principle: anything the
-evaluated code needs from the world is a **declared, inert input** the trusted
-parent resolves and records; an injected live capability is an undeclared input
-no cache key can capture.
+`fuz_eval::eval_module(&EvalRequest)`, a fresh spawn per call with the wrapper
+piped over stdin, a wall-clock timeout + kill, and byte-capped output. Don't
+re-roll the spawn — its walls are three things together:
+
+- **Permissions.** `deno run --no-prompt` with a read grant — the caller's
+  `ReadScope` (`Scoped(dir)` or `Unrestricted`) — and **no** net, env, or
+  write grant.
+- **Module loading**, which Deno does outside the permission system:
+  `--no-remote --cached-only --node-modules-dir=manual --no-lock`. No remote
+  specifier loads, an `npm:` specifier resolves only to a package installed in
+  `node_modules`, and no lockfile is read or written — the module graph is
+  files on disk.
+- **The environment.** The child does not inherit the caller's: it is cleared
+  down to an allowlist (`PATH`, `HOME`, `DENO_DIR`, `XDG_CACHE_HOME`,
+  `TMPDIR`), with `TZ`, `LC_ALL`, and `NO_COLOR` pinned. The runtime acts on
+  its environment before any permission check — a variable can hand every
+  permission decision to a socket, export console output to a collector, or
+  preload a module — so a denylist would be incomplete by construction. The
+  pins make the time zone and locale evaluated code observes the same on
+  every machine.
+
+`fuz_eval::deno_info` (the dependency graph, for a watch set or cache
+revalidation) is a second spawn under the same environment and the same module-loading
+flags less `--cached-only`, which `deno info` does not take.
+
+Policy belongs to the caller. The read scope is a trust decision: a caller
+that trusts the config author to run code passes `Unrestricted` (configs
+resolve imports from anywhere up the tree), a caller that does not passes
+`Scoped`; the other walls hold either way. A caller whose output must be a
+pure function of declared inputs also enforces **determinism by
+construction** in its wrapper: the clock and randomness entry points throw
+instead of answering, and the stdout-writing `console` methods reroute to
+stderr so stdout stays pure JSON — the result must be a content-addressed
+fact. `fuz_eval` ships optional ingredients for that (`DETERMINISM_STUBS_JS`,
+`CONSOLE_TO_STDERR_JS`, `build_extract_export_wrapper(name, stubs)` —
+injection-safe, export name JSON-encoded into bracket notation) for a simple
+consumer to compose; the wrapper is the consumer's either way, and a rich one
+(zap's builder) is written whole by its consumer, with the stubs its own
+contract needs. Principle: anything the evaluated code needs from the world
+is a **declared, inert input** the trusted parent resolves and records; an
+injected live capability is an undeclared input no cache key can capture.
 
 ### Sidecar controller
 
