@@ -26,9 +26,9 @@ The stack is designed so the full lifecycle — produce, deploy, operate — is
 accessible to anyone with intent and an AI partner. Consistent,
 self-describing patterns let an agent learn once and apply everywhere:
 snake_case aligns TS, Rust, and SQL with zero renaming; Zod schemas are the
-single source of truth for shape, type, defaults, and validation; `fuz_app`
-is the shared backend spine (auth, sessions, DB, SSE) that zzz and the apps
-build on.
+single source of truth for data shape, type, defaults, and validation
+(fuz_schema for task and CLI args); `fuz_app` is the shared backend spine
+(auth, sessions, DB, SSE) that zzz and the apps build on.
 
 ## Package Ecosystem
 
@@ -37,6 +37,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | Package        | Description                                                                     |
 | -------------- | ------------------------------------------------------------------------------- |
 | `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types               |
+| `fuz_schema`   | performance-focused Standard Schema library — task and CLI args                 |
 | `gro`          | task runner and toolkit extending SvelteKit (internals adopting Rust)           |
 | `fuz_css`      | semantic-first CSS framework and design system                                  |
 | `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                |
@@ -52,7 +53,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `zzz`          | software garage — produce software with AI assistance                           |
 | `zap`          | convergence — deploy and operate infrastructure                                 |
 
-**Dependency flow**: `fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps`.
+**Dependency flow**: `fuz_schema → fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps`.
 zap sits beside the chain: its site builds on fuz_ui; its Rust engine consumes
 neither fuz_app nor the spine crates.
 
@@ -328,8 +329,9 @@ See ./references/fuz-util.md.
 ## Zod Schemas
 
 Zod schemas are the source of truth for JSON shape, TS type, defaults,
-metadata, CLI help, and serialization; schema changes cascade through the
-stack.
+metadata, and serialization; schema changes cascade through the stack. CLI and
+task args are `@fuzdev/fuz_schema` schemas instead
+(./references/task-patterns.md).
 
 - **`z.strictObject()`** by default. `z.looseObject()` / `z.object()` only
   for external data, client-consumed response/error shapes, and extensible
@@ -337,7 +339,7 @@ stack.
 - **PascalCase, schema and type share the name**:
   `const Foo = z.strictObject({...}); type Foo = z.infer<typeof Foo>;`
 - **`.meta({description})`**, not `.describe()` — both work in Zod 4, but
-  `.meta()` is the convention and carries extra keys (`aliases`, `sensitivity`)
+  `.meta()` is the convention and carries extra keys (`sensitivity`)
 - **`.brand()`** for validated nominal types (`Uuid`, `Datetime`, `DiskfilePath`)
 - **`safeParse` at boundaries**, `parse` for internal assertions
 

@@ -11,22 +11,27 @@ from `@fuzdev/gro/task.ts`.
 ## Task Interface
 
 ```typescript
-interface Task<TArgs = Args, TArgsSchema extends z.ZodType<Args, Args> = z.ZodType<Args, Args>, TReturn = unknown> {
+interface Task<TArgs = Args, TArgsSchema extends Schema<Args, Args> = Schema<Args, Args>, TReturn = unknown> {
 	run: (ctx: TaskContext<TArgs>) => TReturn | Promise<TReturn>;
 	summary?: string; // shown in `gro` listing and --help
-	Args?: TArgsSchema; // Zod schema for CLI arg parsing
+	Args?: TArgsSchema; // fuz_schema schema for CLI arg parsing
 }
 ```
 
 Tasks are either `Task` or `Task<Args>` — the other params are rarely
-customized. Both the Zod schema and its inferred type are exported as `Args`:
+customized. `Args` is a `@fuzdev/fuz_schema` schema, not Zod; the schema and
+its inferred type are both exported as `Args`:
 
 ```typescript
 // src/lib/greet.task.ts → `gro greet --name Claude`; `--help` is generated from the schema
-export const Args = z.strictObject({
-	name: z.string().meta({ description: 'who to greet' }).default('world')
+import type { Task } from '@fuzdev/gro';
+import * as s from '@fuzdev/fuz_schema/schema.ts';
+import { meta } from '@fuzdev/fuz_schema/meta.ts';
+
+export const Args = s.object({
+	name: s.with_default(meta(s.string, { description: 'who to greet', aliases: ['n'] }), 'world')
 });
-export type Args = z.infer<typeof Args>;
+export type Args = s.Infer<typeof Args>;
 
 export const task: Task<Args> = {
 	summary: 'greet someone by name',
@@ -37,14 +42,37 @@ export const task: Task<Args> = {
 };
 ```
 
-**Args conventions**: `z.strictObject()`; `.meta({description})` for help text;
-`.default()` (fields without one are required on the CLI); `/** @nodocs */` on
-the `Args` exports to keep them out of API docs. Positional args go in
-`_: z.array(z.string())` — `gro test foo bar --dir src/lib/` gives
-`_ = ['foo', 'bar']`. Opt-out booleans use `--no-*` duals —
-`typecheck: z.boolean().default(true)` paired with
-`'no-typecheck': z.boolean().default(false)`; `--help` shows only the `no-*`
-entry.
+**Args conventions**:
+
+- `s.object()`, which refuses unknown flags
+- `meta(entry, {description, aliases})` for help text and short flags (`-n`),
+  `meta` from `@fuzdev/fuz_schema/meta.ts` (fuz_util's `args.ts` declares
+  `aliases` on `SchemaMeta`)
+- `s.with_default(entry, x)`, `s.with_default_fn(entry, make)`, or
+  `s.optional(entry)` for a flag that may be left out; an entry without one is
+  required on the CLI. A defaulted flag is the default alone — an
+  `s.optional` around it leaves a missing key out, so the default never applies
+- `s.with_default_fn(entry, () => [])` for an array or object default — a
+  `with_default` value is the same object on every parse
+- integers as `s.pipe(s.number, s.safe_integer)`
+- `/** @nodocs */` on the `Args` exports to keep them out of API docs
+- positional args in `_: s.with_default_fn(s.array(s.string), () => [])` —
+  `gro test foo bar --dir src/lib/` gives `_ = ['foo', 'bar']`
+- opt-out booleans as `--no-*` duals — `typecheck: s.with_default(s.boolean, true)`
+  paired with `'no-typecheck': s.with_default(s.boolean, false)`; `--help`
+  shows only the `no-*` entry
+
+Gro parses with `args_parse` from `@fuzdev/fuz_util/args.ts`: it expands
+aliases, syncs `--no-*` duals, and returns `{ok: true, value}` or
+`{ok: false, issues}`, each issue printable with fuz_schema's `format_issue`
+(`bogus: expected no unknown keys, received number`). `--help` reads the
+schema through fuz_schema's `introspect.ts` (`get_schema_fields`,
+`format_schema_type`). A CLI outside Gro takes the same schemas: fuz_util's
+`argv_parse` + `args_parse`, or `@fuzdev/fuz_app/cli/args.ts`
+(`parse_command_args`, `create_extract_global_flags`) and
+`@fuzdev/fuz_app/cli/help.ts` (`create_help`). `s.parse_or_throw(Args, value)`
+skips alias expansion and `--no-*` sync — fine for a test that passes
+canonical keys; `args_parse` for one that exercises flags.
 
 ## TaskContext
 

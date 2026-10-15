@@ -5,11 +5,12 @@ description: Zod conventions — strictObject, branded types, introspection
 # Zod Schemas
 
 Zod schemas are the source of truth for JSON shape, TypeScript type
-(`z.infer`), defaults, metadata (`.meta()` → CLI help, runtime reflection),
-and serialization. They're runtime-inspectable (walkable via
+(`z.infer`), defaults, metadata (`.meta()` → runtime reflection), and
+serialization. They're runtime-inspectable (walkable via
 `@fuzdev/fuz_util/zod.ts`, exportable via `z.toJSONSchema`) and JSON-native —
 branded strings for timestamps (`Datetime`), IDs (`Uuid`), and paths avoid
-serialization friction.
+serialization friction. CLI and task args are `@fuzdev/fuz_schema` schemas
+instead, parsed by fuz_util's `args_parse` (./task-patterns.md).
 
 ## Schema helpers by layer
 
@@ -18,7 +19,6 @@ serialization friction.
 | Foundation   | `@fuzdev/fuz_util/zod.ts`                                | Introspection — descriptions, defaults, aliases, types; optional/nullable/default checks; display formatting; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); field helpers (`zod_get_schema_keys`, `zod_get_field_schema`) |
 | Foundation   | `@fuzdev/fuz_util/id.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` brands + factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`)                                                                        |
 | Cell helpers | `@fuzdev/zzz/zod_helpers.ts`                             | Path-transform schemas (`PathWithTrailingSlash`, `PathWithoutTrailingSlash`, `PathWithLeadingSlash`)                                                                               |
-| CLI          | `@fuzdev/fuz_app/cli/args.ts`, `help.ts`                 | Schema-validated arg parsing; schema-driven help                                                                                                                                   |
 | HTTP         | `@fuzdev/fuz_app/http/schema_helpers.ts`                 | `schema_to_surface()` — JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces                                                                                      |
 | Testing      | `@fuzdev/fuz_app/testing/schema_generators.ts`           | Schema-driven test data — valid bodies, adversarial inputs                                                                                                                         |
 
@@ -34,7 +34,7 @@ serialization friction.
 2. **PascalCase, schema and type share the name** — no `-Schema` suffix, no
    snake_case.
 3. **`.meta({description: '...'})`**, not `.describe()` — `.meta()` supports
-   additional keys (`aliases`, `sensitivity`).
+   additional keys (`sensitivity`).
 4. **`safeParse` for external input, `parse` for fail-fast** — §Validation at
    Boundaries.
 
@@ -133,7 +133,7 @@ export const DiskfileDirectoryPath = PathWithTrailingSlash.pipe(DiskfilePath).br
 
 `z.uuid()` / `z.iso.datetime()` (paired with brands); `z.coerce.number()`
 (env vars); `z.toJSONSchema(schema)` (API surface snapshots);
-`z.prettifyError(error)` (CLI display); `z.record(K, V)` (env vars, resource
+`z.prettifyError(error)` (error messages); `z.record(K, V)` (env vars, resource
 maps).
 
 - `z.null()` for HTTP input with no body (`input: z.null()` in route specs);
@@ -194,14 +194,10 @@ class for the registry; both `FooJson` and `FooJsonInput` (constructors and
 
 ## Metadata
 
-`description` powers CLI help; other keys are domain-specific:
-
-```typescript
-branch: z.string().meta({ description: 'deploy branch', aliases: ['b'] }).default('deploy'),
-```
-
-fuz_app's `SchemaFieldMeta` (`@fuzdev/fuz_app/schema_meta.ts`) adds
-`sensitivity: 'secret'`, which masks values in logs and API surface snapshots
+`description` documents the field and carries into `z.toJSONSchema` output;
+other keys are domain-specific. fuz_app's `SchemaFieldMeta`
+(`@fuzdev/fuz_app/schema_meta.ts`) adds `sensitivity: 'secret'`, which masks
+values in logs and API surface snapshots
 (`DATABASE_URL: z.string().min(1).meta({description: '…', sensitivity: 'secret'})`).
 
 ## Validation at Boundaries
@@ -212,15 +208,14 @@ fuz_app's `SchemaFieldMeta` (`@fuzdev/fuz_app/schema_meta.ts`) adds
   strips issue details from production responses), external API responses. Route
   specs validate input via `safeParse` and output in DEV only.
 - **`parse` for fail-fast** where invalid data is a bug or fatal misconfig —
-  internal assertions (`RoleName.parse(name)`), CLI args, factories, Cell
-  field updates.
+  internal assertions (`RoleName.parse(name)`), factories, Cell field updates.
 - **`safeParse` + custom throw** when the error needs context — env loading
   throws `EnvValidationError(raw, result.error)` carrying the raw values.
 - **`safeParse` + return null** for optional data that may be absent or invalid
   — an optional config file (`runtime.warn(...); return null`).
 
-Format errors with Zod 4's built-ins: `z.prettifyError` (multi-line, CLI),
-`z.treeifyError` (nested, mirrors the schema), `z.flattenError`
+Format errors with Zod 4's built-ins: `z.prettifyError` (multi-line, error
+messages), `z.treeifyError` (nested, mirrors the schema), `z.flattenError`
 (`{formErrors, fieldErrors}`, forms).
 
 ## Quick Reference
@@ -237,7 +232,7 @@ Format errors with Zod 4's built-ins: `z.prettifyError` (multi-line, CLI),
 | Type inference (input)         | `type MyThingInput = z.input<typeof MyThing>`            | manual partial types                                     |
 | IDs and paths                  | `z.string().brand('MyId')`                               | plain `z.string()`                                       |
 | HTTP/API input                 | `schema.safeParse(data)`                                 | `schema.parse(data)`                                     |
-| CLI args/factories             | `schema.parse(data)`                                     | `schema.safeParse(data)` with unnecessary error handling |
+| Factories                      | `schema.parse(data)`                                     | `schema.safeParse(data)` with unnecessary error handling |
 | Env loading                    | `safeParse` + custom throw (better error context)        | bare `parse` (loses raw values)                          |
 | Optional config files          | `safeParse` + return null                                | `parse` (crashes on missing file)                        |
 | No input/output                | `z.void()` or `z.void().optional()`                      | `z.undefined()`, omitting the field                      |

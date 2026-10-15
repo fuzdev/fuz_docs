@@ -212,7 +212,7 @@ exports) and flat-namespace collisions.
 
 ```typescript
 /** @nodocs */
-export const Args = z.strictObject({...});
+export const Args = s.object({...});
 ```
 
 **Never `@nodocs` a symbol external consumers import.** Rename one side of the

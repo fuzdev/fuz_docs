@@ -506,11 +506,11 @@ Arg parsing tracks binary size:
 | Needs env-var binding, shell completions, or `wrap_help` | clap (`derive`)         | +340 KB                       |
 
 argh is schema-driven (`#[derive(FromArgs)]`), the same mental model as
-fuz_util's Zod `args_parse`. Where a CLI exists in both TS and Rust, align flag
-names and aliases. Manual daemons `match` on the first arg and return `Result`
-to the `main() -> ExitCode` wrapper — no `std::process::exit` in the async
-body, no `args[1]` panic. Shared input modes: file path, `--content <string>`,
-`--stdin`.
+fuz_util's `args_parse` over a fuz_schema object schema. Where a CLI exists in
+both TS and Rust, align flag names and aliases. Manual daemons `match` on the
+first arg and return `Result` to the `main() -> ExitCode` wrapper — no
+`std::process::exit` in the async body, no `args[1]` panic. Shared input
+modes: file path, `--content <string>`, `--stdin`.
 
 ### Exit codes
 
