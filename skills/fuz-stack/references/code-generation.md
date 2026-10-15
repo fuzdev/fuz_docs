@@ -132,6 +132,3 @@ resolves them.
   `gen_task_registry` writes the `ProjectTasks` augmentation that types
   `invoke_task` for the project's own tasks (./task-patterns.md); svelte-docinfo
   is the exemplar.
-- **Gro generator for fuz_css** — `gen_fuz_css()` in a `fuz.gen.css.ts` writes
-  a committed `fuz.css`; the Vite plugin is preferred, this is for when it
-  isn't an option (./css-patterns.md §Project Setup).

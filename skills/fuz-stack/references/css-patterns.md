@@ -169,9 +169,7 @@ HMR works. The default tree-shaken bundled mode needs no options; the dev-only
 `prescan` option eagerly scans sources so the first served CSS is complete.
 fuz_css itself passes `additional_elements: 'all'`,
 `additional_variables: 'all'`, and a computed `additional_classes` list for its
-docs demos. The Gro generator alternative (`gen_fuz_css()` in
-`src/routes/fuz.gen.css.ts`, committed `fuz.css`) is for projects that can't run
-the plugin.
+docs demos.
 
 ### Project `style.css`
 
