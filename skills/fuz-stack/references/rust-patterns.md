@@ -26,7 +26,7 @@ justification); `///` for public API, `//` for implementation notes.
 ## New Workspace Checklist
 
 1. `[workspace.package]`: `edition = "2024"`, `version = "0.1.0"`,
-   `license = "MIT"`, `publish = false` (until publishing is real);
+   `license = "0BSD"`, `publish = false` (until publishing is real);
    `resolver = "2"`.
 2. Copy the canonical `[workspace.lints.*]` block (§Lints); every crate takes
    `[lints] workspace = true`. Root `clippy.toml` with

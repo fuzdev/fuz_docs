@@ -1,7 +1,7 @@
 ---
 name: grimoire
 description: Navigate and maintain a grimoire — a markdown meta-repo that coordinates work across multiple sibling repositories. Covers the three primitives: skills (agent knowledge files), lore (per-repo planning projections), and quests (cross-repo goals). Use when orienting work across repos, reading project planning context, checking TODOs before working on a project, updating planning docs after completing work, creating or updating lore entries, drafting new quests, deciding whether to create a quest vs a lore TODO, pruning stale decisions from lore entries, or understanding grimoire conventions and structure.
-license: MIT
+license: 0BSD
 metadata:
   author: ryanatkn
   version: 0.1.0

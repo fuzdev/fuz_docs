@@ -54,4 +54,4 @@ You may also try pointing your agent to:
 
 ## License
 
-[MIT](LICENSE)
+[0BSD](LICENSE)
