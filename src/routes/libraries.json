@@ -8,7 +8,7 @@
 			"glyph": "🦕",
 			"logo": "logo.svg",
 			"logo_alt": "a green sauropod wearing a brown utility belt",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://util.fuz.dev/",
 			"repository": {
 				"type": "git",
@@ -19682,7 +19682,7 @@
 			"glyph": "🌰",
 			"logo": "logo.svg",
 			"logo_alt": "a pixelated green oak acorn with a glint of sun",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://gro.fuz.dev/",
 			"repository": {
 				"type": "git",
@@ -34709,7 +34709,7 @@
 			"glyph": "🪴",
 			"logo": "logo.svg",
 			"logo_alt": "a fuzzy tuft of green moss",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://css.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_css",
 			"funding": "https://www.ryanatkn.com/funding",
@@ -35936,9 +35936,9 @@
 						{
 							"name": "css_class_composites",
 							"kind": "variable",
-							"docComment": "The builtin composite classes. The multi-property ones render in the\n`fuz.utilities.composites` sublayer (`composite: true`, the default for\nrulesets), so a token or literal class on the same element wins over them;\nthe single-property shortcuts (`circular`, `pixelated`, `mb_flow`,\n`mt_flow`) are single-purpose and order with the token classes.",
+							"docComment": "The builtin composite classes. The multi-property ones render in the\n`fuz.utilities.composites` sublayer (`composite: true`, the default for\nrulesets), so a token or literal class on the same element wins over them;\nthe single-property shortcuts (`circular`, `pixelated`, `mb_flow`,\n`mt_flow`) are single-purpose and order with the token classes. Their\nforced-colors rules nest inside their own rules (`@media (forced-colors:\nactive)`), so a modified variant keeps them conditional, and a browser\nwithout CSS nesting, which also has no forced-colors mode, skips them.",
 							"typeSignature": "Record<string, CssClassDefinition | undefined>",
-							"sourceLine": 11,
+							"sourceLine": 14,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Record",
@@ -45877,77 +45877,77 @@
 							"kind": "variable",
 							"docComment": "AAA body text: `--text_color` (`text_80` by default) on `shade_00`/`05`/`10`.",
 							"typeSignature": "7",
-							"sourceLine": 58
+							"sourceLine": 64
 						},
 						{
 							"name": "GATE_SUBTLE_TEXT",
 							"kind": "variable",
 							"docComment": "Disabled/secondary floor: `--text_disabled` (`text_50` by default) on `shade_00`.",
 							"typeSignature": "3",
-							"sourceLine": 60
+							"sourceLine": 66
 						},
 						{
 							"name": "GATE_LINK",
 							"kind": "variable",
 							"docComment": "AA links: `--link_color` (the accent at stop 60 by default) on `shade_00`,\nplus that stop itself when a theme repoints the role, since\n`label.selected` paints it directly, and an authored `--link_color_selected`.",
 							"typeSignature": "4.5",
-							"sourceLine": 66
+							"sourceLine": 72
 						},
 						{
 							"name": "GATE_UI",
 							"kind": "variable",
 							"docComment": "WCAG 1.4.11 non-text: every hue at stop 50 vs `shade_00`, and an authored\n`--outline_color` (the focus ring, the accent at stop 50 by default).",
 							"typeSignature": "3",
-							"sourceLine": 71
+							"sourceLine": 77
 						},
 						{
 							"name": "GATE_FILL_TEXT",
 							"kind": "variable",
 							"docComment": "Large-text floor: `text_max` on every stop-50 fill.",
 							"typeSignature": "3",
-							"sourceLine": 73
+							"sourceLine": 79
 						},
 						{
 							"name": "GATE_SELECTED_TEXT",
 							"kind": "variable",
 							"docComment": "AA selected-control inverse text: `text_00` on `shade_60` and on every\nstop-60 fill - the selected-button pairings in `style.css` (`.selected`\nfills with `shade_60`, `.palette_X.selected` with `palette_X_60`). The\nendpoint stop is immune to `text_lightness_curve` bends, so this gate moves\nonly when a theme moves the endpoints, the fill ramps, or the hues.",
 							"typeSignature": "4.5",
-							"sourceLine": 81
+							"sourceLine": 87
 						},
 						{
 							"name": "GATE_PALETTE_TEXT",
 							"kind": "variable",
-							"docComment": "AA colored labels: every palette hue at stop 60 on `shade_00` (colored text\nand `.plain` buttons), on the `.palette_X` button's rest fill, and on its\nown stop-10 tint (the chip). The button fill follows the `style.css`\nrecipe: the label's own color at 8% alpha, composited over `shade_00` in\ngamma-encoded sRGB. An 8-bit raster quantizes both colors, so a rendered\nmeasurement lands within about 0.07 of the ratio. Only the rest fill is\ngated - the hover, focus, and pressed fills tint further and are not.",
+							"docComment": "AA colored labels: every palette hue at stop 60 on `shade_00` (colored\ntext) and on its own stop-10 tint (the chip), and the `.palette_X` button\nlabel - the hue at stop 70 - on each of the button's fills. The\nfills follow the `style.css` recipe: the hue at stop 60 at 8% alpha at\nrest (and focused), 16% hovered, and 24% pressed, composited over\n`shade_00` in gamma-encoded sRGB. A hovered label mixes 10% toward\n`shade_max` in oklab, so a mouse press pairs that label with the pressed\nfill, and a keyboard press, which doesn't hover, pairs the plain label with\nit. An 8-bit raster quantizes both colors, so a rendered measurement lands\nwithin about 0.07 of the ratio.",
 							"typeSignature": "4.5",
-							"sourceLine": 91
+							"sourceLine": 100
 						},
 						{
 							"name": "GATE_BORDER",
 							"kind": "variable",
 							"docComment": "Control borders: `--border_color` (`shade_30` by default) vs `shade_00`.\nA regression floor for the shipped design, not a WCAG level - 1.4.11's 3:1\napplies to required component boundaries, and fuz borders sit deliberately\nsofter - so a theme can't silently wash control borders out.",
 							"typeSignature": "1.5",
-							"sourceLine": 98
+							"sourceLine": 107
 						},
 						{
 							"name": "GATE_BORDER_DIVIDER",
 							"kind": "variable",
 							"docComment": "Divider borders: the `border_color_30` alpha color composited over\n`shade_00` (the `hr` pairing in `style.css`). A regression floor like\n`GATE_BORDER`.",
 							"typeSignature": "1.3",
-							"sourceLine": 104
+							"sourceLine": 113
 						},
 						{
 							"name": "GATE_GAMUT_TOLERANCE",
 							"kind": "variable",
 							"docComment": "Gamut gate: how far outside sRGB (the largest channel excess) a stop may sit and\nstill pass - float noise, not visible clipping.",
 							"typeSignature": "0.0001",
-							"sourceLine": 110
+							"sourceLine": 119
 						},
 						{
 							"name": "ThemeGateId",
 							"kind": "type",
 							"docComment": "Which accessibility gate an entry belongs to.",
 							"typeSignature": "ThemeGateId",
-							"sourceLine": 117,
+							"sourceLine": 126,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "ThemeGateId",
@@ -45975,7 +45975,7 @@
 							"kind": "interface",
 							"docComment": "A single gate measurement against a theme. The `value`/`threshold`\ncomparison direction depends on the gate: `contrast` passes at\n`value >= threshold` (a WCAG ratio floor), `monotonicity` at\n`value > threshold` (the minimum ramp step must exceed 0), and `gamut` at\n`value <= threshold` (sRGB channel excess stays within tolerance). `pass`\nis authoritative; renderers formatting the comparison switch on `gate`.",
 							"typeSignature": "ThemeGateEntry",
-							"sourceLine": 127,
+							"sourceLine": 136,
 							"members": [
 								{
 									"name": "gate",
@@ -46039,7 +46039,7 @@
 							"kind": "interface",
 							"docComment": "A gate input the checker couldn't evaluate, so the gates reading it were\nskipped: a knob or derived stop that doesn't resolve to a number, or a\npinned color in a form the gates don't read.",
 							"typeSignature": "ThemeUncheckedEntry",
-							"sourceLine": 141,
+							"sourceLine": 150,
 							"members": [
 								{
 									"name": "variable",
@@ -46063,7 +46063,7 @@
 							"kind": "interface",
 							"docComment": "The result of `check_theme`. `ok` is true only when every entry passes and\nnothing was left unchecked.",
 							"typeSignature": "ThemeCheckReport",
-							"sourceLine": 151,
+							"sourceLine": 160,
 							"members": [
 								{
 									"name": "ok",
@@ -46101,7 +46101,7 @@
 							"kind": "interface",
 							"docComment": "The output of `compile_theme`: the emitted theme plus its lint and gate report.",
 							"typeSignature": "CompiledTheme",
-							"sourceLine": 158,
+							"sourceLine": 167,
 							"members": [
 								{
 									"name": "theme",
@@ -46136,14 +46136,14 @@
 							"kind": "variable",
 							"docComment": "The role variables the contrast gates follow - each aliases a color stop or\nanother role by default (`text_color` is `var(--text_80)`), and\n`check_theme` measures\nwhatever a theme points it at instead of the stop it left.",
 							"typeSignature": "readonly string[]",
-							"sourceLine": 308
+							"sourceLine": 339
 						},
 						{
 							"name": "check_theme",
 							"kind": "function",
 							"docComment": "Runs the gamut, monotonicity, and contrast gates against a theme, resolving\nits authored CSS back to numbers through the resolution core. Report-only:\nfailures land in `entries` (with `pass: false`), inputs that can't be\nevaluated land in `unchecked`, and `ok` is true only when every entry passes\nand nothing is unchecked. Never throws.\n\nEvery color a gate reads is looked up by its variable name, so a theme that\nauthors one directly - a stop (`palette_a_50`, `shade_00`, `text_max`,\n`border_color_30`) or a role (`text_color`, `link_color`, `border_color`) -\nis measured at the authored color when it is an `oklch(L C H)` numeric\nliteral or an exact `var()` reference to another color the gates evaluate,\nand recorded in `unchecked` otherwise. An authored color a gate depends on\nnever passes unread, and one no gate reads stays out of the report.\n\nA contrast subject names what was measured: the default stop while a role\nis at its default (`text_80 on shade_00`), the role once the theme authors\nit (`text_color on shade_00`).\n\nAn intent stop that renders the same color as a palette letter's (the\ndefault for every intent) folds into that letter's gamut entry rather than\nduplicating it, so reports for letter-bound themes list fewer subjects than\nthe full letters × intents grid.",
 							"typeSignature": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }): ThemeCheckReport",
-							"sourceLine": 338,
+							"sourceLine": 369,
 							"parameters": [
 								{
 									"name": "theme",
@@ -46161,7 +46161,7 @@
 							"kind": "function",
 							"docComment": "Recomputes a theme's per-stop worst-hue chroma caps from its own hues and\nthe palette lightness each stop resolves to, then emits `palette_chroma_NN`\noverrides wherever the baked caps no longer fit - the fix for a theme\n(rotated hues, a monochrome collapse, a moved lightness ramp) whose gamut\nheadroom the baked worst-hue table misjudges.\n\nEach stop's cap is computed at the lightness the resolution core resolves\nfor `palette_lightness_NN` in that scheme - a pinned intermediate stop when\nthe theme pins one, the endpoint-and-curve ramp otherwise - so the caps\ndescribe the same colors `check_theme` gates.\n\nA stop is emitted when either scheme's recomputed cap is tighter than the\nbaked value, or looser by more than the emit epsilon, and the theme doesn't\nalready pin that stop. Nothing is emitted when a hue fails to resolve to a\nnumber, since caps computed without it could overshoot its gamut, and a\nstop whose lightness fails to resolve is skipped. An override emits both\nslots together, so a one-scheme override can't silently kill the base\ndefault's other slot by cascade-layer order, collapsing to a single slot\nin the base position when the two rendered values coincide.\n\nA stanced theme's two schemes resolve to the stanced appearance through the\nmirror, so its caps are baselined against the stanced scheme's baked table -\nthe values the mirror already re-slots - and a stance alone (hues and\nlightness unmoved) emits nothing. Its overrides coincide across schemes and\nemit single-slot unless the theme authors a dark slot that splits them. A\nstanced theme's `scheme_mirror` is recomputed over the emitted variables,\nso the output is render-ready even when the input wasn't resolved.\n\nThe caps bound the requested chroma only: `chroma_scale` and the per-slot\n`*_chroma_scale` multipliers apply above the clamp. A theme that raises one\npast 1 clips by design - its gamut failures survive the compile, and a cap\nthe compile loosens can add to them, since the multiplier then pushes more\nstops past the looser cap. The input theme is never mutated. The report\nre-checks the emitted theme, whose compiled-cap overrides the resolution\ncore recognizes.",
 							"typeSignature": "(theme: { name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }): CompiledTheme",
-							"sourceLine": 788,
+							"sourceLine": 843,
 							"parameters": [
 								{
 									"name": "theme",
@@ -46881,9 +46881,9 @@
 						{
 							"name": "low_contrast_theme",
 							"kind": "variable",
-							"docComment": "Gentle contrast: a compressed surface range, tuned to the softest\ncompression that still clears the `check_theme` text, link, border, and\nfill gates over the base theme. The one pairing it gives up is the colored\n`.palette_X` button label on its own tinted fill, which lands just under AA\non the lowered light ground. Composed over a theme with a tighter ground it\ncan dip below another gate, so check the composition.\n\nIt moves the ground and nothing else, so a theme keeps its own neutral\ncast under it.",
+							"docComment": "Gentle contrast: a compressed surface range, tuned to the softest\ncompression that still clears the `check_theme` text, link, border, and\nfill gates over the base theme. Composed over a theme with a tighter ground\nit can dip below a gate, so check the composition.\n\nIt moves the ground and nothing else, so a theme keeps its own neutral\ncast under it.",
 							"typeSignature": "{ name: string; variables: { name: string; light?: string | undefined; dark?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; scheme_mirror?: { ...; }[] | undefined; }",
-							"sourceLine": 14,
+							"sourceLine": 12,
 							"typeInfo": {
 								"kind": "reference",
 								"name": "Theme"
@@ -49516,7 +49516,7 @@
 			"glyph": "📝",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly pixelated spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://mdz.fuz.dev/",
 			"repository": {
 				"type": "git",
@@ -56825,7 +56825,7 @@
 			"glyph": "🧶",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly brown spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://ui.fuz.dev/",
 			"repository": {
 				"type": "git",
@@ -72701,7 +72701,7 @@
 			"glyph": "🗝",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly teal spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://app.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_app",
 			"exports": {
@@ -133440,9 +133440,9 @@
 						{
 							"name": "Email",
 							"kind": "type",
-							"docComment": "Email validation. Lives here rather than `@fuzdev/fuz_util` because every\ncurrent consumer pairs it with `Username` (signup, invites, audit log) —\nkeeping the two together avoids a cross-package import for the\nidentity-primitive bundle. Promote to fuz_util if a non-identity consumer\nsurfaces.\n\nDeliberately permissive — a structural shape check (`EMAIL_REGEX` plus the\n`EMAIL_LENGTH_MAX` byte bound), not RFC 5322 conformance or deliverability\n(real delivery is proven by a confirmation email). Replaces Zod's stricter\n`z.email()` so the rule is one explicit regex the Rust spine's\n`is_valid_email` mirrors; `z.email()`'s internal regex (2+ char TLD, no\nconsecutive dots) was brittle to keep in cross-impl parity and rejected\naddresses like `a@b.c`. The length bound is the UTF-8 **byte** count (RFC\n5321 measures octets), so a multibyte address is bounded identically to the\nRust spine's `s.len()` rather than diverging on JS's UTF-16 `.length`. No\ntransform: case is preserved and surrounding whitespace is rejected (not\ntrimmed), so storage is verbatim and the case-insensitive lookup rides the\nDB-side `LOWER(email)`.",
+							"docComment": "Email validation. Every current consumer pairs it with `Username` (signup,\ninvites, audit log), so the two live together with the other Zod\nprimitives.\n\nDeliberately permissive — a structural shape check (`EMAIL_REGEX` plus the\n`EMAIL_LENGTH_MAX` byte bound), not RFC 5322 conformance or deliverability\n(real delivery is proven by a confirmation email). Replaces Zod's stricter\n`z.email()` so the rule is one explicit regex the Rust spine's\n`is_valid_email` mirrors; `z.email()`'s internal regex (2+ char TLD, no\nconsecutive dots) was brittle to keep in cross-impl parity and rejected\naddresses like `a@b.c`. The length bound is the UTF-8 **byte** count (RFC\n5321 measures octets), so a multibyte address is bounded identically to the\nRust spine's `s.len()` rather than diverging on JS's UTF-16 `.length`. No\ntransform: case is preserved and surrounding whitespace is rejected (not\ntrimmed), so storage is verbatim and the case-insensitive lookup rides the\nDB-side `LOWER(email)`.",
 							"typeSignature": "string",
-							"sourceLine": 212,
+							"sourceLine": 210,
 							"mergedValue": true
 						},
 						{
@@ -133450,7 +133450,7 @@
 							"kind": "function",
 							"docComment": "Returns a new random (v4) `Uuid`.",
 							"typeSignature": "(): string & $brand<\"Uuid\">",
-							"sourceLine": 215,
+							"sourceLine": 213,
 							"returnType": "string & $brand<\"Uuid\">",
 							"returnTypeInfo": {
 								"kind": "reference",
@@ -133462,7 +133462,7 @@
 							"kind": "type",
 							"docComment": "Branded UUID schema.",
 							"typeSignature": "string & $brand<\"Uuid\">",
-							"sourceLine": 219,
+							"sourceLine": 217,
 							"externalTypes": [
 								"z.infer<typeof Uuid>"
 							],
@@ -133493,7 +133493,7 @@
 							"kind": "type",
 							"docComment": "`Uuid` that defaults to a fresh `create_uuid()` when the input is `undefined`.",
 							"typeSignature": "string & $brand<\"Uuid\">",
-							"sourceLine": 223,
+							"sourceLine": 221,
 							"externalTypes": [
 								"z.infer<typeof UuidWithDefault>"
 							],
@@ -133524,7 +133524,7 @@
 							"kind": "type",
 							"docComment": "Branded ISO 8601 datetime schema.",
 							"typeSignature": "string & $brand<\"Datetime\">",
-							"sourceLine": 227,
+							"sourceLine": 225,
 							"externalTypes": [
 								"z.infer<typeof Datetime>"
 							],
@@ -133555,7 +133555,7 @@
 							"kind": "function",
 							"docComment": "Returns an ISO 8601 datetime string for the current time.",
 							"typeSignature": "(): string & $brand<\"Datetime\">",
-							"sourceLine": 230,
+							"sourceLine": 228,
 							"returnType": "string & $brand<\"Datetime\">",
 							"returnTypeInfo": {
 								"kind": "reference",
@@ -133567,7 +133567,7 @@
 							"kind": "type",
 							"docComment": "`Datetime` that defaults to `get_datetime_now()` when the input is `undefined`.",
 							"typeSignature": "string & $brand<\"Datetime\">",
-							"sourceLine": 234,
+							"sourceLine": 232,
 							"externalTypes": [
 								"z.infer<typeof DatetimeNow>"
 							],
@@ -133598,7 +133598,7 @@
 							"kind": "type",
 							"docComment": "Zod schema for a BLAKE3 hex hash — 64 lowercase hex characters (256-bit output).",
 							"typeSignature": "string",
-							"sourceLine": 240,
+							"sourceLine": 238,
 							"mergedValue": true
 						},
 						{
@@ -133606,7 +133606,7 @@
 							"kind": "variable",
 							"docComment": "Wire-form schema for a `blake3:`-prefixed fact hash, whose output is\n`FactHash` from `@fuzdev/fuz_util/hash_schemas.ts` — the type\n`fact_hash_bytes`, `fact_hash_stream`, and `FactStore` use — so a parsed\nvalue passes straight to them. Client-side (cell payloads) and server-side\n(DB-row hashes) consumers reuse this same schema.\n\nThe output type is a cast over a plain regex check: Zod's `.brand('FactHash')`\nwould output Zod's own brand, which doesn't fit fuz_util's fuz_schema-branded\n`FactHash`, and a `.transform` or `z.custom` that produced the right type\nmakes `z.toJSONSchema` throw, as neither can be represented in JSON Schema.\nThe cast costs nothing at runtime and keeps the `ZodString` API and the\n`pattern` in the generated JSON Schema, so `.meta()`, `.nullable()`, and\n`z.array()` compose as before.",
 							"typeSignature": "ZodString & ZodType<FactHash, string, $ZodTypeInternals<FactHash, string>>",
-							"sourceLine": 257,
+							"sourceLine": 255,
 							"typeInfo": {
 								"kind": "intersection",
 								"members": [
@@ -174193,7 +174193,7 @@
 			"glyph": "🎨",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly pink spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://code.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_code",
 			"funding": "https://www.ryanatkn.com/funding",
@@ -177154,7 +177154,7 @@
 			"glyph": "❄",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly pixelated spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://template.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_template"
 		},
@@ -178835,6 +178835,7 @@
 			"glyph": "🖊️",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly yellow spider facing you",
+			"license": "0BSD",
 			"homepage": "https://blog.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_blog",
 			"exports": {
@@ -180383,7 +180384,7 @@
 			"glyph": "🦣",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly purple spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://mastodon.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_mastodon",
 			"funding": "https://www.ryanatkn.com/funding",
@@ -182137,7 +182138,7 @@
 			"glyph": "🪄",
 			"logo": "logo.svg",
 			"logo_alt": "a friendly blue spider facing you",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://repos.fuz.dev/",
 			"repository": "https://github.com/fuzdev/fuz_repos",
 			"funding": "https://www.ryanatkn.com/funding",
@@ -246529,7 +246530,7 @@
 			"glyph": "📜",
 			"logo": "logo.svg",
 			"logo_alt": "a cyan scroll with curling ends",
-			"license": "MIT",
+			"license": "0BSD",
 			"homepage": "https://svelte-docinfo.fuz.dev/",
 			"repository": {
 				"type": "git",

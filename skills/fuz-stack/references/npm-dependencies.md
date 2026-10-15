@@ -70,7 +70,7 @@ oracle).
 
 | Package                     | Purpose                               |
 | --------------------------- | ------------------------------------- |
-| `zod`                       | Schema validation                     |
+| `zod`                       | Schema validation for app data        |
 | `esm-env`                   | Environment flags (`DEV` / `BROWSER`) |
 | `zimmerframe`               | AST walker                            |
 | `magic-string`              | Source-string edits with sourcemaps   |

@@ -161,9 +161,11 @@ Real uses: `PathId` (`path.ts`), `GitOrigin`/`GitBranch` (`git.ts`, `flavor`
 schemas), color channel types (`colors.ts`), `Url` (`url.ts`, paired with a
 fuz_schema schema of the same name), `BlogPostId` (fuz_blog), `InputPath`
 (gro), `ReorderableId` (zzz). `Branded<TValue, TName>` (requires a cast, also
-from fuz_schema) is exported but unused — use `Flavored` for compile-time-only
-nominal typing, and Zod `.brand()` when the value crosses a runtime boundary
-and should validate (`Uuid`, `Datetime`; ./zod-schemas.md §Branded Types).
+from fuz_schema) is for values that must not assign from a bare base value:
+fuz_util's `FactHash` (`hash_schemas.ts`), produced only by hashing or
+`is_fact_hash`. Zod `.brand()` stays the app-data form when the value crosses a
+runtime boundary and should validate (`Uuid`, `Datetime` in fuz_app;
+./zod-schemas.md §Branded Types).
 
 **Strict and distributive.** `OmitStrict<T, K extends keyof T>` — `Omit`
 that rejects non-keys (standard `Omit` lets typos compile); widely used.
