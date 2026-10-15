@@ -103,6 +103,7 @@ fuz_util — not stack utilities; don't add them to app code.)
 | `oxc-parser`               | Fast JS/TS parser        |
 | `ts-blank-space`           | Type-stripping transform |
 | `es-module-lexer`          | ESM import/export lexer  |
+| `acorn`                    | JS parser (ESTree)       |
 | `acorn-jsx`                | JSX plugin for acorn     |
 | `chokidar`                 | File watching            |
 | `dotenv`                   | `.env` loader            |
@@ -125,12 +126,14 @@ package, would anything break?_ Yes → peer. No, but published code imports it 
 `dependencies`. Only the build sees it → `devDependencies`.
 
 - **`peerDependencies`** — must resolve to a **single instance** in the
-  consumer's tree: a framework host (`svelte`, `@sveltejs/kit`) or anything
-  whose instances/types cross the library's API boundary (`zod` schemas,
-  `esm-env` flags). Two copies break `instanceof`, Zod `.brand()` identity,
-  Svelte context keys, and the dev/prod env gate. Mirror the version in
-  `devDependencies` so the library's own build resolves it. Required when the
-  public API always reaches it; **optional** (via `peerDependenciesMeta`) for
+  consumer's tree: a framework host (`svelte`, `@sveltejs/kit`;
+  `svelte/compiler` used only as a parser shares no runtime state, so it may
+  be a plain dependency, as in fuz_css) or anything whose instances/types
+  cross the library's API boundary (`zod` schemas, `esm-env` flags). Two
+  copies break `instanceof`, Zod `.brand()` identity, Svelte context keys,
+  and the dev/prod env gate. Mirror the version in `devDependencies` so the
+  library's own build resolves it. Required when the public API always
+  reaches it; **optional** (via `peerDependenciesMeta`) for
   an opt-in path (a preprocessor, a deep-import module many consumers skip) —
   but **only when a _required_ peer guarantees it transitively**: `svelte` and
   `@sveltejs/kit` both depend on `esm-env`, so a lib requiring either can leave
