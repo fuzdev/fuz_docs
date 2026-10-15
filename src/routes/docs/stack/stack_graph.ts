@@ -306,7 +306,7 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_css',
 		to: 'blake3',
-		kind: 'peer'
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_css',
