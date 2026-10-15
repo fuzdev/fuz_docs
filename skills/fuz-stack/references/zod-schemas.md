@@ -7,7 +7,7 @@ description: Zod conventions — strictObject, branded types, introspection
 Zod schemas are the source of truth for app data — JSON shape, TypeScript
 type (`z.infer`), defaults, metadata (`.meta()` → runtime reflection), and
 serialization. They're runtime-inspectable (walkable via
-`@fuzdev/fuz_util/zod.ts`, exportable via `z.toJSONSchema`) and JSON-native —
+`@fuzdev/fuz_app/zod.ts`, exportable via `z.toJSONSchema`) and JSON-native —
 branded strings for timestamps (`Datetime`), IDs (`Uuid`), and paths avoid
 serialization friction. CLI and task args, and fuz_util's
 `PackageJson`/`Url`/fetch-cache schemas, are `@fuzdev/fuz_schema` schemas
@@ -17,8 +17,8 @@ instead, task args parsed by fuz_util's `args_parse` (./task-patterns.md).
 
 | Layer        | Module                                                   | Capabilities                                                                                                                                                                       |
 | ------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Foundation   | `@fuzdev/fuz_util/zod.ts`                                | Walkers — optional/nullable/default checks; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); field helpers (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_extract_fields`) |
-| Foundation   | `@fuzdev/fuz_util/id.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` brands + factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`)                                                                        |
+| Spine        | `@fuzdev/fuz_app/zod.ts`                                 | Walkers — unwrap wrappers (`zod_unwrap_def`, `zod_get_base_type`, `zod_get_innermost_type`, `zod_unwrap_to_object`); field helpers (`zod_get_schema_keys`, `zod_get_field_schema`); `zod_extract_fields` → `ZodFieldInfo` (`name`, `base_type`, `required`, `has_default`, `nullable`) |
+| Spine        | `@fuzdev/fuz_app/primitive_schemas.ts`                   | `Uuid`, `Datetime`, `Blake3Hash`, `FactHashSchema` (output `FactHash`, a fuz_schema `Branded` from `@fuzdev/fuz_util/hash_schemas.ts`) + factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`)                                               |
 | Cell helpers | `@fuzdev/zzz/zod_helpers.ts`                             | Path-transform schemas (`PathWithTrailingSlash`, `PathWithoutTrailingSlash`, `PathWithLeadingSlash`)                                                                               |
 | HTTP         | `@fuzdev/fuz_app/http/schema_helpers.ts`                 | `schema_to_surface()` — JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces                                                                                      |
 | Testing      | `@fuzdev/fuz_app/testing/schema_generators.ts`           | Schema-driven test data — valid bodies, adversarial inputs                                                                                                                         |
@@ -82,7 +82,7 @@ export const package_resource = (config: Omit<PackageResourceInput, 'type'>): Pa
 ## Branded Types
 
 ```typescript
-// fuz_util/id.ts, datetime.ts — Zod 4 validators + brand
+// fuz_app/primitive_schemas.ts — Zod 4 validators + brand
 export const Uuid = z.uuid().brand('Uuid');
 export const Datetime = z.iso.datetime().brand('Datetime');
 
@@ -146,10 +146,12 @@ maps).
 
 Prefer `instanceof` (`schema instanceof z.ZodObject`) and the public `.def`
 getter (`schema.def.type`) — not `._zod.def` (same value, internal API).
-`@fuzdev/fuz_util/zod.ts` unwraps optional/nullable/default/transform/pipe
-wrappers (`zod_unwrap_def`, `zod_get_base_type`, `zod_to_subschema`,
-`zod_get_innermost_type`, `zod_unwrap_to_object`) and reads object fields
-(`zod_get_schema_keys`, `zod_get_field_schema`, `zod_maybe_get_field_schema`).
+`@fuzdev/fuz_app/zod.ts` unwraps optional/nullable/default/transform/pipe
+wrappers (`zod_unwrap_def`, `zod_get_base_type`, `zod_get_innermost_type`,
+`zod_unwrap_to_object`) and reads object fields (`zod_get_schema_keys`,
+`zod_get_field_schema`). `zod_extract_fields` returns a `ZodFieldInfo` per
+field (`required`, `has_default`, `nullable`) — use it for
+optional/nullable/default checks. fuz_util itself is zod-free.
 
 ## Unions and Enums
 
