@@ -1,0 +1,1 @@
+var e={name:`@fuzdev/fuz_docs`,version:`0.0.1`,description:`experimental AI-generated docs and skills for Fuz, a zippy stack for human agency`,glyph:`📜`,logo:`logo.svg`,logo_alt:`a friendly pixelated spider facing you`,homepage:`https://docs.fuz.dev/`,repository:`https://github.com/fuzdev/fuz_docs`};export{e as t};
