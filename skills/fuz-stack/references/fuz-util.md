@@ -4,8 +4,9 @@ description: fuz_util — Result, error helpers, Logger, Timings, concurrency, D
 
 # fuz_util
 
-Shared utilities from `@fuzdev/fuz_util` (zero deps). Modules named below are
-paths under the package (`@fuzdev/fuz_util/result.ts`).
+Shared utilities from `@fuzdev/fuz_util` (zero deps; `@fuzdev/fuz_schema` and
+`esm-env` are required peers). Modules named below are paths under the package
+(`@fuzdev/fuz_util/result.ts`).
 
 ## Result (`result.ts`)
 
@@ -143,9 +144,11 @@ validation). `DagOptions` adds `on_error`/`on_skip`/`should_skip`,
 
 ## Type utilities (`types.ts`)
 
-**Nominal typing.** `Flavored<TValue, TName>` is the primary approach: an
-_optional_ invisible brand, so unflavored base values assign without casting
-but different flavors are incompatible:
+**Nominal typing.** `Flavored<TValue, TName>`, defined in
+`@fuzdev/fuz_schema/schema.ts` beside the `flavor`/`brand` schema helpers that
+produce the same types, is the primary approach: an _optional_ invisible
+brand, so unflavored base values assign without casting but different flavors
+are incompatible:
 
 ```typescript
 type Email = Flavored<string, 'Email'>;
@@ -154,13 +157,13 @@ const email1: Email = 'foo@bar.com'; // ok — plain string assigns
 const email2: Email = 'foo' as Address; // error — Address !== Email
 ```
 
-Real uses: `PathId` (`path.ts`), `GitOrigin`/`GitBranch` (`git.ts`), color
-channel types (`colors.ts`), `Url` (`url.ts`, paired with a Zod schema of the
-same name), `BlogPostId` (fuz_blog), `InputPath` (gro), `ReorderableId` (zzz).
-`Branded<TValue, TName>` (requires a cast) is exported but unused — use
-`Flavored` for compile-time-only nominal typing, and Zod `.brand()` when the
-value crosses a runtime boundary and should validate (`Uuid`, `Datetime`;
-./zod-schemas.md §Branded Types).
+Real uses: `PathId` (`path.ts`), `GitOrigin`/`GitBranch` (`git.ts`, `flavor`
+schemas), color channel types (`colors.ts`), `Url` (`url.ts`, paired with a
+fuz_schema schema of the same name), `BlogPostId` (fuz_blog), `InputPath`
+(gro), `ReorderableId` (zzz). `Branded<TValue, TName>` (requires a cast, also
+from fuz_schema) is exported but unused — use `Flavored` for compile-time-only
+nominal typing, and Zod `.brand()` when the value crosses a runtime boundary
+and should validate (`Uuid`, `Datetime`; ./zod-schemas.md §Branded Types).
 
 **Strict and distributive.** `OmitStrict<T, K extends keyof T>` — `Omit`
 that rejects non-keys (standard `Omit` lets typos compile); widely used.

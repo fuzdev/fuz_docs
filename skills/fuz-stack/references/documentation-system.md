@@ -46,15 +46,15 @@ artifact is the hand-written `src/routes/library.ts` glue.
 A **Tome** is a documentation page (`@fuzdev/fuz_ui/tome.ts`):
 
 ```typescript
-const Tome = z.object({
-	slug: z.string(),                 // URL segment + lookup key
-	title: z.string().optional(),     // display label; falls back to slug
-	category: z.string(),             // sidebar grouping (fuz_ui: guide/helpers/components; fuz_css: guide/systems/styles)
-	Component: z.custom<Component<any, any>>(),
-	related_tomes: z.array(z.string()),        // other tome slugs
-	related_modules: z.array(z.string()),      // source files in /docs/api/ ('theme_state.svelte.ts')
-	related_declarations: z.array(z.string())  // exports in API docs ('ThemeRoot')
-});
+interface Tome {
+	slug: string; // URL segment + lookup key
+	title?: string; // display label; falls back to slug
+	category: string; // sidebar grouping (fuz_ui: guide/helpers/components; fuz_css: guide/systems/styles)
+	Component: Component<any, any>;
+	related_tomes: Array<string>; // other tome slugs
+	related_modules: Array<string>; // source files in /docs/api/ ('theme_state.svelte.ts')
+	related_declarations: Array<string>; // exports in API docs ('ThemeRoot')
+}
 ```
 
 Helpers from `tome.ts`: `tome_get_by_slug(slug)` (throws if missing),

@@ -26,9 +26,10 @@ The stack is designed so the full lifecycle — produce, deploy, operate — is
 accessible to anyone with intent and an AI partner. Consistent,
 self-describing patterns let an agent learn once and apply everywhere:
 snake_case aligns TS, Rust, and SQL with zero renaming; Zod schemas are the
-single source of truth for data shape, type, defaults, and validation
-(fuz_schema for task and CLI args); `fuz_app` is the shared backend spine
-(auth, sessions, DB, SSE) that zzz and the apps build on.
+single source of truth for app data shape, type, defaults, and validation
+(fuz_schema for task and CLI args and the tooling's own data); `fuz_app` is
+the shared backend spine (auth, sessions, DB, SSE) that zzz and the apps
+build on.
 
 ## Package Ecosystem
 
@@ -37,7 +38,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | Package        | Description                                                                     |
 | -------------- | ------------------------------------------------------------------------------- |
 | `fuz_util`     | foundation utilities (zero deps) — hashing, async, schemas, types               |
-| `fuz_schema`   | performance-focused Standard Schema library — task and CLI args                 |
+| `fuz_schema`   | performance-focused Standard Schema library — CLI args, tooling, `Flavored`     |
 | `gro`          | task runner and toolkit extending SvelteKit (internals adopting Rust)           |
 | `fuz_css`      | semantic-first CSS framework and design system                                  |
 | `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                |
@@ -322,16 +323,18 @@ Full guide: ./references/dependency-injection.md.
   the `PUBLIC_LOG_LEVEL` env var
 - **`Timings`**, **`run_dag()`**, **`each_concurrent` / `map_concurrent` /
   `map_concurrent_settled` / `AsyncSemaphore` / `Deferred`**
-- **`Flavored`/`Branded`**, `OmitStrict`, `PickUnion`
+- `OmitStrict`, `PickUnion` (`types.ts`); **`Flavored`/`Branded`** come from
+  `@fuzdev/fuz_schema/schema.ts`
 
 See ./references/fuz-util.md.
 
 ## Zod Schemas
 
-Zod schemas are the source of truth for JSON shape, TS type, defaults,
-metadata, and serialization; schema changes cascade through the stack. CLI and
-task args are `@fuzdev/fuz_schema` schemas instead
-(./references/task-patterns.md).
+Zod schemas are the source of truth for app data — JSON shape, TS type,
+defaults, metadata, and serialization; schema changes cascade through the
+stack. CLI and task args, and the tooling's own schemas (fuz_util's
+`PackageJson`, `Url`, and fetch cache; gro's build cache), are
+`@fuzdev/fuz_schema` schemas instead (./references/task-patterns.md).
 
 - **`z.strictObject()`** by default. `z.looseObject()` / `z.object()` only
   for external data, client-consumed response/error shapes, and extensible

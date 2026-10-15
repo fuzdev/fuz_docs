@@ -4,19 +4,20 @@ description: Zod conventions — strictObject, branded types, introspection
 
 # Zod Schemas
 
-Zod schemas are the source of truth for JSON shape, TypeScript type
-(`z.infer`), defaults, metadata (`.meta()` → runtime reflection), and
+Zod schemas are the source of truth for app data — JSON shape, TypeScript
+type (`z.infer`), defaults, metadata (`.meta()` → runtime reflection), and
 serialization. They're runtime-inspectable (walkable via
 `@fuzdev/fuz_util/zod.ts`, exportable via `z.toJSONSchema`) and JSON-native —
 branded strings for timestamps (`Datetime`), IDs (`Uuid`), and paths avoid
-serialization friction. CLI and task args are `@fuzdev/fuz_schema` schemas
-instead, parsed by fuz_util's `args_parse` (./task-patterns.md).
+serialization friction. CLI and task args, and fuz_util's
+`PackageJson`/`Url`/fetch-cache schemas, are `@fuzdev/fuz_schema` schemas
+instead, task args parsed by fuz_util's `args_parse` (./task-patterns.md).
 
 ## Schema helpers by layer
 
 | Layer        | Module                                                   | Capabilities                                                                                                                                                                       |
 | ------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Foundation   | `@fuzdev/fuz_util/zod.ts`                                | Introspection — descriptions, defaults, aliases, types; optional/nullable/default checks; display formatting; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); field helpers (`zod_get_schema_keys`, `zod_get_field_schema`) |
+| Foundation   | `@fuzdev/fuz_util/zod.ts`                                | Walkers — optional/nullable/default checks; unwrap wrappers (`zod_get_innermost_type`, `zod_unwrap_to_object`); field helpers (`zod_get_schema_keys`, `zod_get_field_schema`, `zod_extract_fields`) |
 | Foundation   | `@fuzdev/fuz_util/id.ts`, `@fuzdev/fuz_util/datetime.ts` | `Uuid`, `Datetime` brands + factories (`create_uuid`, `get_datetime_now`, `UuidWithDefault`, `DatetimeNow`)                                                                        |
 | Cell helpers | `@fuzdev/zzz/zod_helpers.ts`                             | Path-transform schemas (`PathWithTrailingSlash`, `PathWithoutTrailingSlash`, `PathWithLeadingSlash`)                                                                               |
 | HTTP         | `@fuzdev/fuz_app/http/schema_helpers.ts`                 | `schema_to_surface()` — JSON Schema via `z.toJSONSchema()` for snapshot-testable API surfaces                                                                                      |
@@ -26,11 +27,10 @@ instead, parsed by fuz_util's `args_parse` (./task-patterns.md).
 
 1. **`z.strictObject()`** for all object schemas, including members of
    `z.discriminatedUnion()` / `z.union()`. **Exceptions**, each with a comment
-   saying why: external data (`z.looseObject()`, or `z.object()`; e.g. npm
-   adds fields to `package.json`, GitHub to API responses);
-   client-consumed response/error schemas (`z.looseObject()` so fields can be
-   added without breaking clients); protocol shapes the other side may extend
-   per spec (JSON-RPC messages).
+   saying why: external data (`z.looseObject()`, or `z.object()`; e.g. GitHub
+   adds fields to API responses); client-consumed response/error schemas
+   (`z.looseObject()` so fields can be added without breaking clients);
+   protocol shapes the other side may extend per spec (JSON-RPC messages).
 2. **PascalCase, schema and type share the name** — no `-Schema` suffix, no
    snake_case.
 3. **`.meta({description: '...'})`**, not `.describe()` — `.meta()` supports
@@ -98,8 +98,8 @@ export const ResourceId = z.string().min(1).brand<'ResourceId'>();
 
 Each pairs with `export type X = z.infer<typeof X>`. Dynamic defaults use
 factories (`Uuid.default(create_uuid)`, `Datetime.default(get_datetime_now)`).
-For compile-time-only nominal typing without validation, use `Flavored`
-(./fuz-util.md §Type utilities).
+For compile-time-only nominal typing without validation, use `Flavored` from
+`@fuzdev/fuz_schema/schema.ts` (./fuz-util.md §Type utilities).
 
 ## Defaults and Optionality
 
