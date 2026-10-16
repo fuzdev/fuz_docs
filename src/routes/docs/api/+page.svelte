@@ -72,7 +72,7 @@
 	}
 	.package_card:hover {
 		border-color: var(--palette_a_50);
-		background: var(--fg_10);
+		background: var(--ink_10);
 	}
 	.glyph {
 		font-size: var(--font_size_xl);
