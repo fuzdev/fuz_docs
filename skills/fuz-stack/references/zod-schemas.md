@@ -9,8 +9,9 @@ type (`z.infer`), defaults, metadata (`.meta()` → runtime reflection), and
 serialization. They're runtime-inspectable (walkable via
 `@fuzdev/fuz_app/zod.ts`, exportable via `z.toJSONSchema`) and JSON-native —
 branded strings for timestamps (`Datetime`), IDs (`Uuid`), and paths avoid
-serialization friction. CLI and task args, and fuz_util's
-`PackageJson`/`Url`/fetch-cache schemas, are `@fuzdev/fuz_schema` schemas
+serialization friction. CLI and task args, fuz_util's
+`PackageJson`/`Url`/fetch-cache schemas, and fuz_css's `Theme`/`StyleVariable`
+are `@fuzdev/fuz_schema` schemas
 instead, task args parsed by fuz_util's `args_parse` (./task-patterns.md).
 
 ## Schema helpers by layer
