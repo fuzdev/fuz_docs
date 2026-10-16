@@ -4,15 +4,15 @@ description: Zod conventions — strictObject, branded types, introspection
 
 # Zod Schemas
 
-Zod schemas are the source of truth for app data — JSON shape, TypeScript
-type (`z.infer`), defaults, metadata (`.meta()` → runtime reflection), and
-serialization. They're runtime-inspectable (walkable via
-`@fuzdev/fuz_app/zod.ts`, exportable via `z.toJSONSchema`) and JSON-native —
+Zod schemas are the source of truth for fuz_app's app data and the apps
+built on it — JSON shape, TypeScript type (`z.infer`), defaults, metadata
+(`.meta()` → runtime reflection), and serialization. They're
+runtime-inspectable (walkable via `@fuzdev/fuz_app/zod.ts`, exportable via
+`z.toJSONSchema`) and JSON-native —
 branded strings for timestamps (`Datetime`), IDs (`Uuid`), and paths avoid
-serialization friction. CLI and task args, fuz_util's
-`PackageJson`/`Url`/fetch-cache schemas, and fuz_css's `Theme`/`StyleVariable`
-are `@fuzdev/fuz_schema` schemas
-instead, task args parsed by fuz_util's `args_parse` (./task-patterns.md).
+serialization friction. Everything else — the packages below fuz_app, CLI
+and task args (parsed by fuz_util's `args_parse`, ./task-patterns.md),
+tooling, fuz_app's CLI config — is `@fuzdev/fuz_schema`.
 
 ## Schema helpers by layer
 

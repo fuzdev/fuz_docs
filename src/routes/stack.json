@@ -391,6 +391,7 @@
 			"export_count": 783,
 			"peer_dependencies": [
 				"@fuzdev/fuz_app",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util"
 			],
@@ -566,6 +567,7 @@
 		"@fuzdev/zzz": [
 			"@fuzdev/blake3-wasm",
 			"@fuzdev/fuz_app",
+			"@fuzdev/fuz_schema",
 			"@fuzdev/fuz_ui",
 			"@fuzdev/fuz_util"
 		],

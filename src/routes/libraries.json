@@ -40150,7 +40150,7 @@
 								{
 									"name": "theme",
 									"kind": "variable",
-									"docComment": "A theme to bake into the generated CSS, overlaid onto `variables`\nlast-wins by name. This is how a project picks a theme statically: no JS\ntheme rendering at runtime, and the output stays tree-shaken because the\noverlay happens before the dependency graph is built, so a theme's\nreferenced variables are pulled in transitively.\n\nFor runtime switching use fuz_ui's `ThemeRoot`; the two compose, with the\nruntime theme winning by cascade layer. The theme's own overlay also\nrenders into the `fuz.theme.baked` sublayer - above the\n`fuz.preferences` OS mappings, with `color-scheme` pinned for a stance,\nand below a runtime theme's direct `fuz.theme` styles - so the baked\ntheme behaves like the same theme at runtime until one overrides it.\n\nThe bake derives what the theme renders with, as `render_theme_style`\ntakes it at runtime, so a plain `Theme` is all it needs (a\n`ResolvedTheme` is accepted too, its derived data recomputed):\n\n- a single-scheme theme's stance mirror, re-slotted from the configured\n  `variables`, so a customized scheme-adaptive variable keeps its own\n  value under the stance\n- compiled chroma caps: `compute_theme_caps` recomputes the gamut caps\n  wherever the theme's hues or lightness moved off the baked table (a\n  rotated hue, a monochrome collapse), and the caps render last. The\n  gates run with them and report as warnings - `theme_gate_failed` and\n  `theme_gate_unchecked` - measured against the shipped defaults' numeric\n  twin with the configured `variables`' knob-tier values folded in\n  where they differ from the defaults, so the caps and gates measure\n  what renders. A stanced theme lists only its stanced scheme's\n  entries. A theme can fail a gate knowingly: marquee bakes with a\n  gamut warning, since it exceeds the caps on purpose. The lint doesn't\n  run; run `validate_theme` on the theme yourself\n\nThe baked values become the output's defaults, so a runtime theme can't\nrevert to the pre-bake appearance by being empty - the base theme\nrenders nothing. To offer \"back to fuz defaults\" at runtime, render the\ndefaults explicitly, internal ramp variables included:\n`render_style_variables(default_variables)`.",
+									"docComment": "A theme to bake into the generated CSS, overlaid onto `variables`\nlast-wins by name. This is how a project picks a theme statically: no JS\ntheme rendering at runtime, and the output stays tree-shaken because the\noverlay happens before the dependency graph is built, so a theme's\nreferenced variables are pulled in transitively.\n\nFor runtime switching use fuz_ui's `ThemeRoot`; the two compose, with the\nruntime theme winning by cascade layer. The theme's own overlay also\nrenders into the `fuz.theme.baked` sublayer - above the\n`fuz.preferences` OS mappings, with `color-scheme` pinned for a stance,\nand below a runtime theme's direct `fuz.theme` styles - so the baked\ntheme behaves like the same theme at runtime until one overrides it.\n\nThe bake derives what the theme renders with, as `render_theme_style`\ntakes it at runtime, so a plain `Theme` is all it needs (a\n`ResolvedTheme` is accepted too, its derived data recomputed):\n\n- a single-scheme theme's stance mirror, re-slotted from the configured\n  `variables`, so a customized scheme-adaptive variable keeps its own\n  value under the stance\n- compiled chroma caps: `compute_theme_caps` recomputes the gamut caps\n  wherever the theme's hues or lightness moved off the baked table (a\n  rotated hue, a monochrome collapse), and the caps render last. The\n  gates run with them and report as warnings - `theme_gate_failed` and\n  `theme_gate_unchecked` - measured against the shipped defaults' numeric\n  twin with the configured `variables`' knob-tier values folded in\n  where they differ from the defaults, so the caps and gates measure\n  what renders. A stanced theme lists only its stanced scheme's\n  entries. A theme can fail a gate knowingly: marquee bakes with a\n  gamut warning, since it exceeds the caps on purpose\n- the lint: `validate_theme` runs over the theme, each issue a\n  `theme_lint` diagnostic at its own level - an unknown variable is an\n  error, the knob range and type checks are warnings\n\nThe baked values become the output's defaults, so a runtime theme can't\nrevert to the pre-bake appearance by being empty - the base theme\nrenders nothing. To offer \"back to fuz defaults\" at runtime, render the\ndefaults explicitly, internal ramp variables included:\n`render_style_variables(default_variables)`.",
 									"typeSignature": "{ name: string; variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; } | ResolvedTheme | null",
 									"examples": [
 										"```ts\nimport {phosphor_theme} from '@fuzdev/fuz_css/themes/phosphor.ts';\nvite_plugin_fuz_css({theme: phosphor_theme});\n```"
@@ -40354,7 +40354,7 @@
 							"kind": "interface",
 							"docComment": "Options for error and warning handling.",
 							"typeSignature": "CssDiagnosticsOptions",
-							"sourceLine": 387,
+							"sourceLine": 389,
 							"members": [
 								{
 									"name": "on_error",
@@ -40414,7 +40414,7 @@
 							"kind": "interface",
 							"docComment": "Options for cache behavior.",
 							"typeSignature": "CssCacheOptions",
-							"sourceLine": 413,
+							"sourceLine": 415,
 							"members": [
 								{
 									"name": "cache_dir",
@@ -40439,7 +40439,7 @@
 							"kind": "interface",
 							"docComment": "The combined options the generator core reads, which\n`VitePluginFuzCssOptions` extends.",
 							"typeSignature": "CssGeneratorBaseOptions",
-							"sourceLine": 433,
+							"sourceLine": 435,
 							"extends": [
 								"CssExtractionOptions",
 								"CssClassOptions",
@@ -46723,7 +46723,7 @@
 							"kind": "interface",
 							"docComment": "The output of `compile_theme`: the input theme with everything derived from\nit - the stance mirror and the recomputed caps - plus the gate report and\nlint over that rendering. Renders as `render_theme_style(c.theme, c)`.",
 							"typeSignature": "CompiledTheme",
-							"sourceLine": 24,
+							"sourceLine": 23,
 							"extends": [
 								"ResolvedTheme"
 							],
@@ -46799,7 +46799,7 @@
 							"kind": "function",
 							"docComment": "Compiles a theme: computes its stance mirror and its recomputed chroma caps\n(`compute_theme_caps`), re-checks the gates with the caps, and lints it.\nThe theme comes back as the same reference and never carries the derived\ndata, so compiling the same theme again gives the same result.",
 							"typeSignature": "(theme: { name: string; variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; }): CompiledTheme",
-							"sourceLine": 50,
+							"sourceLine": 49,
 							"parameters": [
 								{
 									"name": "theme",
@@ -46815,7 +46815,7 @@
 							"returnDescription": "the theme with its mirror, caps, gate report, and lint"
 						}
 					],
-					"moduleComment": "The compile step for a theme: everything derived from it - the stance\nmirror and the recomputed chroma caps - with the gates and the lint run\nover that rendering, in one call.\n\nApart from `theme_check.ts` so the gates and the caps stay importable\nwithout the lint (`validate_theme`) and the schemas it parses with, which\nis how the build-time theme bake runs them.",
+					"moduleComment": "The compile step for a theme: everything derived from it - the stance\nmirror and the recomputed chroma caps - with the gates and the lint run\nover that rendering, in one call.\n\nApart from `theme_check.ts` so the gates and the caps stay importable\nwithout the lint (`validate_theme`) and the schemas it parses with.",
 					"dependencies": [
 						"theme.ts",
 						"theme_check.ts",
@@ -47356,7 +47356,8 @@
 						"variables.ts"
 					],
 					"dependents": [
-						"theme_compile.ts"
+						"theme_compile.ts",
+						"variable_graph.ts"
 					]
 				},
 				{
@@ -49443,7 +49444,7 @@
 							"kind": "interface",
 							"docComment": "Information about a single style variable and its dependencies.",
 							"typeSignature": "StyleVariableInfo",
-							"sourceLine": 36,
+							"sourceLine": 37,
 							"members": [
 								{
 									"name": "name",
@@ -49528,7 +49529,7 @@
 							"kind": "interface",
 							"docComment": "Dependency graph for style variables.",
 							"typeSignature": "VariableDependencyGraph",
-							"sourceLine": 52,
+							"sourceLine": 53,
 							"members": [
 								{
 									"name": "variables",
@@ -49589,7 +49590,7 @@
 							"kind": "function",
 							"docComment": "Builds a dependency graph from an array of style variables.\n\nThe graph is what the bundled theme CSS renders from, verbatim, so it\napplies the containment checks `render_theme_style` does: a slot whose\nvalue could end its own declaration (or is blank), or a variable whose\nname isn't a plain identifier, is left out and reported as an\n`uncontained_theme_value` error rather than written into the stylesheet.",
 							"typeSignature": "(variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]): VariableDependencyGraph",
-							"sourceLine": 124,
+							"sourceLine": 125,
 							"parameters": [
 								{
 									"name": "variables",
@@ -49612,7 +49613,7 @@
 							"kind": "interface",
 							"docComment": "Result from transitive variable resolution.",
 							"typeSignature": "ResolveVariablesResult",
-							"sourceLine": 147,
+							"sourceLine": 148,
 							"members": [
 								{
 									"name": "variables",
@@ -49675,7 +49676,7 @@
 							"kind": "function",
 							"docComment": "Resolves variables transitively using DFS with cycle detection.\nWhen a variable is requested, all variables it depends on are included.\nBoth base and dark dependencies are always resolved together.\n\nAn excluded variable is left out along with the dependencies only it\npulls in - whatever defines it in its place defines those too.",
 							"typeSignature": "(graph: VariableDependencyGraph, initial_variables: Iterable<string>, excluded?: ReadonlySet<string> | undefined): ResolveVariablesResult",
-							"sourceLine": 171,
+							"sourceLine": 172,
 							"parameters": [
 								{
 									"name": "graph",
@@ -49730,7 +49731,7 @@
 							"kind": "function",
 							"docComment": "Generates theme CSS for the resolved variables.",
 							"typeSignature": "(graph: VariableDependencyGraph, resolved_variables: Set<string>): { root_css: string; dark_css: string; }",
-							"sourceLine": 245,
+							"sourceLine": 246,
 							"parameters": [
 								{
 									"name": "graph",
@@ -49761,7 +49762,7 @@
 							"kind": "function",
 							"docComment": "Gets all variable names from the graph.",
 							"typeSignature": "(graph: VariableDependencyGraph): Set<string>",
-							"sourceLine": 288,
+							"sourceLine": 289,
 							"parameters": [
 								{
 									"name": "graph",
@@ -49787,7 +49788,7 @@
 							"kind": "function",
 							"docComment": "Finds the most similar variable in the graph to the given name.\nReturns null if no variable exceeds the similarity threshold.",
 							"typeSignature": "(graph: VariableDependencyGraph, name: string): string | null",
-							"sourceLine": 327,
+							"sourceLine": 328,
 							"parameters": [
 								{
 									"name": "graph",
@@ -49819,9 +49820,9 @@
 						{
 							"name": "bake_theme",
 							"kind": "function",
-							"docComment": "Derives what a build-time theme renders with from the configured variable\nset: the stance mirror, re-slotted from the configured `variables` (so a\nbuild that customizes a scheme-adaptive variable mirrors its own value, not\nthe default), and the caps `compute_theme_caps` recomputes for the theme's\nhues and lightness - the derived half of `compile_theme`. A `ResolvedTheme`\npassed in has its theme baked the same way - a supplied mirror or caps are\nrecomputed, so the output can't depend on derived data computed against\nanother variable set or an older release.\n\nThe theme's variables pass the containment checks first, as\n`build_variable_graph` applies them: a slot the stylesheet can't hold, or\nan entry without a plain-identifier name, is reported as an\n`uncontained_theme_value` error and left out, and the caps, the gates, and\nthe overlay all see the contained theme - what renders.\n\nThe caps and the gates measure the theme over the configured set: a\nknob-tier value (`theme_knobs`) the configured `variables` change from the\ndefault is folded in beneath the theme's own, re-slotted for a stance as\nthe mirror re-slots it, so a build that retunes a ramp knob is capped and\ngated at what it renders. A configured value the gates can't read lands\nin `unchecked`.\n\nThe gates (`check_theme` with the caps) report as warnings, since a theme\ncan knowingly give up a gate: `theme_gate_failed` lists the failing gate\nentries and `theme_gate_unchecked` the inputs the gates couldn't evaluate.\nA stanced theme renders its one appearance in both schemes, so only the\nstanced scheme's entries are listed. The lint (`validate_theme`) doesn't\nrun here.",
+							"docComment": "Derives what a build-time theme renders with from the configured variable\nset: the stance mirror, re-slotted from the configured `variables` (so a\nbuild that customizes a scheme-adaptive variable mirrors its own value, not\nthe default), and the caps `compute_theme_caps` recomputes for the theme's\nhues and lightness - the derived half of `compile_theme`. A `ResolvedTheme`\npassed in has its theme baked the same way - a supplied mirror or caps are\nrecomputed, so the output can't depend on derived data computed against\nanother variable set or an older release.\n\nThe theme's variables pass the containment checks first, as\n`build_variable_graph` applies them: a slot the stylesheet can't hold, or\nan entry without a plain-identifier name, is reported as an\n`uncontained_theme_value` error and left out, and the caps, the gates, and\nthe overlay all see the contained theme - what renders.\n\nThe caps and the gates measure the theme over the configured set: a\nknob-tier value (`theme_knobs`) the configured `variables` change from the\ndefault is folded in beneath the theme's own, re-slotted for a stance as\nthe mirror re-slots it, so a build that retunes a ramp knob is capped and\ngated at what it renders. A configured value the gates can't read lands\nin `unchecked`.\n\nThe gates (`check_theme` with the caps) report as warnings, since a theme\ncan knowingly give up a gate: `theme_gate_failed` lists the failing gate\nentries and `theme_gate_unchecked` the inputs the gates couldn't evaluate.\nA stanced theme renders its one appearance in both schemes, so only the\nstanced scheme's entries are listed. The lint (`validate_theme`) runs\nover the contained theme, so a slot reported as uncontained isn't reported\nagain: each issue is a `theme_lint` diagnostic at the issue's level, so an\nunknown variable fails a build that throws on errors.",
 							"typeSignature": "(theme: { name: string; variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; } | ResolvedTheme, variables: { ...; }[], diagnostics?: GenerationDiagnostic[] | undefined): ResolvedTheme",
-							"sourceLine": 403,
+							"sourceLine": 406,
 							"parameters": [
 								{
 									"name": "theme",
@@ -49864,7 +49865,7 @@
 										}
 									},
 									"optional": true,
-									"description": "collects the containment errors and the gate warnings, when given"
+									"description": "collects the containment errors, the lint issues, and the gate warnings, when given"
 								}
 							],
 							"returnType": "ResolvedTheme",
@@ -49875,7 +49876,7 @@
 							"kind": "function",
 							"docComment": "Overlays a baked theme onto a resolved variable set, last-wins by name.\n\nThis is how a theme is baked in at build time: the overlaid values flow\nthrough the dependency graph like any other, so the variables a theme\nreferences are pulled in transitively and the output stays tree-shaken.\nThe overlay follows `render_theme_style`'s order - the stance mirror\n(minus the names the theme or its caps set), then the theme's own\nvariables (minus any internal name, which a theme can't set), then the\ncaps. A slot the stylesheet can't hold is dropped before it overlays, as\n`render_theme_style` drops it, so the value beneath it stays.",
 							"typeSignature": "(variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[], theme: ResolvedTheme | null | undefined): { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]",
-							"sourceLine": 517,
+							"sourceLine": 530,
 							"parameters": [
 								{
 									"name": "variables",
@@ -49927,7 +49928,7 @@
 							"kind": "function",
 							"docComment": "Builds a variable dependency graph from a variables option, with a\nbuild-time theme baked in through `bake_theme`.\nHandles all option forms: undefined (defaults), null (disabled), array, or callback.",
 							"typeSignature": "(variables: VariablesOption, theme?: { name: string; variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | ... 2 more ... | undefined; } | ResolvedTheme | null | undefined): VariableDependencyGraph",
-							"sourceLine": 554,
+							"sourceLine": 567,
 							"parameters": [
 								{
 									"name": "variables",
@@ -49998,6 +49999,7 @@
 						"theme.ts",
 						"theme_check.ts",
 						"theme_stance.ts",
+						"theme_validate.ts",
 						"variable.ts",
 						"variables.ts"
 					],
@@ -231433,7 +231435,7 @@
 										"typeArgs": [
 											{
 												"kind": "object",
-												"text": "{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; name: ZodDefault<ZodString>; start: ZodDefault<ZodNullable<ZodNumber>>; end: ZodDefault<ZodNullable<ZodNumber>>; has_xml_tag: ZodDefault<ZodBoolean>; xml_tag_name: ZodDefault<ZodString>; attributes: ZodDefault<ZodArray<ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; key: ZodDefault<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, ZodString>>; value: ZodDefault<ZodString>; }, $strict>>>; enabled: ZodDefault<ZodBoolean>; title: ZodDefault<ZodNullable<ZodString>>; summary: ZodDefault<ZodNullable<ZodString>>; type: ZodDefault<ZodLiteral<\"text\">>; content: ZodDefault<ZodString>; }"
+												"text": "{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; name: ZodDefault<ZodString>; start: ZodDefault<ZodNullable<ZodNumber>>; end: ZodDefault<ZodNullable<ZodNumber>>; has_xml_tag: ZodDefault<ZodBoolean>; xml_tag_name: ZodDefault<ZodString>; attributes: ZodDefault<ZodArray<ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; key: ZodDefault<ZodString>; value: ZodDefault<ZodString>; }, $strict>>>; enabled: ZodDefault<ZodBoolean>; title: ZodDefault<ZodNullable<ZodString>>; summary: ZodDefault<ZodNullable<ZodString>>; type: ZodDefault<ZodLiteral<\"text\">>; content: ZodDefault<ZodString>; }"
 											},
 											{
 												"kind": "reference",
@@ -231477,7 +231479,7 @@
 										"typeArgs": [
 											{
 												"kind": "object",
-												"text": "{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; name: ZodDefault<ZodString>; start: ZodDefault<ZodNullable<ZodNumber>>; end: ZodDefault<ZodNullable<ZodNumber>>; xml_tag_name: ZodDefault<ZodString>; attributes: ZodDefault<ZodArray<ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; key: ZodDefault<ZodPipe<ZodPipe<ZodString, ZodTransform<string, string>>, ZodString>>; value: ZodDefault<ZodString>; }, $strict>>>; enabled: ZodDefault<ZodBoolean>; title: ZodDefault<ZodNullable<ZodString>>; summary: ZodDefault<ZodNullable<ZodString>>; type: ZodDefault<ZodLiteral<\"diskfile\">>; path: ZodDefault<ZodNullable<$ZodBranded<ZodString, \"DiskfilePath\", \"out\">>>; has_xml_tag: ZodDefault<ZodDefault<ZodBoolean>>; }"
+												"text": "{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; created: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; updated: ZodDefault<$ZodBranded<ZodISODateTime, \"Datetime\", \"out\">>; name: ZodDefault<ZodString>; start: ZodDefault<ZodNullable<ZodNumber>>; end: ZodDefault<ZodNullable<ZodNumber>>; xml_tag_name: ZodDefault<ZodString>; attributes: ZodDefault<ZodArray<ZodObject<{ id: ZodDefault<$ZodBranded<ZodUUID, \"Uuid\", \"out\">>; key: ZodDefault<ZodString>; value: ZodDefault<ZodString>; }, $strict>>>; enabled: ZodDefault<ZodBoolean>; title: ZodDefault<ZodNullable<ZodString>>; summary: ZodDefault<ZodNullable<ZodString>>; type: ZodDefault<ZodLiteral<\"diskfile\">>; path: ZodDefault<ZodNullable<$ZodBranded<ZodString, \"DiskfilePath\", \"out\">>>; has_xml_tag: ZodDefault<ZodDefault<ZodBoolean>>; }"
 											},
 											{
 												"kind": "reference",
@@ -249236,35 +249238,35 @@
 							"name": "XmlAttributeKey",
 							"kind": "type",
 							"typeSignature": "string",
-							"sourceLine": 8,
+							"sourceLine": 5,
 							"mergedValue": true
 						},
 						{
 							"name": "XmlAttributeKeyWithDefault",
 							"kind": "type",
 							"typeSignature": "string",
-							"sourceLine": 11,
+							"sourceLine": 8,
 							"mergedValue": true
 						},
 						{
 							"name": "XmlAttributeValue",
 							"kind": "type",
 							"typeSignature": "string",
-							"sourceLine": 14,
+							"sourceLine": 11,
 							"mergedValue": true
 						},
 						{
 							"name": "XmlAttributeValueWithDefault",
 							"kind": "type",
 							"typeSignature": "string",
-							"sourceLine": 17,
+							"sourceLine": 14,
 							"mergedValue": true
 						},
 						{
 							"name": "XmlAttributeWithDefaults",
 							"kind": "type",
 							"typeSignature": "{ id: string & $brand<\"Uuid\">; key: string; value: string; }",
-							"sourceLine": 26,
+							"sourceLine": 23,
 							"members": [
 								{
 									"name": "id",
