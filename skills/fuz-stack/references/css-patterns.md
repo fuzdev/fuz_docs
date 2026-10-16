@@ -39,19 +39,22 @@ Stop at the first rung that suffices:
    `.palette_a`–`.palette_j`, `.inline`, `.unstyled` — state/variant classes
    the semantic styles already recognize.
 3. **Composite classes** — `box`, `row`, `column`, `panel`, `chip`, `ellipsis`.
-4. **Token classes** — `p_md`, `gap_lg`, `color_a_50`; never hardcode spacing
-   or color.
-5. **Literal classes** — `display:flex`, `width:100%`, `hover:opacity:80%`.
+4. **Token and keyword classes** — `p_md`, `gap_lg`, `color_a_50`; never
+   hardcode spacing or color. Keyword classes are bare CSS keywords that name
+   their property (`flex`, `sticky`, `uppercase`), plus `hidden`
+   (`display: none`).
+5. **Literal classes** — `justify-content:space-between`, `width:100%`,
+   `hover:opacity:80%`.
 6. **`<style>` block with design tokens** — component-specific layout,
    animation, complex selectors, theming APIs.
 
 **Rungs 3–5 are one tier**, mixed freely on the same element: a composite when
-one _exactly_ matches (`row` over `display:flex align-items:center`), tokens
-for spacing/color, literals for one-off layout. Spacing tokens are the
-most-used family and literal flex classes (`display:flex`, `flex:1`,
-`width:100%`) are as common as composites. The real cut points are rung 1 vs
-the rest, and rungs 1–5 vs rung 6. Mixing has one rule: a token or literal
-class beats a multi-property composite on the same property, since
+one _exactly_ matches (`row` over `flex align-items:center`), tokens for
+spacing/color, keywords and literals for one-off layout. Spacing tokens are the
+most-used family and flex classes (`flex`, `flex:1`, `width:100%`) are as
+common as composites. The real cut points are rung 1 vs the rest, and rungs
+1–5 vs rung 6. Mixing has one rule: a token, keyword, or literal class beats a
+multi-property composite on the same property, modified or not, since
 composites render in a lower sublayer. Same for text: `<small>` over
 `font-size: var(--font_size_sm)`, `<aside>` over a hand-built callout.
 Never hand-write a `rem` font size: fuz_css sets a 62.5% root, so `0.85rem`
@@ -209,21 +212,21 @@ letter implies the palette.
 
 ### Color-Scheme Variants
 
-| Prefix      | Behavior                                       | Use case                       |
-| ----------- | ---------------------------------------------- | ------------------------------ |
-| `text_*`    | Opaque, scheme-aware (low=subtle, high=bold)   | Text (alpha hurts performance) |
-| `shade_*`   | Opaque, tinted neutrals (00→100), scheme-aware | Backgrounds, surfaces          |
-| `fg_*`      | Toward contrast (darkens light, lightens dark) | Foreground overlays that stack |
-| `bg_*`      | Toward surface (lightens light, darkens dark)  | Background overlays that stack |
-| `darken_*`  | Always darkens (agnostic, alpha-based)         | Shadows, backdrops             |
-| `lighten_*` | Always lightens (agnostic, alpha-based)        | Highlights                     |
+| Prefix      | Behavior                                             | Use case                       |
+| ----------- | ---------------------------------------------------- | ------------------------------ |
+| `text_*`    | Opaque, scheme-aware (low=subtle, high=bold)         | Text (alpha hurts performance) |
+| `shade_*`   | Opaque, tinted neutrals (00→100), scheme-aware       | Backgrounds, surfaces          |
+| `ink_*`     | Toward the text color (darkens light, lightens dark) | Foreground overlays that stack |
+| `paper_*`   | Toward the ground (lightens light, darkens dark)     | Background overlays that stack |
+| `darken_*`  | Always darkens (agnostic, alpha-based)               | Shadows, backdrops             |
+| `lighten_*` | Always lightens (agnostic, alpha-based)              | Highlights                     |
 
 These are **variable** families. `text_*` and `shade_*` are the everyday opaque
-tokens — reach for them first; `fg_*`/`bg_*` overlays use alpha and accumulate
-when nested. `text_*`, `shade_*`, `darken_*`, `lighten_*` exist as classes too,
-but `fg_*`/`bg_*` have no bare token classes — the `bg_` class prefix means the
-_opaque_ backgrounds (`bg_a_50`, `bg_positive_50`), so reach the adaptive
-overlays via literals (`background-color:var(--fg_10)`). `shade_*` and `text_*`
+tokens — reach for them first; `ink_*`/`paper_*` overlays use alpha and
+accumulate when nested. `text_*`, `shade_*`, `darken_*`, `lighten_*` exist as
+classes too, but `ink_*`/`paper_*` have no token classes (the `bg_` class prefix
+is the _opaque_ backgrounds, `bg_a_50`, `bg_positive_50`), so reach the adaptive
+overlays via literals (`background-color:var(--ink_10)`). `shade_*` and `text_*`
 have `_min`/`_max` for untinted extremes. For a color that doesn't adapt to the
 scheme, write the literal or define a custom property (the old `_light`/`_dark`
 variants were removed).
@@ -265,11 +268,12 @@ children inherit: `font_size_lg` → `font-size` + `--font_size`; `color_a_50`
 
 ## Utility Classes
 
-| Type                  | Example                               | Purpose                      |
-| --------------------- | ------------------------------------- | ---------------------------- |
-| **Token classes**     | `.p_md`, `.color_a_50`, `.gap_lg`     | Map to style variables       |
-| **Composite classes** | `.box`, `.row`, `.ellipsis`           | Multi-property shortcuts     |
-| **Literal classes**   | `.display:flex`, `.hover:opacity:80%` | Arbitrary CSS property:value |
+| Type                  | Example                                     | Purpose                             |
+| --------------------- | ------------------------------------------- | ----------------------------------- |
+| **Token classes**     | `.p_md`, `.color_a_50`, `.gap_lg`           | Map to style variables              |
+| **Keyword classes**   | `.flex`, `.sticky`, `.uppercase`, `.hidden` | A CSS keyword sets its one property |
+| **Composite classes** | `.box`, `.row`, `.ellipsis`                 | Multi-property shortcuts            |
+| **Literal classes**   | `.align-items:center`, `.hover:opacity:80%` | Arbitrary CSS property:value        |
 
 ### Token Classes
 
@@ -284,6 +288,45 @@ children inherit: `font_size_lg` → `font-size` + `--font_size`; `color_a_50`
 - **Borders**: `border_radius_xs`, `border_width_2`, `border_color_30`
 - **Shadows**: `shadow_md`, `shadow_top_md`, `shadow_inset_xs`,
   `shadow_alpha_50`, `shadow_color_umbra` (also `_highlight`, `_glow`, `_shroud`)
+
+### Keyword Classes
+
+A CSS value keyword that names its property on its own is a bare class setting
+that one declaration; a keyword shared across properties (`center`, `nowrap`,
+`none`) stays a literal (`align-items:center`).
+
+- **display**: `flex`, `inline-flex`, `grid`, `inline-grid`, `inline-block`,
+  `block`, `flow-root`
+- **position**: `relative`, `absolute`, `fixed`, `sticky`
+- **typography**: `uppercase`, `lowercase`, `capitalize`, `italic`,
+  `oblique`, `bold`, `bolder`, `lighter`, `underline`, `overline`,
+  `line-through` (the decoration ones set the `text-decoration-line` longhand)
+- **`hidden`**: `display: none`, mirroring the HTML attribute
+
+They order with the token and literal classes and take modifiers like any
+class (`md:flex`, `hover:underline`). `flex` is plain `display: flex`; `row`,
+`column`, and `box` stay the composites that add direction and alignment.
+
+`hidden` exists for the modifiers the attribute can't take (`max-md:hidden`,
+`print:hidden`); static hiding is the `hidden` attribute's job, and the
+attribute beats every class; the class itself loses to a `display` set in a
+component `<style>` block. The class orders after a `display:*` literal it
+ties with, so it toggles in a class list, while a media query still outranks
+it:
+
+```svelte
+<div class={['flex', {hidden: !open}]}>         <!-- toggled: hidden wins -->
+<nav class="max-md:hidden row">                   <!-- hidden below md, a row from md up -->
+<nav class="hidden md:flex">                      <!-- hidden until md, then flex -->
+```
+
+**Trap**: `hidden md:row` stays hidden at every width — the composite `row`
+sits in the lower sublayer, so even modified it loses to `hidden`. Put the
+modifier on the single-purpose class: `max-md:hidden row`.
+
+Keyword classes are found implicitly like any class, so a component-local
+class named like one (`.hidden`, `.block`, `.bold`) also gets fuz_css's
+declaration — name local classes in `kebab-case` that no keyword takes.
 
 ### Composite Classes
 
@@ -329,7 +372,7 @@ The load-bearing composites are `row`, `column`, `box`, `panel`, `chip`,
 properties; `calc` needs `~` around `+`/`-`:
 
 ```svelte
-<div class="display:flex justify-content:center gap:var(--space_md)">
+<div class="flex justify-content:center gap:var(--space_md)">
 <div class="margin:0~auto padding:var(--space_sm)~var(--space_lg)">
 <div class="width:calc(100%~-~20px)">
 ```
@@ -348,7 +391,7 @@ Prefixes on any class, each 1:1 with a pseudo-class or at-rule
 
 ```svelte
 <button class="hover:opacity:80% focus:outline:2px~solid~var(--palette_a_50)">
-<div class="display:none md:display:flex">          <!-- responsive -->
+<div class="hidden md:flex">                        <!-- responsive -->
 <div class="box-shadow:var(--shadow_lg) dark:box-shadow:var(--shadow_sm)">
 <div class='before:content:"" before:display:block'> <!-- pseudo needs explicit content -->
 ```
