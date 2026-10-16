@@ -13,7 +13,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_util",
-			"version": "0.75.0",
+			"version": "0.75.1",
 			"path": "fuz_util",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
@@ -48,7 +48,7 @@
 			"published": true,
 			"module_count": 83,
 			"exported_module_count": 60,
-			"export_count": 363,
+			"export_count": 364,
 			"peer_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_schema",
@@ -70,23 +70,23 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.66.2",
+			"version": "0.67.0",
 			"path": "fuz_css",
-			"description": "semantic-first CSS framework and design system",
+			"description": "semantic-first CSS framework and design system: styled HTML defaults, themes derived from a few knobs, and utility classes generated from what you use",
 			"glyph": "🪴",
 			"homepage_url": "https://css.fuz.dev/",
 			"published": true,
-			"module_count": 61,
-			"exported_module_count": 55,
-			"export_count": 400,
+			"module_count": 63,
+			"exported_module_count": 57,
+			"export_count": 424,
 			"peer_dependencies": [
-				"@fuzdev/fuz_util",
-				"@fuzdev/gro"
+				"@fuzdev/fuz_util"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
@@ -96,7 +96,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/mdz",
-			"version": "0.4.0",
+			"version": "0.5.0",
 			"path": "mdz",
 			"description": "a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content",
 			"glyph": "📝",
@@ -104,7 +104,7 @@
 			"published": true,
 			"module_count": 28,
 			"exported_module_count": 19,
-			"export_count": 111,
+			"export_count": 120,
 			"peer_dependencies": [
 				"@fuzdev/fuz_util"
 			],
@@ -114,6 +114,7 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro"
 			]
@@ -121,7 +122,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.214.0",
+			"version": "0.215.0",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -142,6 +143,7 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"
@@ -199,6 +201,7 @@
 			"dev_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_css",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
@@ -224,6 +227,7 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"
@@ -284,6 +288,7 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
@@ -339,6 +344,7 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
@@ -364,6 +370,7 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"
@@ -419,6 +426,7 @@
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
 				"@fuzdev/fuz_ui",
+				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"
@@ -507,8 +515,7 @@
 			"@fuzdev/tsv"
 		],
 		"@fuzdev/fuz_css": [
-			"@fuzdev/fuz_util",
-			"@fuzdev/gro"
+			"@fuzdev/fuz_util"
 		],
 		"@fuzdev/mdz": [
 			"@fuzdev/fuz_util"

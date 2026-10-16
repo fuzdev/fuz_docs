@@ -56,7 +56,8 @@ export const stack_nodes: Array<StackNode> = [
 		name: 'fuz_css',
 		category: 'styling',
 		language: 'ts',
-		description: 'semantic-first CSS framework and design system',
+		description:
+			'semantic-first CSS framework and design system: styled HTML defaults, themes derived from a few knobs, and utility classes generated from what you use',
 		layer: 4,
 		fan_in: 10,
 		x: 0,
@@ -139,7 +140,7 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description: 'task runner and toolkit extending SvelteKit',
 		layer: 3,
-		fan_in: 11,
+		fan_in: 9,
 		x: 0,
 		y: 600
 	},
@@ -150,7 +151,7 @@ export const stack_nodes: Array<StackNode> = [
 		description:
 			'a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content',
 		layer: 2,
-		fan_in: 9,
+		fan_in: 10,
 		x: 0,
 		y: 720
 	},
@@ -326,7 +327,7 @@ export const stack_edges: Array<StackEdge> = [
 	{
 		from: 'fuz_css',
 		to: 'gro',
-		kind: 'peer'
+		kind: 'dev'
 	},
 	{
 		from: 'fuz_css',
