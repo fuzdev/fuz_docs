@@ -68,15 +68,17 @@ oracle).
 
 ## Core utilities
 
-| Package                     | Purpose                               |
-| --------------------------- | ------------------------------------- |
-| `zod`                       | Schema validation for app data        |
-| `esm-env`                   | Environment flags (`DEV` / `BROWSER`) |
-| `zimmerframe`               | AST walker                            |
-| `magic-string`              | Source-string edits with sourcemaps   |
-| `@webref/css`               | W3C CSS reference data                |
-| `@jridgewell/trace-mapping` | Sourcemap decoding                    |
-| `date-fns`                  | Date utilities                        |
+| Package                     | Purpose                                                      |
+| --------------------------- | ------------------------------------------------------------ |
+| `zod`                       | Schema validation for app data                               |
+| `esm-env`                   | Environment flags (`DEV` / `BROWSER`)                        |
+| `zimmerframe`               | AST walker                                                   |
+| `magic-string`              | Source-string edits with sourcemaps                          |
+| `@webref/css`               | W3C CSS reference data                                       |
+| `@jridgewell/trace-mapping` | Sourcemap decoding                                           |
+| `date-fns`                  | Date utilities                                               |
+| `valibot`                   | Schema validation in svelte-docinfo (its own public schemas) |
+| `immer`                     | Immutable state updates (setup's state)                      |
 
 (`dequal` and `fast-deep-equal` appear only as benchmark baselines in
 fuz_util — not stack utilities; don't add them to app code.)
@@ -102,7 +104,6 @@ fuz_util — not stack utilities; don't add them to app code.)
 | `esbuild`                  | Bundler / transform      |
 | `oxc-parser`               | Fast JS/TS parser        |
 | `ts-blank-space`           | Type-stripping transform |
-| `es-module-lexer`          | ESM import/export lexer  |
 | `acorn`                    | JS parser (ESTree)       |
 | `acorn-jsx`                | JSX plugin for acorn     |
 | `chokidar`                 | File watching            |
