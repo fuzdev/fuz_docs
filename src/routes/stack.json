@@ -1,19 +1,19 @@
 {
 	"toolchain": {
-		"rustc": "rustc 1.94.1 (e408947bf 2026-03-25)",
-		"cargo": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+		"rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+		"cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
 		"node": "v24.14.1",
 		"svelte": "5.57.2",
 		"sveltekit": "3.0.1",
 		"typescript": "6.0.3",
-		"gro": "0.219.0",
+		"gro": "0.220.0",
 		"vitest": "5.0.3"
 	},
 	"libraries": [
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_util",
-			"version": "0.76.0",
+			"version": "0.77.0",
 			"path": "fuz_util",
 			"description": "utility belt for JS",
 			"glyph": "🦕",
@@ -40,7 +40,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.219.0",
+			"version": "0.220.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
@@ -70,7 +70,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_css",
-			"version": "0.69.0",
+			"version": "0.70.0",
 			"path": "fuz_css",
 			"description": "semantic-first CSS framework and design system: styled HTML defaults, themes derived from a few knobs, and utility classes generated from what you use",
 			"glyph": "🪴",
@@ -80,8 +80,8 @@
 			"exported_module_count": 57,
 			"export_count": 424,
 			"peer_dependencies": [
-				"@fuzdev/fuz_util",
-				"@fuzdev/fuz_schema"
+				"@fuzdev/fuz_schema",
+				"@fuzdev/fuz_util"
 			],
 			"runtime_dependencies": [],
 			"dev_dependencies": [
@@ -97,7 +97,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/mdz",
-			"version": "0.5.0",
+			"version": "0.6.0",
 			"path": "mdz",
 			"description": "a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content",
 			"glyph": "📝",
@@ -114,8 +114,8 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
-				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_schema",
+				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro"
 			]
@@ -123,7 +123,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.216.1",
+			"version": "0.217.0",
 			"path": "fuz_ui",
 			"description": "Svelte UI library",
 			"glyph": "🧶",
@@ -153,7 +153,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_app",
-			"version": "0.139.0",
+			"version": "0.140.0",
 			"path": "fuz_app",
 			"description": "fullstack app library",
 			"glyph": "🗝",
@@ -185,7 +185,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_code",
-			"version": "0.53.0",
+			"version": "0.54.0",
 			"path": "fuz_code",
 			"description": "syntax styler for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
@@ -227,8 +227,8 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
-				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_schema",
+				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"
@@ -237,7 +237,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.34.0",
+			"version": "0.35.0",
 			"path": "fuz_blog",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",
@@ -270,7 +270,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_mastodon",
-			"version": "0.44.0",
+			"version": "0.45.1",
 			"path": "fuz_mastodon",
 			"description": "Mastodon components and helpers for Svelte, SvelteKit, and Fuz",
 			"glyph": "🦣",
@@ -299,7 +299,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/fuz_repos",
-			"version": "0.86.0",
+			"version": "0.87.0",
 			"path": "fuz_repos",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
@@ -370,8 +370,8 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
-				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_schema",
+				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"
@@ -427,8 +427,8 @@
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
 				"@fuzdev/fuz_css",
-				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_schema",
+				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
 				"@fuzdev/gro",
 				"@fuzdev/mdz"

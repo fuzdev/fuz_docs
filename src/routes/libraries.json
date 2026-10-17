@@ -2,7 +2,7 @@
 	"fuz_util": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_util",
-			"version": "0.76.0",
+			"version": "0.77.0",
 			"description": "utility belt for JS",
 			"tagline": "ancient not extinct",
 			"glyph": "🦕",
@@ -19686,7 +19686,7 @@
 	"gro": {
 		"pkg_json": {
 			"name": "@fuzdev/gro",
-			"version": "0.219.0",
+			"version": "0.220.0",
 			"description": "task runner and toolkit extending SvelteKit",
 			"tagline": "generate, run, optimize",
 			"glyph": "🌰",
@@ -33775,7 +33775,7 @@
 									},
 									{
 										"kind": "object",
-										"text": "{ \"gro/build\": typeof import(\"build.task.ts\", { with: { \"resolution-mode\": \"import\" } }); \"gro/changeset\": typeof import(\"changeset.task.ts\", { with: { \"resolution-mode\": \"import\" } }); \"gro/check\": typeof import(\"check.task.ts\", { with: { \"reso..."
+										"text": "{ \"gro/build\": typeof import(\"build.task.ts\", { with: { \"resolution-mode\": \"import\" } }); \"gro/changeset\": typeof import(\"changeset.task.ts\", { with: { \"resolution-mode\": \"import\" } }); \"gro/check\": typeof import(\"check.task.ts\", { with: { \"resolut..."
 									}
 								]
 							},
@@ -34751,7 +34751,7 @@
 	"fuz_css": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_css",
-			"version": "0.69.0",
+			"version": "0.70.0",
 			"description": "semantic-first CSS framework and design system: styled HTML defaults, themes derived from a few knobs, and utility classes generated from what you use",
 			"tagline": "CSS with more utility",
 			"glyph": "🪴",
@@ -47665,7 +47665,7 @@
 							"kind": "type",
 							"docComment": "A style variable: a custom property name with a value per color scheme.\n\nThe slots follow the renderer's cascade: `base` is the base position,\nrendered on `:root`, and `dark` renders on `:root.dark` (and for a root\nnaming no scheme, under `prefers-color-scheme: dark`). A theme variable\nwith only `base` therefore applies in both color schemes (its `fuz.theme`\n`:root` beats the `fuz.base` dark default by layer order), while `dark`\nalone applies in dark only - which is why the shipped themes author a\nscheme-agnostic knob as a single `base` value. The light scheme renders\n`base`; there is no light-only slot.\n\nStrict: a misspelled slot is an error, not a silently dropped scheme. A\nslot must also be a contained CSS value (see `css_containment.ts`), since it\nrenders verbatim.\n\nThe name is a public one (`StyleVariableName`): an internal ramp variable\nis rejected with an error saying so. The derived data that does carry\ninternal names - a stance's mirror and `compile_theme`'s caps - travels\nbeside a theme as `ThemeDerived`, never inside it.",
 							"typeSignature": "{ name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }",
-							"sourceLine": 138,
+							"sourceLine": 140,
 							"members": [
 								{
 									"name": "name",
@@ -47698,7 +47698,7 @@
 							"kind": "type",
 							"docComment": "A theme's scheme stance: which color schemes it supports. `'dual'` themes\nrender light and dark appearances from each variable's slots; `'light'` and\n`'dark'` themes render that single appearance in both color schemes.",
 							"typeSignature": "\"dark\" | \"light\" | \"dual\"",
-							"sourceLine": 149,
+							"sourceLine": 151,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -47725,7 +47725,7 @@
 							"name": "Theme",
 							"kind": "type",
 							"typeSignature": "{ name: string; variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; }",
-							"sourceLine": 179,
+							"sourceLine": 181,
 							"members": [
 								{
 									"name": "name",
@@ -47785,7 +47785,7 @@
 							"kind": "function",
 							"docComment": "Parses an unknown value as a `Theme`, returning `null` when it doesn't\nmatch. For untrusted input - a theme restored from storage, a theme handed\nacross a boundary - where a malformed value should fall back to a default\nrather than throw. Use `s.parse(Theme, value)` directly when the failure\ndetail matters, or `validate_theme` in `theme_validate.ts` for the full lint.",
 							"typeSignature": "(value: unknown): { name: string; variables: { name: string; dark?: string | undefined; base?: string | undefined; summary?: string | undefined; }[]; summary?: string | undefined; scheme?: \"dark\" | \"light\" | \"dual\" | undefined; } | null",
-							"sourceLine": 191,
+							"sourceLine": 193,
 							"parameters": [
 								{
 									"name": "value",
@@ -50204,7 +50204,7 @@
 	"mdz": {
 		"pkg_json": {
 			"name": "@fuzdev/mdz",
-			"version": "0.5.0",
+			"version": "0.6.0",
 			"description": "a strict markdown dialect built for streaming, Svelte authoring, docs websites, and untrusted content",
 			"tagline": "markdown for fuz",
 			"glyph": "📝",
@@ -57993,7 +57993,7 @@
 	"fuz_ui": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_ui",
-			"version": "0.216.1",
+			"version": "0.217.0",
 			"description": "Svelte UI library",
 			"tagline": "friendly user zystem",
 			"glyph": "🧶",
@@ -74636,7 +74636,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.139.0",
+			"version": "0.140.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -176436,7 +176436,7 @@
 	"fuz_code": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_code",
-			"version": "0.53.0",
+			"version": "0.54.0",
 			"description": "syntax styler for TypeScript, Svelte, Markdown, and more",
 			"glyph": "🎨",
 			"logo": "logo.svg",
@@ -181078,7 +181078,7 @@
 	"fuz_blog": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_blog",
-			"version": "0.34.0",
+			"version": "0.35.0",
 			"description": "blog software from scratch with SvelteKit",
 			"glyph": "🖊️",
 			"logo": "logo.svg",
@@ -182708,7 +182708,7 @@
 	"fuz_mastodon": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_mastodon",
-			"version": "0.44.0",
+			"version": "0.45.1",
 			"description": "Mastodon components and helpers for Svelte, SvelteKit, and Fuz",
 			"glyph": "🦣",
 			"logo": "logo.svg",
@@ -184393,7 +184393,7 @@
 	"fuz_repos": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_repos",
-			"version": "0.86.0",
+			"version": "0.87.0",
 			"description": "a tool for managing many repos",
 			"glyph": "🪄",
 			"logo": "logo.svg",
