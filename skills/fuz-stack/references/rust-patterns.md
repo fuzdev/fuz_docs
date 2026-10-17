@@ -41,8 +41,9 @@ justification); `///` for public API, `//` for implementation notes.
    `fn main() -> ExitCode`; pick and test the exit-code dialect early (§CLI
    Patterns).
 6. Dev automation: spine-consuming workspaces add an `xtask` crate wrapping
-   `check-release` (./rust-spine.md); binding/library repos may drive builds
-   through a script runner instead (tsv and blake3 use Deno tasks, no xtask).
+   `check-release` (./rust-spine.md); mixed TS + Rust repos put the one
+   local check for both halves in `xtask` (gro's `cargo xtask check`). tsv and
+   blake3 still drive builds through Deno tasks; new repos don't add Deno.
 7. Deps from ./rust-dependencies.md, shared via `[workspace.dependencies]`.
 
 ## Lints
@@ -612,6 +613,25 @@ ops (open with `O_NOFOLLOW`, check permissions on the fd); `0o600` files,
 `0o700` directories — and deliberately _not_ for non-secret state (a
 daemon-info file readable by tooling is `0o644` on purpose; state the choice).
 Supply-chain isolation is a crate-graph property (./rust-dependencies.md).
+
+**Kernel backstop, Linux-only, under the policy.** A process whose job is
+to run untrusted bytes without spawning or reaching the network (fuzi's
+install, gro's confined eval) installs a seccomp-bpf denylist first thing in
+`main()`, before any thread exists, so every later thread inherits it:
+`KillProcess` on `execve`/`execveat`/`ptrace`/`fork`/`vfork`, `socket` by
+address family and `connect` refused where no net is granted, `io_uring_*`
+denied outright (its operations bypass seccomp), `clone`/`clone3` **allowed**
+(glibc creates threads with `clone3`; a fork-shaped child inherits the filter
+and still cannot `execve`). Where a read scope exists, Landlock sits beside
+it (read-only roots, no write, no execute, TCP denied) with the same
+before-threads rule, and the process warms the `/proc` reads the runtime
+needs (`available_parallelism`, `pthread_getattr_np`) ahead of restricting.
+A denylist first, a full syscall allowlist as the hardened endpoint. The
+policy (no-scripts, the grant set) stays the primary control; the filter
+turns "true if the code is correct" into "true even if it has a bug". Fail
+loud: a kernel without the wall refuses the confined mode unless an explicit
+flag opts out, naming the missing wall. `seccompiler` and `landlock` are the
+approved crates (./rust-dependencies.md).
 
 **One `$HOME` lookup.** A home-relative path resolves through
 `fuz_sys::home_dir` — `$HOME`, else the password database, and only ever

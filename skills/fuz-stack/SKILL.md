@@ -303,7 +303,10 @@ import small interfaces directly, never `Pick<Composite>`.
   author new ones.
 - **Composition roots** — `AppDeps` (fuz_app server, assembled once in a
   two-step root); `RuntimeDeps` (env/fs/commands, platform factories for
-  Deno/Node/mock).
+  Node/mock; the Deno factory stays until the Deno exit, no new Deno code).
+  On the gro runtime a task's import graph is the composition root: host-module
+  imports declare capabilities and grants are inferred from them; authority
+  globals (`fetch`) are declared and absent until granted, nothing is ambient.
 - **Contracts** — L1 domain deps take a single `options` object and return
   `Result` with typed error kinds; L0 platform shims mirror the platform and
   throw. Plain-object mocks, no mocking libs; throwing stubs over silent no-ops.

@@ -6,8 +6,17 @@ description: Injectable *Deps interfaces, mock factories, composition patterns
 
 Typed interfaces for side effects, real implementations as defaults, accepted
 as params, tested with plain object mocks. No `vi.mock` — dependencies flow
-through signatures, so code is runtime-independent (Deno / Node / tests) via
-parameterization, not magic mocks or ambient singletons.
+through signatures, so code is runtime-independent (Node / the gro runtime /
+tests; Deno is sunsetting and gets no new code) via parameterization, not
+magic mocks or ambient singletons.
+
+The same discipline is what the gro runtime (`fgro`, experimental) builds
+on: there, importing a host module (`fuz_host`'s fs, process, spawn) is the
+capability declaration, a task's grants are meant to be inferred from its
+import graph, and authority globals (`fetch`) are declared and absent until
+granted, so nothing is ambient. Keeping platform access at the edges (L0 shims and
+platform factories, never module-scope `node:*` in domain code) is what
+keeps that inference small and legible, so the convention below pays twice.
 
 ## Convention
 

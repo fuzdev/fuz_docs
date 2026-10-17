@@ -112,7 +112,10 @@ fuz_util — not stack utilities; don't add them to app code.)
 
 ## Adding a dependency
 
-Prefer `node:` built-ins, then this list. A new package needs explicit
+Prefer web standards, then `node:` built-ins (`fuz_host` replaces these per
+module as it lands, with a Node implementation and the gro runtime's builtins
+behind one import), then this list. New scripts and tasks run on Node via gro,
+never on Deno. A new package needs explicit
 approval — name, purpose, what it replaces or enables, transitive footprint.
 Removing an unused dependency is pre-authorized: verify nothing references it,
 drop it, and if it was the last user, drop it from this list in the same
