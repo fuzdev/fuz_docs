@@ -378,8 +378,8 @@ open or crosses a crate boundary the lower crate can't name.
   regresses every backend to the default.
 - `zzz_server::Provider`, `zap_core::Connection` (local/ssh/mock) — async
   methods matching on `self`, no `#[async_trait]`.
-- `zap_core::EventHandler` (`Null` / `Stdout` / `Masking` decorator / `Multi`
-  fan-out / test-only `Capture`) — sync `emit`.
+- `zap_core::EventHandler` (`Null` / `Stdout` / `Masking` decorator /
+  test-only `Capture`) — sync `emit`.
 - `zap_types::ResourceKind` — the enum lives in the pure types crate; dispatch
   is parallel exhaustive matches in free functions (detect pass, execute), so a
   new kind is a compile error in both.
