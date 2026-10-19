@@ -174,11 +174,16 @@ magic number.
   non-streaming.
 - **WS and SSE admission is two-phase, and spine-owned**: `register_action_ws`
   gates origin → 401 → token scope → role, then `admit_upgrade` registers the
-  connection pending, re-reads the credential
-  (`fuz_auth::revalidate_resolved_auth`), and admits — the per-account cap
-  evicts only there. A credential revoked mid-upgrade closes with 4001, a
-  failed re-read with 1011, a superseded socket with 4004, and an upgrade the
-  shutdown closed or refused with 1001 (§Daemon lifecycle). A consumer
+  connection pending with the endpoint's `required_roles`, re-reads the
+  credential (`fuz_auth::revalidate_resolved_auth`) and then those roles
+  (global grants only), and admits — the per-account cap evicts only there. A
+  credential revoked mid-upgrade closes with 4001, a required role revoked
+  mid-upgrade with 4006 (`WS_CLOSE_PERMISSION_REVOKED`), a failed re-read with
+  1011, a superseded socket with 4004, and an upgrade the shutdown closed or
+  refused with 1001 (§Daemon lifecycle). The roles hold for the socket's
+  lifetime: revoking a global grant of one closes the account's sockets on
+  that endpoint with 4006, nothing more is written, and the client stays
+  closed rather than reconnecting into the gate. A consumer
   mounting its own long-lived transport follows the same order
   (`register_pending` / `subscribe_pending` → re-read → `admit`); a pending
   entry is closeable but receives nothing and counts toward nothing.
@@ -207,6 +212,12 @@ magic number.
     and the same deadline is the keep-alive idle time. A running handler, a
     streaming response, and an upgraded socket are not timed by it; a request
     body is not timed at all.
+  - _Credential deadline._ A WS closes 4001 "Credential expired"
+    (`WS_CLOSE_CREDENTIAL_EXPIRED_REASON`) and an SSE stream ends at
+    `ResolvedAuth::credential_deadline`, waited in hour-capped sleeps that also
+    check the wall clock.
+  - _Receive timeout._ `ActionWsOptions::receive_timeout`
+    (`DEFAULT_WS_RECEIVE_TIMEOUT`, 60 s) closes a silent socket with 4003.
 
   A consumer mounting its own long-lived transport inherits the accept-loop
   deadlines and owes its own queue bound. These limits have no TS twin where
