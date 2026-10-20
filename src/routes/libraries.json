@@ -70598,12 +70598,6 @@
 							"sourceLine": 93
 						},
 						{
-							"name": "logo_fuz_mastodon",
-							"kind": "variable",
-							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
-							"sourceLine": 99
-						},
-						{
 							"name": "logo_fuz_repos",
 							"kind": "variable",
 							"typeSignature": "{ label: string; fill: string; paths: { d: string; }[]; }",
@@ -181167,55 +181161,17 @@
 							"mergedValue": true
 						},
 						{
-							"name": "MastodonBlogComments",
-							"kind": "type",
-							"typeSignature": "{ url: string; type: \"mastodon\"; }",
-							"sourceLine": 24,
-							"members": [
-								{
-									"name": "url",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "type",
-									"kind": "variable",
-									"typeSignature": "\"mastodon\""
-								}
-							],
-							"mergedValue": true
-						},
-						{
-							"name": "BlogComments",
-							"kind": "type",
-							"typeSignature": "{ url: string; type: \"mastodon\"; }",
-							"sourceLine": 28,
-							"members": [
-								{
-									"name": "url",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "type",
-									"kind": "variable",
-									"typeSignature": "\"mastodon\""
-								}
-							],
-							"mergedValue": true
-						},
-						{
 							"name": "BlogPostMetadata",
 							"kind": "type",
 							"docComment": "The author-defined metadata for each post. Loose so a consumer can add its own\nfields (e.g. an autoblog's `model`); the extras stay on the page's `post` and\ndo not reach the generated `BlogFeed` (see `resolve_blog_feed_item`).",
-							"typeSignature": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; comments?: { url: string; type: \"mastodon\"; } | undefined; } & Record<string, unknown>",
-							"sourceLine": 48,
+							"typeSignature": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; } & Record<string, unknown>",
+							"sourceLine": 37,
 							"typeInfo": {
 								"kind": "intersection",
 								"members": [
 									{
 										"kind": "object",
-										"text": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; comments?: { url: string; type: \"mastodon\"; } | undefined; }"
+										"text": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; }"
 									},
 									{
 										"kind": "reference",
@@ -181266,17 +181222,6 @@
 									"optional": true
 								},
 								{
-									"name": "comments",
-									"kind": "variable",
-									"typeSignature": "{ url: string; type: \"mastodon\"; }",
-									"optional": true,
-									"typeInfo": {
-										"kind": "reference",
-										"name": "BlogComments",
-										"module": "blog.ts"
-									}
-								},
-								{
 									"name": "[key: string]",
 									"kind": "variable",
 									"typeSignature": "unknown"
@@ -181289,7 +181234,7 @@
 							"kind": "interface",
 							"docComment": "A single blog's configuration in the consumer's `src/routes/blogs.ts` registry.",
 							"typeSignature": "BlogConfig",
-							"sourceLine": 53,
+							"sourceLine": 42,
 							"members": [
 								{
 									"name": "dirname",
@@ -181336,7 +181281,7 @@
 							"kind": "interface",
 							"docComment": "The options `gro post` passes to a `BlogConfig` `scaffold`.",
 							"typeSignature": "BlogPostScaffoldOptions",
-							"sourceLine": 84,
+							"sourceLine": 73,
 							"members": [
 								{
 									"name": "title",
@@ -181367,7 +181312,7 @@
 							"kind": "interface",
 							"docComment": "The shape of the consumer's `src/routes/blogs.ts` module.",
 							"typeSignature": "BlogsModule",
-							"sourceLine": 101,
+							"sourceLine": 90,
 							"members": [
 								{
 									"name": "blogs",
@@ -181387,12 +181332,12 @@
 							"name": "BlogPostModule",
 							"kind": "interface",
 							"typeSignature": "BlogPostModule",
-							"sourceLine": 105,
+							"sourceLine": 94,
 							"members": [
 								{
 									"name": "post",
 									"kind": "variable",
-									"typeSignature": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; comments?: { url: string; type: \"mastodon\"; } | undefined; } & Record<string, unknown>",
+									"typeSignature": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; } & Record<string, unknown>",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "BlogPostMetadata"
@@ -181427,7 +181372,7 @@
 							"name": "BlogPostId",
 							"kind": "type",
 							"typeSignature": "BlogPostId",
-							"sourceLine": 110,
+							"sourceLine": 99,
 							"externalTypes": [
 								"Flavored<number, 'BlogPostId'>"
 							],
@@ -181457,8 +181402,8 @@
 							"name": "BlogFeedItem",
 							"kind": "type",
 							"docComment": "A feed entry, derived from a `BlogPostMetadata` by `resolve_blog_feed_item`.\nStrict, so a leaked consumer field fails the generated feed's validation.",
-							"typeSignature": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
-							"sourceLine": 133,
+							"typeSignature": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }",
+							"sourceLine": 122,
 							"members": [
 								{
 									"name": "id",
@@ -181509,17 +181454,6 @@
 									"name": "blog_post_id",
 									"kind": "variable",
 									"typeSignature": "number"
-								},
-								{
-									"name": "comments",
-									"kind": "variable",
-									"typeSignature": "{ url: string; type: \"mastodon\"; }",
-									"optional": true,
-									"typeInfo": {
-										"kind": "reference",
-										"name": "BlogComments",
-										"module": "blog.ts"
-									}
 								}
 							],
 							"mergedValue": true
@@ -181527,8 +181461,8 @@
 						{
 							"name": "BlogFeed",
 							"kind": "type",
-							"typeSignature": "{ id: string; title: string; home_page_url: string; description: string; icon: string; favicon: string; author: { name: string; url?: string | undefined; email?: string | undefined; }; items: { id: string; ... 9 more ...; comments?: { ...; } | undefined; }[]; atom: { ...; }; }",
-							"sourceLine": 139,
+							"typeSignature": "{ id: string; title: string; home_page_url: string; description: string; icon: string; favicon: string; author: { name: string; url?: string | undefined; email?: string | undefined; }; items: { id: string; ... 8 more ...; blog_post_id: number; }[]; atom: { ...; }; }",
+							"sourceLine": 128,
 							"members": [
 								{
 									"name": "id",
@@ -181568,7 +181502,7 @@
 								{
 									"name": "items",
 									"kind": "variable",
-									"typeSignature": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }[]",
+									"typeSignature": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }[]",
 									"typeInfo": {
 										"kind": "array",
 										"element": {
@@ -181590,14 +181524,14 @@
 							"name": "blog_feed_context",
 							"kind": "variable",
 							"typeSignature": "{ get: (error_message?: string | undefined) => { id: string; title: string; home_page_url: string; description: string; icon: string; favicon: string; author: { name: string; url?: string | undefined; email?: string | undefined; }; items: { ...; }[]; atom: { ...; }; }; get_maybe: () => { ...; } | undefined; set: (va...",
-							"sourceLine": 141
+							"sourceLine": 130
 						},
 						{
 							"name": "resolve_blog_config",
 							"kind": "function",
 							"docComment": "Resolves a `BlogConfig` from the registry by its `dirname`,\ndefaulting to the first registered blog when `dirname` is omitted.\nThrows when `dirname` matches no registered blog.",
 							"typeSignature": "(blogs: BlogConfig[], dirname: string | undefined): BlogConfig",
-							"sourceLine": 148,
+							"sourceLine": 137,
 							"parameters": [
 								{
 									"name": "blogs",
@@ -181634,8 +181568,8 @@
 							"name": "resolve_blog_feed_item",
 							"kind": "function",
 							"docComment": "Derives a `BlogFeedItem` (the feed entry) from a post and its blog's\n`dirname` and `home_page_url`. Emits only `BlogFeedItem` fields - a\nconsumer's extra post metadata stays on the page's `post` for its component\nto render, and does not leak into the typed generated feed.",
-							"typeSignature": "(blog_post_id: BlogPostId, dirname: string, home_page_url: string, post: { title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; comments?: { ...; } | undefined; } & Record<...>, options?: { ...; } | undefined): { ...; }",
-							"sourceLine": 173,
+							"typeSignature": "(blog_post_id: BlogPostId, dirname: string, home_page_url: string, post: { title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; } & Record<...>, options?: { ...; } | undefined): { ...; }",
+							"sourceLine": 162,
 							"parameters": [
 								{
 									"name": "blog_post_id",
@@ -181675,7 +181609,7 @@
 								},
 								{
 									"name": "post",
-									"type": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; comments?: { url: string; type: \"mastodon\"; } | undefined; } & Record<string, unknown>",
+									"type": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; } & Record<string, unknown>",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "BlogPostMetadata"
@@ -181689,7 +181623,7 @@
 									"description": "`slug_routes: false` makes `url` the integer-id `id`"
 								}
 							],
-							"returnType": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
+							"returnType": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }",
 							"returnTypeInfo": {
 								"kind": "reference",
 								"name": "BlogFeedItem"
@@ -181703,7 +181637,6 @@
 						"blog.gen.ts",
 						"blog_helpers.ts",
 						"BlogPost.svelte",
-						"BlogPostComments.svelte",
 						"BlogPostHeader.svelte",
 						"BlogPostList.svelte",
 						"post.task.ts",
@@ -182211,7 +182144,7 @@
 							"props": [
 								{
 									"name": "post",
-									"type": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; comments?: { url: string; type: \"mastodon\"; } | undefined; } & Record<string, unknown>",
+									"type": "{ title: string; date_published: string; date_modified: string; summary: string; slug: string; tags?: string[] | undefined; } & Record<string, unknown>",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "BlogPostMetadata"
@@ -182219,7 +182152,7 @@
 								},
 								{
 									"name": "item",
-									"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
+									"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "BlogFeedItem"
@@ -182244,7 +182177,7 @@
 								},
 								{
 									"name": "meta",
-									"type": "Snippet<[item: { id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }]>",
+									"type": "Snippet<[item: { id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }]>",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "Snippet",
@@ -182268,7 +182201,7 @@
 									"parameters": [
 										{
 											"name": "item",
-											"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
+											"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }",
 											"typeInfo": {
 												"kind": "reference",
 												"name": "BlogFeedItem"
@@ -182283,7 +182216,7 @@
 								},
 								{
 									"name": "comments",
-									"type": "Snippet<[item: { id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }]>",
+									"type": "Snippet<[item: { id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }]>",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "Snippet",
@@ -182303,11 +182236,11 @@
 										]
 									},
 									"optional": true,
-									"description": "Renders after `footer`, usually with `BlogPostComments`.\nImporting `BlogPostComments.svelte` is what opts into the\n`@fuzdev/fuz_mastodon` peer dependency.",
+									"description": "Renders after `footer`, for a post's comments.",
 									"parameters": [
 										{
 											"name": "item",
-											"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
+											"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }",
 											"typeInfo": {
 												"kind": "reference",
 												"name": "BlogFeedItem"
@@ -182329,35 +182262,6 @@
 					]
 				},
 				{
-					"path": "BlogPostComments.svelte",
-					"declarations": [
-						{
-							"name": "BlogPostComments",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "item",
-									"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
-									"typeInfo": {
-										"kind": "reference",
-										"name": "BlogFeedItem"
-									}
-								},
-								{
-									"name": "separator",
-									"type": "Snippet<[]>",
-									"optional": true,
-									"defaultValue": "default_separator"
-								}
-							]
-						}
-					],
-					"dependencies": [
-						"blog.ts"
-					]
-				},
-				{
 					"path": "BlogPostHeader.svelte",
 					"declarations": [
 						{
@@ -182367,7 +182271,7 @@
 							"props": [
 								{
 									"name": "item",
-									"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; comments?: { url: string; type: \"mastodon\"; } | undefined; }",
+									"type": "{ id: string; title: string; url: string; date_published: string; date_modified: string; summary: string; tags: string[]; slug: string; pathname: string; blog_post_id: number; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "BlogFeedItem"
@@ -182394,7 +182298,7 @@
 							"props": [
 								{
 									"name": "feed",
-									"type": "{ id: string; title: string; home_page_url: string; description: string; icon: string; favicon: string; author: { name: string; url?: string | undefined; email?: string | undefined; }; items: { id: string; ... 9 more ...; comments?: { ...; } | undefined; }[]; atom: { ...; }; }",
+									"type": "{ id: string; title: string; home_page_url: string; description: string; icon: string; favicon: string; author: { name: string; url?: string | undefined; email?: string | undefined; }; items: { id: string; ... 8 more ...; blog_post_id: number; }[]; atom: { ...; }; }",
 									"typeInfo": {
 										"kind": "reference",
 										"name": "BlogFeed"
@@ -182700,1691 +182604,6 @@
 					],
 					"dependents": [
 						"FeedItemDate.svelte"
-					]
-				}
-			]
-		}
-	},
-	"fuz_mastodon": {
-		"pkg_json": {
-			"name": "@fuzdev/fuz_mastodon",
-			"version": "0.45.1",
-			"description": "Mastodon components and helpers for Svelte, SvelteKit, and Fuz",
-			"glyph": "🦣",
-			"logo": "logo.svg",
-			"logo_alt": "a friendly purple spider facing you",
-			"license": "0BSD",
-			"homepage": "https://mastodon.fuz.dev/",
-			"repository": "https://github.com/fuzdev/fuz_mastodon",
-			"funding": "https://www.ryanatkn.com/funding",
-			"exports": {
-				"./package.json": "./package.json",
-				"./*.js": {
-					"types": "./dist/*.d.ts",
-					"default": "./dist/*.js"
-				},
-				"./*.ts": {
-					"types": "./dist/*.d.ts",
-					"default": "./dist/*.js"
-				},
-				"./*.svelte": {
-					"types": "./dist/*.svelte.d.ts",
-					"svelte": "./dist/*.svelte",
-					"default": "./dist/*.svelte"
-				}
-			}
-		},
-		"source_json": {
-			"modules": [
-				{
-					"path": "mastodon.ts",
-					"declarations": [
-						{
-							"name": "to_mastodon_status_url",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string): string",
-							"sourceLine": 18,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "to_mastodon_status_url_with_author",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string, author: string): string",
-							"sourceLine": 21,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								},
-								{
-									"name": "author",
-									"type": "string"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "to_mastodon_status_url_with_users_author",
-							"kind": "function",
-							"docComment": "longhand for `to_mastodon_status_url_with_author`, apperas.",
-							"typeSignature": "(host: string, id: string, author: string): string",
-							"sourceLine": 30,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								},
-								{
-									"name": "author",
-									"type": "string"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "to_mastodon_api_status_url",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string): string",
-							"sourceLine": 36,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "to_mastodon_api_status_context_url",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string): string",
-							"sourceLine": 39,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "to_mastodon_api_favourites_url",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string): string",
-							"sourceLine": 42,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								}
-							],
-							"returnType": "string"
-						},
-						{
-							"name": "MastodonStatusUrl",
-							"kind": "interface",
-							"typeSignature": "MastodonStatusUrl",
-							"sourceLine": 46,
-							"members": [
-								{
-									"name": "href",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "host",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "status_id",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "author",
-									"kind": "variable",
-									"typeSignature": "string",
-									"optional": true
-								}
-							]
-						},
-						{
-							"name": "parse_mastodon_status_url",
-							"kind": "function",
-							"docComment": "parses a url to a post or API endpoint for a post, aka Mastodon status context.",
-							"typeSignature": "(url: string): MastodonStatusUrl | null",
-							"sourceLine": 58,
-							"parameters": [
-								{
-									"name": "url",
-									"type": "string"
-								}
-							],
-							"returnType": "MastodonStatusUrl | null",
-							"returnTypeInfo": {
-								"kind": "union",
-								"members": [
-									{
-										"kind": "reference",
-										"name": "MastodonStatusUrl"
-									},
-									{
-										"kind": "intrinsic",
-										"text": "null"
-									}
-								]
-							},
-							"returnDescription": "the parsed host and id params, if any"
-						},
-						{
-							"name": "fetch_mastodon_status_context",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string, cache?: FetchValueCache | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: { ...; } | undefined): Promise<...>",
-							"sourceLine": 72,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								},
-								{
-									"name": "cache",
-									"type": "FetchValueCache | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true
-								},
-								{
-									"name": "log",
-									"type": "Logger",
-									"optional": true
-								},
-								{
-									"name": "request",
-									"type": "RequestInit",
-									"optional": true
-								},
-								{
-									"name": "token",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "fetch",
-									"type": "{ (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>; (input: string | Request | URL, init?: RequestInit | undefined): Promise<...>; }",
-									"optional": true
-								}
-							],
-							"returnType": "Promise<MastodonStatusContext | null>",
-							"returnTypeInfo": {
-								"kind": "reference",
-								"name": "Promise",
-								"typeArgs": [
-									{
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "MastodonStatusContext"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								]
-							}
-						},
-						{
-							"name": "fetch_mastodon_status",
-							"kind": "function",
-							"typeSignature": "(host: string, id: string, cache?: FetchValueCache | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: { ...; } | undefined): Promise<...>",
-							"sourceLine": 94,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "id",
-									"type": "string"
-								},
-								{
-									"name": "cache",
-									"type": "FetchValueCache | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true
-								},
-								{
-									"name": "log",
-									"type": "Logger",
-									"optional": true
-								},
-								{
-									"name": "request",
-									"type": "RequestInit",
-									"optional": true
-								},
-								{
-									"name": "token",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "fetch",
-									"type": "{ (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>; (input: string | Request | URL, init?: RequestInit | undefined): Promise<...>; }",
-									"optional": true
-								}
-							],
-							"returnType": "Promise<MastodonStatus | null>",
-							"returnTypeInfo": {
-								"kind": "reference",
-								"name": "Promise",
-								"typeArgs": [
-									{
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "MastodonStatus"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								]
-							}
-						},
-						{
-							"name": "fetch_mastodon_favourites",
-							"kind": "function",
-							"typeSignature": "(host: string, status_id: string, cache?: FetchValueCache | null | undefined, log?: Logger | undefined, request?: RequestInit | undefined, token?: string | undefined, fetch?: { ...; } | undefined): Promise<...>",
-							"sourceLine": 116,
-							"parameters": [
-								{
-									"name": "host",
-									"type": "string"
-								},
-								{
-									"name": "status_id",
-									"type": "string"
-								},
-								{
-									"name": "cache",
-									"type": "FetchValueCache | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true
-								},
-								{
-									"name": "log",
-									"type": "Logger",
-									"optional": true
-								},
-								{
-									"name": "request",
-									"type": "RequestInit",
-									"optional": true
-								},
-								{
-									"name": "token",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "fetch",
-									"type": "{ (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>; (input: string | Request | URL, init?: RequestInit | undefined): Promise<...>; }",
-									"optional": true
-								}
-							],
-							"returnType": "Promise<MastodonFavourite[] | null>",
-							"returnTypeInfo": {
-								"kind": "reference",
-								"name": "Promise",
-								"typeArgs": [
-									{
-										"kind": "union",
-										"members": [
-											{
-												"kind": "array",
-												"element": {
-													"kind": "reference",
-													"name": "MastodonFavourite"
-												}
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								]
-							}
-						},
-						{
-							"name": "MastodonStatusContext",
-							"kind": "interface",
-							"docComment": "result from `https://:host/api/v1/statuses/:id/context`.",
-							"typeSignature": "MastodonStatusContext",
-							"sourceLine": 144,
-							"seeAlso": [
-								"https://docs.joinmastodon.org/entities/Context/"
-							],
-							"members": [
-								{
-									"name": "ancestors",
-									"kind": "variable",
-									"typeSignature": "MastodonStatus[]",
-									"typeInfo": {
-										"kind": "array",
-										"element": {
-											"kind": "reference",
-											"name": "MastodonStatus"
-										}
-									}
-								},
-								{
-									"name": "descendants",
-									"kind": "variable",
-									"typeSignature": "MastodonStatus[]",
-									"typeInfo": {
-										"kind": "array",
-										"element": {
-											"kind": "reference",
-											"name": "MastodonStatus"
-										}
-									}
-								}
-							]
-						},
-						{
-							"name": "MastodonStatus",
-							"kind": "interface",
-							"typeSignature": "MastodonStatus",
-							"sourceLine": 149,
-							"members": [
-								{
-									"name": "id",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "created_at",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "in_reply_to_id",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "in_reply_to_account_id",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "sensitive",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "spoiler_text",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "visibility",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "language",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "uri",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "url",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "replies_count",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "reblogs_count",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "favourites_count",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "edited_at",
-									"kind": "variable",
-									"typeSignature": "string | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "intrinsic",
-												"text": "string"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								},
-								{
-									"name": "favourited",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "reblogged",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "muted",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "bookmarked",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "content",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "filtered",
-									"kind": "variable",
-									"typeSignature": "unknown[]"
-								},
-								{
-									"name": "reblog",
-									"kind": "variable",
-									"typeSignature": "unknown"
-								},
-								{
-									"name": "account",
-									"kind": "variable",
-									"typeSignature": "{ id: string; username: string; acct: string; display_name: string; locked: boolean; bot: boolean; discoverable: boolean; group: boolean; created_at: string; note: string; url: string; avatar: string; ... 8 more ...; fields: unknown[]; }"
-								},
-								{
-									"name": "media_attachments",
-									"kind": "variable",
-									"typeSignature": "unknown[]"
-								},
-								{
-									"name": "mentions",
-									"kind": "variable",
-									"typeSignature": "[{ id: string; username: string; url: string; acct: string; }]"
-								},
-								{
-									"name": "tags",
-									"kind": "variable",
-									"typeSignature": "[{ name: string; url: string; }]"
-								},
-								{
-									"name": "emojis",
-									"kind": "variable",
-									"typeSignature": "unknown[]"
-								},
-								{
-									"name": "card",
-									"kind": "variable",
-									"typeSignature": "unknown"
-								},
-								{
-									"name": "poll",
-									"kind": "variable",
-									"typeSignature": "unknown"
-								}
-							]
-						},
-						{
-							"name": "MastodonFavourite",
-							"kind": "interface",
-							"typeSignature": "MastodonFavourite",
-							"sourceLine": 214,
-							"members": [
-								{
-									"name": "id",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "username",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "acct",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "display_name",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "locked",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "bot",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "discoverable",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "group",
-									"kind": "variable",
-									"typeSignature": "boolean"
-								},
-								{
-									"name": "created_at",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "note",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "url",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "avatar",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "avatar_static",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "header",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "header_static",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "followers_count",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "following_count",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "statuses_count",
-									"kind": "variable",
-									"typeSignature": "number"
-								},
-								{
-									"name": "last_status_at",
-									"kind": "variable",
-									"typeSignature": "string"
-								},
-								{
-									"name": "emojis",
-									"kind": "variable",
-									"typeSignature": "unknown[]"
-								},
-								{
-									"name": "fields",
-									"kind": "variable",
-									"typeSignature": "{ name: string; value: string; verified_at: string; }[]"
-								}
-							]
-						},
-						{
-							"name": "ReplyFilter",
-							"kind": "type",
-							"docComment": "When filtering replies, at least one rule must pass for a reply to be included.",
-							"typeSignature": "ReplyFilter",
-							"sourceLine": 245,
-							"typeInfo": {
-								"kind": "union",
-								"alias": "ReplyFilter",
-								"members": [
-									{
-										"kind": "reference",
-										"name": "FavouritedByReplyFilter"
-									},
-									{
-										"kind": "reference",
-										"name": "MinimumFavouritesReplyFilter"
-									},
-									{
-										"kind": "reference",
-										"name": "CustomReplyFilter"
-									}
-								]
-							}
-						},
-						{
-							"name": "FavouritedByReplyFilter",
-							"kind": "interface",
-							"typeSignature": "FavouritedByReplyFilter",
-							"sourceLine": 248,
-							"members": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"typeSignature": "\"favourited_by\""
-								},
-								{
-									"name": "favourited_by",
-									"kind": "variable",
-									"typeSignature": "string[]"
-								}
-							]
-						},
-						{
-							"name": "MinimumFavouritesReplyFilter",
-							"kind": "interface",
-							"typeSignature": "MinimumFavouritesReplyFilter",
-							"sourceLine": 253,
-							"members": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"typeSignature": "\"minimum_favourites\""
-								},
-								{
-									"name": "minimum_favourites",
-									"kind": "variable",
-									"typeSignature": "number"
-								}
-							]
-						},
-						{
-							"name": "CustomReplyFilter",
-							"kind": "interface",
-							"typeSignature": "CustomReplyFilter",
-							"sourceLine": 258,
-							"members": [
-								{
-									"name": "type",
-									"kind": "variable",
-									"typeSignature": "\"custom\""
-								},
-								{
-									"name": "should_include",
-									"kind": "function",
-									"typeSignature": "(status: MastodonStatus, root_status: MastodonStatus, status_context: MastodonStatusContext): boolean",
-									"parameters": [
-										{
-											"name": "status",
-											"type": "MastodonStatus"
-										},
-										{
-											"name": "root_status",
-											"type": "MastodonStatus"
-										},
-										{
-											"name": "status_context",
-											"type": "MastodonStatusContext"
-										}
-									],
-									"returnType": "boolean"
-								}
-							]
-						},
-						{
-							"name": "CreateReplyFilters",
-							"kind": "type",
-							"typeSignature": "CreateReplyFilters",
-							"sourceLine": 267,
-							"members": [
-								{
-									"name": "(call)",
-									"kind": "function",
-									"typeSignature": "(item: MastodonStatus, status_context: MastodonStatusContext): ReplyFilter | ReplyFilter[] | null",
-									"parameters": [
-										{
-											"name": "item",
-											"type": "MastodonStatus"
-										},
-										{
-											"name": "status_context",
-											"type": "MastodonStatusContext"
-										}
-									],
-									"returnType": "ReplyFilter | ReplyFilter[] | null",
-									"returnTypeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "union",
-												"alias": "ReplyFilter",
-												"members": [
-													{
-														"kind": "reference",
-														"name": "FavouritedByReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "MinimumFavouritesReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "CustomReplyFilter"
-													}
-												]
-											},
-											{
-												"kind": "array",
-												"element": {
-													"kind": "union",
-													"alias": "ReplyFilter",
-													"members": [
-														{
-															"kind": "reference",
-															"name": "FavouritedByReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "MinimumFavouritesReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "CustomReplyFilter"
-														}
-													]
-												}
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								}
-							]
-						},
-						{
-							"name": "filter_valid_replies",
-							"kind": "function",
-							"typeSignature": "(root_status: MastodonStatus, status_context: MastodonStatusContext, reply_filter: ReplyFilter | ReplyFilter[] | null, cache: FetchValueCache | ... 1 more ... | undefined, log: Logger | undefined): Promise<...>",
-							"sourceLine": 274,
-							"parameters": [
-								{
-									"name": "root_status",
-									"type": "MastodonStatus"
-								},
-								{
-									"name": "status_context",
-									"type": "MastodonStatusContext"
-								},
-								{
-									"name": "reply_filter",
-									"type": "ReplyFilter | ReplyFilter[] | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "union",
-												"alias": "ReplyFilter",
-												"members": [
-													{
-														"kind": "reference",
-														"name": "FavouritedByReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "MinimumFavouritesReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "CustomReplyFilter"
-													}
-												]
-											},
-											{
-												"kind": "array",
-												"element": {
-													"kind": "union",
-													"alias": "ReplyFilter",
-													"members": [
-														{
-															"kind": "reference",
-															"name": "FavouritedByReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "MinimumFavouritesReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "CustomReplyFilter"
-														}
-													]
-												}
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									}
-								},
-								{
-									"name": "cache",
-									"type": "FetchValueCache | null | undefined",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "undefined"
-											}
-										]
-									}
-								},
-								{
-									"name": "log",
-									"type": "Logger | undefined",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "Logger"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "undefined"
-											}
-										]
-									}
-								}
-							],
-							"returnType": "Promise<MastodonStatus[]>",
-							"returnTypeInfo": {
-								"kind": "reference",
-								"name": "Promise",
-								"typeArgs": [
-									{
-										"kind": "array",
-										"element": {
-											"kind": "reference",
-											"name": "MastodonStatus"
-										}
-									}
-								]
-							}
-						}
-					],
-					"dependents": [
-						"MastodonStatusItem.svelte",
-						"MastodonStatusTree.svelte",
-						"Toot.svelte",
-						"TootInput.svelte",
-						"TootLoader.svelte"
-					]
-				},
-				{
-					"path": "mastodon_cache.svelte.ts",
-					"declarations": [
-						{
-							"name": "MastodonCache",
-							"kind": "class",
-							"sourceLine": 6,
-							"members": [
-								{
-									"name": "load_data",
-									"kind": "variable",
-									"typeSignature": "() => Promise<[Url, FetchValueCacheItem][] | null>",
-									"modifiers": [
-										"readonly"
-									]
-								},
-								{
-									"name": "data",
-									"kind": "variable",
-									"docComment": "If `undefined`, it's still loading. `null` means no data.",
-									"typeSignature": "FetchValueCache | null | undefined",
-									"reactivity": "$state.raw",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "undefined"
-											}
-										]
-									}
-								},
-								{
-									"name": "constructor",
-									"kind": "constructor",
-									"typeSignature": "(load_data: () => Promise<[Url, FetchValueCacheItem][] | null>, load_on_mount?: boolean): MastodonCache",
-									"parameters": [
-										{
-											"name": "load_data",
-											"type": "() => Promise<[Url, FetchValueCacheItem][] | null>"
-										},
-										{
-											"name": "load_on_mount",
-											"type": "boolean",
-											"defaultValue": "true"
-										}
-									]
-								},
-								{
-									"name": "load",
-									"kind": "variable",
-									"typeSignature": "() => Promise<void>"
-								}
-							]
-						},
-						{
-							"name": "mastodon_cache_context",
-							"kind": "variable",
-							"typeSignature": "{ get: (error_message?: string | undefined) => MastodonCache; get_maybe: () => MastodonCache | undefined; set: (value: MastodonCache) => MastodonCache; }",
-							"sourceLine": 32
-						}
-					]
-				},
-				{
-					"path": "MastodonStatusItem.svelte",
-					"declarations": [
-						{
-							"name": "MastodonStatusItem",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "item",
-									"type": "MastodonStatus"
-								}
-							]
-						}
-					],
-					"dependencies": [
-						"mastodon.ts"
-					],
-					"dependents": [
-						"MastodonStatusTree.svelte",
-						"Toot.svelte"
-					]
-				},
-				{
-					"path": "MastodonStatusTree.svelte",
-					"declarations": [
-						{
-							"name": "MastodonStatusTree",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "item",
-									"type": "MastodonStatus"
-								},
-								{
-									"name": "items",
-									"type": "MastodonStatus[]",
-									"typeInfo": {
-										"kind": "array",
-										"element": {
-											"kind": "reference",
-											"name": "MastodonStatus"
-										}
-									}
-								}
-							]
-						}
-					],
-					"dependencies": [
-						"mastodon.ts",
-						"MastodonStatusItem.svelte",
-						"MastodonStatusTree.svelte"
-					],
-					"dependents": [
-						"MastodonStatusTree.svelte",
-						"Toot.svelte"
-					]
-				},
-				{
-					"path": "storage.ts",
-					"declarations": [
-						{
-							"name": "load_from_storage",
-							"kind": "function",
-							"docComment": "Loads `key` and falls back to `defaultValue`.\nIf `validate` is provided and throws, it removes the `key` and returns `undefined`.",
-							"typeSignature": "<T>(key: string, to_default_value: () => T, validate?: ((value: any) => asserts value is T) | undefined): T",
-							"sourceLine": 13,
-							"genericParams": [
-								{
-									"name": "T"
-								}
-							],
-							"parameters": [
-								{
-									"name": "key",
-									"type": "string"
-								},
-								{
-									"name": "to_default_value",
-									"type": "() => T"
-								},
-								{
-									"name": "validate",
-									"type": "(value: any) => asserts value is T",
-									"optional": true
-								}
-							],
-							"returnType": "T"
-						},
-						{
-							"name": "set_in_storage",
-							"kind": "function",
-							"docComment": "Sets `value` at `key`.\nImportantly, if `value` is `undefined` the `key` is removed,\nbut a `value` of `null` is stored.",
-							"typeSignature": "(key: string, value: any): void",
-							"sourceLine": 40,
-							"parameters": [
-								{
-									"name": "key",
-									"type": "string"
-								},
-								{
-									"name": "value",
-									"type": "any"
-								}
-							],
-							"returnType": "void"
-						}
-					],
-					"dependents": [
-						"Toot.svelte"
-					]
-				},
-				{
-					"path": "Toot.svelte",
-					"declarations": [
-						{
-							"name": "Toot",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "url",
-									"type": "string"
-								},
-								{
-									"name": "updated_url",
-									"type": "string",
-									"optional": true,
-									"description": "Defaults to the `url`, but can be updated by user input.",
-									"defaultValue": "url",
-									"bindable": true
-								},
-								{
-									"name": "include_ancestors",
-									"type": "boolean",
-									"optional": true,
-									"description": "Whether to fetch and display the ancestors in the status context.",
-									"defaultValue": "false"
-								},
-								{
-									"name": "include_replies",
-									"type": "boolean",
-									"optional": true,
-									"description": "Whether to fetch and display replies aka descendants in the status context.",
-									"defaultValue": "false"
-								},
-								{
-									"name": "reply_filter",
-									"type": "ReplyFilter | CreateReplyFilters | ReplyFilter[] | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "union",
-												"alias": "ReplyFilter",
-												"members": [
-													{
-														"kind": "reference",
-														"name": "FavouritedByReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "MinimumFavouritesReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "CustomReplyFilter"
-													}
-												]
-											},
-											{
-												"kind": "array",
-												"element": {
-													"kind": "union",
-													"alias": "ReplyFilter",
-													"members": [
-														{
-															"kind": "reference",
-															"name": "FavouritedByReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "MinimumFavouritesReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "CustomReplyFilter"
-														}
-													]
-												}
-											},
-											{
-												"kind": "function",
-												"text": "CreateReplyFilters"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"description": "Get a list of rules that controls whether replies are shown or not."
-								},
-								{
-									"name": "cache",
-									"type": "FetchValueCache | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"description": "Optional API result cache.\nSee `MastodonCache` and `get_mastodon_cache`/`set_mastodon_cache`."
-								},
-								{
-									"name": "log",
-									"type": "Logger",
-									"optional": true,
-									"description": "Optional logger for network calls."
-								},
-								{
-									"name": "loading",
-									"type": "boolean",
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "load_time",
-									"type": "number",
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "settings_storage_key",
-									"type": "string",
-									"optional": true
-								},
-								{
-									"name": "initial_show_settings",
-									"type": "boolean",
-									"optional": true,
-									"defaultValue": "false"
-								},
-								{
-									"name": "show_settings",
-									"type": "boolean",
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "autoload_storage_key",
-									"type": "string",
-									"optional": true,
-									"defaultValue": "'autoload'"
-								},
-								{
-									"name": "initial_autoload",
-									"type": "boolean",
-									"optional": true,
-									"defaultValue": "false"
-								},
-								{
-									"name": "autoload",
-									"type": "boolean",
-									"optional": true,
-									"defaultValue": "autoload_storage_key\n\t\t\t? load_from_storage(autoload_storage_key, () => initial_autoload)\n\t\t\t: initial_autoload"
-								},
-								{
-									"name": "onreset",
-									"type": "() => void",
-									"optional": true,
-									"returnType": "void"
-								},
-								{
-									"name": "settings",
-									"type": "Snippet<[]>",
-									"optional": true
-								}
-							]
-						}
-					],
-					"dependencies": [
-						"mastodon.ts",
-						"MastodonStatusItem.svelte",
-						"MastodonStatusTree.svelte",
-						"storage.ts",
-						"TootInput.svelte",
-						"TootLoader.svelte"
-					]
-				},
-				{
-					"path": "TootInput.svelte",
-					"declarations": [
-						{
-							"name": "TootInput",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "url",
-									"type": "string",
-									"bindable": true
-								},
-								{
-									"name": "attrs",
-									"type": "HTMLInputAttributes",
-									"optional": true
-								}
-							]
-						}
-					],
-					"dependencies": [
-						"mastodon.ts"
-					],
-					"dependents": [
-						"Toot.svelte"
-					]
-				},
-				{
-					"path": "TootLoader.svelte",
-					"declarations": [
-						{
-							"name": "TootLoader",
-							"kind": "component",
-							"sourceLine": 1,
-							"props": [
-								{
-									"name": "host",
-									"type": "string | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "intrinsic",
-												"text": "string"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"description": "The host part of the url, like `'mastodon.ryanatkn.com'`."
-								},
-								{
-									"name": "id",
-									"type": "string | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "intrinsic",
-												"text": "string"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"description": "The status id to fetch, like `'110702983310017651'`."
-								},
-								{
-									"name": "include_ancestors",
-									"type": "boolean",
-									"optional": true,
-									"description": "Whether to fetch and display the ancestors in the status context.",
-									"defaultValue": "false"
-								},
-								{
-									"name": "include_replies",
-									"type": "boolean",
-									"optional": true,
-									"description": "Whether to fetch and display replies aka descendants in the status context.",
-									"defaultValue": "false"
-								},
-								{
-									"name": "cache",
-									"type": "FetchValueCache | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "FetchValueCache"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"description": "Optional API result cache."
-								},
-								{
-									"name": "log",
-									"type": "Logger",
-									"optional": true,
-									"description": "Optional logger for network calls."
-								},
-								{
-									"name": "loading",
-									"type": "boolean",
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "item",
-									"type": "MastodonStatus | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "MastodonStatus"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "status_context",
-									"type": "MastodonStatusContext | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "reference",
-												"name": "MastodonStatusContext"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "replies",
-									"type": "MastodonStatus[] | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "array",
-												"element": {
-													"kind": "reference",
-													"name": "MastodonStatus"
-												}
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "reply_filter",
-									"type": "ReplyFilter | CreateReplyFilters | ReplyFilter[] | null",
-									"typeInfo": {
-										"kind": "union",
-										"members": [
-											{
-												"kind": "union",
-												"alias": "ReplyFilter",
-												"members": [
-													{
-														"kind": "reference",
-														"name": "FavouritedByReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "MinimumFavouritesReplyFilter"
-													},
-													{
-														"kind": "reference",
-														"name": "CustomReplyFilter"
-													}
-												]
-											},
-											{
-												"kind": "array",
-												"element": {
-													"kind": "union",
-													"alias": "ReplyFilter",
-													"members": [
-														{
-															"kind": "reference",
-															"name": "FavouritedByReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "MinimumFavouritesReplyFilter"
-														},
-														{
-															"kind": "reference",
-															"name": "CustomReplyFilter"
-														}
-													]
-												}
-											},
-											{
-												"kind": "function",
-												"text": "CreateReplyFilters"
-											},
-											{
-												"kind": "intrinsic",
-												"text": "null"
-											}
-										]
-									},
-									"optional": true,
-									"description": "Get a list of rules that controls whether replies are shown or not.\nIf omitted, all replies are included."
-								},
-								{
-									"name": "load_time",
-									"type": "number",
-									"optional": true,
-									"bindable": true
-								},
-								{
-									"name": "children",
-									"type": "Snippet<[{ item: MastodonStatus | null | undefined; status_context: MastodonStatusContext | null | undefined; replies: MastodonStatus[] | null | undefined; load: () => Promise<...>; loading: boolean | undefined; load_time: number | undefined; }]>",
-									"typeInfo": {
-										"kind": "reference",
-										"name": "Snippet",
-										"typeArgs": [
-											{
-												"kind": "tuple",
-												"elements": [
-													{
-														"type": {
-															"kind": "object",
-															"text": "{ item: MastodonStatus | null | undefined; status_context: MastodonStatusContext | null | undefined; replies: MastodonStatus[] | null | undefined; load: () => Promise<void>; loading: boolean | undefined; load_time: number | undefined; }"
-														}
-													}
-												]
-											}
-										]
-									},
-									"parameters": [
-										{
-											"name": "arg0",
-											"type": "{ item: MastodonStatus | null | undefined; status_context: MastodonStatusContext | null | undefined; replies: MastodonStatus[] | null | undefined; load: () => Promise<...>; loading: boolean | undefined; load_time: number | undefined; }"
-										}
-									]
-								}
-							],
-							"acceptsChildren": true
-						}
-					],
-					"dependencies": [
-						"mastodon.ts"
-					],
-					"dependents": [
-						"Toot.svelte"
 					]
 				}
 			]

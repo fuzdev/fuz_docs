@@ -48,7 +48,6 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `fuz_template` | web app template — TypeScript + SvelteKit + optional Rust                       |
 | `fuz_code`     | syntax styler for TypeScript, Svelte, Markdown, and more                        |
 | `fuz_blog`     | blog software from scratch with SvelteKit                                       |
-| `fuz_mastodon` | Mastodon components and helpers                                                 |
 | `fuz_repos`    | multi-repo management                                                           |
 | `blake3`       | BLAKE3 hashing compiled to WASM (`@fuzdev/blake3-wasm` + `blake3-wasm-small`)   |
 | `zzz`          | software garage — produce software with AI assistance                           |
