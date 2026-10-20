@@ -202,9 +202,9 @@ fn decode_grant_row(row: &tokio_postgres::Row) -> Result<CellGrantRow, CellError
   a reasoned exemption, and each const names exactly its live columns. Each
   spine crate exports a `fuz_db::ColumnProjections` set per migration chain
   (`AUTH_COLUMN_PROJECTIONS`, `CELL_COLUMN_PROJECTIONS`,
-  `CELL_HISTORY_COLUMN_PROJECTIONS`, `FACT_COLUMN_PROJECTIONS`; `fuz_db`'s
-  `DB_COLUMN_PROJECTIONS` covers `schema_version`), and the test composes the
-  sets for the chains it migrates plus its own tables:
+  `FACT_COLUMN_PROJECTIONS`; `fuz_db`'s `DB_COLUMN_PROJECTIONS` covers
+  `schema_version`), and the test composes the sets for the chains it migrates
+  plus its own tables:
   `column_projection_mismatches_merged(&live, &[DB_COLUMN_PROJECTIONS, AUTH_COLUMN_PROJECTIONS, …, OWN])`.
   Never copy a spine chain's table→const list into a consumer — compose the
   exported set, so a spine table addition reaches every registry through one
