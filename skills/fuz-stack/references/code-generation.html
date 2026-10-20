@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/18.BIy7hL-q.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/18.DsHAZJSt.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -68,20 +68,44 @@ the output name can't equal the gen name.<!--]--><!--]--><!----></p><!--]--><!--
 promise of one), or a <!--]--><!--[3--><!--[-1--><code>{generate, dependencies?}</code><!--]--><!--]--><!--[2--> config object. Types come from
 <!--]--><!--[3--><!--[-1--><code>@fuzdev/gro/gen.ts</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>Gen</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>GenContext</code><!--]--><!--]--><!--[2--> also re-exported from <!--]--><!--[3--><!--[-1--><code>@fuzdev/gro</code><!--]--><!--]--><!--[2-->).<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">// theme.gen.css.ts — fuz_css's base theme</span>
 <span class="token_special_keyword">import</span> <span class="token_import_type_keyword token_special_keyword">type</span> <span class="token_punctuation">{</span> <span class="token_capitalized_identifier token_class_name">Gen</span> <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'@fuzdev/gro'</span><span class="token_punctuation">;</span>
+
 <span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> default_themes <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'./themes.ts'</span><span class="token_punctuation">;</span>
-<span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> render_theme_style <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'./theme.ts'</span><span class="token_punctuation">;</span>
+<span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> render_style_variables <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'./theme.ts'</span><span class="token_punctuation">;</span>
 <span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> default_variables <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'./variables.ts'</span><span class="token_punctuation">;</span>
 
+<span class="token_comment">/** @nodocs */</span>
 <span class="token_special_keyword">export</span> <span class="token_keyword">const</span> gen<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Gen</span></span></span> <span class="token_operator">=</span> <span class="token_punctuation">({</span> origin_path <span class="token_punctuation">})</span> <span class="token_operator">=></span> <span class="token_punctuation">{</span>
-	<span class="token_keyword">const</span> banner <span class="token_operator">=</span> <span class="token_template_string"><span class="token_template_punctuation token_string">`</span><span class="token_string">/* generated by </span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>origin_path<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string"> -- DO NOT EDIT DIRECTLY! */</span><span class="token_template_punctuation token_string">`</span></span><span class="token_punctuation">;</span>
-	<span class="token_comment">// the base theme is empty (it inherits the defaults), so the full default set</span>
-	<span class="token_comment">// is passed explicitly; it renders into the base layer so runtime themes beat</span>
-	<span class="token_comment">// it from fuz.theme</span>
-	<span class="token_keyword">const</span> theme_style <span class="token_operator">=</span> <span class="token_function">render_theme_style</span><span class="token_punctuation">(</span>
-		<span class="token_punctuation">{</span> <span class="token_operator">...</span>default_themes<span class="token_punctuation">[</span><span class="token_number">0</span><span class="token_punctuation">]</span><span class="token_operator">!</span><span class="token_punctuation">,</span> variables<span class="token_operator">:</span> default_variables <span class="token_punctuation">},</span>
-		<span class="token_punctuation">{</span> comments<span class="token_operator">:</span> <span class="token_boolean">true</span><span class="token_punctuation">,</span> layer<span class="token_operator">:</span> <span class="token_string">'fuz.base'</span> <span class="token_punctuation">}</span>
-	<span class="token_punctuation">);</span>
-	<span class="token_special_keyword">return</span> <span class="token_template_string"><span class="token_template_punctuation token_string">`</span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>banner<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string">\n</span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>theme_style<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string">\n</span><span class="token_template_punctuation token_string">`</span></span><span class="token_punctuation">;</span>
+	<span class="token_keyword">const</span> banner <span class="token_operator">=</span> <span class="token_template_string"><span class="token_template_punctuation token_string">`</span><span class="token_string">/**
+ * generated by </span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>origin_path<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string"> -- DO NOT EDIT DIRECTLY!
+ *
+ * This file contains all style variables. For optimized output that includes only
+ * the variables your code uses, use the Vite plugin or Gro generator instead:
+ *
+ *   import 'virtual:fuz.css';  // Vite plugin - recommended
+ *   import './fuz.css';        // Gro generator
+ *
+ * Direct import of this file is for utility-only mode or non-bundled usage.
+ * See: https://css.fuz.dev/docs/classes
+ */</span><span class="token_template_punctuation token_string">`</span></span><span class="token_punctuation">;</span>
+
+	<span class="token_keyword">const</span> theme <span class="token_operator">=</span> default_themes<span class="token_punctuation">[</span><span class="token_number">0</span><span class="token_punctuation">]</span><span class="token_operator">!</span><span class="token_punctuation">;</span>
+	<span class="token_comment">// the default theme's variables are the system's defaults, so they render</span>
+	<span class="token_comment">// into the base layer; runtime theme overrides beat them from fuz.theme.</span>
+	<span class="token_comment">// the theme itself is empty (it inherits the defaults), so the full set is</span>
+	<span class="token_comment">// rendered as a variable set - the internal ramp variables included, which</span>
+	<span class="token_comment">// a theme can't carry</span>
+	<span class="token_keyword">const</span> theme_style <span class="token_operator">=</span> <span class="token_function">render_style_variables</span><span class="token_punctuation">(</span>default_variables<span class="token_punctuation">,</span> <span class="token_punctuation">{</span>
+		comments<span class="token_operator">:</span> <span class="token_boolean">true</span><span class="token_punctuation">,</span>
+		layer<span class="token_operator">:</span> <span class="token_string">'fuz.base'</span>
+	<span class="token_punctuation">});</span>
+
+	<span class="token_special_keyword">return</span> <span class="token_template_string"><span class="token_template_punctuation token_string">`</span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>banner<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string">
+
+/* theme: </span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>theme<span class="token_punctuation">.</span>name<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string"> */
+</span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>theme_style<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string">
+
+</span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span>banner<span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_string">
+</span><span class="token_template_punctuation token_string">`</span></span><span class="token_punctuation">;</span>
 <span class="token_punctuation">};</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>GenContext</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>origin_id</code><!--]--><!--]--><!--[2--> (absolute path), <!--]--><!--[3--><!--[-1--><code>origin_path</code><!--]--><!--]--><!--[2--> (project-relative;
 use it in generated-by banners), <!--]--><!--[3--><!--[-1--><code>config</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>GroConfig</code><!--]--><!--]--><!--[2-->), <!--]--><!--[3--><!--[-1--><code>svelte_config</code><!--]--><!--]--><!--[2--> (lazy
 promise), <!--]--><!--[3--><!--[-1--><code>filer</code><!--]--><!--]--><!--[2--> (filesystem tracker — reading source files), <!--]--><!--[3--><!--[-1--><code>log</code><!--]--><!--]--><!--[2-->,
@@ -112,22 +136,20 @@ and returns a manifest, per-skill data files, and <!--]--><!--[3--><!--[-1--><co
 one gen.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Task registry<!--]--><!--]--><!----></strong><!--]--><!--[2--> — a <!--]--><!--[3--><!--[-1--><code>src/gro_tasks.gen.ts</code><!--]--><!--]--><!--[2--> exporting gro's
 <!--]--><!--[3--><!--[-1--><code>gen_task_registry</code><!--]--><!--]--><!--[2--> writes the <!--]--><!--[3--><!--[-1--><code>ProjectTasks</code><!--]--><!--]--><!--[2--> augmentation that types
 <!--]--><!--[3--><!--[-1--><code>invoke_task</code><!--]--><!--]--><!--[2--> for the project's own tasks (./task-patterns); svelte-docinfo
-is the exemplar.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Gro generator for fuz_css<!--]--><!--]--><!----></strong><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>gen_fuz_css()</code><!--]--><!--]--><!--[2--> in a <!--]--><!--[3--><!--[-1--><code>fuz.gen.css.ts</code><!--]--><!--]--><!--[2--> writes
-a committed <!--]--><!--[3--><!--[-1--><code>fuz.css</code><!--]--><!--]--><!--[2-->; the Vite plugin is preferred, this is for when it
-isn't an option (./css-patterns §Project Setup).<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--]--><!--]--><!----></div><!----><!----><!--]--><!--]--><!--]--><!----><!----></div></div></div><!--]--><!--]--><!--]--><!----><!----><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!--]-->
+is the exemplar.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--]--><!--]--><!----></div><!----><!----><!--]--><!--]--><!--]--><!----><!----></div></div></div><!--]--><!--]--><!--]--><!----><!----><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!--]-->
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 18],
 							data: [null,null,null],

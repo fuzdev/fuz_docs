@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/30.BAgUpMhc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/30.BCokIPvN.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -175,11 +175,16 @@ carries a progress token <!--]--><!--[5--><em><!--[--><!--[2-->and<!--]--><!--]-
 <!--]--><!--[3--><!--[-1--><code>Arc&lt;fuz_realtime::ConnectionRegistry>::send_to</code><!--]--><!--]--><!--[2-->. HTTP → <!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2--> →
 non-streaming.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->WS and SSE admission is two-phase, and spine-owned<!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>register_action_ws</code><!--]--><!--]--><!--[2-->
 gates origin → 401 → token scope → role, then <!--]--><!--[3--><!--[-1--><code>admit_upgrade</code><!--]--><!--]--><!--[2--> registers the
-connection pending, re-reads the credential
-(<!--]--><!--[3--><!--[-1--><code>fuz_auth::revalidate_resolved_auth</code><!--]--><!--]--><!--[2-->), and admits — the per-account cap
-evicts only there. A credential revoked mid-upgrade closes with 4001, a
-failed re-read with 1011, a superseded socket with 4004, and an upgrade the
-shutdown closed or refused with 1001 (§Daemon lifecycle). A consumer
+connection pending with the endpoint's <!--]--><!--[3--><!--[-1--><code>required_roles</code><!--]--><!--]--><!--[2-->, re-reads the
+credential (<!--]--><!--[3--><!--[-1--><code>fuz_auth::revalidate_resolved_auth</code><!--]--><!--]--><!--[2-->) and then those roles
+(global grants only), and admits — the per-account cap evicts only there. A
+credential revoked mid-upgrade closes with 4001, a required role revoked
+mid-upgrade with 4006 (<!--]--><!--[3--><!--[-1--><code>WS_CLOSE_PERMISSION_REVOKED</code><!--]--><!--]--><!--[2-->), a failed re-read with
+1011, a superseded socket with 4004, and an upgrade the shutdown closed or
+refused with 1001 (§Daemon lifecycle). The roles hold for the socket's
+lifetime: revoking a global grant of one closes the account's sockets on
+that endpoint with 4006, nothing more is written, and the client stays
+closed rather than reconnecting into the gate. A consumer
 mounting its own long-lived transport follows the same order
 (<!--]--><!--[3--><!--[-1--><code>register_pending</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>subscribe_pending</code><!--]--><!--]--><!--[2--> → re-read → <!--]--><!--[3--><!--[-1--><code>admit</code><!--]--><!--]--><!--[2-->); a pending
 entry is closeable but receives nothing and counts toward nothing.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->What a slow or silent client can hold is bounded, and spine-owned too<!--]--><!--]--><!----></strong><!--]--><!--[2-->:<!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[5--><em><!--[--><!--[2-->Outbound queues.<!--]--><!--]--><!----></em><!--]--><!--[2--> A send to a WebSocket never waits: it queues onto that
@@ -203,7 +208,11 @@ after <!--]--><!--[3--><!--[-1--><code>HEADER_READ_TIMEOUT</code><!--]--><!--]--
 that never sends a request, or never finishes its headers, is dropped,
 and the same deadline is the keep-alive idle time. A running handler, a
 streaming response, and an upgraded socket are not timed by it; a request
-body is not timed at all.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->A consumer mounting its own long-lived transport inherits the accept-loop
+body is not timed at all.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[5--><em><!--[--><!--[2-->Credential deadline.<!--]--><!--]--><!----></em><!--]--><!--[2--> A WS closes 4001 "Credential expired"
+(<!--]--><!--[3--><!--[-1--><code>WS_CLOSE_CREDENTIAL_EXPIRED_REASON</code><!--]--><!--]--><!--[2-->) and an SSE stream ends at
+<!--]--><!--[3--><!--[-1--><code>ResolvedAuth::credential_deadline</code><!--]--><!--]--><!--[2-->, waited in hour-capped sleeps that also
+check the wall clock.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[5--><em><!--[--><!--[2-->Receive timeout.<!--]--><!--]--><!----></em><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>ActionWsOptions::receive_timeout</code><!--]--><!--]--><!--[2-->
+(<!--]--><!--[3--><!--[-1--><code>DEFAULT_WS_RECEIVE_TIMEOUT</code><!--]--><!--]--><!--[2-->, 60 s) closes a silent socket with 4003.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->A consumer mounting its own long-lived transport inherits the accept-loop
 deadlines and owes its own queue bound. These limits have no TS twin where
 the runtime owns the socket.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Migration namespaces compose<!--]--><!--]--><!----></strong><!--]--><!--[2-->: substrate DDL lives in the owning crate
 (<!--]--><!--[3--><!--[-1--><code>fuz_auth::AUTH_MIGRATIONS</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>fuz_cell::CELL_MIGRATIONS</code><!--]--><!--]--><!--[2-->,
@@ -298,16 +307,16 @@ are crates, not features: <!--]--><!--[7--><!--[1--><a href="/skills/fuz-stack/r
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 30],
 							data: [null,null,null],

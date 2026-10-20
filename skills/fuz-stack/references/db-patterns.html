@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/20.jDJ2x4m6.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/20.BBJNlf7w.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -61,9 +61,9 @@ on either spine. Hand-written SQL by design: no query builder, no ORM — string
 stay planner-visible, pglet-compatible, and readable across the TS ↔ Rust twin.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="query-module-shape"><!--[--><!--[2-->Query module shape<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->One module per table. Every function is <!--]--><!--[3--><!--[-1--><code>query_&lt;table>_&lt;verb></code><!--]--><!--]--><!--[2-->, takes
 <!--]--><!--[3--><!--[-1--><code>deps: QueryDeps</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>{db}</code><!--]--><!--]--><!--[2-->) first, has no audit side effects, and returns the
 affected row (or <!--]--><!--[3--><!--[-1--><code>null</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2--> for not-found) from mutations.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="ts" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_special_keyword">export</span> <span class="token_keyword">const</span> <span class="token_function_variable token_function">query_invite_delete_unclaimed</span> <span class="token_operator">=</span> <span class="token_keyword">async</span> <span class="token_punctuation">(</span>
-	deps<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">QueryDeps</span><span class="token_punctuation">,</span>
-	id<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Uuid</span>
-<span class="token_punctuation">)</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Promise</span><span class="token_operator">&lt;</span><span class="token_capitalized_identifier token_class_name">Invite</span> <span class="token_operator">|</span> <span class="token_keyword">null</span><span class="token_operator">></span> <span class="token_operator">=></span> <span class="token_punctuation">{</span>
+	deps<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">QueryDeps</span></span></span><span class="token_punctuation">,</span>
+	id<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Uuid</span></span></span>
+<span class="token_punctuation">)</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Promise</span><span class="token_operator">&lt;</span><span class="token_type_name token_class_name">Invite</span> <span class="token_operator">|</span> <span class="token_keyword">null</span><span class="token_operator">></span></span></span> <span class="token_operator">=></span> <span class="token_punctuation">{</span>
 	<span class="token_keyword">const</span> row <span class="token_operator">=</span> <span class="token_special_keyword">await</span> deps<span class="token_punctuation">.</span>db<span class="token_punctuation">.</span><span class="token_generic_function"><span class="token_function">query_one</span><span class="token_generic token_class_name"><span class="token_operator">&lt;</span><span class="token_type_name token_class_name">Invite</span><span class="token_operator">></span></span></span><span class="token_punctuation">(</span>
 		<span class="token_template_string"><span class="token_template_punctuation token_string">`</span><span class="token_string">DELETE FROM invite WHERE id = $1 AND claimed_at IS NULL
 		 RETURNING </span><span class="token_interpolation"><span class="token_interpolation_punctuation token_punctuation">${</span><span class="token_function">columns_sql</span><span class="token_punctuation">(</span><span class="token_constant">INVITE_COLUMNS</span><span class="token_punctuation">)</span><span class="token_interpolation_punctuation token_punctuation">}</span></span><span class="token_template_punctuation token_string">`</span></span><span class="token_punctuation">,</span>
@@ -200,16 +200,16 @@ telling you the DDL and the const disagree; decide which is right.<!--]--><!--]-
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 20],
 							data: [null,null,null],

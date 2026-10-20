@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/36.CQkH4hnk.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/36.D5cY3GW0.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -165,7 +165,7 @@ across entries.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3-
 <!--]--><!--[3--><!--[-1--><code>export const blake3_ready = init();</code><!--]--><!--]--><!--[2--> (eager; immediate under sync init,
 awaited in browsers) and
 <!--]--><!--[3--><!--[-1--><code>hash_blake3(data: Uint8Array | BufferSource | string): string</code><!--]--><!--]--><!--[2--> returning
-64-char hex (validated by the <!--]--><!--[3--><!--[-1--><code>Blake3Hash</code><!--]--><!--]--><!--[2--> Zod schema).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>deno compile</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: wasm-bindgen's deno target loads WASM via <!--]--><!--[3--><!--[-1--><code>fetch()</code><!--]--><!--]--><!--[2-->,
+64-char hex (fuz_app's <!--]--><!--[3--><!--[-1--><code>Blake3Hash</code><!--]--><!--]--><!--[2--> Zod schema validates this shape).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>deno compile</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2-->: wasm-bindgen's deno target loads WASM via <!--]--><!--[3--><!--[-1--><code>fetch()</code><!--]--><!--]--><!--[2-->,
 which <!--]--><!--[3--><!--[-1--><code>deno compile</code><!--]--><!--]--><!--[2--> can't do. The build patches the generated JS to
 <!--]--><!--[3--><!--[-1--><code>Deno.readFileSync</code><!--]--><!--]--><!--[2--> and creates a <!--]--><!--[3--><!--[-1--><code>_bg.js</code><!--]--><!--]--><!--[2--> stub for module resolution.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h2 id="multiple-binding-crates-tsv"><!--[--><!--[2-->Multiple Binding Crates (tsv)<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->One binding crate per technology, all exporting identical macro-generated
 signatures so consumers choose by runtime:<!--]--><!--]--><!----></p><!--]--><!--[12--><table><!--[0--><thead><tr><!--[--><!----><th><!--[0--><!--[--><!--[2-->Crate<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Technology<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Target<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Error type<!--]--><!--]--><!--]--><!----></th><!----><!--]--><!----></tr></thead><!--]--><!--[0--><tbody><!--[--><!--[-1--><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>tsv_wasm</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->wasm-bindgen<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Deno, browsers, Node<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>Result&lt;T, JsError></code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>tsv_napi</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->N-API<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Node.js, Bun (native npm path)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->N-API errors<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>tsv_ffi</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->C ABI<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Deno FFI, Python<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->JSON error objects<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--]--></tbody><!--]--></table><!--]--><!--[8--><p><!--[--><!--[2-->All share <!--]--><!--[3--><!--[-1--><code>tsv_arena</code><!--]--><!--]--><!--[2-->. <!--]--><!--[3--><!--[-1--><code>tsv_ffi</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>tsv_napi</code><!--]--><!--]--><!--[2--> override <!--]--><!--[3--><!--[-1--><code>unsafe_code = "allow"</code><!--]--><!--]--><!--[2-->
@@ -211,16 +211,16 @@ runtime (Deno, N-API, npm) plus in-crate FFI/N-API round-trips
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 36],
 							data: [null,null,null],

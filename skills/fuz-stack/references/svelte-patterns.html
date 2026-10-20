@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/31.AfECvjG5.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/31.BYGyJKDO.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -72,7 +72,7 @@ code with <!--]--><!--[3--><!--[-1--><code>$state()</code><!--]--><!--]--><!--[2
 the raw non-reactivity.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></blockquote><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>structuredClone</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>JSON.stringify</code><!--]--><!--]--><!--[2--> (including <!--]--><!--[3--><!--[-1--><code>toJSON()</code><!--]--><!--]--><!--[2-->), and <!--]--><!--[3--><!--[-1--><code>postMessage</code><!--]--><!--]--><!--[2-->
 walk <!--]--><!--[3--><!--[-1--><code>$state()</code><!--]--><!--]--><!--[2--> proxies cleanly.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="state-for-constructor-initialized-fields"><!--[--><!--[3--><!--[-1--><code>$state()!</code><!--]--><!--]--><!--[2--> for constructor-initialized fields<!--]--><!--]--><!----></h3><!----><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_special_keyword">export</span> <span class="token_keyword">class</span> <span class="token_class_name">ThemeState</span> <span class="token_punctuation">{</span>
 	theme<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Theme</span></span></span> <span class="token_operator">=</span> <span class="token_function">$state</span><span class="token_punctuation">()</span><span class="token_operator">!</span><span class="token_punctuation">;</span>
-	<span class="token_function">constructor</span><span class="token_punctuation">(</span>options<span class="token_operator">?:</span> <span class="token_capitalized_identifier token_class_name">ThemeStateOptions</span><span class="token_punctuation">)</span> <span class="token_punctuation">{</span>
+	<span class="token_function">constructor</span><span class="token_punctuation">(</span>options<span class="token_operator">?</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">ThemeStateOptions</span></span></span><span class="token_punctuation">)</span> <span class="token_punctuation">{</span>
 		<span class="token_keyword">this</span><span class="token_punctuation">.</span>theme <span class="token_operator">=</span> options<span class="token_operator">?.</span>theme <span class="token_operator">??</span> default_themes<span class="token_punctuation">[</span><span class="token_number">0</span><span class="token_punctuation">]</span><span class="token_operator">!</span><span class="token_punctuation">;</span>
 	<span class="token_punctuation">}</span>
 <span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Used across fuz_ui state classes and zzz Cell subclasses (older code spells
@@ -89,7 +89,7 @@ Return <!--]--><!--[3--><!--[-1--><code>| undefined</code><!--]--><!--]--><!--[2
 read — a throw render-crashes every consumer; guard at callsites:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_comment">// zzz/thread.svelte.ts</span>
 <span class="token_keyword">readonly</span> model<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Model</span> <span class="token_operator">|</span> <span class="token_keyword">undefined</span></span></span> <span class="token_operator">=</span> $derived<span class="token_punctuation">.</span><span class="token_function">by</span><span class="token_punctuation">(()</span> <span class="token_operator">=></span> <span class="token_keyword">this</span><span class="token_punctuation">.</span>app<span class="token_punctuation">.</span>models<span class="token_punctuation">.</span><span class="token_function">find_by_name</span><span class="token_punctuation">(</span><span class="token_keyword">this</span><span class="token_punctuation">.</span>model_name<span class="token_punctuation">));</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Immutable data-wrapper classes use getters + memoization, not <!--]--><!--[3--><!--[-1--><code>$derived</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></strong><!--]--><!--[2-->
 fuz_ui's <!--]--><!--[3--><!--[-1--><code>Library</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>Module</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>Declaration</code><!--]--><!--]--><!--[2--> were rewritten from <!--]--><!--[3--><!--[-1--><code>readonly x = $derived(…)</code><!--]--><!--]--><!--[2--> to plain getters with <!--]--><!--[3--><!--[-1--><code>#field ??=</code><!--]--><!--]--><!--[2--> caches:<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!---->#repo_url<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">RepoUrl</span> <span class="token_operator">|</span> <span class="token_keyword">undefined</span><span class="token_punctuation">;</span>
-<span class="token_keyword">get</span> <span class="token_function">repo_url</span><span class="token_punctuation">()</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">RepoUrl</span> <span class="token_punctuation">{</span>
+<span class="token_keyword">get</span> <span class="token_function">repo_url</span><span class="token_punctuation">()</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">RepoUrl</span></span></span> <span class="token_punctuation">{</span>
 	<span class="token_special_keyword">return</span> <span class="token_punctuation">(</span><span class="token_keyword">this</span><span class="token_punctuation">.</span>#repo_url <span class="token_operator">??=</span> <span class="token_function">repo_url_parse</span><span class="token_punctuation">(</span><span class="token_keyword">this</span><span class="token_punctuation">.</span>pkg_json<span class="token_punctuation">.</span>repository<span class="token_punctuation">)</span><span class="token_operator">!</span><span class="token_punctuation">);</span>
 <span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Reason: Svelte's server runtime only memoizes a <!--]--><!--[3--><!--[-1--><code>$derived</code><!--]--><!--]--><!--[2--> created during a
 render, so a <!--]--><!--[3--><!--[-1--><code>Library</code><!--]--><!--]--><!--[2--> constructed at module scope (the normal docs-site shape)
@@ -168,7 +168,7 @@ run can be skipped (<!--]--><!--[3--><!--[-1--><code>if (count === 1) return;</c
 <!--]--><!--[3--><!--[-1--><code>(element) => cleanup | void</code><!--]--><!--]--><!--[2-->, typed as <!--]--><!--[3--><!--[-1--><code>Attachment</code><!--]--><!--]--><!--[2--> from <!--]--><!--[3--><!--[-1--><code>svelte/attachments</code><!--]--><!--]--><!--[2-->.
 fuz_ui uses a <!--]--><!--[4--><strong><!--[--><!--[2-->factory<!--]--><!--]--><!----></strong><!--]--><!--[2--> — a function taking config and returning the
 attachment (<!--]--><!--[3--><!--[-1--><code>{@attach my_attachment({...})}</code><!--]--><!--]--><!--[2-->):<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_special_keyword">export</span> <span class="token_keyword">const</span> <span class="token_function_variable token_function">my_attachment</span> <span class="token_operator">=</span>
-	<span class="token_punctuation">(</span>options<span class="token_operator">?:</span> <span class="token_capitalized_identifier token_class_name">MyOptions</span><span class="token_punctuation">)</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Attachment</span><span class="token_operator">&lt;</span><span class="token_capitalized_identifier token_class_name">HTMLElement</span> <span class="token_operator">|</span> <span class="token_capitalized_identifier token_class_name">SVGElement</span><span class="token_operator">></span> <span class="token_operator">=></span>
+	<span class="token_punctuation">(</span>options<span class="token_operator">?</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">MyOptions</span></span></span><span class="token_punctuation">)</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Attachment</span><span class="token_operator">&lt;</span><span class="token_type_name token_class_name">HTMLElement</span> <span class="token_operator">|</span> <span class="token_type_name token_class_name">SVGElement</span><span class="token_operator">></span></span></span> <span class="token_operator">=></span>
 	<span class="token_punctuation">(</span>el<span class="token_punctuation">)</span> <span class="token_operator">=></span> <span class="token_punctuation">{</span>
 		<span class="token_comment">// setup</span>
 		<span class="token_special_keyword">return</span> <span class="token_punctuation">()</span> <span class="token_operator">=></span> <span class="token_punctuation">{</span> <span class="token_comment">/* cleanup */</span> <span class="token_punctuation">};</span>
@@ -253,16 +253,16 @@ Use clsx-style arrays/objects in <!--]--><!--[3--><!--[-1--><code>class</code><!
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 31],
 							data: [null,null,null],

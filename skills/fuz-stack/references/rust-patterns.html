@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/28.CWERhDVe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/28.CGgCUJeL.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -67,7 +67,7 @@ worked precedent throughout).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--
 <!--]--><!--[3--><!--[-1--><code>unsafe_code = "forbid"</code><!--]--><!--]--><!--[2--> + pedantic lints; if it's slow, it's a bug; copious
 <!--]--><!--[3--><!--[-1--><code>// TODO:</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>todo!()</code><!--]--><!--]--><!--[2--> warns workspace-wide — <!--]--><!--[3--><!--[-1--><code>#[allow(clippy::todo)]</code><!--]--><!--]--><!--[2--> with
 justification); <!--]--><!--[3--><!--[-1--><code>///</code><!--]--><!--]--><!--[2--> for public API, <!--]--><!--[3--><!--[-1--><code>//</code><!--]--><!--]--><!--[2--> for implementation notes.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="new-workspace-checklist"><!--[--><!--[2-->New Workspace Checklist<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[0--><ol><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>[workspace.package]</code><!--]--><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>edition = "2024"</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>version = "0.1.0"</code><!--]--><!--]--><!--[2-->,
-<!--]--><!--[3--><!--[-1--><code>license = "MIT"</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>publish = false</code><!--]--><!--]--><!--[2--> (until publishing is real);
+<!--]--><!--[3--><!--[-1--><code>license = "0BSD"</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>publish = false</code><!--]--><!--]--><!--[2--> (until publishing is real);
 <!--]--><!--[3--><!--[-1--><code>resolver = "2"</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Copy the canonical <!--]--><!--[3--><!--[-1--><code>[workspace.lints.*]</code><!--]--><!--]--><!--[2--> block (§Lints); every crate takes
 <!--]--><!--[3--><!--[-1--><code>[lints] workspace = true</code><!--]--><!--]--><!--[2-->. Root <!--]--><!--[3--><!--[-1--><code>clippy.toml</code><!--]--><!--]--><!--[2--> with
 <!--]--><!--[3--><!--[-1--><code>allow-{unwrap,expect,panic}-in-tests = true</code><!--]--><!--]--><!--[2-->. A workspace that resolves
@@ -77,8 +77,9 @@ only with a driving need.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[
 frequently-typed binaries (§Project Structure).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Errors from day one: <!--]--><!--[3--><!--[-1--><code>thiserror</code><!--]--><!--]--><!--[2--> library enums, a binary wrapper error,
 <!--]--><!--[3--><!--[-1--><code>fn main() -> ExitCode</code><!--]--><!--]--><!--[2-->; pick and test the exit-code dialect early (§CLI
 Patterns).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Dev automation: spine-consuming workspaces add an <!--]--><!--[3--><!--[-1--><code>xtask</code><!--]--><!--]--><!--[2--> crate wrapping
-<!--]--><!--[3--><!--[-1--><code>check-release</code><!--]--><!--]--><!--[2--> (./rust-spine); binding/library repos may drive builds
-through a script runner instead (tsv and blake3 use Deno tasks, no xtask).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Deps from <!--]--><!--[7--><!--[1--><a href="/skills/fuz-stack/references/rust-dependencies"><!--[--><!--[2-->./rust-dependencies<!--]--><!--]--><!----></a><!--]--><!--]--><!--[2-->, shared via <!--]--><!--[3--><!--[-1--><code>[workspace.dependencies]</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ol><!--]--><!--]--><!--[14--><!----><h2 id="lints"><!--[--><!--[2-->Lints<!--]--><!--]--><!----></h2><!----><!--]--><!--[15--><!--[0--><!--[--><code data-lang="toml" class="svelte-jqsy8a"><!--[0-->[workspace.lints.rust]
+<!--]--><!--[3--><!--[-1--><code>check-release</code><!--]--><!--]--><!--[2--> (./rust-spine); mixed TS + Rust repos put the one
+local check for both halves in <!--]--><!--[3--><!--[-1--><code>xtask</code><!--]--><!--]--><!--[2--> (gro's <!--]--><!--[3--><!--[-1--><code>cargo xtask check</code><!--]--><!--]--><!--[2-->). tsv and
+blake3 still drive builds through Deno tasks; new repos don't add Deno.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Deps from <!--]--><!--[7--><!--[1--><a href="/skills/fuz-stack/references/rust-dependencies"><!--[--><!--[2-->./rust-dependencies<!--]--><!--]--><!----></a><!--]--><!--]--><!--[2-->, shared via <!--]--><!--[3--><!--[-1--><code>[workspace.dependencies]</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ol><!--]--><!--]--><!--[14--><!----><h2 id="lints"><!--[--><!--[2-->Lints<!--]--><!--]--><!----></h2><!----><!--]--><!--[15--><!--[0--><!--[--><code data-lang="toml" class="svelte-jqsy8a"><!--[0-->[workspace.lints.rust]
 unsafe_code = "forbid"
 missing_debug_implementations = "warn"
 trivial_casts = "warn"
@@ -301,8 +302,8 @@ trait is RPITIT and never consumed as <!--]--><!--[3--><!--[-1--><code>dyn</code
 wrapper must forward each backend's provided-method overrides (streaming
 <!--]--><!--[3--><!--[-1--><code>download_to_file</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>upload_file</code><!--]--><!--]--><!--[2-->, bounded <!--]--><!--[3--><!--[-1--><code>download_capped</code><!--]--><!--]--><!--[2-->) or it silently
 regresses every backend to the default.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>zzz_server::Provider</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>zap_core::Connection</code><!--]--><!--]--><!--[2--> (local/ssh/mock) — async
-methods matching on <!--]--><!--[3--><!--[-1--><code>self</code><!--]--><!--]--><!--[2-->, no <!--]--><!--[3--><!--[-1--><code>#[async_trait]</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>zap_core::EventHandler</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>Null</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>Stdout</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>Masking</code><!--]--><!--]--><!--[2--> decorator / <!--]--><!--[3--><!--[-1--><code>Multi</code><!--]--><!--]--><!--[2-->
-fan-out / test-only <!--]--><!--[3--><!--[-1--><code>Capture</code><!--]--><!--]--><!--[2-->) — sync <!--]--><!--[3--><!--[-1--><code>emit</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>zap_types::ResourceKind</code><!--]--><!--]--><!--[2--> — the enum lives in the pure types crate; dispatch
+methods matching on <!--]--><!--[3--><!--[-1--><code>self</code><!--]--><!--]--><!--[2-->, no <!--]--><!--[3--><!--[-1--><code>#[async_trait]</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>zap_core::EventHandler</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>Null</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>Stdout</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>Masking</code><!--]--><!--]--><!--[2--> decorator /
+test-only <!--]--><!--[3--><!--[-1--><code>Capture</code><!--]--><!--]--><!--[2-->) — sync <!--]--><!--[3--><!--[-1--><code>emit</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>zap_types::ResourceKind</code><!--]--><!--]--><!--[2--> — the enum lives in the pure types crate; dispatch
 is parallel exhaustive matches in free functions (detect pass, execute), so a
 new kind is a compile error in both.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->A single-impl <!--]--><!--[3--><!--[-1--><code>Arc&lt;dyn Trait></code><!--]--><!--]--><!--[2--> is a deferred enum<!--]--><!--]--><!----></strong><!--]--><!--[2--> — prefer concrete or
 enum until a second impl or test mock exists. Promotion is real when the swap
@@ -432,7 +433,24 @@ isolation.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="security">
 ops (open with <!--]--><!--[3--><!--[-1--><code>O_NOFOLLOW</code><!--]--><!--]--><!--[2-->, check permissions on the fd); <!--]--><!--[3--><!--[-1--><code>0o600</code><!--]--><!--]--><!--[2--> files,
 <!--]--><!--[3--><!--[-1--><code>0o700</code><!--]--><!--]--><!--[2--> directories — and deliberately <!--]--><!--[5--><em><!--[--><!--[2-->not<!--]--><!--]--><!----></em><!--]--><!--[2--> for non-secret state (a
 daemon-info file readable by tooling is <!--]--><!--[3--><!--[-1--><code>0o644</code><!--]--><!--]--><!--[2--> on purpose; state the choice).
-Supply-chain isolation is a crate-graph property (./rust-dependencies).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->One <!--]--><!--[3--><!--[-1--><code>$HOME</code><!--]--><!--]--><!--[2--> lookup.<!--]--><!--]--><!----></strong><!--]--><!--[2--> A home-relative path resolves through
+Supply-chain isolation is a crate-graph property (./rust-dependencies).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Kernel backstop, Linux-only, under the policy.<!--]--><!--]--><!----></strong><!--]--><!--[2--> A process whose job is
+to run untrusted bytes without spawning or reaching the network (fuzi's
+install, gro's confined eval) installs a seccomp-bpf denylist first thing in
+<!--]--><!--[3--><!--[-1--><code>main()</code><!--]--><!--]--><!--[2-->, before any thread exists, so every later thread inherits it:
+<!--]--><!--[3--><!--[-1--><code>KillProcess</code><!--]--><!--]--><!--[2--> on <!--]--><!--[3--><!--[-1--><code>execve</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>execveat</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>ptrace</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>fork</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>vfork</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>socket</code><!--]--><!--]--><!--[2--> by
+address family and <!--]--><!--[3--><!--[-1--><code>connect</code><!--]--><!--]--><!--[2--> refused where no net is granted, <!--]--><!--[3--><!--[-1--><code>io_uring_*</code><!--]--><!--]--><!--[2-->
+denied outright (its operations bypass seccomp), <!--]--><!--[3--><!--[-1--><code>clone</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>clone3</code><!--]--><!--]--><!--[2--> <!--]--><!--[4--><strong><!--[--><!--[2-->allowed<!--]--><!--]--><!----></strong><!--]--><!--[2-->
+(glibc creates threads with <!--]--><!--[3--><!--[-1--><code>clone3</code><!--]--><!--]--><!--[2-->; a fork-shaped child inherits the filter
+and still cannot <!--]--><!--[3--><!--[-1--><code>execve</code><!--]--><!--]--><!--[2-->). Where a read scope exists, Landlock sits beside
+it (read-only roots, no write, no execute, TCP denied) with the same
+before-threads rule, and the process warms the <!--]--><!--[3--><!--[-1--><code>/proc</code><!--]--><!--]--><!--[2--> reads the runtime
+needs (<!--]--><!--[3--><!--[-1--><code>available_parallelism</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>pthread_getattr_np</code><!--]--><!--]--><!--[2-->) ahead of restricting.
+A denylist first, a full syscall allowlist as the hardened endpoint. The
+policy (no-scripts, the grant set) stays the primary control; the filter
+turns "true if the code is correct" into "true even if it has a bug". Fail
+loud: a kernel without the wall refuses the confined mode unless an explicit
+flag opts out, naming the missing wall. <!--]--><!--[3--><!--[-1--><code>seccompiler</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>landlock</code><!--]--><!--]--><!--[2--> are the
+approved crates (./rust-dependencies).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->One <!--]--><!--[3--><!--[-1--><code>$HOME</code><!--]--><!--]--><!--[2--> lookup.<!--]--><!--]--><!----></strong><!--]--><!--[2--> A home-relative path resolves through
 <!--]--><!--[3--><!--[-1--><code>fuz_sys::home_dir</code><!--]--><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>$HOME</code><!--]--><!--]--><!--[2-->, else the password database, and only ever
 non-empty and absolute — never <!--]--><!--[3--><!--[-1--><code>std::env::var("HOME")</code><!--]--><!--]--><!--[2--> or
 <!--]--><!--[3--><!--[-1--><code>std::env::home_dir</code><!--]--><!--]--><!--[2--> (which reads an empty <!--]--><!--[3--><!--[-1--><code>HOME</code><!--]--><!--]--><!--[2--> as unset and substitutes
@@ -500,16 +518,16 @@ logging; <!--]--><!--[3--><!--[-1--><code>--json</code><!--]--><!--]--><!--[2-->
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 28],
 							data: [null,null,null],

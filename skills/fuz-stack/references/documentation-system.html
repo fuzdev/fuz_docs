@@ -23,14 +23,14 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.BsK_mPzw.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.koH4-OYG.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BblgKVPF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
@@ -42,13 +42,13 @@
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/22.C7daWU75.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D5dimfHS.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Cjg-j22L.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/B4lxV4Hc.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HMQLSD_s.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/22.69mGMQrW.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.BJIkaSuh.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/SidebarLayout.B77E2Fia.css" rel="stylesheet">
@@ -78,13 +78,13 @@ lookup maps (<!--]--><!--[3--><!--[-1--><code>module_by_path</code><!--]--><!--]
 autolink because fuz_ui injects <!--]--><!--[3--><!--[-1--><code>DocsLink</code><!--]--><!--]--><!--[2--> as mdz's inline-code renderer,
 resolving against the <!--]--><!--[3--><!--[-1--><code>Library</code><!--]--><!--]--><!--[2--> (./mdz).<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->There is no committed <!--]--><!--[3--><!--[-1--><code>library.gen.ts</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>library.json</code><!--]--><!--]--><!--[2-->; the only committed
 artifact is the hand-written <!--]--><!--[3--><!--[-1--><code>src/routes/library.ts</code><!--]--><!--]--><!--[2--> glue.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="tome-system"><!--[--><!--[2-->Tome System<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->A <!--]--><!--[4--><strong><!--[--><!--[2-->Tome<!--]--><!--]--><!----></strong><!--]--><!--[2--> is a documentation page (<!--]--><!--[3--><!--[-1--><code>@fuzdev/fuz_ui/tome.ts</code><!--]--><!--]--><!--[2-->):<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="typescript" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_keyword">interface</span> <span class="token_class_name">Tome</span> <span class="token_punctuation">{</span>
-	slug<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span> <span class="token_comment">// URL segment + lookup key</span>
-	title<span class="token_operator">?:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span> <span class="token_comment">// display label; falls back to slug</span>
-	category<span class="token_operator">:</span> <span class="token_builtin">string</span><span class="token_punctuation">;</span> <span class="token_comment">// sidebar grouping (fuz_ui: guide/helpers/components; fuz_css: guide/systems/styles)</span>
-	<span class="token_capitalized_identifier token_class_name">Component</span><span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Component</span><span class="token_operator">&lt;</span><span class="token_builtin">any</span><span class="token_punctuation">,</span> <span class="token_builtin">any</span><span class="token_operator">></span><span class="token_punctuation">;</span>
-	related_tomes<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span> <span class="token_comment">// other tome slugs</span>
-	related_modules<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span> <span class="token_comment">// source files in /docs/api/ ('theme_state.svelte.ts')</span>
-	related_declarations<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span><span class="token_punctuation">;</span> <span class="token_comment">// exports in API docs ('ThemeRoot')</span>
+	slug<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_builtin">string</span></span></span><span class="token_punctuation">;</span> <span class="token_comment">// URL segment + lookup key</span>
+	title<span class="token_operator">?</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_builtin">string</span></span></span><span class="token_punctuation">;</span> <span class="token_comment">// display label; falls back to slug</span>
+	category<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_builtin">string</span></span></span><span class="token_punctuation">;</span> <span class="token_comment">// sidebar grouping (fuz_ui: guide/helpers/components; fuz_css: guide/systems/styles)</span>
+	<span class="token_capitalized_identifier token_class_name">Component</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Component</span><span class="token_operator">&lt;</span><span class="token_builtin">any</span><span class="token_punctuation">,</span> <span class="token_builtin">any</span><span class="token_operator">></span></span></span><span class="token_punctuation">;</span>
+	related_tomes<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span></span></span><span class="token_punctuation">;</span> <span class="token_comment">// other tome slugs</span>
+	related_modules<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span></span></span><span class="token_punctuation">;</span> <span class="token_comment">// source files in /docs/api/ ('theme_state.svelte.ts')</span>
+	related_declarations<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">Array</span><span class="token_operator">&lt;</span><span class="token_builtin">string</span><span class="token_operator">></span></span></span><span class="token_punctuation">;</span> <span class="token_comment">// exports in API docs ('ThemeRoot')</span>
 <span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->Helpers from <!--]--><!--[3--><!--[-1--><code>tome.ts</code><!--]--><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>tome_get_by_slug(slug)</code><!--]--><!--]--><!--[2--> (throws if missing),
 <!--]--><!--[3--><!--[-1--><code>tome_to_pathname(tome, docs_path?, hash?)</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>tome_to_title(tome)</code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code>tomes_context</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>() => Map&lt;string, Tome></code><!--]--><!--]--><!--[2-->, set by <!--]--><!--[3--><!--[-1--><code>Docs</code><!--]--><!--]--><!--[2-->), <!--]--><!--[3--><!--[-1--><code>tome_context</code><!--]--><!--]--><!--[2-->
@@ -119,7 +119,7 @@ resolve<span class="token_operator">:</span> <span class="token_punctuation">{</
 <span class="token_comment">/// &lt;reference types="svelte-docinfo/virtual-svelte-docinfo.js" /></span>
 <span class="token_keyword">declare</span> module <span class="token_string">'virtual:pkg.json'</span> <span class="token_punctuation">{</span>
 	<span class="token_special_keyword">import</span> <span class="token_import_type_keyword token_special_keyword">type</span> <span class="token_punctuation">{</span> <span class="token_capitalized_identifier token_class_name">PkgJson</span> <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'@fuzdev/fuz_util/pkg_json.ts'</span><span class="token_punctuation">;</span>
-	<span class="token_keyword">const</span> pkg_json<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">PkgJson</span><span class="token_punctuation">;</span>
+	<span class="token_keyword">const</span> pkg_json<span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_type_name token_class_name">PkgJson</span></span></span><span class="token_punctuation">;</span>
 	<span class="token_special_keyword">export</span> <span class="token_special_keyword">default</span> pkg_json<span class="token_punctuation">;</span>
 <span class="token_punctuation">}</span><!----><!--]--></code><!--]--><!--]--><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Footgun<!--]--><!--]--><!----></strong><!--]--><!--[2-->: if a project widens the exposed <!--]--><!--[3--><!--[-1--><code>package.json</code><!--]--><!--]--><!--[2--> fields, the
 <!--]--><!--[4--><strong><!--[--><!--[2-->same <!--]--><!--[3--><!--[-1--><code>keys</code><!--]--><!--]--><!--[2--> set must reach both<!--]--><!--]--><!----></strong><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>vite_plugin_pkg_json</code><!--]--><!--]--><!--[2--> and
@@ -130,7 +130,7 @@ today.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h3 id="2-root-layout-
 <!--]--><!--[4--><strong><!--[--><!--[2-->Do not build the <!--]--><!--[3--><!--[-1--><code>Library</code><!--]--><!--]--><!--[2--> here<!--]--><!--]--><!----></strong><!--]--><!--[2--> — that pulls the analyzed <!--]--><!--[3--><!--[-1--><code>modules</code><!--]--><!--]--><!--[2--> into
 the root chunk and instantiates <!--]--><!--[3--><!--[-1--><code>Library</code><!--]--><!--]--><!--[2--> on every page.<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="svelte" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;</span>script</span> <span class="token_attr_name">lang</span><span class="token_attr_value"><span class="token_punctuation token_attr_equals">=</span><span class="token_punctuation token_attr_quote">"</span>ts<span class="token_punctuation token_attr_quote">"</span></span><span class="token_punctuation token_tag_punctuation">></span></span><span class="token_script"><span class="token_lang_ts">
 	<span class="token_special_keyword">import</span> pkg_json <span class="token_special_keyword">from</span> <span class="token_string">'virtual:pkg.json'</span><span class="token_punctuation">;</span>
-	<span class="token_keyword">const</span> <span class="token_punctuation">{</span> children <span class="token_punctuation">}</span><span class="token_operator">:</span> <span class="token_punctuation">{</span> children<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Snippet</span> <span class="token_punctuation">}</span> <span class="token_operator">=</span> <span class="token_function">$props</span><span class="token_punctuation">();</span>
+	<span class="token_keyword">const</span> <span class="token_punctuation">{</span> children <span class="token_punctuation">}</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_punctuation">{</span> children<span class="token_operator">:</span> <span class="token_type_name token_class_name">Snippet</span> <span class="token_punctuation">}</span></span></span> <span class="token_operator">=</span> <span class="token_function">$props</span><span class="token_punctuation">();</span>
 	site_context<span class="token_punctuation">.</span><span class="token_function">set</span><span class="token_punctuation">(</span><span class="token_keyword">new</span> <span class="token_class_name">SiteState</span><span class="token_punctuation">({</span> icon<span class="token_operator">:</span> logo_my_project<span class="token_punctuation">,</span> pkg_json <span class="token_punctuation">}));</span>
 </span></span><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;/</span>script</span><span class="token_punctuation token_tag_punctuation">></span></span>
 
@@ -144,7 +144,7 @@ the root chunk and instantiates <!--]--><!--[3--><!--[-1--><code>Library</code><
 	<span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> <span class="token_capitalized_identifier token_class_name">Library</span><span class="token_punctuation">,</span> library_context <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'@fuzdev/fuz_ui/library.svelte.ts'</span><span class="token_punctuation">;</span>
 	<span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> tomes <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'#routes/docs/tomes.ts'</span><span class="token_punctuation">;</span>
 	<span class="token_special_keyword">import</span> <span class="token_punctuation">{</span> library_json <span class="token_punctuation">}</span> <span class="token_special_keyword">from</span> <span class="token_string">'#routes/library.ts'</span><span class="token_punctuation">;</span>
-	<span class="token_keyword">const</span> <span class="token_punctuation">{</span> children <span class="token_punctuation">}</span><span class="token_operator">:</span> <span class="token_punctuation">{</span> children<span class="token_operator">:</span> <span class="token_capitalized_identifier token_class_name">Snippet</span> <span class="token_punctuation">}</span> <span class="token_operator">=</span> <span class="token_function">$props</span><span class="token_punctuation">();</span>
+	<span class="token_keyword">const</span> <span class="token_punctuation">{</span> children <span class="token_punctuation">}</span><span class="token_type_annotation"><span class="token_:">:</span> <span class="token_type"><span class="token_punctuation">{</span> children<span class="token_operator">:</span> <span class="token_type_name token_class_name">Snippet</span> <span class="token_punctuation">}</span></span></span> <span class="token_operator">=</span> <span class="token_function">$props</span><span class="token_punctuation">();</span>
 	<span class="token_keyword">const</span> library <span class="token_operator">=</span> <span class="token_keyword">new</span> <span class="token_class_name">Library</span><span class="token_punctuation">(</span>library_json<span class="token_punctuation">);</span>
 	library_context<span class="token_punctuation">.</span><span class="token_function">set</span><span class="token_punctuation">(()</span> <span class="token_operator">=></span> library<span class="token_punctuation">);</span>
 </span></span><span class="token_tag"><span class="token_tag"><span class="token_punctuation token_tag_punctuation">&lt;/</span>script</span><span class="token_punctuation token_tag_punctuation">></span></span>
@@ -196,16 +196,16 @@ see (<!--]--><!--[3--><!--[-1--><code>// returns a Uint8Array</code><!--]--><!--
 			
 			<script>
 				{
-					__sveltekit_21d234 = {
+					__sveltekit_17h70x6 = {
 						base: "",
-						version: "5ec20f64ebd41d17dcb8949459b699c4a513ee66"
+						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_21d234);
-						const app = await import("/_app/immutable/entry/app.BsK_mPzw.js");
+						kit.init(__sveltekit_17h70x6);
+						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 22],
 							data: [null,null,null],
