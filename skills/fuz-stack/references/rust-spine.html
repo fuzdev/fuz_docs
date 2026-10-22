@@ -23,7 +23,7 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.MdLKrMjO.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.DIgNohey.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
@@ -32,21 +32,21 @@
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.BpwWpeaS.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.BJoivtZT.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D7obSWfs.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/C00ztSRU.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/D7mbXC1Z.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/UfIDI-FR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dg4uJei1.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BPVwp-J3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/B_qJcHIr.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CeWgHvem.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/gjYyGhy3.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/30.BCokIPvN.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/30.Bh4QSJ6s.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/Sa5R3kdh.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/wa3_gRR7.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
 		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
@@ -112,7 +112,7 @@ otherwise exhaust the per-IP budget). Building through the mode keeps a newly
 wired surface from staying enforced while the rest is disabled, and any process
 that nulls a limiter prints a startup banner (same fail-loud shape as
 <!--]--><!--[3--><!--[-1--><code>TestingArgon2idHasher</code><!--]--><!--]--><!--[2-->). Consumer-owned limiters that aren't spine surfaces
-(visiones's upload caps) stay live in both modes.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Upkeep runs beside the server, owned by <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Every spine server
+(an image-upload cap, say) stay live in both modes.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Upkeep runs beside the server, owned by <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Every spine server
 schedules `fuz_auth::spawn_auth_cleanup(AuthCleanupOptions { pool, audit,
 socket_revoker }, DEFAULT_AUTH_CLEANUP_INTERVAL, shutdown.clone())` — expired
 sessions deleted and their connections closed, expired role-grant offers
@@ -128,7 +128,7 @@ Where a consumer splits out a <!--]--><!--[3--><!--[-1--><code>build_router</cod
 revocation handlers already hold (<!--]--><!--[3--><!--[-1--><code>RealtimeRevoker</code><!--]--><!--]--><!--[2--> where an SSE stream sits
 beside the WebSocket): a sweep with nothing to close through strands the swept
 sessions' connections. A consumer's own sweep goes on the same loop
-(<!--]--><!--[3--><!--[-1--><code>fuz_http::spawn_periodic</code><!--]--><!--]--><!--[2-->, cord's invite sweep) — two or more tasks collect
+(<!--]--><!--[3--><!--[-1--><code>fuz_http::spawn_periodic</code><!--]--><!--]--><!--[2-->, an invite-expiry sweep) — two or more tasks collect
 in a <!--]--><!--[3--><!--[-1--><code>spawn_upkeep(…) -> [JoinHandle&lt;()>; N]</code><!--]--><!--]--><!--[2-->. <!--]--><!--[3--><!--[-1--><code>testing_spine_stub</code><!--]--><!--]--><!--[2--> schedules
 none.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->The daemon-token keeper wiring (<!--]--><!--[3--><!--[-1--><code>BootstrapKeeperResolved</code><!--]--><!--]--><!--[2--> + boot-time
 <!--]--><!--[3--><!--[-1--><code>query_keeper_account_id</code><!--]--><!--]--><!--[2-->) is spine-owned in <!--]--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> — don't re-implement.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="json-rpc-envelope-fuz_http-owns-it"><!--[--><!--[2-->JSON-RPC envelope — <!--]--><!--[3--><!--[-1--><code>fuz_http</code><!--]--><!--]--><!--[2--> owns it<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>fuz_http</code><!--]--><!--]--><!--[2--> owns the error constructors (<!--]--><!--[3--><!--[-1--><code>invalid_params(detail, reason)</code><!--]--><!--]--><!--[2-->,
@@ -146,7 +146,7 @@ magic number.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="env-loa
 <!--]--><!--[3--><!--[-1--><code>from_vars(get: impl Fn(&amp;str) -> Option&lt;String>)</code><!--]--><!--]--><!--[2--> so tests inject a map —
 <!--]--><!--[3--><!--[-1--><code>fuz_forge_server</code><!--]--><!--]--><!--[2-->'s env struct is the exemplar, including a test that
 <!--]--><!--[5--><em><!--[--><!--[2-->rejects retired var names<!--]--><!--]--><!----></em><!--]--><!--[2-->. Audit for stray <!--]--><!--[3--><!--[-1--><code>std::env::var</code><!--]--><!--]--><!--[2--> in router code
-(both consumers still have a few).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Fail loud, not just closed<!--]--><!--]--><!----></strong><!--]--><!--[2-->: security-consequential misconfig refuses to
+(consumers still have a few).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Fail loud, not just closed<!--]--><!--]--><!----></strong><!--]--><!--[2-->: security-consequential misconfig refuses to
 boot — an empty <!--]--><!--[3--><!--[-1--><code>FUZ_ALLOWED_ORIGINS</code><!--]--><!--]--><!--[2--> (empty allowlist = allow-all;
 <!--]--><!--[3--><!--[-1--><code>fuz_http::require_non_empty_origins</code><!--]--><!--]--><!--[2-->), a <!--]--><!--[5--><em><!--[--><!--[2-->malformed<!--]--><!--]--><!----></em><!--]--><!--[2--> trusted-proxy list
 (unset → loopback is fine), missing/weak cookie keys, a failed
@@ -155,8 +155,8 @@ boot — an empty <!--]--><!--[3--><!--[-1--><code>FUZ_ALLOWED_ORIGINS</code><!-
 ports on the same host, so the spine's JSON handlers refuse a <!--]--><!--[3--><!--[-1--><code>POST</code><!--]--><!--]--><!--[2--> with no
 <!--]--><!--[3--><!--[-1--><code>Content-Type</code><!--]--><!--]--><!--[2--> or a form / text one (415 — a request a browser sends
 cross-origin with no preflight). A loopback daemon (zzz is the exemplar)
-also wraps its whole router in <!--]--><!--[3--><!--[-1--><code>fuz_http::host_layer</code><!--]--><!--]--><!--[2--> (DNS rebinding) and,
-when it takes no form uploads, <!--]--><!--[3--><!--[-1--><code>simple_request_layer</code><!--]--><!--]--><!--[2-->, and lists exact
+also sets <!--]--><!--[3--><!--[-1--><code>StackOptions::host_gate</code><!--]--><!--]--><!--[2--> (DNS rebinding) and, on groups that
+take no form uploads, <!--]--><!--[3--><!--[-1--><code>RouteGroup::refuse_simple_requests</code><!--]--><!--]--><!--[2-->, and lists exact
 origins — the origin allowlist is the only gate on the never-preflighted
 WebSocket upgrade, so <!--]--><!--[3--><!--[-1--><code>http://localhost:*</code><!--]--><!--]--><!--[2--> admits every local page.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Booleans<!--]--><!--]--><!----></strong><!--]--><!--[2--> via <!--]--><!--[3--><!--[-1--><code>fuz_sys::env::parse_stringbool</code><!--]--><!--]--><!--[2--> (the <!--]--><!--[3--><!--[-1--><code>z.stringbool()</code><!--]--><!--]--><!--[2-->
 closed set; unknown values error).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Secret-shaped names<!--]--><!--]--><!----></strong><!--]--><!--[2--> carry the <!--]--><!--[3--><!--[-1--><code>SECRET_*</code><!--]--><!--]--><!--[2--> prefix — one contract across TS
@@ -221,7 +221,7 @@ the runtime owns the socket.<!--]--><!--]--><!----></p><!--]--><!--]--><!----></
 namespace stays small (the forge's is one token-policy table).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Loopback-gated internal routes<!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>/internal/*</code><!--]--><!--]--><!--[2--> checks the
 <!--]--><!--[3--><!--[-1--><code>ConnectInfo&lt;SocketAddr></code><!--]--><!--]--><!--[2--> peer is loopback <!--]--><!--[5--><em><!--[--><!--[2-->and<!--]--><!--]--><!----></em><!--]--><!--[2--> a per-resource secret —
 X-Forwarded-For can't fake the peer.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Boot errors carry the CLI exit-code policy<!--]--><!--]--><!----></strong><!--]--><!--[2-->: a <!--]--><!--[3--><!--[-1--><code>StartupError</code><!--]--><!--]--><!--[2--> with
-<!--]--><!--[3--><!--[-1--><code>exit_code()</code><!--]--><!--]--><!--[2--> mapping <!--]--><!--[3--><!--[-1--><code>Config → 2</code><!--]--><!--]--><!--[2-->, else <!--]--><!--[3--><!--[-1--><code>1</code><!--]--><!--]--><!--[2--> (./rust-patterns §CLI Patterns).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Subprocess harness<!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>SpawnOptions</code><!--]--><!--]--><!--[2--> + <!--]--><!--[3--><!--[-1--><code>spawn_collect</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>spawn_streaming</code><!--]--><!--]--><!--[2-->
+<!--]--><!--[3--><!--[-1--><code>exit_code()</code><!--]--><!--]--><!--[2--> mapping <!--]--><!--[3--><!--[-1--><code>Config → 2</code><!--]--><!--]--><!--[2-->, else <!--]--><!--[3--><!--[-1--><code>1</code><!--]--><!--]--><!--[2--> (./rust-patterns §CLI Patterns).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Subprocess harness<!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>spawn_collect</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>spawn_streaming</code><!--]--><!--]--><!--[2--> (with their <!--]--><!--[3--><!--[-1--><code>Spawn*Options</code><!--]--><!--]--><!--[2-->)
 (env-isolating spawn, capped output drain) lives in <!--]--><!--[3--><!--[-1--><code>fuz_forge_server</code><!--]--><!--]--><!--[2--> —
 local until a second consumer needs it; the promotion target is a spine-free
 leaf crate.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h2 id="daemon-lifecycle-two-layers"><!--[--><!--[2-->Daemon lifecycle — two layers<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[0--><ol><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Server-side graceful shutdown is shared.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Signal → <!--]--><!--[3--><!--[-1--><code>CancellationToken</code><!--]--><!--]--><!--[2--> is
@@ -307,16 +307,16 @@ are crates, not features: <!--]--><!--[7--><!--[1--><a href="/skills/fuz-stack/r
 			
 			<script>
 				{
-					__sveltekit_17h70x6 = {
+					__sveltekit_1o6welm = {
 						base: "",
-						version: "aa0b4ff7d906b78f5001ff441f6df810c93a79e3"
+						version: "8d7e6912d084cd2738665c3281f2fcf7b4d61d7d"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_17h70x6);
-						const app = await import("/_app/immutable/entry/app.MdLKrMjO.js");
+						kit.init(__sveltekit_1o6welm);
+						const app = await import("/_app/immutable/entry/app.DIgNohey.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 30],
 							data: [null,null,null],
