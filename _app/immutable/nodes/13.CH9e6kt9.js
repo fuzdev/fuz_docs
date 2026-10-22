@@ -1,0 +1,1 @@
+export{t as component}from"../chunks/CGc-JF3T.js";
