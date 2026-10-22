@@ -145,8 +145,8 @@ magic number.
   ports on the same host, so the spine's JSON handlers refuse a `POST` with no
   `Content-Type` or a form / text one (415 — a request a browser sends
   cross-origin with no preflight). A loopback daemon (zzz is the exemplar)
-  also wraps its whole router in `fuz_http::host_layer` (DNS rebinding) and,
-  when it takes no form uploads, `simple_request_layer`, and lists exact
+  also sets `StackOptions::host_gate` (DNS rebinding) and, on groups that
+  take no form uploads, `RouteGroup::refuse_simple_requests`, and lists exact
   origins — the origin allowlist is the only gate on the never-preflighted
   WebSocket upgrade, so `http://localhost:*` admits every local page.
 - **Booleans** via `fuz_sys::env::parse_stringbool` (the `z.stringbool()`
