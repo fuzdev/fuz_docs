@@ -48,7 +48,7 @@
 				</tr>
 				<tr>
 					<td><TomeLink slug="grimoire" /></td>
-					<td>Cross-repo coordination with lore, quests, and skills</td>
+					<td>Cross-repo coordination with lore, quests, and arcs</td>
 				</tr>
 			</tbody>
 		</table>

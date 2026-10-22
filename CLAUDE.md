@@ -109,7 +109,7 @@ Each skill lives in `skills/<skill-name>/` following the
 | Skill       | Path                | Purpose                                                                        |
 | ----------- | ------------------- | ------------------------------------------------------------------------------ |
 | `fuz-stack` | `skills/fuz-stack/` | Coding conventions and patterns for `@fuzdev` TypeScript and Svelte 5 projects |
-| `grimoire`  | `skills/grimoire/`  | Grimoire pattern: lore, quests, and skills for cross-repo coordination         |
+| `grimoire`  | `skills/grimoire/`  | Grimoire pattern: lore, quests, and arcs for cross-repo coordination           |
 
 ### Skill structure
 
@@ -139,7 +139,7 @@ skills/
 │   │   ├── wasm-patterns.md           # WASM/N-API build targets, WIT, wasm-bindgen, component model (blake3, tsv)
 │   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
 └── grimoire/
-    └── SKILL.md                       # Grimoire pattern (lore, quests, skills)
+    └── SKILL.md                       # Grimoire pattern (lore, quests, arcs)
 ```
 
 ## Project standards
