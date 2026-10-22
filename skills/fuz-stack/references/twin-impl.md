@@ -51,8 +51,8 @@ makes it cheap.
 - **A declared difference is a capability flag**, not a branch on the backend's
   name or a hand-skipped case. Each backend config carries a
   `BackendCapabilities`; a suite gates a case with `test_if(capabilities.X, …)`
-  (`ws_handshake_pipelining`, `ws_account_actions`) or forks one assertion on
-  the flag (`ws_self_revocation_reply`). Every flag is required, so a
+  (`ws_handshake_pipelining`, `ws_account_actions`) or picks how one case reads
+  a result on the flag (`ws_refusal_body`). Every flag is required, so a
   full capabilities literal — the family defaults, a consumer's hand-written
   one — fails to compile until it declares a new flag; a preset spread off a
   family default inherits that default.

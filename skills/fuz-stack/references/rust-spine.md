@@ -5,8 +5,8 @@ description: Spine crate map, consumer servers, env, daemon lifecycle
 # Rust Spine & Consumer Servers
 
 **Applies to**: the fuz workspace's spine crates and the servers consuming
-them — `zzz_server`, the other consumer servers, and the test-only
-`testing_spine_stub`.
+them — `zzz_server`, `fuz_forge_server`, the other consumer servers, and the
+test-only `testing_spine_stub`.
 The spine is the Rust twin of `fuz_app`'s TS backend (./twin-impl.md).
 Consumers take the spine as **path deps to a sibling checkout of the fuz
 repo** — not git URLs, not vendoring. Shape/idiom conventions:
@@ -37,10 +37,9 @@ repo's concern):
 - **Tooling** — `fuz_audit` (dep-graph audit), `fuz_testing` (test-only
   impls, e.g. `TestingArgon2idHasher` — never shippable).
 
-Consumers also name `fuz_db_admin`, `fuz_release`, `fuz_sign` (an artifact
-host) and `fuz_pty` (zzz). The storage-vs-serving splits and the
-`fuz_sys`/`fuz_home` leaf split are enforced by layering rules (§xtask &
-check-release).
+Consumers also name `fuz_db_admin`, `fuz_release`, `fuz_sign` (the forge) and
+`fuz_pty` (zzz). The storage-vs-serving splits and the `fuz_sys`/`fuz_home`
+leaf split are enforced by layering rules (§xtask & check-release).
 
 ## Server lifecycle — `run_app`
 
@@ -76,7 +75,7 @@ and override only the port), `drain_timeout: Duration` passed
 `fuz_http::DEFAULT_DRAIN_TIMEOUT` (10 s), and
 `rate_limiters: fuz_auth::RateLimiterMode`. Remaining fields are per-consumer
 (zzz adds `force_test_actions`) — don't force one struct across consumers; bind
-env-var names are per-consumer too (`PORT`/`HOST` in one, `ZZZ_PORT` in zzz).
+env-var names are per-consumer too (`PORT`/`HOST` forge, `ZZZ_PORT` zzz).
 
 **Every spine rate limiter is built through `RateLimiterMode`** —
 `mode.limiter(fuz_auth::DEFAULT_LOGIN_IP_RATE_LIMIT)`, never
@@ -132,9 +131,10 @@ magic number.
 ## Env loading
 
 - **Injectable seam**: load through
-  `from_vars(get: impl Fn(&str) -> Option<String>)` so tests inject a map,
-  and pair the env struct with a test that _rejects retired var names_. Audit
-  for stray `std::env::var` in router code (consumers still have a few).
+  `from_vars(get: impl Fn(&str) -> Option<String>)` so tests inject a map —
+  `fuz_forge_server`'s env struct is the exemplar, including a test that
+  _rejects retired var names_. Audit for stray `std::env::var` in router code
+  (consumers still have a few).
 - **Fail loud, not just closed**: security-consequential misconfig refuses to
   boot — an empty `FUZ_ALLOWED_ORIGINS` (empty allowlist = allow-all;
   `fuz_http::require_non_empty_origins`), a _malformed_ trusted-proxy list
@@ -226,14 +226,14 @@ magic number.
   (`fuz_auth::AUTH_MIGRATIONS`, `fuz_cell::CELL_MIGRATIONS`,
   `fuz_fact::FACT_MIGRATIONS`); the consumer composes them with its own via
   `fuz_db::run_migrations`, ordered for FKs (auth first). A consumer's own
-  namespace stays small (one consumer's is a single token-policy table).
+  namespace stays small (the forge's is one token-policy table).
 - **Loopback-gated internal routes**: `/internal/*` checks the
   `ConnectInfo<SocketAddr>` peer is loopback _and_ a per-resource secret —
   X-Forwarded-For can't fake the peer.
 - **Boot errors carry the CLI exit-code policy**: a `StartupError` with
   `exit_code()` mapping `Config → 2`, else `1` (./rust-patterns.md §CLI Patterns).
-- **Subprocess harness**: `SpawnOptions` + `spawn_collect`/`spawn_streaming`
-  (env-isolating spawn, capped output drain) lives in one consumer server —
+- **Subprocess harness**: `spawn_collect`/`spawn_streaming` (with their `Spawn*Options`)
+  (env-isolating spawn, capped output drain) lives in `fuz_forge_server` —
   local until a second consumer needs it; the promotion target is a spine-free
   leaf crate.
 
@@ -316,8 +316,8 @@ magic number.
 ## xtask & check-release
 
 Every spine-consuming workspace's `xtask` wraps the shared audit — don't
-hand-roll it: `fuz_audit::xtask_main()` (complete single-subcommand xtask; a
-3-line `main`), `run_check_release_cli()` (workspaces with their own
+hand-roll it: `fuz_audit::xtask_main()` (complete single-subcommand xtask; the
+forge's 3-line `main`), `run_check_release_cli()` (workspaces with their own
 router — zzz, zap), `run_check_release_cli_with_rules(&AuditRules)` where
 `AuditRules` is one POD: `extra_forbidden: &[&str]` (fuz adds `fuz_sign` so its
 `fuz` binary can never sign) + `per_binary: &[PerBinaryForbid]` (`fuz`/`fuzd`
