@@ -140,7 +140,10 @@ repos set `opt-level = "s"` as the base (blake3), overridden per-build via
 `catch_unwind` is dead under abort and it powers the Prettier differential run;
 its `[profile.napi]` (`panic = "unwind"`) because `#[napi(catch_unwind)]` is
 inert under abort and a panic would kill the _host_ (dev server, editor);
-`[profile.profiling]` keeps `debug = true`, `strip = false`.
+`[profile.profiling]` keeps `debug = true`, `strip = false`. Spine-server
+workspaces (the consumers serving `fuz_http::compose_stack`) set
+`panic = "unwind"`: the stack catches a request panic and answers the generic
+500, which abort would turn into a dead server.
 
 ## Error Handling
 
