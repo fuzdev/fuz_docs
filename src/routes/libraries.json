@@ -74766,7 +74766,7 @@
 	"fuz_app": {
 		"pkg_json": {
 			"name": "@fuzdev/fuz_app",
-			"version": "0.145.0",
+			"version": "0.146.0",
 			"description": "fullstack app library",
 			"glyph": "🗝",
 			"logo": "logo.svg",
@@ -91291,9 +91291,9 @@
 						{
 							"name": "create_account_status_route_spec",
 							"kind": "function",
-							"docComment": "Create the account status route spec.\n\nHandles both authenticated and unauthenticated requests:\n- Authenticated: returns `{account}` with 200\n- Unauthenticated: returns 401 with optional `bootstrap_available` flag\n\nA scope-narrowed API token is answered as the unauthenticated caller, byte\nfor byte. A narrowed token reaches no non-RPC surface\n(`token_scope_admits_non_rpc`), and this one hands out the account's email,\nits verification state, and the acting actor's role grants; the route\nalready answers anonymous callers, so that answer is the refusal — a 403\nwould tell the holder nothing that dropping the header doesn't.\n\nThis eliminates the need for a separate `/health` fetch on page load —\nthe frontend gets both session state and bootstrap availability in one request.",
+							"docComment": "Create the account status route spec.\n\nHandles both authenticated and unauthenticated requests:\n- Authenticated: returns `{account}` with 200\n- Unauthenticated: returns 401 with optional `bootstrap_available` flag\n\nA scope-narrowed API token is answered as the unauthenticated caller, byte\nfor byte. A narrowed token reaches no non-RPC surface\n(`token_scope_admits_non_rpc`), and this one hands out the account's email,\nits verification state, and the acting actor's role grants; the route\nalready answers anonymous callers, so that answer is the refusal — a 403\nwould tell the holder nothing that dropping the header doesn't. The handler\nreads the credential through `get_public_account_id`, which applies it.\n\nThis eliminates the need for a separate `/health` fetch on page load —\nthe frontend gets both session state and bootstrap availability in one request.",
 							"typeSignature": "(options?: AccountStatusOptions | undefined): RouteSpec",
-							"sourceLine": 91,
+							"sourceLine": 92,
 							"parameters": [
 								{
 									"name": "options",
@@ -91310,7 +91310,7 @@
 							"kind": "interface",
 							"docComment": "Options for the account status route spec.",
 							"typeSignature": "AccountStatusOptions",
-							"sourceLine": 179,
+							"sourceLine": 178,
 							"members": [
 								{
 									"name": "path",
@@ -91333,21 +91333,21 @@
 							"kind": "variable",
 							"docComment": "Default minimum wall-clock time (ms) for a login failure (401) response.\n\nPicked to exceed the p99 of every 401 code path (Argon2id dominates at\n~100ms, plus DB + overhead). The handler races failure work against\n`sleep(floor + jitter)` via `await`, so observed response time = max(work,\ndelay). Found-vs-not-found and rate-limit-skipped-vs-not paths converge.\nOnly 401 is padded — 429 stays fast by design to keep rate-limit DoS\nhandling cheap.",
 							"typeSignature": "250",
-							"sourceLine": 196
+							"sourceLine": 195
 						},
 						{
 							"name": "DEFAULT_LOGIN_FAIL_JITTER_MS",
 							"kind": "variable",
 							"docComment": "Default uniform jitter window (±ms) layered on the floor.\n\nRandom jitter prevents a stable clamp point from leaking whenever a path\noccasionally exceeds the floor. `Math.random` is sufficient — we only need\nunpredictability of the exact delay, not cryptographic guarantees.",
 							"typeSignature": "25",
-							"sourceLine": 205
+							"sourceLine": 204
 						},
 						{
 							"name": "AuthSessionRouteOptions",
 							"kind": "interface",
 							"docComment": "Shared options for route factories that create sessions.\n\nExtended by `AccountRouteOptions` and `SignupRouteOptions`.\nConsumers can destructure these from `AppServerContext` once and spread into multiple factories.\n\nThe per-IP limiter is deliberately *not* here. Each auth surface names its\nown (`login_ip_rate_limiter`, `signup_ip_rate_limiter`,\n`bootstrap_ip_rate_limiter`) because the buckets are monotone within their\nwindow — see `RateLimiter.reset`. A shared base field made one instance the\npath of least resistance, which let a failure on any surface spend the\nbudget that bounds guessing on every other one.",
 							"typeSignature": "AuthSessionRouteOptions",
-							"sourceLine": 226,
+							"sourceLine": 225,
 							"members": [
 								{
 									"name": "session_options",
@@ -91371,7 +91371,7 @@
 							"kind": "interface",
 							"docComment": "Per-factory configuration for account route specs.",
 							"typeSignature": "AccountRouteOptions",
-							"sourceLine": 233,
+							"sourceLine": 232,
 							"extends": [
 								"AuthSessionRouteOptions"
 							],
@@ -91462,7 +91462,7 @@
 							"kind": "function",
 							"docComment": "Create account route specs for session-based auth.\n\nThe returned specs cover the REST flows that stay after the RPC migration:\n`/status` (account info + bootstrap availability), `/verify` (nginx\n`auth_request` shim), `/login`, `/logout`, `/password`. `/status` is bundled\nhere (relative path, prefixed to `/api/account/status` by the caller) so\nevery account surface serves it, matching the Rust `account_router`.\nSelf-service session/token management is on `auth/account_actions.ts`.\n\n`/login` closes the connections of the sessions its cap evicts, and\n`/logout` and `/password` close the account's, each once its revocation has\ncommitted: `/logout` through the route transaction's post-commit queue\n(`queue_connection_close`), `/login` and `/password` — which open their own\ntransaction around just their writes — straight after it commits\n(`close_connections_after_commit`, which logs a failing close rather than\nfailing the committed request), so a later throw can't drop a close a\ncommitted revocation owes. All on `deps.connection_closer`.",
 							"typeSignature": "(deps: RouteFactoryDeps, options: AccountRouteOptions): RouteSpec[]",
-							"sourceLine": 294,
+							"sourceLine": 293,
 							"parameters": [
 								{
 									"name": "deps",
@@ -91498,7 +91498,6 @@
 						"auth/session_cookie.ts",
 						"auth/session_middleware.ts",
 						"auth/session_queries.ts",
-						"auth/token_scope.ts",
 						"hono_context.ts",
 						"http/auth_shape.ts",
 						"http/client_ip.ts",
@@ -95210,6 +95209,7 @@
 						"testing/cross_backend/app_settings.ts",
 						"testing/cross_backend/cell_relations.ts",
 						"testing/cross_backend/login_security.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/role_grant_participation.ts",
 						"testing/cross_backend/sse_round_trip.ts",
 						"testing/cross_backend/ws_round_trip.ts",
@@ -109464,7 +109464,7 @@
 							"kind": "interface",
 							"docComment": "The resolved identity context for an authenticated request.\n\n`actor` is null on account-grain routes (no `acting` field on input,\nno `role` / `keeper` auth) — those handlers don't trigger actor\nresolution. `role_grants` is empty in that case. Role grant checks\n(`has_role`, `has_scoped_role`, `has_any_scoped_role`) are\nnull-tolerant on `RequestContext | null`; they additionally treat\n`actor: null` as \"no role_grants\" so callers don't have to narrow.\n\nMulti-actor invariant: when populated, `actor.account_id === account.id`.\n`build_request_context` enforces this; the dispatcher's authorization\nphase rejects with `actor_not_on_account` before reaching the handler.",
 							"typeSignature": "RequestContext",
-							"sourceLine": 99,
+							"sourceLine": 100,
 							"members": [
 								{
 									"name": "account",
@@ -109508,21 +109508,21 @@
 							"kind": "variable",
 							"docComment": "Hono context variable name for the request context.",
 							"typeSignature": "\"request_context\"",
-							"sourceLine": 106
+							"sourceLine": 107
 						},
 						{
 							"name": "AUTH_SESSION_TOKEN_HASH_KEY",
 							"kind": "variable",
 							"docComment": "Hono context variable name for the authenticated session token hash.\n\nSet by `create_request_context_middleware` after a successful session lookup.\n`null` when the request is unauthenticated or authenticated via a non-session\ncredential (bearer token, daemon token). Exposed so handlers can scope\nper-session resources (e.g., SSE stream identity for targeted disconnection\non `session_revoke`) without re-hashing the token.",
 							"typeSignature": "\"auth_session_token_hash\"",
-							"sourceLine": 117
+							"sourceLine": 118
 						},
 						{
 							"name": "get_request_context",
 							"kind": "function",
 							"docComment": "Get the request context from a Hono context, or `null` if unauthenticated.",
 							"typeSignature": "(c: Context<any, any, {}>): RequestContext | null",
-							"sourceLine": 125,
+							"sourceLine": 126,
 							"parameters": [
 								{
 									"name": "c",
@@ -109569,7 +109569,7 @@
 							"kind": "function",
 							"docComment": "Get the request context, throwing if unauthenticated.\n\nUse in route handlers where the dispatcher's authorization phase guarantees\na context exists (i.e., routes with `auth: {type: 'authenticated'}` or\nstricter). Prefer this over `get_request_context(c)!` for explicit error\nhandling.",
 							"typeSignature": "(c: Context<any, any, {}>): RequestContext",
-							"sourceLine": 141,
+							"sourceLine": 142,
 							"throws": [
 								{
 									"type": "Error",
@@ -109609,7 +109609,7 @@
 							"kind": "interface",
 							"docComment": "Request context narrowed to a resolved acting actor.\n\nUsed by handlers bound through `rpc_action` against an actor-implying\nspec (`auth.actor === 'required'`) — the binder's conditional return\ntype tightens `ctx.auth` to this shape because the dispatcher's\nauthorization phase always resolves an actor before the handler runs.\nThe biconditional `actor !== 'none' ⟺ input declares acting?: ActingActor`\nis enforced at registry time.",
 							"typeSignature": "RequestActorContext",
-							"sourceLine": 161,
+							"sourceLine": 162,
 							"extends": [
 								"RequestContext"
 							],
@@ -109626,7 +109626,7 @@
 							"kind": "function",
 							"docComment": "Check if a request context has an active role_grant for a given role at\n**any** scope.\n\nChecks the role_grants already loaded in the context (no DB query).\nNull-tolerant — `null` ctx (unauthenticated) returns `false`. Symmetric\nwith `has_scoped_role` / `has_any_scoped_role` so the three helpers\ncompose freely in the same predicate.\n\nScope-blind, so never the gate for a builtin role (`admin` / `keeper`) or\nfor any capability that isn't itself scoped: a grant bound to one resource\nwould pass it. Those gates read the global grant through\n`has_scoped_role(ctx, role, null)` (e.g.\n`has_scoped_role(auth, ROLE_ADMIN, null) || has_scoped_role(auth, role, scope)`).",
 							"typeSignature": "(ctx: RequestContext | null, role: string, now?: Date): boolean",
-							"sourceLine": 185,
+							"sourceLine": 186,
 							"parameters": [
 								{
 									"name": "ctx",
@@ -109666,7 +109666,7 @@
 							"kind": "function",
 							"docComment": "Whether the request context holds an active role_grant for `role` at `scope_id`.\n\nWalks the in-memory `ctx.role_grants` snapshot loaded once per request by\nthe route-spec / RPC dispatcher's authorization phase (when the route\ndeclares `acting?: ActingActor` or has role_grant-requiring auth); zero DB\nroundtrip per check. The \"freshness\" framing of a SQL re-query is\nillusory because the race window is between predicate and the actual\nmutation, not predicate and authorization load. Closing that race needs\na transactional re-check inside the UPDATE/INSERT, which neither style\nprovides.\n\nNull-tolerant — `null` ctx (unauthenticated) and account-grain\ncontexts (`actor: null`, empty `role_grants`) both return `false`. Same\nconvention as `has_role`; lets the helper drop into public\n(`{account: 'none', actor: 'none'}`) and account-grain\n(`{account: 'required', actor: 'none'}`) handlers without a manual\nnarrow. See `cell_authorize` for the resource-side analog.\n\n`has_scoped_role(ctx, ROLE_ADMIN, null)` is the admin check everywhere admin\nconfers authority (builtin roles are global-only, see `is_builtin_role`).\n\n`scope_id` semantics: in-memory `role_grant.scope_id` is `string | null`, so\nJS `===` matches the SQL `IS NOT DISTINCT FROM` semantics exactly:\n\n- `scope_id === null` matches global role_grants (`scope_id IS NULL`).\n- `scope_id === '<uuid>'` matches role_grants bound to that exact scope.",
 							"typeSignature": "(ctx: RequestContext | null, role: string, scope_id: string | null, now?: Date): boolean",
-							"sourceLine": 226,
+							"sourceLine": 227,
 							"parameters": [
 								{
 									"name": "ctx",
@@ -109724,7 +109724,7 @@
 							"kind": "function",
 							"docComment": "Whether the request context holds an active role_grant for any role in `roles`\nat `scope_id`. Empty `roles` short-circuits to `false` — documents intent\nat the call site (\"zero roles trivially admit no-one\"). Same scope and\nnull-tolerance semantics as `has_scoped_role`.",
 							"typeSignature": "(ctx: RequestContext | null, roles: readonly string[], scope_id: string | null, now?: Date): boolean",
-							"sourceLine": 250,
+							"sourceLine": 251,
 							"parameters": [
 								{
 									"name": "ctx",
@@ -109782,7 +109782,7 @@
 							"kind": "type",
 							"docComment": "Result of `resolve_acting_actor` — either an actor id or a structured\nerror the caller maps to an HTTP response.",
 							"typeSignature": "ResolveActingActorResult",
-							"sourceLine": 267,
+							"sourceLine": 268,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "ResolveActingActorResult",
@@ -109811,7 +109811,7 @@
 							"kind": "function",
 							"docComment": "Resolve the acting actor for an authenticated request.\n\nCalled from the route-spec / RPC dispatcher's authorization phase\nwith the authenticated account id and the validated `acting` value\n(from the request payload). Applies the uniform resolution rules:\n\n- `acting_actor_id` omitted + 1 actor → use it.\n- `acting_actor_id` omitted + 0 actors → `no_actors` (defensive —\n  signup / bootstrap always create an actor in the same tx, so this\n  is a server error).\n- `acting_actor_id` omitted + multiple actors → `actor_required` with\n  the available list so the client can prompt; never pick silently.\n- `acting_actor_id` present + matches an actor on the account → use it.\n- `acting_actor_id` present + does not match → `actor_not_on_account`.\n  The available list is intentionally not echoed in this branch (treat\n  as opaque rejection).\n\n`acting_actor_id` is compared lowercased, the form actor ids are stored and\nread back in, so a caller passing an id that skipped the `Uuid` schema\nstill matches its actor whatever its case.",
 							"typeSignature": "(deps: QueryDeps, account_id: string, acting_actor_id: string | undefined): Promise<ResolveActingActorResult>",
-							"sourceLine": 299,
+							"sourceLine": 300,
 							"parameters": [
 								{
 									"name": "deps",
@@ -109877,7 +109877,7 @@
 							"kind": "function",
 							"docComment": "Create middleware that authenticates the account from a session cookie.\n\nReads the session identity (set by session middleware), looks up the\n`auth_session`, and on a valid session sets `c.var.auth_account_id`,\n`CREDENTIAL_TYPE_KEY = 'session'`, `AUTH_SESSION_TOKEN_HASH_KEY`, and\n`CREDENTIAL_DEADLINE_KEY` — the earlier of the cookie's signed expiry\n(`SESSION_COOKIE_EXPIRES_AT_KEY`) and the row's.\nTouches the session (fire-and-forget). Does not load actor or role_grants;\n`REQUEST_CONTEXT_KEY` is left null — the route-spec / RPC dispatcher\nauthorization phase resolves the acting actor and builds the full\n`RequestContext` when the route needs one.\n\nInvalid / missing session leaves all keys null and calls `next()` —\n`require_auth` / `require_role` enforce.",
 							"typeSignature": "(deps: QueryDeps, session_context_key?: string): MiddlewareHandler",
-							"sourceLine": 340,
+							"sourceLine": 341,
 							"mutates": {
 								"Hono context": "sets `ACCOUNT_ID_KEY`, `CREDENTIAL_TYPE_KEY`, `AUTH_SESSION_TOKEN_HASH_KEY`, `AUTH_API_TOKEN_ID_KEY`, and `CREDENTIAL_DEADLINE_KEY`"
 							},
@@ -109901,7 +109901,7 @@
 							"kind": "function",
 							"docComment": "Refuse a non-RPC surface to a narrowed token — rule 3, for callers that are\nnot route specs. Under the Rust twin's name\n(`token_scope_surface_denied_response`).\n\nThe WS upgrade is the spine's one such caller: `upgradeWebSocket`'s callback\nmust return `WSEvents` and so cannot produce a denial, which is why the gate\nruns as pre-upgrade middleware calling this rather than as a route-spec\ndeclaration. A consumer hand-rolling its own upgrade is in the same position\nand reaches for the same function.\n\nTakes the whole capability string, not a bare surface name — one spelling\nacross route-spec declarations and direct calls alike, and the twin of the\nRust signature. It needs no parse: the surface arm's identifier is pure label,\nsince rule 3 never asks *which* surface. And it is deliberately not narrowed\nto the spine's own — the name decides nothing, so there is nothing for a\nclosed set to protect, while a consumer surface would have nothing to pass.\nfuz_app's own uses are pinned two ways by the surface census: the exact call\nsite, and the scan asserting every `'surface:<name>'` literal in `src/lib`\nnames a surface the spine actually mounts.",
 							"typeSignature": "(c: Context<any, any, {}>, capability: string): Response | null",
-							"sourceLine": 431,
+							"sourceLine": 432,
 							"parameters": [
 								{
 									"name": "c",
@@ -109949,11 +109949,58 @@
 							"returnDescription": "the 403 to return, or `null` when the caller may proceed"
 						},
 						{
+							"name": "get_public_account_id",
+							"kind": "function",
+							"docComment": "The account id a public route — one that answers anonymous callers and reads\nthe credential (`reads_credential`) — may act on: `null` for the anonymous\ncaller **and for a scope-narrowed API token**. Rule 3 in its\nanonymous-admitting disposition — the downgrade the Rust\n`AuthGate::public_request_context` applies.\n\nA narrowed token reaches no non-RPC surface that reads account data\n(`token_scope_admits_non_rpc`). On a route that refuses anonymous callers\nthat is a 403 (`auth.required_scope`); on one that answers them, a 403\nwould enforce nothing — the holder drops the `Authorization` header and\nreads the anonymous answer anyway — so the narrowed token *is* the\nanonymous caller there. Read the credential through this on any\n`reads_credential` route instead of `ACCOUNT_ID_KEY` directly, so the\ndowngrade is one decision rather than an `&&` hand-rolled per handler.\n\nThe RPC endpoint is the exception: its dispatcher gates each method against\nthe scope, so it reads the full credential.",
+							"typeSignature": "(c: Context<any, any, {}>): string | null",
+							"sourceLine": 457,
+							"parameters": [
+								{
+									"name": "c",
+									"type": "Context<any, any, {}>",
+									"typeInfo": {
+										"kind": "reference",
+										"name": "Context",
+										"typeArgs": [
+											{
+												"kind": "intrinsic",
+												"text": "any"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "any"
+											},
+											{
+												"kind": "object",
+												"text": "{}"
+											}
+										]
+									},
+									"description": "the request context, after the auth middleware chain"
+								}
+							],
+							"returnType": "string | null",
+							"returnTypeInfo": {
+								"kind": "union",
+								"members": [
+									{
+										"kind": "intrinsic",
+										"text": "string"
+									},
+									{
+										"kind": "intrinsic",
+										"text": "null"
+									}
+								]
+							},
+							"returnDescription": "the account id, or `null` for an anonymous caller or a narrowed token"
+						},
+						{
 							"name": "require_token_scope",
 							"kind": "function",
 							"docComment": "Create middleware refusing a route to a credential whose scope does not admit\n`capability`.\n\nThe route-spec form, mounted by `fuz_auth_guard_resolver` from\n`auth.required_scope`. Lands in the `pre_authorization` phase, so a narrowed\ntoken is told about its scope rather than about the role it also lacks — and\nlearns nothing about the route's input shape on the way.\n\nParses at construction, so a malformed capability is a registration-time\nthrow rather than a guard that mounts and reports nonsense.",
 							"typeSignature": "(capability: string): MiddlewareHandler",
-							"sourceLine": 450,
+							"sourceLine": 481,
 							"throws": [
 								{
 									"type": "Error",
@@ -109975,7 +110022,7 @@
 							"kind": "function",
 							"docComment": "Middleware that requires authentication.\n\nReturns 401 if the auth middleware did not set `c.var.auth_account_id`.",
 							"typeSignature": "(c: Context<any, string, {}>, next: Next): Promise<void | Response>",
-							"sourceLine": 469,
+							"sourceLine": 500,
 							"parameters": [
 								{
 									"name": "c",
@@ -110030,7 +110077,7 @@
 							"kind": "function",
 							"docComment": "Create middleware that requires the actor to hold any of the given\nroles globally (`scope_id IS NULL`).\n\nReturns 401 if unauthenticated, 403 if none of the roles are present.\nReads `REQUEST_CONTEXT_KEY` because role-gated routes always run the\ndispatcher's authorization phase before this guard (the phase sets\nthe actor-bound `RequestContext`).\n\nUses `has_any_scoped_role(ctx, roles, null)` so the gate matches\n**global / unscoped role_grants only**. A scoped role_grant\n(`{role: 'admin', scope_id: <some uuid>}`) does not unlock route-spec\ngates that are inherently global. The same scope-aware check is\nmirrored in `actions/action_rpc.ts` (HTTP RPC dispatcher) and\n`actions/register_action_ws.ts` (WS dispatcher) so all three\ntransports agree.\n\nMulti-role disjunction (any-of) lets `auth.roles: ['admin', 'steward']`\nspecs translate to one middleware that admits either role. Single-role\nroutes pass `[role_name]`; the array shape is uniform.",
 							"typeSignature": "(roles: readonly string[]): MiddlewareHandler",
-							"sourceLine": 499,
+							"sourceLine": 530,
 							"parameters": [
 								{
 									"name": "roles",
@@ -110045,7 +110092,7 @@
 							"kind": "function",
 							"docComment": "Create middleware that requires the request's `credential_type` to be\none of the given values.\n\nReturns 401 if unauthenticated, 403 with\n`ERROR_CREDENTIAL_TYPE_REQUIRED` + `required_credential_types` echoing\nthe spec's allowlist when the wire-side credential isn't in it.\n\nReads only `ACCOUNT_ID_KEY` + `CREDENTIAL_TYPE_KEY`, both set by the auth\nmiddleware — never the resolved `RequestContext`. That is why\n`fuz_auth_guard_resolver` mounts it in the `pre_authorization` phase: a\nwrong channel is refused before the route resolves an actor for it, so the\ndenial costs no DB work and discloses no account state.\nBody shape is symmetric with the role gate (`ERROR_INSUFFICIENT_PERMISSIONS` +\n`required_roles`) and matches what the RPC dispatcher's post-auth\ngate emits for the same condition. Today's only credential gate is\nkeeper (`['daemon_token']`); future gates (`agent_token`,\n`group_actor_token`) reuse this literal and label themselves through\nthe array.",
 							"typeSignature": "(credential_types: readonly string[]): MiddlewareHandler",
-							"sourceLine": 534,
+							"sourceLine": 565,
 							"parameters": [
 								{
 									"name": "credential_types",
@@ -110060,7 +110107,7 @@
 							"kind": "function",
 							"docComment": "Reload active role_grants from the database, returning a new request context.\n\nUseful for long-lived WebSocket connections where role_grants may change\n(grant or revoke) during the connection lifetime. Call periodically\nor after receiving a revocation signal.\n\nReturns a new `RequestContext` with updated role_grants — the original\ncontext is not mutated, making concurrent calls safe. Throws when\n`ctx.actor` is null; account-grain contexts have no role_grants to refresh.",
 							"typeSignature": "(ctx: RequestContext, deps: QueryDeps): Promise<RequestContext>",
-							"sourceLine": 571,
+							"sourceLine": 602,
 							"throws": [
 								{
 									"type": "Error",
@@ -110097,7 +110144,7 @@
 							"kind": "function",
 							"docComment": "Build a full `RequestContext` from an account id and an explicit\nactor id (already resolved via `resolve_acting_actor`).\n\nLoads `account` + the named `actor` + the actor's active role_grants.\nVerifies the `actor.account_id === account.id` binding so downstream\nhandlers can trust `ctx.actor.account_id === ctx.account.id`. Returns\n`null` when the account is missing, the actor is missing, or the\nactor doesn't belong to the supplied account.\n\nCalled by the route-spec / RPC dispatcher's authorization phase for\nroutes that need an acting actor; account-grain routes use\n`build_account_context` instead.",
 							"typeSignature": "(deps: QueryDeps, account_id: string, actor_id: string): Promise<RequestActorContext | null>",
-							"sourceLine": 603,
+							"sourceLine": 634,
 							"parameters": [
 								{
 									"name": "deps",
@@ -110142,7 +110189,7 @@
 							"kind": "function",
 							"docComment": "Build an account-only `RequestContext` (no actor, no role_grants) from\nan account id.\n\nUsed by the dispatcher's authorization phase for authenticated routes\nthat don't need an acting actor — account-grain operations (logout,\npassword change, account self-service). Lets handlers read\n`auth.account.id` / `auth.account.username` uniformly with role_grant-bound\nroutes; the cost is one extra `query_account_by_id` per request.\n\nReturns `null` when the account row is missing (e.g. deleted between\nthe auth middleware's session lookup and the dispatcher) — caller\nsurfaces that as a 500 since it represents a torn read.",
 							"typeSignature": "(deps: QueryDeps, account_id: string): Promise<RequestContext | null>",
-							"sourceLine": 637,
+							"sourceLine": 668,
 							"parameters": [
 								{
 									"name": "deps",
@@ -110182,7 +110229,7 @@
 							"kind": "type",
 							"docComment": "Resolution-failure shape returned by `apply_authorization_phase`. Each\ntransport binds this to the appropriate wire shape — REST emits the body\ndirectly via `c.json(body, status)`; the RPC dispatcher folds it into a\nJSON-RPC error envelope `{jsonrpc, id, error: {code, message, data}}`.\n\nThe auth phase deliberately stops short of constructing a `Response` so\nthe same failure flows through every transport without the auth-domain\ncode knowing about JSON-RPC. See `../../../CLAUDE.md` §Cleanest\narchitecture takes priority for the rationale.",
 							"typeSignature": "AuthorizationFailureBody",
-							"sourceLine": 657,
+							"sourceLine": 688,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "AuthorizationFailureBody",
@@ -110211,7 +110258,7 @@
 							"kind": "type",
 							"docComment": "Result of the authorization phase. Pure data — the auth domain stops\nshort of touching the Hono context or producing a `Response` so HTTP\nRPC, WS, and REST each bind the same shape to their wire surface.\n\n- **`{ok: true, request_context}`** — `request_context` is non-null on\n  resolved (actor-bound or account-only) outcomes; `null` for public\n  actions (`{account: 'none', actor: 'none'}`) and for genuine anonymous\n  access on an `'optional'` axis. Public and unauthenticated collapse\n  to the same null `request_context`; every transport already treated\n  them identically.\n- **`{ok: false, status, body}`** — 400/500 failure. `status` is\n  narrowed to the two values the auth phase emits, so Hono's `c.json`\n  status overload accepts the literals directly. The 500 reasons stay\n  distinct in `body`: `no_actors_on_account` (signup invariant\n  violation); `account_vanished` (torn read after resolve).",
 							"typeSignature": "AuthorizationResult",
-							"sourceLine": 680,
+							"sourceLine": 711,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "AuthorizationResult",
@@ -110232,7 +110279,7 @@
 							"kind": "function",
 							"docComment": "Apply the dispatcher's authorization phase against the flat-record\n`RouteAuth` shape. Shared by the route-spec wrapper, the HTTP RPC\ndispatcher, and the per-message WS dispatcher. Phase order:\npre-authorization 401 → authorization phase → post-authorization 403 →\ninput validation 400.\n\nPure data — the function does not touch a Hono context. Each transport\npasses `account_id` (extracted from its own credential surface) and\nbinds the returned `AuthorizationResult` to its wire shape. The REST\npipeline additionally writes `REQUEST_CONTEXT_KEY` on `c` for downstream\n`require_role` / `require_credential_types` middleware that still reads\nthe resolved context off the Hono context.\n\nBranching by `auth.account` × `auth.actor`:\n\n- Both `'none'` → `{ok: true, request_context: null}`. Public actions\n  never see a `RequestContext`.\n- `account_id == null` on any non-public route → same null\n  `request_context`. The `'required'` callers were already rejected at\n  the pre-authorization gate in the dispatcher; only genuine anonymous\n  access on an `'optional'` axis lands here.\n- `actor === 'none'` → builds account-only context via\n  `build_account_context`. Null lookup → `account_vanished` 500 failure.\n- `actor === 'required'` → resolves the actor from `acting_value` (or\n  single-actor account); failures map to 400 / 500.\n- `actor === 'optional'` → same as `'required'` except multi-actor\n  accounts without an `acting` value fall back to account-only context\n  (no `actor_required` 400). Bad `acting` ids still 400.\n\n500 branches stay distinct: `ERROR_NO_ACTORS_ON_ACCOUNT` (signup\ninvariant violation), `ERROR_ACCOUNT_VANISHED` (torn read after\nresolve).",
 							"typeSignature": "(deps: QueryDeps, account_id: string | null, auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }, acting_value: string | undefined): Promise<...>",
-							"sourceLine": 718,
+							"sourceLine": 749,
 							"parameters": [
 								{
 									"name": "deps",
@@ -110308,7 +110355,7 @@
 							"kind": "function",
 							"docComment": "Create the route-spec authorization handler used by `apply_route_specs`.\n\nReads the `acting` selector via `read_route_acting` — `c.var.validated_query`\non GETs, the raw body on mutations, since input validation now runs after\nthe authority gates. Public routes (`auth.account === 'none' &&\nauth.actor === 'none'`) skip the phase entirely.\n\nPer registry-time invariant 2, `auth.actor !== 'none'` ⟺ the input\n(or query) schema declares `acting?: ActingActor` — so the selector is\npresent on exactly the specs that read it, and input validation is what\nrejects a malformed one.\n\nResolved contexts land on `REQUEST_CONTEXT_KEY` so the post-authorization\nREST middleware (`require_role`, `require_credential_types`) reads the\nactor-bound context off `c.var`. The HTTP RPC and WS dispatchers consume\nthe `apply_authorization_phase` outcome directly without round-tripping\nthrough `c.var`.",
 							"typeSignature": "(deps: QueryDeps): (c: Context<any, any, {}>, spec: RouteSpec) => Promise<void | Response>",
-							"sourceLine": 784,
+							"sourceLine": 815,
 							"parameters": [
 								{
 									"name": "deps",
@@ -117545,9 +117592,9 @@
 						{
 							"name": "token_scope_admits_non_rpc",
 							"kind": "function",
-							"docComment": "Does `scope` admit a non-RPC spine surface?\n\n**A narrowed token reaches no non-RPC surface that reads account data or\ncarries authority** — the load-bearing\nhalf of token scoping, and what \"rule 3\" names wherever this module's\ncallers and the Rust twin use that shorthand. See `docs/security.md`\n§Token scoping.\n\nA method-name allowlist alone would have been a false promise: the db-admin\nbrowser serves paginated rows of any `public` table (including\n`account.password_hash`, `auth_session`, and `api_token`) plus row `DELETE`,\ngated on a global role a bearer credential satisfies. A token whose UI badge\nread \"scoped to `cell_get`\" could still delete an account row.\n\nDenying every non-RPC surface outright is strictly more restrictive than\nnaming each one, keeps no vocabulary to maintain, and fits in one sentence a\nuser can hold: *a scoped token is RPC-only*.",
+							"docComment": "Does `scope` admit a non-RPC spine surface?\n\n**A narrowed token reaches no non-RPC surface that reads account data or\ncarries authority** — the load-bearing half of token scoping, and what\n\"rule 3\" names wherever this module's callers and the Rust twin use that\nshorthand. See `docs/security.md` §Token scoping.\n\nA method-name allowlist alone would have been a false promise: the db-admin\nbrowser serves paginated rows of any `public` table (including\n`account.password_hash`, `auth_session`, and `api_token`) plus row `DELETE`,\ngated on a global role a bearer credential satisfies. A token whose UI badge\nread \"scoped to `cell_get`\" could still delete an account row.\n\nThe predicate is all-or-nothing: no per-surface vocabulary decides anything,\nso it fits in one sentence a user can hold — *a scoped token is RPC-only*.\nPlacement is per site: a route that refuses anonymous callers declares\n`auth.required_scope`, one that answers them reads the credential through\n`get_public_account_id` and answers a narrowed token as anonymous, and the\nsurface census pins every site.",
 							"typeSignature": "(scope: { version: 1; kind: \"full\"; grandfathered?: boolean | undefined; } | { version: 1; kind: \"methods\"; methods: string[]; grandfathered?: boolean | undefined; }): boolean",
-							"sourceLine": 136,
+							"sourceLine": 138,
 							"parameters": [
 								{
 									"name": "scope",
@@ -117565,13 +117612,13 @@
 							"kind": "variable",
 							"docComment": "The non-RPC surfaces the **spine itself** mounts (rule 3). Twin of the Rust\n`TokenSurface` enum, name for name, except the two only the TS spine serves:\n`app_surface`, the opt-in `GET /api/surface` explorer\n(`server/surface_route.ts`), and `account_verify`, the\n`GET /api/account/verify` nginx `auth_request` probe\n(`auth/account_route_schema.ts`).\n\nNot a registry a consumer registers into. `RouteAuth.required_scope` accepts\nany well-formed `surface:<name>` (see `parse_token_scope_capability`), so a\nconsumer names its own non-RPC surface without an upstream release. This\ntuple is what the *spine* may declare, and what its surface census iterates\n— the closure is a check on fuz_app's own routes, not a vocabulary consumers\nhave to ask permission to extend.\n\nA surface name never decides anything: rule 3 is all-or-nothing\n(`token_scope_admits_non_rpc`), so the name only labels *which* surface\nrefused, in the `required_scope` a denial reports. That is the same field\nwhose `rpc:<method>` arm has always carried arbitrary consumer method names.",
 							"typeSignature": "readonly [\"db_admin\", \"fact_bare\", \"audit_stream\", \"ws_upgrade\", \"app_surface\", \"account_verify\"]",
-							"sourceLine": 158
+							"sourceLine": 160
 						},
 						{
 							"name": "TokenSurface",
 							"kind": "type",
 							"typeSignature": "\"db_admin\" | \"fact_bare\" | \"audit_stream\" | \"ws_upgrade\" | \"app_surface\" | \"account_verify\"",
-							"sourceLine": 166,
+							"sourceLine": 168,
 							"typeInfo": {
 								"kind": "union",
 								"members": [
@@ -117613,7 +117660,7 @@
 							"kind": "function",
 							"docComment": "Is `value` one of the surfaces the spine mounts?\n\nMembership, not well-formedness — `parse_token_scope_capability` is the format\ncheck the guard resolver runs on a declaration, and it is deliberately looser.\nUsed where the *spine's* own surfaces are the question: the direct-call denial\nhelpers, and the census assertion that fuz_app declares no surface it doesn't\nmount.",
 							"typeSignature": "(value: string): value is \"db_admin\" | \"fact_bare\" | \"audit_stream\" | \"ws_upgrade\" | \"app_surface\" | \"account_verify\"",
-							"sourceLine": 177,
+							"sourceLine": 179,
 							"parameters": [
 								{
 									"name": "value",
@@ -117627,14 +117674,14 @@
 							"kind": "variable",
 							"docComment": "Name format for the identifier half of a capability string. Mirrors\n`RoleName` / `CredentialTypeName` / `ScopeKindName`.\n\nApplied to the `surface:` arm only. The `rpc:` arm's identifier is an action\nmethod name, whose vocabulary belongs to `ActionSpec` (and includes shapes\nlike `peer/ping` this regex would refuse) — the capability parser checks it\nis non-empty and leaves the rest to the registry that owns it.",
 							"typeSignature": "RegExp",
-							"sourceLine": 189
+							"sourceLine": 191
 						},
 						{
 							"name": "token_scope_method_capability",
 							"kind": "function",
 							"docComment": "The capability string an action method is refused under: `rpc:<method>`.\n\nExported because two sites *compute* one — the dispatcher's per-method gate\nand the REST bridge, which must agree — where a `surface:` capability is\nalways written as a literal on a route spec, so nothing computes one.",
 							"typeSignature": "(method: string): string",
-							"sourceLine": 204,
+							"sourceLine": 206,
 							"parameters": [
 								{
 									"name": "method",
@@ -117648,7 +117695,7 @@
 							"kind": "type",
 							"docComment": "A parsed `required_scope` capability — what a route demands of the calling\ncredential's `TokenScope`.\n\n`capability` is the wire string verbatim, carried rather than re-derived so a\ndenial reports exactly what the route declared. The arms are asymmetric on\npurpose, and the asymmetry is the whole design: the `rpc:` identifier is\n**consumed by a predicate** (`token_scope_admits_method`), so it is kept; the\n`surface:` identifier is **pure label**, because rule 3 is all-or-nothing\n(`token_scope_admits_non_rpc` never looks at which surface). That is why one\nhalf of the vocabulary needs no registry.",
 							"typeSignature": "TokenScopeCapability",
-							"sourceLine": 219,
+							"sourceLine": 221,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "TokenScopeCapability",
@@ -117669,7 +117716,7 @@
 							"kind": "function",
 							"docComment": "Parse a capability string into the question it asks, or `null` when it is\nnot a capability at all.\n\nCallers turn `null` into a registration-time throw: `RouteAuth.required_scope`\nis typed as a plain string so `http/` needs no `auth/` import, and this is the\nsingle point where that string becomes a mounted guard, so it is where the\nvalue gets checked. Refusing an unknown prefix is what keeps the `surface:`\nnamespace fuz_app's own — a route cannot mint an `rpc:`-looking capability out\nof a surface gate, which would put a method name in front of a whole-surface\nrefusal.",
 							"typeSignature": "(value: string): TokenScopeCapability | null",
-							"sourceLine": 237,
+							"sourceLine": 239,
 							"parameters": [
 								{
 									"name": "value",
@@ -117708,7 +117755,7 @@
 							"kind": "function",
 							"docComment": "Does `scope` admit `capability`?\n\nThe one place the two arms of the vocabulary meet their two predicates, so a\n`surface:` capability can never be answered by a method-list membership test\n(which would let a narrowed token onto a surface by listing a method named\nafter it) and an `rpc:` capability can never be answered by rule 3 (which\nwould refuse a token the method it was minted for).",
 							"typeSignature": "(scope: { version: 1; kind: \"full\"; grandfathered?: boolean | undefined; } | { version: 1; kind: \"methods\"; methods: string[]; grandfathered?: boolean | undefined; }, capability: TokenScopeCapability): boolean",
-							"sourceLine": 258,
+							"sourceLine": 260,
 							"parameters": [
 								{
 									"name": "scope",
@@ -117744,7 +117791,7 @@
 							"kind": "function",
 							"docComment": "Build the flat denial body a non-RPC route returns when a narrowed token\nreaches a capability it lacks:\n`{error: 'token_scope_required', required_scope: '<section>:<id>'}` at 403.\n\nOne shape for every capability, matching the Rust\n`token_scope_surface_denied_response`. These are REST-ish routes whose\nsibling denials are already flat, so the JSON-RPC envelope stays with the\ndispatcher's per-method gate and stops there.",
 							"typeSignature": "(capability: string): { error: \"token_scope_required\"; required_scope: string; }",
-							"sourceLine": 276,
+							"sourceLine": 278,
 							"parameters": [
 								{
 									"name": "capability",
@@ -117758,7 +117805,7 @@
 							"kind": "function",
 							"docComment": "Stable label for the token list / UI.",
 							"typeSignature": "(scope: { version: 1; kind: \"full\"; grandfathered?: boolean | undefined; } | { version: 1; kind: \"methods\"; methods: string[]; grandfathered?: boolean | undefined; }): string",
-							"sourceLine": 284,
+							"sourceLine": 286,
 							"parameters": [
 								{
 									"name": "scope",
@@ -117776,7 +117823,7 @@
 							"kind": "function",
 							"docComment": "Parse a stored document, enforcing the size cap and the schema.\n\n**Fail-closed**: returns `null` on an unreadable document, and every caller on\nthe enforcement path treats `null` as \"refuse the credential\" rather than\n\"allow everything\". fuz_forge's hydrate path deliberately widens on a DB blip\n— safe there only because a role gate still applies. Here the scope *is* the\ngate, so widening on a parse failure would hand a narrowed token full\nauthority exactly when something is already wrong.",
 							"typeSignature": "(raw: string): { version: 1; kind: \"full\"; grandfathered?: boolean | undefined; } | { version: 1; kind: \"methods\"; methods: string[]; grandfathered?: boolean | undefined; } | null",
-							"sourceLine": 299,
+							"sourceLine": 301,
 							"parameters": [
 								{
 									"name": "raw",
@@ -117807,7 +117854,7 @@
 							"kind": "function",
 							"docComment": "Serialize for storage, enforcing the size cap.\n\nThrows on an over-cap document — the mint path maps that to a 400, matching\nthe Rust side's `TokenScopeError::TooLarge`.",
 							"typeSignature": "(scope: { version: 1; kind: \"full\"; grandfathered?: boolean | undefined; } | { version: 1; kind: \"methods\"; methods: string[]; grandfathered?: boolean | undefined; }): string",
-							"sourceLine": 317,
+							"sourceLine": 319,
 							"parameters": [
 								{
 									"name": "scope",
@@ -117825,7 +117872,7 @@
 							"kind": "function",
 							"docComment": "Read a stored `api_token.scope` value back into a `TokenScope`, or `null`\nwhen the document is unreadable.\n\nThe DB driver may hand `scope` back already-parsed (JSONB → object) or as\ntext depending on backend, so both are normalized here rather than at each\ncall site. Lives here rather than beside the queries so the pure scope module\nowns every parse — and so mocking the query module doesn't drag this along.",
 							"typeSignature": "(value: unknown): { version: 1; kind: \"full\"; grandfathered?: boolean | undefined; } | { version: 1; kind: \"methods\"; methods: string[]; grandfathered?: boolean | undefined; } | null",
-							"sourceLine": 336,
+							"sourceLine": 338,
 							"parameters": [
 								{
 									"name": "value",
@@ -117858,12 +117905,10 @@
 						"actions/perform_action.ts",
 						"auth/account_action_specs.ts",
 						"auth/account_actions.ts",
-						"auth/account_routes.ts",
 						"auth/api_token_queries.ts",
 						"auth/daemon_token_middleware.ts",
 						"auth/request_context.ts",
 						"hono_context.ts",
-						"server/serve_fact_route.ts",
 						"testing/app_server.ts",
 						"testing/entities.ts",
 						"testing/middleware.ts"
@@ -129440,7 +129485,6 @@
 						"auth/resolved_auth.ts",
 						"auth/session_middleware.ts",
 						"server/app_server.ts",
-						"server/serve_fact_route.ts",
 						"testing/attack_surface.ts",
 						"testing/auth_apps.ts",
 						"testing/middleware.ts",
@@ -129549,7 +129593,7 @@
 							"kind": "type",
 							"docComment": "The canonical auth shape used by both `ActionSpec.auth` and\n`RouteSpec.auth`.\n\nCross-axis registry invariants enforced via `.superRefine`:\n\n1. **Roles imply actor.** `roles?.length` ⟹ `actor === 'required'`.\n   Role checks read the actor's role_grants, so a role-gated spec without\n   a resolved actor would have nothing to check.\n3. **No accountless actors yet.** `account === 'none' && actor !== 'none'`\n   is invalid in v1. The credential resolver always binds account before\n   actor today; agent-token / group-actor credentials will lift this.\n4. **Unrestricted is leaf.** `account === 'none' && actor === 'none'`\n   ⟹ no `roles`, no `credential_types` (nothing left to gate). The same\n   rule covers `required_scope`, but enforcing it needs the capability\n   vocabulary from `auth/`, so it lives with the other `required_scope`\n   check in `fuz_auth_guard_resolver` — which is also the only site every\n   route spec traverses, since the route pipeline never parses this schema.\n\nInvariant 2 — the `actor !== 'none' ⟺ input or query declares\nacting?: ActingActor` biconditional — needs introspection of the\nspec's input/query schemas, so it is checked at registration time,\nnot on this schema. See `assert_route_auth_acting_biconditional`\nbelow.",
 							"typeSignature": "{ account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }",
-							"sourceLine": 211,
+							"sourceLine": 215,
 							"members": [
 								{
 									"name": "account",
@@ -129616,7 +129660,7 @@
 								{
 									"name": "required_scope",
 									"kind": "variable",
-									"docComment": "The capability a **narrowed** api token's scope must admit to reach this\nroute, in the `<section>:<id>` vocabulary a denial reports back as\n`required_scope`:\n\n- `surface:<name>` — a non-RPC surface, refused to every narrowed token\n  whatever its method list says (token scoping's rule that a narrowed\n  token is RPC-only). `surface:audit_stream`, `surface:fact_bare`,\n  `surface:account_verify`, and `surface:app_surface` are the spine's\n  route-spec ones; a consumer names its own without registering it.\n- `rpc:<method>` — one action method, refused unless the token lists it.\n  What a route bridged from an `ActionSpec` declares: it carries the\n  method's identity but never reaches the dispatcher's per-method gate.\n\nDeclaring it makes the guard resolver mount the refusal ahead of the role\ngate, instead of the route hand-rolling the check in its handler (which\nthe auth phase has already role-gated by then, so a narrowed token whose\naccount lacks the role would be told about the role rather than about the\nscope).\n\nOpt-in rather than blanket: no narrowed token reaches login (which reads\nno credential) or logout and the password change (session-only), and the\nRPC endpoint runs its own per-method check inside the dispatcher — and\nall are route specs too.\n\nTyped as a plain string here to keep `http/` from importing `auth/`; the\nresolver parses it at registration and throws on a malformed one.",
+									"docComment": "The capability a **narrowed** api token's scope must admit to reach this\nroute, in the `<section>:<id>` vocabulary a denial reports back as\n`required_scope`:\n\n- `surface:<name>` — a non-RPC surface, refused to every narrowed token\n  whatever its method list says (token scoping's rule that a narrowed\n  token is RPC-only). `surface:audit_stream`, `surface:fact_bare`,\n  `surface:account_verify`, and `surface:app_surface` are the spine's\n  route-spec ones; a consumer names its own without registering it.\n- `rpc:<method>` — one action method, refused unless the token lists it.\n  What a route bridged from an `ActionSpec` declares: it carries the\n  method's identity but never reaches the dispatcher's per-method gate.\n\nDeclaring it makes the guard resolver mount the refusal ahead of the role\ngate, instead of the route hand-rolling the check in its handler (which\nthe auth phase has already role-gated by then, so a narrowed token whose\naccount lacks the role would be told about the role rather than about the\nscope).\n\nOpt-in rather than blanket: no narrowed token reaches login (which reads\nno credential) or logout and the password change (session-only), the\nRPC endpoint runs its own per-method check inside the dispatcher, the\n`reads_credential` routes that answer anonymous callers (account status,\nthe cell-scoped fact read) can't take the field and answer a narrowed\ntoken as anonymous in their handler (`get_public_account_id`), and the\nserver-status route admits a narrowed token by design — and all are\nroute specs too.\n\nTyped as a plain string here to keep `http/` from importing `auth/`; the\nresolver parses it at registration and throws on a malformed one.",
 									"typeSignature": "string",
 									"optional": true
 								}
@@ -129628,7 +129672,7 @@
 							"kind": "function",
 							"docComment": "True iff the route is fully public — both account and actor axes\nare `'none'`. Public routes skip the dispatcher's authorization\nphase entirely (per registry-time invariant 4 they also cannot\ndeclare roles or credential gates).",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 227,
+							"sourceLine": 231,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129646,7 +129690,7 @@
 							"kind": "function",
 							"docComment": "True iff the route declares an actor axis (`'optional'` or\n`'required'`). Equivalent to \"the dispatcher's authorization phase\nmay resolve an actor for this request\" — which by registry-time\ninvariant 2 also means the input (or query, on REST GETs) declares\n`acting?: ActingActor`.",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 237,
+							"sourceLine": 241,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129664,7 +129708,7 @@
 							"kind": "function",
 							"docComment": "True iff the route declares an account axis (`'optional'` or\n`'required'`). Per registry-time invariant 3 this is implied by\n`needs_actor(auth)` in v1 (no accountless actors yet).",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 244,
+							"sourceLine": 248,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129682,7 +129726,7 @@
 							"kind": "function",
 							"docComment": "True iff the route declares any role gate (`auth.roles?.length`).",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 247,
+							"sourceLine": 251,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129700,7 +129744,7 @@
 							"kind": "function",
 							"docComment": "True iff the route declares any credential-type gate (`auth.credential_types?.length`).",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 250,
+							"sourceLine": 254,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129718,7 +129762,7 @@
 							"kind": "function",
 							"docComment": "True iff the route is the keeper bucket — a credential gate admitting\n`daemon_token`. Knows the literal directly, because keeper is a named\nauthority level rather than one channel among many: it is the ceiling\nsessions and api tokens cannot reach.\n\nNarrower than `is_credential_gated_auth`, which is true of every channel\ngate — including the session-only gates pointing the other way (the\ncredential-minting actions, `POST /logout` / `POST /password`, the audit\nSSE stream). Reach for the general predicate when the question is \"does a\nchannel gate answer here\"; reach for this one only when the question is\nabout keeper specifically.",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 266,
+							"sourceLine": 270,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129736,7 +129780,7 @@
 							"kind": "function",
 							"docComment": "True iff the route is plain authenticated — `account === 'required'`\nwith no role gate and no credential gate: any credential the auth\nmiddleware resolved gets in.\n\nA channel gate takes a route out of this bucket, which is why the\naccount-grain routes one might expect here are not — `POST /logout`,\n`POST /password`, and the `account_*` credential-lifecycle actions all\ndeclare `credential_types: ['session']` and answer to\n`is_credential_gated_auth` instead.",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }): boolean",
-							"sourceLine": 280,
+							"sourceLine": 284,
 							"parameters": [
 								{
 									"name": "auth",
@@ -129754,7 +129798,7 @@
 							"kind": "function",
 							"docComment": "Whether a schema declares the canonical `acting?: ActingActor` field.\nReference-equality on the exported `ActingActor` schema — consumer\nschemas with unrelated `acting` fields don't trip this check.\n\nPeels through Zod wrappers (`optional`, `nullable`, `default`,\n`transform`, `pipe`, `prefault`) via `zod_unwrap_to_object` so a spec\nauthored as `z.optional(z.strictObject({acting: ActingActor}))` or\n`z.strictObject({acting: ActingActor}).default({})` still trips the\npredicate.",
 							"typeSignature": "(schema: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>): boolean",
-							"sourceLine": 304,
+							"sourceLine": 308,
 							"parameters": [
 								{
 									"name": "schema",
@@ -129796,7 +129840,7 @@
 							"kind": "interface",
 							"docComment": "Slots where a spec may declare the `acting?: ActingActor` field —\ninput for both REST + actions; query for REST GETs that bi-locate\n`acting` on the query schema (actions have no `query` shape, so the\nfield is omitted on action call sites).",
 							"typeSignature": "ActingSlots",
-							"sourceLine": 316,
+							"sourceLine": 320,
 							"members": [
 								{
 									"name": "input",
@@ -129872,7 +129916,7 @@
 							"kind": "function",
 							"docComment": "Registry-time biconditional check: `auth.actor !== 'none' ⟺ some\nsupplied slot declares acting?: ActingActor`. Throws on violation.\n\nThe slot set differs by surface: REST passes `{input, query}` (both\nlocatable, query only set for GETs); action dispatchers pass `{input}`\n(no query shape on `ActionSpec`). The throw message lists the slots\nthat were actually in play, so an actor-required action without\n`acting` doesn't point the operator at a query slot that doesn't\nexist on their spec.\n\nCalled by every dispatcher registration loop (`apply_route_specs`,\n`compile_action_registry`) on every spec it accepts.",
 							"typeSignature": "(auth: { account: \"optional\" | \"none\" | \"required\"; actor: \"optional\" | \"none\" | \"required\"; roles?: readonly string[] | undefined; credential_types?: readonly string[] | undefined; required_scope?: string | undefined; }, slots: ActingSlots, context: string): void",
-							"sourceLine": 340,
+							"sourceLine": 344,
 							"throws": [
 								{
 									"type": "Error",
@@ -134884,7 +134928,7 @@
 							"kind": "function",
 							"docComment": "Get validated input from the Hono context.\n\nCall after the input validation middleware has run. Pass the route's\n`input` Zod schema to infer the typed shape directly:\n\n```ts\nconst input = get_route_input(c, my_route_spec.input);\n```\n\nOr pass an explicit type argument when the schema isn't in scope:\n\n```ts\nconst input = get_route_input<MyInput>(c);\n```",
 							"typeSignature": "<S extends z.ZodType>(c: Context<any, any, {}>, schema: S): output<S>",
-							"sourceLine": 248,
+							"sourceLine": 256,
 							"genericParams": [
 								{
 									"name": "S",
@@ -135001,7 +135045,7 @@
 							"kind": "function",
 							"docComment": "Get validated URL path params from the Hono context.\n\nCall after the params validation middleware has run. Pass the route's\n`params` schema to infer the typed shape, or supply an explicit type\nargument. See `get_route_input` for the two call shapes.",
 							"typeSignature": "<S extends z.ZodType>(c: Context<any, any, {}>, schema: S): output<S>",
-							"sourceLine": 261,
+							"sourceLine": 269,
 							"genericParams": [
 								{
 									"name": "S",
@@ -135118,7 +135162,7 @@
 							"kind": "function",
 							"docComment": "Get validated URL query params from the Hono context.\n\nCall after the query validation middleware has run. Pass the route's\n`query` schema to infer the typed shape, or supply an explicit type\nargument. See `get_route_input` for the two call shapes.",
 							"typeSignature": "<S extends z.ZodType>(c: Context<any, any, {}>, schema: S): output<S>",
-							"sourceLine": 274,
+							"sourceLine": 282,
 							"genericParams": [
 								{
 									"name": "S",
@@ -135718,7 +135762,7 @@
 								{
 									"name": "reads_credential",
 									"kind": "variable",
-									"docComment": "Marks a route that reads the resolved credential in its handler while\ndeclaring no auth gate — it answers an anonymous caller itself instead\nof taking the dispatcher's `401` (account status, the cell-scoped fact\nread, the JSON-RPC endpoint whose dispatcher gates each action).\nOutside the auth middleware's scope no session or bearer parsing runs\nand it would see every caller as anonymous, so assembly refuses it\nthere (`assert_credential_routes_in_auth_scope`), as it does a route\nwhose `auth.account` is not `'none'`.",
+									"docComment": "Marks a route that reads the resolved credential in its handler while\ndeclaring no auth gate — it answers an anonymous caller itself instead\nof taking the dispatcher's `401` (account status, the cell-scoped fact\nread, the JSON-RPC endpoint whose dispatcher gates each action).\nOutside the auth middleware's scope no session or bearer parsing runs\nand it would see every caller as anonymous, so assembly refuses it\nthere (`assert_credential_routes_in_auth_scope`), as it does a route\nwhose `auth.account` is not `'none'`.\n\nThe handler owns the token-scope rule a gate would otherwise apply: a\nscope-narrowed API token reaches no non-RPC surface that reads account\ndata, and `auth.required_scope` is refused on a route that admits\nanonymous callers. Read the credential through `get_public_account_id`\n(`auth/request_context.ts`), not `ACCOUNT_ID_KEY`, so a narrowed token is\nanswered as the anonymous caller. The RPC endpoint is the exception — its\ndispatcher gates each method against the scope.",
 									"typeSignature": "boolean",
 									"optional": true
 								},
@@ -135798,7 +135842,7 @@
 							"kind": "function",
 							"docComment": "Apply named middleware specs to a Hono app.",
 							"typeSignature": "(app: Hono<BlankEnv, BlankSchema, \"/\">, specs: MiddlewareSpec[]): void",
-							"sourceLine": 459,
+							"sourceLine": 467,
 							"mutates": {
 								"app": ""
 							},
@@ -135845,7 +135889,7 @@
 							"kind": "function",
 							"docComment": "Apply route specs to a Hono app.\n\nFor each spec: resolves auth to guards via the provided resolver,\nadds input validation middleware (for routes with non-null input schemas),\nruns the optional authorization phase to resolve the acting actor + build\nthe request context, wraps handler with DEV-only output and error\nvalidation, wraps with error catch layer (catches `ThrownJsonrpcError`\nand generic errors), and registers the route.\n\nPer-route middleware order: content type (415, `POST` only) → params →\nquery → pre-authorization auth guards (401 + rule-3 scope) →\nauthorization phase → post-authorization auth guards (403) → input\nvalidation (400) → handler. The content type goes first because it says\nalmost nothing about the route, and a forged request should be refused\nbefore any credential is read. Body\nvalidation runs behind every authority gate, so a caller\nany of them refuse never sees route-shape information from a parse\nfailure — a 400 there would confirm the route exists and describe how\nto call it. Params and query still validate first (they address the\nroute rather than carry its payload, and the authorization phase reads\n`acting` off the query on GETs).\n\nEach handler receives a `RouteContext` with:\n- `db`: transaction-scoped when `RouteSpec.transaction` is true; pool-level otherwise\n- `pending_effects`: eager fire-and-forget pool-write queue\n- `post_commit_effects`: deferred-thunk queue (push via `emit_after_commit`)\n\nAlso enforces registry-time invariant 2 from the auth-shape design:\n`auth.actor !== 'none' ⟺ input or query declares acting?: ActingActor`.\nREST is bi-located (GETs declare `acting` on `query`, mutations on\n`input`), so the check passes both slots; the action-dispatcher\nregistries (`compile_action_registry`) share the same helper with\n`input` only — `ActionSpec` has no `query` shape.",
 							"typeSignature": "(app: Hono<BlankEnv, BlankSchema, \"/\">, specs: RouteSpec[], resolve_auth_guards: AuthGuardResolver, log: Logger, db: Db, authorize?: AuthorizationHandler | undefined): void",
-							"sourceLine": 592,
+							"sourceLine": 600,
 							"throws": [
 								{
 									"type": "Error",
@@ -135918,7 +135962,7 @@
 							"kind": "function",
 							"docComment": "Prepend a prefix to all route spec paths.",
 							"typeSignature": "(prefix: string, specs: RouteSpec[]): RouteSpec[]",
-							"sourceLine": 677,
+							"sourceLine": 685,
 							"parameters": [
 								{
 									"name": "prefix",
@@ -144228,18 +144272,25 @@
 							"sourceLine": 37
 						},
 						{
+							"name": "FACT_CACHE_CONTROL",
+							"kind": "variable",
+							"docComment": "`Cache-Control` for fact responses — private, five minutes: the window a\ncached read outlives a revoked view.",
+							"typeSignature": "\"private, max-age=300\"",
+							"sourceLine": 43
+						},
+						{
 							"name": "FACT_SECURITY_HEADERS",
 							"kind": "variable",
 							"docComment": "The fact hardening headers, in render order. `Content-Disposition:\nattachment` is deliberately absent — it would force-download and break\nlegitimate inline image rendering.",
 							"typeSignature": "{ readonly 'X-Content-Type-Options': \"nosniff\"; readonly 'Content-Security-Policy': \"default-src 'none'; sandbox\"; }",
-							"sourceLine": 44
+							"sourceLine": 50
 						},
 						{
 							"name": "fact_security_header_directives",
 							"kind": "function",
 							"docComment": "The exact nginx `add_header … always;` lines the internal facts location must\ncarry, rendered from `FACT_SECURITY_HEADERS`. `always` makes nginx add the\nheader on every status, not just 2xx/3xx. The X-Accel validator refuses a\nfacts location missing any of them.",
 							"typeSignature": "(): string[]",
-							"sourceLine": 57,
+							"sourceLine": 63,
 							"returnType": "string[]",
 							"returnDescription": "one `add_header` directive per header, each ending in `always;`"
 						}
@@ -144258,7 +144309,7 @@
 							"name": "CreateServeFactRouteSpecOptions",
 							"kind": "interface",
 							"typeSignature": "CreateServeFactRouteSpecOptions",
-							"sourceLine": 195,
+							"sourceLine": 191,
 							"members": [
 								{
 									"name": "deps",
@@ -144293,9 +144344,9 @@
 						{
 							"name": "create_serve_cell_fact_route_spec",
 							"kind": "function",
-							"docComment": "Build the cell-scoped `GET /api/cells/:cell_id/facts/:hash` `RouteSpec`\n— the per-reference read.\n\nResolves the named cell (404 if missing / soft-deleted), requires\n`can_view_cell(caller, cell)` — or the steward arm,\n`cell_steward_admits` — AND `cell.refs` to include the hash\n(else 404, masked), then serves the bytes. Authz is scoped to this one\n`(cell, hash)` edge — never unioned across the fact's other referrers.\n\nPure-public auth — the handler builds the per-request `RequestContext`\nfrom `c.var.account_id` and enforces visibility per-reference.",
+							"docComment": "Build the cell-scoped `GET /api/cells/:cell_id/facts/:hash` `RouteSpec`\n— the per-reference read.\n\nResolves the named cell (404 if missing / soft-deleted), requires\n`can_view_cell(caller, cell)` — or the steward arm,\n`cell_steward_admits` — AND `cell.refs` to include the hash\n(else 404, masked), then serves the bytes. Authz is scoped to this one\n`(cell, hash)` edge — never unioned across the fact's other referrers.\n\nPure-public auth — the handler builds the per-request `RequestContext`\nfrom the resolved account id (`get_public_account_id`) and enforces\nvisibility per-reference.",
 							"typeSignature": "(options: CreateServeFactRouteSpecOptions): RouteSpec",
-							"sourceLine": 350,
+							"sourceLine": 347,
 							"parameters": [
 								{
 									"name": "options",
@@ -144309,7 +144360,7 @@
 							"kind": "function",
 							"docComment": "Build the admin-only bare-hash `GET /api/facts/:hash` `RouteSpec`.\n\nAn admin's reach already spans every cell, so serving by bare hash grants\nno escalation — the union concern that made this route a cross-owner leak\nfor non-admins is vacuous for an admin. Non-admin callers are rejected at\nthe auth phase (403) and never reach the handler. Confidential non-admin\nreads always go through the cell-scoped route above.\n\nAuth is `{account: 'required', actor: 'required', roles: ['admin']}` —\nthe dispatcher's authorization phase resolves the acting actor and the\npost-authorization guard enforces the admin role before the handler runs.\nThe handler re-checks the **global** admin grant\n(`has_scoped_role(_, admin, null)`, the auth phase's own reading) as\ndefense-in-depth so a future\nmounting/auth-shape regression fails closed rather than serving by bare\nhash to a non-admin.",
 							"typeSignature": "(options: CreateServeFactRouteSpecOptions): RouteSpec",
-							"sourceLine": 427,
+							"sourceLine": 424,
 							"parameters": [
 								{
 									"name": "options",
@@ -144319,7 +144370,7 @@
 							"returnType": "RouteSpec"
 						}
 					],
-					"moduleComment": "Content-addressed fact serving — cell-scoped, per-reference reads.\n\nTwo routes serve fact bytes from the PG-backed fact store:\n\n- `GET /api/cells/:cell_id/facts/:hash` — the **per-reference read**.\n  The request names the referencing cell. Authz is scoped to that one\n  reference: `(can_view_cell(caller, cell) OR the steward arm) AND\n  cell.refs includes hash`, the steward arm being the governing root's\n  manager reading a pending or rejected contribution\n  (`auth/cell_steward.ts`). This is the path non-admin callers use, and the only path for\n  confidential content.\n- `GET /api/facts/:hash` — the **bare-hash read**, restricted to admins.\n\nEmbedded facts stream from the `fact.bytes` PG column; external facts\n(filesystem-backed `file:<shard>/<rest>` URLs) either return an\n`X-Accel-Redirect` header pointing into nginx's internal facts location\n(production) or stream from disk (dev / tests). The runtime mode is\nselected by the optional `x_accel` factory option — a validated\n`XAccelConfig` (built via\n`create_x_accel_config` in `server/x_accel.ts`) set in prod, unset in dev.\nThe handle can only be obtained by proving the facts nginx location is\n`internal;` and carries the fact hardening headers, so X-Accel serving can't\nbe enabled against a public or header-less location.\n\nREST, not RPC: binary responses don't fit the JSON-RPC envelope.\n\n## Authorization — authz lives on the cell→fact edge, not the hash\n\nFacts are global, content-addressed, owner-less bytes: identical bytes\nfrom different owners dedup to **one** `fact` row. Keying access control\non the bare hash therefore unions visibility across every owner that\nreferences it — A's private bytes leak the instant B references identical\nbytes from a public cell. The fix is to scope authz to the\n`(cell, hash)` edge: a caller reads a fact *through a specific cell it\ncan view that references the hash*. Dedup becomes a pure storage\noptimization with zero authz consequence — whether two owners' bytes\nshare a `fact` row is invisible to the read check.\n\nThe cell-scoped route resolves the named cell, requires\n`can_view_cell(caller, cell)`, and requires `cell.refs` to include the\nhash. B publishing identical bytes from B's public cell makes them\nreadable *via B's cell* — it never touches A's private reference.\n\nThe edge is only as safe as what may create it. A cell's `refs` derive\nfrom its `data`, and any account that can write a cell writes its `data` —\nso this route alone would make a known hash a read capability: name it in\na cell you own, flip the cell public, and the bytes serve to the world,\nwhile a 200 against a 404 says whether the fact exists. What closes that is\n**possession-gated ref admission** on the cell verbs\n(`auth/cell_ref_admission.ts`): a non-admin `cell_create` / `cell_update` /\n`cell_clone` may introduce a ref only to a fact its acting actor holds —\none it put the bytes of, recorded in `fact_holder` on every put, a\ndeduplicated put included — and is refused `403 cell_ref_not_held`\notherwise, the same answer whether or not a fact is stored. Refs a cell\nalready carries stay admitted through updates and clones, so a viewer who\nclones a cell carries its refs: what a viewer can read through a cell, it\ncan republish — no more than downloading the bytes and uploading them\nagain. A serve is a snapshot of the edge at read time; revoking someone's\naccess to a cell does not withdraw refs they already wrote elsewhere.\nWriters that bypass the verbs (seeds, raw inserts) are trusted and not\nadmitted.\n\nThe bare-hash route is **admin-only**: an admin's reach already spans\nevery cell, so serving by bare hash grants no escalation. Non-admin\ncallers are rejected at the auth phase and never reach the handler.\n(Explicitly-public facts — a producer opting bytes into world-readable\nstatus — are a future refinement; there is no such concept today, so\nthe bare-hash route stays strictly admin-gated.)\n\nAuth shape on the cell-scoped route is `{account: 'none', actor: 'none'}`\n— the dispatcher's authorization phase is skipped for pure-public routes,\nso the handler builds the `RequestContext` itself from `c.var.account_id`\n(populated by the `/api/*` session middleware) by resolving the caller's\nsingle actor and loading their role_grants. Unauthed callers pass through\nwith `req_ctx: null` and are admitted only by a `cell.visibility ===\n'public'` cell whose `moderation` admits an audience (unmoderated or\n`'approved'`). Multi-actor accounts fall through with `req_ctx: null`\n— there's no `acting?` slot on a pure-public route, so multi-actor\ncallers are treated as anonymous. A scope-narrowed API token is treated as\nanonymous too, not refused: a narrowed token reaches no non-RPC surface\n(`token_scope_admits_non_rpc`), but on a route that admits anonymous callers\na 403 would enforce nothing — the holder drops the `Authorization` header and\nre-reads every public cell anyway.\n\n404 is the universal \"not viewable\" response: missing fact, missing or\nunviewable cell, or the cell doesn't reference the hash. We deliberately\ndon't distinguish 403 from 404 — neither the existence of a fact nor the\nexistence of a cell→fact edge should leak through the public surface.\n\nA ref is a `data` string value that is exactly a fact hash\n(`derive_cell_refs`) — a hash inside prose or markup is not one. So a doc\ncell that shows images stores each image's hash as its own string value\n(an attachment list, say) beside the text that places them; serving then\ngoes view-doc-cell → doc-cell-refs-include-hash → serve.\n\n## Untrusted-content hardening\n\nFact bytes are served with a producer-supplied `content_type` emitted\nverbatim, inline. To stop a fact stored as (or sniffable to) `text/html`\nfrom executing as stored XSS for any reader of a referencing cell, **every**\nserved-fact response carries `X-Content-Type-Options: nosniff` +\n`Content-Security-Policy: default-src 'none'; sandbox` (the\n`FACT_SECURITY_HEADERS` set from `server/fact_security_headers.ts`,\nbyte-identical with the Rust twin `fuz_fact_serving`). The embedded and\ndisk-stream branches set them on the response. On the `X-Accel-Redirect`\nbranch nginx serves the bytes, and the headers the client sees come from the\ninternal facts location, not this response — that location must carry the\nlines `fact_security_header_directives` renders, which `create_x_accel_config`\nenforces.\n`Content-Disposition: attachment` is deliberately **not** added — it would\nforce-download and break legitimate inline image rendering.\n\n## Defense-in-depth\n\n`external_url` is re-validated against the `file:<shard>/<rest>` shape\nbefore it addresses the filesystem or an `X-Accel-Redirect`. `PgFactStore`\nwrites only that shape, but the column is free text and `query_put_fact`\ninserts what it is given, so a row written past the store — or a\nrow-injection bug upstream — would otherwise hand nginx an\nattacker-controlled path. Any other shape is a logged 404, the same\nunavailable that `PgFactStore.get` reports for it as `null`.",
+					"moduleComment": "Content-addressed fact serving — cell-scoped, per-reference reads.\n\nTwo routes serve fact bytes from the PG-backed fact store:\n\n- `GET /api/cells/:cell_id/facts/:hash` — the **per-reference read**.\n  The request names the referencing cell. Authz is scoped to that one\n  reference: `(can_view_cell(caller, cell) OR the steward arm) AND\n  cell.refs includes hash`, the steward arm being the governing root's\n  manager reading a pending or rejected contribution\n  (`auth/cell_steward.ts`). This is the path non-admin callers use, and the only path for\n  confidential content.\n- `GET /api/facts/:hash` — the **bare-hash read**, restricted to admins.\n\nEmbedded facts stream from the `fact.bytes` PG column; external facts\n(filesystem-backed `file:<shard>/<rest>` URLs) either return an\n`X-Accel-Redirect` header pointing into nginx's internal facts location\n(production) or stream from disk (dev / tests). The runtime mode is\nselected by the optional `x_accel` factory option — a validated\n`XAccelConfig` (built via\n`create_x_accel_config` in `server/x_accel.ts`) set in prod, unset in dev.\nThe handle can only be obtained by proving the facts nginx location is\n`internal;` and carries the fact hardening headers, so X-Accel serving can't\nbe enabled against a public or header-less location.\n\nREST, not RPC: binary responses don't fit the JSON-RPC envelope.\n\n## Authorization — authz lives on the cell→fact edge, not the hash\n\nFacts are global, content-addressed, owner-less bytes: identical bytes\nfrom different owners dedup to **one** `fact` row. Keying access control\non the bare hash therefore unions visibility across every owner that\nreferences it — A's private bytes leak the instant B references identical\nbytes from a public cell. The fix is to scope authz to the\n`(cell, hash)` edge: a caller reads a fact *through a specific cell it\ncan view that references the hash*. Dedup becomes a pure storage\noptimization with zero authz consequence — whether two owners' bytes\nshare a `fact` row is invisible to the read check.\n\nThe cell-scoped route resolves the named cell, requires\n`can_view_cell(caller, cell)`, and requires `cell.refs` to include the\nhash. B publishing identical bytes from B's public cell makes them\nreadable *via B's cell* — it never touches A's private reference.\n\nThe edge is only as safe as what may create it. A cell's `refs` derive\nfrom its `data`, and any account that can write a cell writes its `data` —\nso this route alone would make a known hash a read capability: name it in\na cell you own, flip the cell public, and the bytes serve to the world,\nwhile a 200 against a 404 says whether the fact exists. What closes that is\n**possession-gated ref admission** on the cell verbs\n(`auth/cell_ref_admission.ts`): a non-admin `cell_create` / `cell_update` /\n`cell_clone` may introduce a ref only to a fact its acting actor holds —\none it put the bytes of, recorded in `fact_holder` on every put, a\ndeduplicated put included — and is refused `403 cell_ref_not_held`\notherwise, the same answer whether or not a fact is stored. Refs a cell\nalready carries stay admitted through updates and clones, so a viewer who\nclones a cell carries its refs: what a viewer can read through a cell, it\ncan republish — no more than downloading the bytes and uploading them\nagain. A serve is a snapshot of the edge at read time; revoking someone's\naccess to a cell does not withdraw refs they already wrote elsewhere.\nWriters that bypass the verbs (seeds, raw inserts) are trusted and not\nadmitted.\n\nThe bare-hash route is **admin-only**: an admin's reach already spans\nevery cell, so serving by bare hash grants no escalation. Non-admin\ncallers are rejected at the auth phase and never reach the handler.\n(Explicitly-public facts — a producer opting bytes into world-readable\nstatus — are a future refinement; there is no such concept today, so\nthe bare-hash route stays strictly admin-gated.)\n\nAuth shape on the cell-scoped route is `{account: 'none', actor: 'none'}`\n— the dispatcher's authorization phase is skipped for pure-public routes,\nso the handler builds the `RequestContext` itself from the resolved account\nid (`get_public_account_id`, over what the `/api/*` auth middleware set) by\nresolving the caller's single actor and loading their role_grants.\nUnauthed callers pass through with `req_ctx: null` and are admitted only by\na `cell.visibility === 'public'` cell whose `moderation` admits an audience (unmoderated or\n`'approved'`). Multi-actor accounts fall through with `req_ctx: null`\n— there's no `acting?` slot on a pure-public route, so multi-actor\ncallers are treated as anonymous. A scope-narrowed API token is treated as\nanonymous too, not refused (`get_public_account_id`): a narrowed token\nreaches no non-RPC surface, but on a route that admits anonymous callers\na 403 would enforce nothing — the holder drops the `Authorization` header and\nre-reads every public cell anyway.\n\n404 is the universal \"not viewable\" response: missing fact, missing or\nunviewable cell, or the cell doesn't reference the hash. We deliberately\ndon't distinguish 403 from 404 — neither the existence of a fact nor the\nexistence of a cell→fact edge should leak through the public surface.\n\nA ref is a `data` string value that is exactly a fact hash\n(`derive_cell_refs`) — a hash inside prose or markup is not one. So a doc\ncell that shows images stores each image's hash as its own string value\n(an attachment list, say) beside the text that places them; serving then\ngoes view-doc-cell → doc-cell-refs-include-hash → serve.\n\n## Untrusted-content hardening\n\nFact bytes are served with a producer-supplied `content_type` emitted\nverbatim, inline. To stop a fact stored as (or sniffable to) `text/html`\nfrom executing as stored XSS for any reader of a referencing cell, **every**\nserved-fact response carries `X-Content-Type-Options: nosniff` +\n`Content-Security-Policy: default-src 'none'; sandbox` (the\n`FACT_SECURITY_HEADERS` set from `server/fact_security_headers.ts`,\nbyte-identical with the Rust twin `fuz_fact_serving`). The embedded and\ndisk-stream branches set them on the response. On the `X-Accel-Redirect`\nbranch nginx serves the bytes, and the headers the client sees come from the\ninternal facts location, not this response — that location must carry the\nlines `fact_security_header_directives` renders, which `create_x_accel_config`\nenforces.\n`Content-Disposition: attachment` is deliberately **not** added — it would\nforce-download and break legitimate inline image rendering.\n\n## Defense-in-depth\n\n`external_url` is re-validated against the `file:<shard>/<rest>` shape\nbefore it addresses the filesystem or an `X-Accel-Redirect`. `PgFactStore`\nwrites only that shape, but the column is free text and `query_put_fact`\ninserts what it is given, so a row written past the store — or a\nrow-injection bug upstream — would otherwise hand nginx an\nattacker-controlled path. Any other shape is a logged 404, the same\nunavailable that `PgFactStore.get` reports for it as `null`.",
 					"dependencies": [
 						"auth/account_queries.ts",
 						"auth/cell_authorize.ts",
@@ -144327,12 +144378,10 @@
 						"auth/deps.ts",
 						"auth/request_context.ts",
 						"auth/role_schema.ts",
-						"auth/token_scope.ts",
 						"db/cell_grant_queries.ts",
 						"db/cell_queries.ts",
 						"db/fact_queries.ts",
 						"db/file_fact_url.ts",
-						"hono_context.ts",
 						"http/auth_shape.ts",
 						"http/error_schemas.ts",
 						"http/route_spec.ts",
@@ -144545,7 +144594,7 @@
 							"kind": "interface",
 							"docComment": "Result of the facts-location check.",
 							"typeSignature": "NginxFactsValidation",
-							"sourceLine": 129,
+							"sourceLine": 131,
 							"members": [
 								{
 									"name": "ok",
@@ -144566,7 +144615,7 @@
 							"kind": "function",
 							"docComment": "Assert the nginx config serves the X-Accel facts prefix only from `internal;`\nlocations carrying the fact hardening headers. See the module docs for the\nrules; every violation is collected, so one call reports them all.",
 							"typeSignature": "(config: string, facts_location: string): NginxFactsValidation",
-							"sourceLine": 145,
+							"sourceLine": 147,
 							"parameters": [
 								{
 									"name": "config",
@@ -144587,7 +144636,7 @@
 							"kind": "type",
 							"docComment": "A validated X-Accel redirect configuration — the only handle that enables the\n`X-Accel-Redirect` serving path in `server/serve_fact_route.ts`.\n\nThe redirect prefix can be obtained **only** by passing the nginx config\nthrough `validate_facts_internal_location` (via `create_x_accel_config`), so\nX-Accel serving is impossible to enable without proving at boot that the\nfacts location is `internal;` and carries the fact hardening headers — a\npublic facts location would bypass every cell-visibility check. A\nZod-branded type: the brand can't be forged without an explicit cast, so the\nfactory is the only ordinary construction path.",
 							"typeSignature": "{ redirect_prefix: string; } & $brand<\"XAccelConfig\">",
-							"sourceLine": 321,
+							"sourceLine": 323,
 							"typeInfo": {
 								"kind": "intersection",
 								"members": [
@@ -144622,7 +144671,7 @@
 							"name": "XAccelConfigError",
 							"kind": "class",
 							"docComment": "A misconfigured X-Accel facts location — a fail-loud boot error thrown by\n`create_x_accel_config`.",
-							"sourceLine": 327,
+							"sourceLine": 329,
 							"extends": [
 								"Error"
 							],
@@ -144657,7 +144706,7 @@
 							"kind": "function",
 							"docComment": "Build a validated `XAccelConfig`, asserting the nginx config serves\n`redirect_prefix` only from safe locations (the module-level rules).\n\nThe make-impossible-states gate: serving can only emit `X-Accel-Redirect`\ninto a location proven `internal;` and header-carrying at boot.",
 							"typeSignature": "(redirect_prefix: string, nginx_config: string): { redirect_prefix: string; } & $brand<\"XAccelConfig\">",
-							"sourceLine": 352,
+							"sourceLine": 354,
 							"throws": [
 								{
 									"description": "`XAccelConfigError` carrying every violation\n`validate_facts_internal_location` finds — a prefix not ending in `/`, a\nmissing, public, header-less, re-headered, exact-match, or regex-shadowed\nfacts location, or `ssi` / headers-more reaching it."
@@ -144683,7 +144732,7 @@
 							"returnDescription": "the validated `XAccelConfig` carrying `redirect_prefix`"
 						}
 					],
-					"moduleComment": "Fail-loud validation of the X-Accel facts nginx location.\n\nThe `X-Accel-Redirect` serving path's confidentiality depends on the facts\nnginx location being `internal;` — only the authz'd handler's redirect (an\ninternal subrequest) may reach it. A *public* facts location would serve any\nfact's bytes to anyone who guesses the `<shard>/<rest>` path, bypassing every\ncell-visibility check. A location with its own `add_header` also stops the\nserver-level headers from applying, so the facts location must carry the fact\nhardening headers itself (`fact_security_header_directives` in\n`server/fact_security_headers.ts`).\n\n`XAccelConfig` makes these assertions structural: a consumer can only obtain\nthe redirect prefix by building an `XAccelConfig`, which runs\n`validate_facts_internal_location` and throws **loudly** on any violation — it\ncannot silently fall closed.\n\n## Rules\n\nThe config is tokenized as nginx reads it (`ngx_conf_read_token`): whitespace\nis exactly space, tab, CR and LF; an unquoted word ends only at those or at\n`;` / `{` (a `}` inside a word is part of it, and so is a `{` straight after\n`$`); `#` starts a comment only where a token would start; quoted strings are\none word, with nginx's backslash escapes. It is then parsed into nested\nblocks, and every `location` at any depth, in every `server` block, is\nclassified against the prefix (trailing slashes ignored). A location *serves\nthe prefix* when it is a prefix-type location (no modifier, or `^~`) whose\npath is the prefix or below it. Each one must:\n\n- use `^~` — a plain prefix location is refused;\n- be a direct child of a `server` block — one nested in another location is\n  refused;\n- carry, as top-level directives of its own body, an exact `internal;` and\n  each `fact_security_header_directives` line (token-equal: whitespace and\n  quoting are free, the words are not);\n- set those headers with no other `add_header` — one naming a\n  `FACT_SECURITY_HEADERS` header (ASCII case-insensitive) that is not\n  token-equal to its required line is refused, since nginx sends both values\n  and a client may read only the first (`sniff, nosniff`);\n- hold only simple directives — any nested block (`location`, `if`,\n  `limit_except`, …) is refused, and so is `include`, since included files\n  are not followed.\n\nThe first two rules are what keep regex locations out: nginx never evaluates\nregex locations for a path whose longest prefix match is a `^~` location at\nserver level, and because every prefix location at or below the prefix must\nbe such a location, the longest match for any redirected path always is. (A\nlonger plain location below the prefix can't exist — the `^~` rule refuses\nit.)\n\nThe prefix may appear only in its own location lines and their bodies:\n`internal;` admits every internal redirect and subrequest, so any other\ndirective with a word naming the prefix (trailing slash trimmed, so\n`/_facts$uri` counts) is refused, in any block at any depth — a `rewrite`,\n`try_files`, `error_page`, `index`, `add_before_body`, or a `set` / `map`\nvalue that a redirect later reads. The only exemptions are each `location`'s\nown modifier and path words and the bodies of the locations serving the\nprefix.\n\nThe prefix itself must be an absolute path ending in exactly one `/` — the\nserver appends `<shard>/<rest>` straight onto it, so `/_facts` would redirect\nto `/_factsab/…`, outside the validated location. At least one location\nserving the prefix must sit exactly at it (`/_facts` or `/_facts/`): one only\nbelow it (`location ^~ /_facts/00/`) leaves every other redirect path to\nwhatever location matches next, and nginx compares location paths\nbyte-for-byte, so `/_facts//` sits below it too.\n\nModule directives that undo those guarantees are refused too:\n\n- `ssi` with any value but `off`, anywhere in the config. SSI `include\n  virtual` is a subrequest, which `internal;` admits, so an SSI-processed\n  response — a fact inheriting `ssi on` from `http` or `server`, or any page\n  carrying user content — could include another fact's bytes.\n- `more_set_headers` / `more_clear_headers` (headers-more) everywhere except\n  inside a `location` that doesn't serve the prefix (or a block within one):\n  they run after `add_header` and can strip the hardening headers, so they\n  are refused in the facts location and at every level above it, including\n  any block there (`if`, another `server`).\n\nAlso refused: an `=` location on the prefix or below it (it can't serve the\nnested paths the redirect emits); a regex location (`~` / `~*`) whose pattern\nspells out the prefix (after unescaping `\\/`, ASCII case-folded for `~*`) —\ndead under the rules above, refused for the clearer message; a config with no\nlocation at the prefix; and blocks nested more than 64 deep (a parse error, so\nthe walks can't exhaust the stack). `include` at server level is allowed, but\nits file is not read — keep facts-related locations and the directives above\nout of included files.\n\nThe threat model is operator mistakes, not an adversarial config author: the\nprefix check is textual, so a value assembled from pieces (`/_fac$1`) evades\nit. Beyond the config text:\n\n- The validator checks URL paths only — another `root` or `alias` that maps\n  onto the facts directory would serve its files publicly, so keep the facts\n  directory outside every other location's root.\n- nginx honours `X-Accel-Redirect` from any proxied upstream (`proxy_pass`,\n  `fastcgi_pass`, `uwsgi_pass`, `scgi_pass`, `grpc_pass`), so every upstream in\n  the server is trusted to point into the prefix; an untrusted one needs\n  `proxy_ignore_headers X-Accel-Redirect;` (or the `fastcgi_` / `uwsgi_` /\n  `scgi_` equivalent).\n- Other module code can redirect internally too (njs `internalRedirect`, perl,\n  echo), so run trusted modules and content only.\n\nThe Rust twin is `fuz_fact_serving`'s `nginx.rs`, held to the same rules and\nthe same fixture corpus.\n\n@example\n```ts\nconst x_accel = create_x_accel_config(\n\t'/_facts/',\n\t`server {\n\tlocation ^~ /_facts/ {\n\t\tinternal;\n\t\talias /srv/app/facts/;\n\t\t${fact_security_header_directives().join('\\n\\t\\t')}\n\t}\n}`\n);\n```",
+					"moduleComment": "Fail-loud validation of the X-Accel facts nginx location.\n\nThe `X-Accel-Redirect` serving path's confidentiality depends on the facts\nnginx location being `internal;` — only the authz'd handler's redirect (an\ninternal subrequest) may reach it. A *public* facts location would serve any\nfact's bytes to anyone who guesses the `<shard>/<rest>` path, bypassing every\ncell-visibility check. A location with its own `add_header` also stops the\nserver-level headers from applying, so the facts location must carry the fact\nhardening headers itself (`fact_security_header_directives` in\n`server/fact_security_headers.ts`).\n\n`XAccelConfig` makes these assertions structural: a consumer can only obtain\nthe redirect prefix by building an `XAccelConfig`, which runs\n`validate_facts_internal_location` and throws **loudly** on any violation — it\ncannot silently fall closed.\n\n## Rules\n\nThe config is tokenized as nginx reads it (`ngx_conf_read_token`): whitespace\nis exactly space, tab, CR and LF; an unquoted word ends only at those or at\n`;` / `{` (a `}` inside a word is part of it, and so is a `{` straight after\n`$`); `#` starts a comment only where a token would start; quoted strings are\none word, with nginx's backslash escapes. It is then parsed into nested\nblocks, and every `location` at any depth, in every `server` block, is\nclassified against the prefix (trailing slashes ignored). A location *serves\nthe prefix* when it is a prefix-type location (no modifier, or `^~`) whose\npath is the prefix or below it. Each one must:\n\n- use `^~` — a plain prefix location is refused;\n- be a direct child of a `server` block — one nested in another location is\n  refused;\n- carry, as top-level directives of its own body, an exact `internal;` and\n  each `fact_security_header_directives` line (token-equal: whitespace and\n  quoting are free, the words are not);\n- set those headers with no other `add_header` — one naming a\n  `FACT_SECURITY_HEADERS` header (ASCII case-insensitive) that is not\n  token-equal to its required line is refused, since nginx sends both values\n  and a client may read only the first (`sniff, nosniff`);\n- hold only simple directives — any nested block (`location`, `if`,\n  `limit_except`, …) is refused, and so is `include`, since included files\n  are not followed.\n\nThe first two rules are what keep regex locations out: nginx never evaluates\nregex locations for a path whose longest prefix match is a `^~` location at\nserver level, and because every prefix location at or below the prefix must\nbe such a location, the longest match for any redirected path always is. (A\nlonger plain location below the prefix can't exist — the `^~` rule refuses\nit.)\n\nThe prefix may appear only in its own location lines and their bodies:\n`internal;` admits every internal redirect and subrequest, so any other\ndirective with a word naming the prefix (trailing slash trimmed, so\n`/_facts$uri` counts) is refused, in any block at any depth — a `rewrite`,\n`try_files`, `error_page`, `index`, `add_before_body`, or a `set` / `map`\nvalue that a redirect later reads. The only exemptions are each `location`'s\nown modifier and path words and the bodies of the locations serving the\nprefix.\n\nThe prefix itself must be an absolute path ending in exactly one `/` — the\nserver appends `<shard>/<rest>` straight onto it, so `/_facts` would redirect\nto `/_factsab/…`, outside the validated location. At least one location\nserving the prefix must sit exactly at it (`/_facts` or `/_facts/`): one only\nbelow it (`location ^~ /_facts/00/`) leaves every other redirect path to\nwhatever location matches next, and nginx compares location paths\nbyte-for-byte, so `/_facts//` sits below it too.\n\nModule directives that undo those guarantees are refused too:\n\n- `ssi` with any value but `off`, anywhere in the config. SSI `include\n  virtual` is a subrequest, which `internal;` admits, so an SSI-processed\n  response — a fact inheriting `ssi on` from `http` or `server`, or any page\n  carrying user content — could include another fact's bytes.\n- `more_set_headers` / `more_clear_headers` (headers-more) everywhere except\n  inside a `location` that doesn't serve the prefix (or a block within one):\n  they run after `add_header` and can strip the hardening headers, so they\n  are refused in the facts location and at every level above it, including\n  any block there (`if`, another `server`).\n\nAlso refused: an `=` location on the prefix or below it (it can't serve the\nnested paths the redirect emits); a regex location (`~` / `~*`) whose pattern\nspells out the prefix (after unescaping `\\/`, ASCII case-folded for `~*`) —\ndead under the rules above, refused for the clearer message; a config with no\nlocation at the prefix; and blocks nested more than 64 deep (a parse error, so\nthe walks can't exhaust the stack). `include` at server level is allowed, but\nits file is not read — keep facts-related locations and the directives above\nout of included files.\n\nThe threat model is operator mistakes, not an adversarial config author: the\nprefix check is textual, so a value assembled from pieces (`/_fac$1`) evades\nit. Beyond the config text:\n\n- The validator checks URL paths only — another `root` or `alias` that maps\n  onto the facts directory would serve its files publicly, so keep the facts\n  directory outside every other location's root.\n- nginx honours `X-Accel-Redirect` from any proxied upstream (`proxy_pass`,\n  `fastcgi_pass`, `uwsgi_pass`, `scgi_pass`, `grpc_pass`), so every upstream in\n  the server is trusted to point into the prefix; an untrusted one needs\n  `proxy_ignore_headers X-Accel-Redirect;` (or the `fastcgi_` / `uwsgi_` /\n  `scgi_` equivalent).\n- Other module code can redirect internally too (njs `internalRedirect`, perl,\n  echo), or strip the hardening headers as headers-more can (njs\n  `js_header_filter`, lua-nginx-module `header_filter_by_lua*`), and the\n  check sees none of it, so run trusted modules and content only.\n\nThe Rust twin is `fuz_fact_serving`'s `nginx.rs`, held to the same rules and\nthe same fixture corpus.\n\n@example\n```ts\nconst x_accel = create_x_accel_config(\n\t'/_facts/',\n\t`server {\n\tlocation ^~ /_facts/ {\n\t\tinternal;\n\t\talias /srv/app/facts/;\n\t\t${fact_security_header_directives().join('\\n\\t\\t')}\n\t}\n}`\n);\n```",
 					"dependencies": [
 						"server/fact_security_headers.ts"
 					],
@@ -147222,6 +147271,7 @@
 						"testing/cross_backend/peer_ping_ws.ts",
 						"testing/cross_backend/query_shape.ts",
 						"testing/cross_backend/ready.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/role_grant_cross_helpers.ts",
 						"testing/cross_backend/role_grant_offer_enumeration.ts",
 						"testing/cross_backend/role_grant_offer_notification_ws.ts",
@@ -150811,6 +150861,7 @@
 						"testing/cross_backend/peer_ping_ws.ts",
 						"testing/cross_backend/query_shape.ts",
 						"testing/cross_backend/ready.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/role_grant_offer_notification_ws.ts",
 						"testing/cross_backend/session_cap.ts",
 						"testing/cross_backend/setup.ts",
@@ -151002,8 +151053,8 @@
 						"testing/cross_backend/fact_serving.ts",
 						"testing/cross_backend/login_security.ts",
 						"testing/cross_backend/origin_conformance.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/role_grant_role_grammar.ts",
-						"testing/cross_backend/sse_round_trip.ts",
 						"testing/cross_backend/token_lifetime.ts",
 						"testing/cross_backend/token_scope_surface.ts",
 						"testing/cross_backend/ws_outbound_overflow.ts",
@@ -152862,7 +152913,7 @@
 							"kind": "interface",
 							"docComment": "The fact suite adds one optional knob to the shared cell options: a setup\nvariant whose keeper carries a **second actor**. Only the multi-actor case\nneeds it; the rest of the suite runs single-actor, so wiring it is opt-in.\nOmit it and the multi-actor case silently skips.",
 							"typeSignature": "FactServingCrossTestOptions",
-							"sourceLine": 70,
+							"sourceLine": 71,
 							"extends": [
 								"RpcPathCapabilityGatedCrossSuiteOptions"
 							],
@@ -152894,7 +152945,7 @@
 							"kind": "interface",
 							"docComment": "Input for `cross_put_fact` — `_testing_put_fact`'s params.",
 							"typeSignature": "CrossPutFactInput",
-							"sourceLine": 89,
+							"sourceLine": 90,
 							"members": [
 								{
 									"name": "content",
@@ -152930,7 +152981,7 @@
 							"kind": "function",
 							"docComment": "Seed an embedded fact over the daemon channel via `_testing_put_fact`;\nreturns its `blake3:` hash. A `holder` is recorded in `fact_holder` (a\ndeduplicated put included), as a real upload records its uploader.",
 							"typeSignature": "(fixture: Pick<TestFixtureBase, \"fresh_transport\" | \"create_daemon_token_headers\">, rpc_path: string, input: CrossPutFactInput): Promise<...>",
-							"sourceLine": 106,
+							"sourceLine": 107,
 							"parameters": [
 								{
 									"name": "fixture",
@@ -152990,7 +153041,7 @@
 							"name": "describe_fact_serving_cross_tests",
 							"kind": "function",
 							"typeSignature": "(options: FactServingCrossTestOptions): void",
-							"sourceLine": 177,
+							"sourceLine": 172,
 							"parameters": [
 								{
 									"name": "options",
@@ -153187,7 +153238,7 @@
 							"kind": "interface",
 							"docComment": "Options for the identity-primitive parity suite.",
 							"typeSignature": "IdentityParityCrossTestOptions",
-							"sourceLine": 126,
+							"sourceLine": 137,
 							"members": [
 								{
 									"name": "setup_test",
@@ -153251,6 +153302,29 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "password_path",
+									"kind": "variable",
+									"docComment": "REST password-change route path, for the malformed-body case. Default\n`/api/account/password` (the spine convention); `null` skips that case.",
+									"typeSignature": "string | null",
+									"modifiers": [
+										"readonly"
+									],
+									"optional": true,
+									"typeInfo": {
+										"kind": "union",
+										"members": [
+											{
+												"kind": "intrinsic",
+												"text": "string"
+											},
+											{
+												"kind": "intrinsic",
+												"text": "null"
+											}
+										]
+									}
 								}
 							]
 						},
@@ -153258,7 +153332,7 @@
 							"name": "describe_identity_parity_cross_tests",
 							"kind": "function",
 							"typeSignature": "(options: IdentityParityCrossTestOptions): void",
-							"sourceLine": 297,
+							"sourceLine": 313,
 							"parameters": [
 								{
 									"name": "options",
@@ -153268,7 +153342,7 @@
 							"returnType": "void"
 						}
 					],
-					"moduleComment": "Cross-backend identity-primitive parity for fuz_app's own spine over real\nHTTP — the `primitive_schemas` twins (`Username`, `UsernameProvided`,\n`Email`) and the login/signup input handling that enforces them, pinned\nfacet-by-facet so a TS↔Rust divergence in any one surfaces as a failure:\nhow usernames are **canonicalized** on the login lookup, the **ASCII-only\ncreation invariant** that bounds what can ever be stored, and the **email\nformat** rule applied at signup.\n\n`UsernameProvided` (login/lookup) canonicalizes the submitted username via\n`.trim().toLowerCase()`, and the DB matches case-insensitively\n(`LOWER(username) = LOWER($1)`); `Username` (creation) lowercases at store\n**and** restricts to ASCII via `^[a-zA-Z][0-9a-zA-Z_-]*[0-9a-zA-Z]$`. The\nRust spine must produce the same canonical form, the same case-insensitive\nlookup, **and** the same ASCII-only rejection — or a username that logs in on\nTS silently 401s on Rust, or a non-ASCII username storable on one backend\nreopens the homograph-collision surface. The spec-derived round-trip +\nconformance suites never vary username casing or charset, so this corner was\nunpinned.\n\n**Canonicalization (login lookup):**\n\n- **case-insensitive login** — an account created `Mixed_Case` logs in via an\n  all-uppercase submission (proves the *lookup* folds case, not merely that\n  the stored form was lowercased).\n- **whitespace-trim login** — the same shape logs in with surrounding\n  whitespace (proves `.trim()` on the lookup path). The trimmed set is JS\n  `String.prototype.trim`'s on every spine: U+FEFF padding is trimmed (→\n  200, and alone → 400 empty), U+0085 is not (→ 401 lookup miss).\n- **no Unicode case-fold collision (negative)** — a Turkish-`İ` (U+0130)\n  variant of an existing ASCII username must NOT match. Both JS\n  `.toLowerCase()` and Rust `str::to_lowercase()` map `İ` → `i` + U+0307\n  (combining dot above), never plain `i`, so the cased homograph stays a\n  distinct, non-existent username → 401 on every backend.\n\n**Username-or-email login lookup:** the login identifier resolves against\n**username or email** — TS `query_account_by_username_or_email`, Rust the\nconverged `query_account_with_password_hash` OR-lookup (this was the\ndivergence the suite closed: the Rust spine previously matched username\nonly). An account created with an email logs in via that email,\ncase-insensitively (`Email` stores the original case; folding rides the\n`LOWER(email) = LOWER($1)` lookup), and username login keeps working when an\nemail is present. A non-existent email → 401.\n\n**Login input validation:** malformed login input → 400 `invalid_request_body`\non every spine — whitespace-only username (empty after trim), over-long\nusername (> 255), empty password, and an unknown body key (strict object).\nTS runs the full `LoginInput` Zod schema; the Rust spine enforces the same\nshape in `account_login` (the convergence the suite closed: the Rust spine\npreviously let three of these fall through to a lookup-miss 401, and TS let a\nwhitespace-only identifier through to a 401). Asserted via the error reason,\nnot just the status, so a same-status-wrong-body backend still fails.\n\n**ASCII-only creation invariant:** a non-ASCII username is rejected at signup\ninput validation → 400 on every backend, so no Unicode username is ever\nstored — the precondition the login no-collision case relies on. (ASCII-only\nis the intended invariant for both spines, not an accident of the TS regex.)\n\n**Length + format creation parity:** the full `Username` shape —\n`[USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX]` = `[3, 39]` and the regex\n`^[a-zA-Z][0-9a-zA-Z_-]*[0-9a-zA-Z]$` — pinned across both backends. The TS\nZod `.min()/.max()/.regex()` and the Rust hand-rolled byte-scan\n(`is_valid_username_for_creation`) are independent reimplementations of the\nsame rule, so each length boundary is tested just-outside (→ 400) and\njust-inside (→ 403 no-matching-invite, the settle for a valid username on a\nspine with `open_signup` at its `false` default), and each format violation\n(leading non-letter, trailing punctuation, embedded disallowed char) → 400,\nwith mid-string `_`/`-` accepted siblings as the don't-over-reject control.\nSignup is also strict-object on both spines (TS `z.strictObject`, Rust\n`#[serde(deny_unknown_fields)]`), so an unknown signup body key → 400.\nNothing trims a creation username: a padded one is refused 400 at signup and\nat bootstrap, never trimmed into a legal name. Bootstrap validates its body\nbefore its window check, so the padded bootstrap answers 400 even after\nbootstrap completed.\n\n**Email format (creation):** the optional signup `email` is validated to a\nloose `local@domain.tld` shape on both spines — TS `Email`\n(`^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$` plus a 254-byte (RFC 5321 octet) length bound; whitespace `White_Space ∪ {U+FEFF}`), Rust the\nhand-rolled `is_valid_email`. A malformed email → 400, a well-formed one →\n403 no-matching-invite (the same accept/reject settle the username tables\nuse). The accepted siblings include the single-char-TLD `a@b.c` that Zod's\n`z.email()` would reject — the deliberately-looser rule both spines now\nshare. This closed a real divergence: the Rust spine previously\nlength-checked the email only, accepting any non-empty string TS rejected.\n\nBoth surfaces are flat REST on every spine, so this is an imperative suite\n(not a `conformance_table` row) and ungated. Runs both legs via the shared\n`{setup_test}` protocol: the in-process leg\n(`cross_backend/identity_parity.db.test.ts`, plain `gro test`) and the\ncross-process leg (`cross_backend/identity_parity.cross.test.ts`, the TS spine\nbinaries + Rust `testing_spine_stub` over real HTTP).",
+					"moduleComment": "Cross-backend identity-primitive parity for fuz_app's own spine over real\nHTTP — the `primitive_schemas` twins (`Username`, `UsernameProvided`,\n`Email`) and the login/signup input handling that enforces them, pinned\nfacet-by-facet so a TS↔Rust divergence in any one surfaces as a failure:\nhow usernames are **canonicalized** on the login lookup, the **ASCII-only\ncreation invariant** that bounds what can ever be stored, and the **email\nformat** rule applied at signup.\n\n`UsernameProvided` (login/lookup) canonicalizes the submitted username via\n`.trim().toLowerCase()`, and the DB matches case-insensitively\n(`LOWER(username) = LOWER($1)`); `Username` (creation) lowercases at store\n**and** restricts to ASCII via `^[a-zA-Z][0-9a-zA-Z_-]*[0-9a-zA-Z]$`. The\nRust spine must produce the same canonical form, the same case-insensitive\nlookup, **and** the same ASCII-only rejection — or a username that logs in on\nTS silently 401s on Rust, or a non-ASCII username storable on one backend\nreopens the homograph-collision surface. The spec-derived round-trip +\nconformance suites never vary username casing or charset, so this corner was\nunpinned.\n\n**Canonicalization (login lookup):**\n\n- **case-insensitive login** — an account created `Mixed_Case` logs in via an\n  all-uppercase submission (proves the *lookup* folds case, not merely that\n  the stored form was lowercased).\n- **whitespace-trim login** — the same shape logs in with surrounding\n  whitespace (proves `.trim()` on the lookup path). The trimmed set is JS\n  `String.prototype.trim`'s on every spine: U+FEFF padding is trimmed (→\n  200, and alone → 400 empty), U+0085 is not (→ 401 lookup miss).\n- **no Unicode case-fold collision (negative)** — a Turkish-`İ` (U+0130)\n  variant of an existing ASCII username must NOT match. Both JS\n  `.toLowerCase()` and Rust `str::to_lowercase()` map `İ` → `i` + U+0307\n  (combining dot above), never plain `i`, so the cased homograph stays a\n  distinct, non-existent username → 401 on every backend.\n\n**Username-or-email login lookup:** the login identifier resolves against\n**username or email** — TS `query_account_by_username_or_email`, Rust the\nconverged `query_account_with_password_hash` OR-lookup (this was the\ndivergence the suite closed: the Rust spine previously matched username\nonly). An account created with an email logs in via that email,\ncase-insensitively (`Email` stores the original case; folding rides the\n`LOWER(email) = LOWER($1)` lookup), and username login keeps working when an\nemail is present. A non-existent email → 401.\n\n**Login input validation:** malformed login input → 400 `invalid_request_body`\non every spine — whitespace-only username (empty after trim), over-long\nusername (> 255), empty password, and an unknown body key (strict object).\nTS runs the full `LoginInput` Zod schema; the Rust spine enforces the same\nshape in `account_login` (the convergence the suite closed: the Rust spine\npreviously let three of these fall through to a lookup-miss 401, and TS let a\nwhitespace-only identifier through to a 401). Asserted via the error reason,\nnot just the status, so a same-status-wrong-body backend still fails.\n\n**ASCII-only creation invariant:** a non-ASCII username is rejected at signup\ninput validation → 400 on every backend, so no Unicode username is ever\nstored — the precondition the login no-collision case relies on. (ASCII-only\nis the intended invariant for both spines, not an accident of the TS regex.)\n\n**Length + format creation parity:** the full `Username` shape —\n`[USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX]` = `[3, 39]` and the regex\n`^[a-zA-Z][0-9a-zA-Z_-]*[0-9a-zA-Z]$` — pinned across both backends. The TS\nZod `.min()/.max()/.regex()` and the Rust hand-rolled byte-scan\n(`is_valid_username_for_creation`) are independent reimplementations of the\nsame rule, so each length boundary is tested just-outside (→ 400) and\njust-inside (→ 403 no-matching-invite, the settle for a valid username on a\nspine with `open_signup` at its `false` default), and each format violation\n(leading non-letter, trailing punctuation, embedded disallowed char) → 400,\nwith mid-string `_`/`-` accepted siblings as the don't-over-reject control.\nSignup is also strict-object on both spines (TS `z.strictObject`, Rust\n`#[serde(deny_unknown_fields)]`), so an unknown signup body key → 400.\nNothing trims a creation username: a padded one is refused 400 at signup and\nat bootstrap, never trimmed into a legal name. Bootstrap validates its body\nbefore its window check, so the padded bootstrap answers 400 even after\nbootstrap completed.\n\n**Email format (creation):** the optional signup `email` is validated to a\nloose `local@domain.tld` shape on both spines — TS `Email`\n(`^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$` plus a 254-byte (RFC 5321 octet) length bound; whitespace `White_Space ∪ {U+FEFF}`), Rust the\nhand-rolled `is_valid_email`. A malformed email → 400, a well-formed one →\n403 no-matching-invite (the same accept/reject settle the username tables\nuse). The accepted siblings include the single-char-TLD `a@b.c` that Zod's\n`z.email()` would reject — the deliberately-looser rule both spines now\nshare. This closed a real divergence: the Rust spine previously\nlength-checked the email only, accepting any non-empty string TS rejected.\n\n**Malformed JSON body:** a body typed `application/json` that doesn't parse\n(`{`) or parses to anything but an object (`[]`) is 400 `{error:\n\"invalid_json_body\"}`, with no other field, on login, signup, bootstrap\n(`bootstrap_path`, parsed ahead of the window check), and the password change\n(`password_path`, default `/api/account/password`, `null` to skip) — parsed\nonly after its credential and session-only gates, so the case sends the\nkeeper's session, and an anonymous unparseable body is still 401.\n\nBoth surfaces are flat REST on every spine, so this is an imperative suite\n(not a `conformance_table` row) and ungated. Runs both legs via the shared\n`{setup_test}` protocol: the in-process leg\n(`cross_backend/identity_parity.db.test.ts`, plain `gro test`) and the\ncross-process leg (`cross_backend/identity_parity.cross.test.ts`, the TS spine\nbinaries + Rust `testing_spine_stub` over real HTTP).",
 					"dependencies": [
 						"http/error_schemas.ts",
 						"testing/assert_dev_env.ts",
@@ -154905,6 +154979,269 @@
 						"testing/assert_dev_env.ts",
 						"testing/cross_backend/capabilities.ts",
 						"testing/cross_backend/setup.ts"
+					]
+				},
+				{
+					"path": "testing/cross_backend/revocation_drivers.ts",
+					"declarations": [
+						{
+							"name": "cross_post_as",
+							"kind": "function",
+							"docComment": "POST a JSON body to a REST route on `account`'s session, asserting `200`.",
+							"typeSignature": "(fixture: TestFixtureBase, account: TestAccount, path: string, body: unknown): Promise<void>",
+							"sourceLine": 41,
+							"parameters": [
+								{
+									"name": "fixture",
+									"type": "TestFixtureBase",
+									"description": "the per-test fixture whose fresh transport carries the request"
+								},
+								{
+									"name": "account",
+									"type": "TestAccount",
+									"description": "the account whose session cookie authenticates it"
+								},
+								{
+									"name": "path",
+									"type": "string",
+									"description": "the REST route path"
+								},
+								{
+									"name": "body",
+									"type": "unknown",
+									"description": "the JSON request body"
+								}
+							],
+							"returnType": "Promise<void>",
+							"returnTypeInfo": {
+								"kind": "reference",
+								"name": "Promise",
+								"typeArgs": [
+									{
+										"kind": "intrinsic",
+										"text": "void"
+									}
+								]
+							}
+						},
+						{
+							"name": "cross_admin_token_revoke_all",
+							"kind": "function",
+							"docComment": "Revoke every API token of `account_id` over the keeper's admin session\n(`admin_token_revoke_all`), asserting success.",
+							"typeSignature": "(fixture: TestFixtureBase, rpc_path: string, account_id: string): Promise<void>",
+							"sourceLine": 63,
+							"parameters": [
+								{
+									"name": "fixture",
+									"type": "TestFixtureBase",
+									"description": "the per-test fixture; its keeper holds the admin role"
+								},
+								{
+									"name": "rpc_path",
+									"type": "string",
+									"description": "the RPC endpoint path"
+								},
+								{
+									"name": "account_id",
+									"type": "string",
+									"description": "the account whose tokens to revoke"
+								}
+							],
+							"returnType": "Promise<void>",
+							"returnTypeInfo": {
+								"kind": "reference",
+								"name": "Promise",
+								"typeArgs": [
+									{
+										"kind": "intrinsic",
+										"text": "void"
+									}
+								]
+							}
+						},
+						{
+							"name": "cross_account_purge",
+							"kind": "function",
+							"docComment": "Purge `account_id` over the keeper's daemon token (`account_purge`),\nasserting success. The request carries no `Origin`, as a daemon-token\ncaller's wouldn't.",
+							"typeSignature": "(fixture: TestFixtureBase, rpc_path: string, account_id: string): Promise<void>",
+							"sourceLine": 87,
+							"parameters": [
+								{
+									"name": "fixture",
+									"type": "TestFixtureBase",
+									"description": "the per-test fixture"
+								},
+								{
+									"name": "rpc_path",
+									"type": "string",
+									"description": "the RPC endpoint path"
+								},
+								{
+									"name": "account_id",
+									"type": "string",
+									"description": "the account to purge"
+								}
+							],
+							"returnType": "Promise<void>",
+							"returnTypeInfo": {
+								"kind": "reference",
+								"name": "Promise",
+								"typeArgs": [
+									{
+										"kind": "intrinsic",
+										"text": "void"
+									}
+								]
+							}
+						},
+						{
+							"name": "AccountRevocation",
+							"kind": "interface",
+							"docComment": "One account-wide revocation, as a row both transport suites iterate.",
+							"typeSignature": "AccountRevocation",
+							"sourceLine": 103,
+							"members": [
+								{
+									"name": "label",
+									"kind": "variable",
+									"docComment": "Names the revocation in a case name and a failure message.",
+									"typeSignature": "string",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "slug",
+									"kind": "variable",
+									"docComment": "Distinguishes the target account's username — unique in the table, and\nshort enough that a suite's prefix keeps the username within `Username`.",
+									"typeSignature": "string",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "gate",
+									"kind": "variable",
+									"docComment": "Whether the backend serves the revocation (beyond `rpc_path`, which every row needs).",
+									"typeSignature": "boolean",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "revoke",
+									"kind": "function",
+									"docComment": "Revoke `target`'s credentials and assert the revocation succeeded.\n`target` must have been created with `DEFAULT_TEST_PASSWORD`, which the\npassword-change row presents.",
+									"typeSignature": "(fixture: TestFixtureBase, target: TestAccount): Promise<void>",
+									"modifiers": [
+										"readonly"
+									],
+									"parameters": [
+										{
+											"name": "fixture",
+											"type": "TestFixtureBase"
+										},
+										{
+											"name": "target",
+											"type": "TestAccount"
+										}
+									],
+									"returnType": "Promise<void>",
+									"returnTypeInfo": {
+										"kind": "reference",
+										"name": "Promise",
+										"typeArgs": [
+											{
+												"kind": "intrinsic",
+												"text": "void"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "AccountRevocationsOptions",
+							"kind": "interface",
+							"docComment": "Configuration for `create_account_revocations`.",
+							"typeSignature": "AccountRevocationsOptions",
+							"sourceLine": 122,
+							"members": [
+								{
+									"name": "capabilities",
+									"kind": "variable",
+									"docComment": "Backend capability flags; `account_purge` gates on `account_lifecycle`.",
+									"typeSignature": "BackendCapabilities",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "rpc_path",
+									"kind": "variable",
+									"docComment": "RPC endpoint path the admin and keeper revocations are sent to.",
+									"typeSignature": "string",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "logout_path",
+									"kind": "variable",
+									"docComment": "REST logout route path.",
+									"typeSignature": "string",
+									"modifiers": [
+										"readonly"
+									]
+								},
+								{
+									"name": "password_path",
+									"kind": "variable",
+									"docComment": "REST password-change route path.",
+									"typeSignature": "string",
+									"modifiers": [
+										"readonly"
+									]
+								}
+							]
+						},
+						{
+							"name": "create_account_revocations",
+							"kind": "function",
+							"docComment": "The account-wide revocations that close every connection of the target\naccount: `admin_token_revoke_all`, `POST /logout`, `POST /password`, and\n`account_purge` (gated on `capabilities.account_lifecycle`).",
+							"typeSignature": "(options: AccountRevocationsOptions): readonly AccountRevocation[]",
+							"sourceLine": 141,
+							"parameters": [
+								{
+									"name": "options",
+									"type": "AccountRevocationsOptions",
+									"description": "the backend's capabilities and route paths"
+								}
+							],
+							"returnType": "readonly AccountRevocation[]",
+							"returnTypeInfo": {
+								"kind": "array",
+								"element": {
+									"kind": "reference",
+									"name": "AccountRevocation"
+								},
+								"readonly": true
+							},
+							"returnDescription": "the revocation rows, in a stable order"
+						}
+					],
+					"moduleComment": "The account-wide revocations the cross-process WS and SSE round-trip suites\nboth close a live connection on — one table, so a revocation added here is\ncovered on both transports.\n\nEach row drives one revocation of a target account's credentials and asserts\nit succeeded; the suite opens the target's connections first and asserts\ntheir close after. `describe_cross_process_ws_tests` and\n`describe_cross_process_sse_tests` iterate `create_account_revocations`. The\nrevocations whose close is narrower than the account (one session, one\ntoken, a cap eviction) or that a suite drives differently (session\nrevoke-all, account delete) stay in their suites.\n\nThe drivers are exported on their own for a consumer suite that closes a\ntransport of its own on the same revocations.",
+					"dependencies": [
+						"auth/admin_action_specs.ts",
+						"testing/assert_dev_env.ts",
+						"testing/cross_backend/capabilities.ts",
+						"testing/cross_backend/cell_cross_helpers.ts",
+						"testing/cross_backend/setup.ts",
+						"testing/test_credentials.ts"
+					],
+					"dependents": [
+						"testing/cross_backend/sse_round_trip.ts",
+						"testing/cross_backend/ws_round_trip.ts"
 					]
 				},
 				{
@@ -157123,6 +157460,7 @@
 						"testing/cross_backend/peer_ping_ws.ts",
 						"testing/cross_backend/query_shape.ts",
 						"testing/cross_backend/ready.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/role_grant_cross_helpers.ts",
 						"testing/cross_backend/role_grant_offer_enumeration.ts",
 						"testing/cross_backend/role_grant_offer_notification_ws.ts",
@@ -157441,7 +157779,7 @@
 							"kind": "interface",
 							"docComment": "Configuration for `describe_cross_process_sse_tests`.",
 							"typeSignature": "CrossProcessSseTestOptions",
-							"sourceLine": 92,
+							"sourceLine": 91,
 							"members": [
 								{
 									"name": "setup_test",
@@ -157561,7 +157899,7 @@
 							"kind": "function",
 							"docComment": "Register the cross-process SSE round-trip suite. Its cases run over a\nreal streaming `fetch`: connected-comment, audit data frame, account-wide\nclose-on-revoke, session-scoped close-on-revoke, close on account delete,\nclose on admin token revoke-all, logout, password change and purge, and the\nper-session cap.",
 							"typeSignature": "(options: CrossProcessSseTestOptions): void",
-							"sourceLine": 161,
+							"sourceLine": 160,
 							"parameters": [
 								{
 									"name": "options",
@@ -157571,7 +157909,7 @@
 							"returnType": "void"
 						}
 					],
-					"moduleComment": "Cross-process SSE round-trip suite — the cross-process counterpart to the\nin-process `testing/sse_round_trip.ts` harness.\n\nWhere the in-process harness reads a Hono `Response.body` directly, this\nsuite opens a **real** streaming `fetch` against a spawned backend's\naudit-log SSE endpoint via `create_sse_transport`, threading the\nfresh-per-test keeper's session cookie. It is the only coverage of the\nspawned binary's live SSE path — the standard cross-process bundle\n(`describe_standard_cross_process_tests`) omits SSE by design, so consumers\ncall this alongside it (paralleling `describe_cross_process_ws_tests`).\n\nIts cases follow the in-process SSE self-test against fuz_app's\nstandard audit-log stream:\n\n1. **connects** — the stream opens and emits the `: connected` comment.\n2. **data frame** (gated on `rpc_path`) — a minted secondary's sessions are\n   revoked over the keeper's admin channel (`admin_session_revoke_all`),\n   broadcasting a `session_revoke_all` audit event as one `data:` frame to\n   the subscribed keeper **without** closing its stream (the event targets\n   the secondary, not the subscriber). The secondary is minted *before* the\n   stream opens so `create_account`'s own audit events (invite / signup /\n   login / token) don't land on it.\n3. **close-on-revoke, account-wide** (gated on `rpc_path`) — the subscriber's\n   *own* sessions are revoked (`account_session_revoke_all`), which closes\n   every stream of the account once the revoke commits (the handler's\n   close, repeated by the audit guard on the `session_revoke_all` row).\n   Asserted via `SseTransport.wait_for_close`.\n4. **close-on-revoke, session-scoped** (gated on `rpc_path`) — the\n   subscriber's *own* single session is revoked (`account_session_revoke`),\n   which closes only the stream registered under that session's hash (the\n   distinct close cases 2–3 don't reach).\n5. **close on account delete** (gated on `rpc_path` and\n   `capabilities.account_lifecycle`) — the keeper soft-deletes a second\n   admin whose stream is open; the delete revokes its credentials and\n   closes its stream.\n6. **close on the other account-wide revocations** (gated on `rpc_path`;\n   purge also on `capabilities.account_lifecycle`) — `admin_token_revoke_all`,\n   `POST /logout`, `POST /password`, and `account_purge` of a second admin\n   each close its stream.\n7. **per-session cap** — one stream past `max_per_scope` on one session\n   closes the oldest (evict-oldest, no final frame) and leaves every other\n   stream open. Needs no RPC: the cap runs inside the subscribe itself.\n\nThe close-on-revoke matrix is layered: cases 3–6 exercise the account-wide\nand session-scoped paths cross-process; `token_revoke` (token-scoped — the\nstock stream admits sessions only, so its bearer close is covered on the\nWebSocket by `describe_cross_process_ws_tests`) and `role_grant_revoke`\n(role-matched) are covered by the spine's `fuz_realtime` SSE-registry unit\ntests and the in-process guard self-test.\n\nGated on `capabilities.sse` — backends without an end-to-end SSE stream\nskip (the cases still surface as `.skip` in the report). Cross-process\nonly: `create_sse_transport` needs a real bound socket, so wire it from a\n`*.cross.test.ts` file, never an in-process setup.",
+					"moduleComment": "Cross-process SSE round-trip suite — the cross-process counterpart to the\nin-process `testing/sse_round_trip.ts` harness.\n\nWhere the in-process harness reads a Hono `Response.body` directly, this\nsuite opens a **real** streaming `fetch` against a spawned backend's\naudit-log SSE endpoint via `create_sse_transport`, threading the\nfresh-per-test keeper's session cookie. It is the only coverage of the\nspawned binary's live SSE path — the standard cross-process bundle\n(`describe_standard_cross_process_tests`) omits SSE by design, so consumers\ncall this alongside it (paralleling `describe_cross_process_ws_tests`).\n\nIts cases follow the in-process SSE self-test against fuz_app's\nstandard audit-log stream:\n\n1. **connects** — the stream opens and emits the `: connected` comment.\n2. **data frame** (gated on `rpc_path`) — a minted secondary's sessions are\n   revoked over the keeper's admin channel (`admin_session_revoke_all`),\n   broadcasting a `session_revoke_all` audit event as one `data:` frame to\n   the subscribed keeper **without** closing its stream (the event targets\n   the secondary, not the subscriber). The secondary is minted *before* the\n   stream opens so `create_account`'s own audit events (invite / signup /\n   login / token) don't land on it.\n3. **close-on-revoke, account-wide** (gated on `rpc_path`) — the subscriber's\n   *own* sessions are revoked (`account_session_revoke_all`), which closes\n   every stream of the account once the revoke commits (the handler's\n   close, repeated by the audit guard on the `session_revoke_all` row).\n   Asserted via `SseTransport.wait_for_close`.\n4. **close-on-revoke, session-scoped** (gated on `rpc_path`) — the\n   subscriber's *own* single session is revoked (`account_session_revoke`),\n   which closes only the stream registered under that session's hash (the\n   distinct close cases 2–3 don't reach).\n5. **close on account delete** (gated on `rpc_path` and\n   `capabilities.account_lifecycle`) — the keeper soft-deletes a second\n   admin whose stream is open; the delete revokes its credentials and\n   closes its stream.\n6. **close on the other account-wide revocations** (gated on `rpc_path`;\n   purge also on `capabilities.account_lifecycle`) — `admin_token_revoke_all`,\n   `POST /logout`, `POST /password`, and `account_purge` of a second admin\n   each close its stream — the rows `create_account_revocations` shares with\n   the WS suite.\n7. **per-session cap** — one stream past `max_per_scope` on one session\n   closes the oldest (evict-oldest, no final frame) and leaves every other\n   stream open. Needs no RPC: the cap runs inside the subscribe itself.\n\nThe close-on-revoke matrix is layered: cases 3–6 exercise the account-wide\nand session-scoped paths cross-process; `token_revoke` (token-scoped — the\nstock stream admits sessions only, so its bearer close is covered on the\nWebSocket by `describe_cross_process_ws_tests`) and `role_grant_revoke`\n(role-matched) are covered by the spine's `fuz_realtime` SSE-registry unit\ntests and the in-process guard self-test.\n\nGated on `capabilities.sse` — backends without an end-to-end SSE stream\nskip (the cases still surface as `.skip` in the report). Cross-process\nonly: `create_sse_transport` needs a real bound socket, so wire it from a\n`*.cross.test.ts` file, never an in-process setup.",
 					"dependencies": [
 						"auth/account_action_specs.ts",
 						"auth/admin_action_specs.ts",
@@ -157580,7 +157918,7 @@
 						"realtime/sse_constants.ts",
 						"testing/assert_dev_env.ts",
 						"testing/cross_backend/capabilities.ts",
-						"testing/cross_backend/cell_cross_helpers.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/setup.ts",
 						"testing/rpc_helpers.ts",
 						"testing/test_credentials.ts",
@@ -160208,7 +160546,7 @@
 							"kind": "interface",
 							"docComment": "Configuration for `describe_cross_process_ws_tests`.",
 							"typeSignature": "CrossProcessWsTestOptions",
-							"sourceLine": 129,
+							"sourceLine": 131,
 							"members": [
 								{
 									"name": "setup_test",
@@ -160337,7 +160675,7 @@
 							"kind": "function",
 							"docComment": "Register the cross-process WS round-trip suite over a real upgrade: authed\n`heartbeat` round-trip, `heartbeat`'s parameterless-shape contract, an\noversized message closing with `WS_CLOSE_MESSAGE_TOO_BIG`, anonymous-upgrade\nrefusal, disallowed-origin refusal, and — when `rpc_path` is supplied —\neach listed revocation (session and token revokes, admin revoke-all, logout,\npassword change, token-cap eviction, account delete and purge) closing the\nlive socket, plus a\nself-revoking socket reading its reply before its close, and a WS mutation's\naudit row read back after `_testing_drain_effects`.",
 							"typeSignature": "(options: CrossProcessWsTestOptions): void",
-							"sourceLine": 181,
+							"sourceLine": 183,
 							"parameters": [
 								{
 									"name": "options",
@@ -160347,7 +160685,7 @@
 							"returnType": "void"
 						}
 					],
-					"moduleComment": "Cross-process WebSocket round-trip suite — the cross-process counterpart\nto the in-process `testing/ws_round_trip.ts` harness.\n\nWhere the in-process harness drives `register_action_ws` against a fake\nHono upgrade (no wire), this suite performs a **real** `WebSocket`\nupgrade against a spawned backend via `create_ws_transport` (the `ws`\nnpm package), so the actual upgrade handshake + per-connection auth +\nJSON-RPC dispatch over the socket are exercised end-to-end. It is the\nonly coverage of the spawned binary's live WS path — the standard\ncross-process bundle (`describe_standard_cross_process_tests`) omits WS\nby design, so consumers call this alongside it.\n\n**Consumer-agnostic**, apart from the cases `rpc_path` and\n`capabilities.ws_account_actions` gate. Every other case drives the\n`heartbeat` protocol action, which\n`assert_ws_endpoints_include_protocol_actions` guarantees is present on\nevery WS endpoint — so the suite needs no knowledge of a consumer's domain\nWS methods. It validates the transport, not the domain.\n\nThree cases mirror the upgrade stack `register_ws_endpoint` wires (origin\ncheck → `require_auth` → dispatch): an authenticated upgrade round-trips\n`heartbeat` (the first case), and an anonymous upgrade and a\ndisallowed-origin upgrade are refused (after the spine-parity cases).\nPer-connection auth is enforced at upgrade time (not per message), so the\nnegative cases assert the upgrade itself rejects rather than a per-message\nerror frame.\n\nSpine-parity cases follow the first. Both spines admit a connection only after\nre-reading its credential, and requests that arrive first wait for that\nrather than being dropped: requests sent the moment the socket opens are all\nanswered, and — gated on `capabilities.ws_handshake_pipelining`, with the\nordering forced — so are frames written in the same TCP write as the upgrade\nrequest (driven through `connect_raw_ws`, since a client library sends\nnothing before its `open` event). `heartbeat` answers the parameterless\nshapes (absent, `{}`) and refuses a declared param with `invalid_params`, and a\nmessage over the backend's cap (`max_message_bytes`, default\n`DEFAULT_WS_MAX_MESSAGE_BYTES`) closes the socket with\n`WS_CLOSE_MESSAGE_TOO_BIG`.\n\nThe cases after the refused upgrades (gated on `rpc_path`) cover\nserver-initiated close.\nPer-message dispatch never re-checks credential validity, so an open socket\nends only when a revocation closes it — which every revocation does, once\nits transaction commits. An authenticated socket is dropped when the\naccount's sessions are revoked over the keeper's session channel\n(`account_session_revoke_all`), and when its account is deleted\n(`account_delete`, also gated on `capabilities.account_lifecycle`). The\nrest of the revocation table follows, each closing a second account's\nsocket with `WS_CLOSE_SESSION_REVOKED` and `WS_CLOSE_SESSION_REVOKED_REASON`:\n`account_token_revoke` closes the revoked token's bearer socket and leaves\na socket on the account's other token open; `admin_token_revoke_all`,\n`POST /logout`, `POST /password`, and `account_purge` (also gated on\n`capabilities.account_lifecycle`) close the account's bearer and session\nsockets; and a token the per-account cap evicts (`max_tokens` further\nmints) has its bearer socket closed. Omit `rpc_path` to skip them\n(consumers without the standard account and admin actions on their RPC\nendpoint).\n\nThe last cases are gated on `capabilities.ws_account_actions` — the backend's\nWS endpoint mounts the self-service account actions: a socket that revokes\nits own sessions *over that socket* is closed with\n`WS_CLOSE_SESSION_REVOKED` after reading the reply to its request — both\nspines answer the revoking request ahead of the close, so the caller is\nnever left without an answer. Under the same gate (and\n`rpc_path`), a socket mints an API token over WS and the token's\n`token_create` audit row is read back after `_testing_drain_effects` — the\nbarrier a WS mutation needs, since a WS reply can precede its audit write.\nThe binary's `create_testing_actions` mount provides the drain.\n\nGated on `capabilities.ws` — backends without an end-to-end WS transport\nskip (the cases still surface as `.skip` in the report). Cross-process\nonly: `create_ws_transport` needs a real bound socket, so wire it from a\n`*.cross.test.ts` file, never an in-process setup.",
+					"moduleComment": "Cross-process WebSocket round-trip suite — the cross-process counterpart\nto the in-process `testing/ws_round_trip.ts` harness.\n\nWhere the in-process harness drives `register_action_ws` against a fake\nHono upgrade (no wire), this suite performs a **real** `WebSocket`\nupgrade against a spawned backend via `create_ws_transport` (the `ws`\nnpm package), so the actual upgrade handshake + per-connection auth +\nJSON-RPC dispatch over the socket are exercised end-to-end. It is the\nonly coverage of the spawned binary's live WS path — the standard\ncross-process bundle (`describe_standard_cross_process_tests`) omits WS\nby design, so consumers call this alongside it.\n\n**Consumer-agnostic**, apart from the cases `rpc_path` and\n`capabilities.ws_account_actions` gate. Every other case drives the\n`heartbeat` protocol action, which\n`assert_ws_endpoints_include_protocol_actions` guarantees is present on\nevery WS endpoint — so the suite needs no knowledge of a consumer's domain\nWS methods. It validates the transport, not the domain.\n\nThree cases mirror the upgrade stack `register_ws_endpoint` wires (origin\ncheck → `require_auth` → dispatch): an authenticated upgrade round-trips\n`heartbeat` (the first case), and an anonymous upgrade and a\ndisallowed-origin upgrade are refused (after the spine-parity cases).\nPer-connection auth is enforced at upgrade time (not per message), so the\nnegative cases assert the upgrade itself rejects rather than a per-message\nerror frame.\n\nSpine-parity cases follow the first. Both spines admit a connection only after\nre-reading its credential, and requests that arrive first wait for that\nrather than being dropped: requests sent the moment the socket opens are all\nanswered, and — gated on `capabilities.ws_handshake_pipelining`, with the\nordering forced — so are frames written in the same TCP write as the upgrade\nrequest (driven through `connect_raw_ws`, since a client library sends\nnothing before its `open` event). `heartbeat` answers the parameterless\nshapes (absent, `{}`) and refuses a declared param with `invalid_params`, and a\nmessage over the backend's cap (`max_message_bytes`, default\n`DEFAULT_WS_MAX_MESSAGE_BYTES`) closes the socket with\n`WS_CLOSE_MESSAGE_TOO_BIG`.\n\nThe cases after the refused upgrades (gated on `rpc_path`) cover\nserver-initiated close.\nPer-message dispatch never re-checks credential validity, so an open socket\nends only when a revocation closes it — which every revocation does, once\nits transaction commits, and every close here is asserted with\n`WS_CLOSE_SESSION_REVOKED` and `WS_CLOSE_SESSION_REVOKED_REASON`, so a\ndropped connection can't pass for one. An authenticated socket is dropped\nwhen the account's sessions are revoked over the keeper's session channel\n(`account_session_revoke_all`), and when its account is deleted\n(`account_delete`, also gated on `capabilities.account_lifecycle`). The\nrest of the revocation table follows, each closing a second account's\nsocket:\n`account_token_revoke` closes the revoked token's bearer socket and leaves\na socket on the account's other token open; `admin_token_revoke_all`,\n`POST /logout`, `POST /password`, and `account_purge` (also gated on\n`capabilities.account_lifecycle`) close the account's bearer and session\nsockets — the rows `create_account_revocations` shares with the SSE suite;\nand a token the per-account cap evicts (`max_tokens` further mints) has its\nbearer socket closed. Omit `rpc_path` to skip them\n(consumers without the standard account and admin actions on their RPC\nendpoint).\n\nThe last cases are gated on `capabilities.ws_account_actions` — the backend's\nWS endpoint mounts the self-service account actions: a socket that revokes\nits own sessions *over that socket* is closed with\n`WS_CLOSE_SESSION_REVOKED` after reading the reply to its request — both\nspines answer the revoking request ahead of the close, so the caller is\nnever left without an answer. Under the same gate (and\n`rpc_path`), a socket mints an API token over WS and the token's\n`token_create` audit row is read back after `_testing_drain_effects` — the\nbarrier a WS mutation needs, since a WS reply can precede its audit write.\nThe binary's `create_testing_actions` mount provides the drain.\n\nGated on `capabilities.ws` — backends without an end-to-end WS transport\nskip (the cases still surface as `.skip` in the report). Cross-process\nonly: `create_ws_transport` needs a real bound socket, so wire it from a\n`*.cross.test.ts` file, never an in-process setup.",
 					"dependencies": [
 						"actions/heartbeat.ts",
 						"actions/transports.ts",
@@ -160358,6 +160696,7 @@
 						"testing/assert_dev_env.ts",
 						"testing/cross_backend/capabilities.ts",
 						"testing/cross_backend/cell_cross_helpers.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/setup.ts",
 						"testing/rpc_helpers.ts",
 						"testing/test_credentials.ts",
@@ -170596,6 +170935,7 @@
 						"testing/audit_completeness.ts",
 						"testing/cross_backend/cookie_attributes.ts",
 						"testing/cross_backend/identity_parity.ts",
+						"testing/cross_backend/revocation_drivers.ts",
 						"testing/cross_backend/session_cap.ts",
 						"testing/cross_backend/setup.ts",
 						"testing/cross_backend/sse_round_trip.ts",
@@ -185894,7 +186234,7 @@
 							"kind": "interface",
 							"docComment": "The output templates from `crates/molt/templates/`, substituted with\n`__PLACEHOLDER__` tokens. The Rust twin embeds these at compile time;\nhere they're read from the working tree (always present pre-molt).",
 							"typeSignature": "Templates",
-							"sourceLine": 647,
+							"sourceLine": 658,
 							"members": [
 								{
 									"name": "PAGE_SVELTE",
@@ -185942,7 +186282,7 @@
 							"name": "load_templates",
 							"kind": "function",
 							"typeSignature": "(root: string): Templates",
-							"sourceLine": 658,
+							"sourceLine": 669,
 							"parameters": [
 								{
 									"name": "root",
@@ -185956,7 +186296,7 @@
 							"kind": "function",
 							"docComment": "Substitutes `__PLACEHOLDER__` tokens in a template.\n\nSingle-pass over the template: inserted values are never re-scanned, so\nuser-provided text (a description containing `__RUST_SECTION__`, say)\ncan't corrupt the output.",
 							"typeSignature": "(template: string, substitutions: [string, string][]): string",
-							"sourceLine": 686,
+							"sourceLine": 697,
 							"parameters": [
 								{
 									"name": "template",
@@ -185974,7 +186314,7 @@
 							"kind": "type",
 							"docComment": "A single filesystem transformation in a molt plan. Paths are relative to\nthe repo root.",
 							"typeSignature": "Action",
-							"sourceLine": 713,
+							"sourceLine": 724,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "Action",
@@ -186018,7 +186358,7 @@
 							"name": "describe",
 							"kind": "function",
 							"typeSignature": "(action: Action): string",
-							"sourceLine": 723,
+							"sourceLine": 734,
 							"parameters": [
 								{
 									"name": "action",
@@ -186070,7 +186410,7 @@
 							"kind": "function",
 							"docComment": "The ranges of the lines in `content` that start with `prefix`, each\nincluding its trailing newline when it has one.",
 							"typeSignature": "(content: string, prefix: string): { start: number; end: number; }[]",
-							"sourceLine": 759,
+							"sourceLine": 770,
 							"parameters": [
 								{
 									"name": "content",
@@ -186088,7 +186428,7 @@
 							"kind": "function",
 							"docComment": "Builds the full molt plan from resolved choices. Pure — reads nothing.",
 							"typeSignature": "(config: MoltConfig, templates: Templates): Action[]",
-							"sourceLine": 777,
+							"sourceLine": 788,
 							"parameters": [
 								{
 									"name": "config",
@@ -186147,7 +186487,7 @@
 							"kind": "function",
 							"docComment": "Verifies every action's preconditions against the tree at `root`,\nreturning human-readable issues (empty = the plan is applicable).",
 							"typeSignature": "(root: string, plan: Action[]): string[]",
-							"sourceLine": 1064,
+							"sourceLine": 1075,
 							"parameters": [
 								{
 									"name": "root",
@@ -186206,7 +186546,7 @@
 							"kind": "function",
 							"docComment": "Lists the files the plan creates that already exist at `root`, kept apart\nfrom `verify`'s drift because the remedy differs.",
 							"typeSignature": "(root: string, plan: Action[]): string[]",
-							"sourceLine": 1158,
+							"sourceLine": 1169,
 							"parameters": [
 								{
 									"name": "root",
@@ -186265,7 +186605,7 @@
 							"kind": "function",
 							"docComment": "Applies a verified plan at `root`. Callers must run `verify` and\n`conflicts` first — apply assumes anchors match, targets exist, and\nnothing is in the way of created files.",
 							"typeSignature": "(root: string, plan: Action[]): void",
-							"sourceLine": 1197,
+							"sourceLine": 1208,
 							"parameters": [
 								{
 									"name": "root",
@@ -186324,7 +186664,7 @@
 							"kind": "interface",
 							"docComment": "What `check_all` found, split by remedy.",
 							"typeSignature": "CheckIssues",
-							"sourceLine": 1247,
+							"sourceLine": 1258,
 							"members": [
 								{
 									"name": "drift",
@@ -186345,7 +186685,7 @@
 							"kind": "function",
 							"docComment": "Verifies the plans for both sample configs, covering every anchor molt can\ntouch (each feature exercised kept in one config and stripped in the other),\nplus the embedded-template invariants that anchors alone can't see.",
 							"typeSignature": "(root: string): CheckIssues",
-							"sourceLine": 1259,
+							"sourceLine": 1270,
 							"parameters": [
 								{
 									"name": "root",
@@ -186359,7 +186699,7 @@
 							"kind": "function",
 							"docComment": "Two configs that together exercise every plan branch: one keeps every\nregistry feature (derived from `FEATURES`, so a new feature is covered\nwithout touching this) and sets every optional value, one strips every\nfeature and clears the optional values.",
 							"typeSignature": "(): [MoltConfig, MoltConfig]",
-							"sourceLine": 1296,
+							"sourceLine": 1307,
 							"returnType": "[MoltConfig, MoltConfig]",
 							"returnTypeInfo": {
 								"kind": "tuple",
@@ -186383,7 +186723,7 @@
 							"name": "TopLevel",
 							"kind": "interface",
 							"typeSignature": "TopLevel",
-							"sourceLine": 1441,
+							"sourceLine": 1452,
 							"members": [
 								{
 									"name": "name",
@@ -186521,7 +186861,7 @@
 							"kind": "function",
 							"docComment": "Parses argv into the flag struct, or `null` when `--help` was printed.",
 							"typeSignature": "(args: string[]): TopLevel | null",
-							"sourceLine": 1491,
+							"sourceLine": 1502,
 							"throws": [
 								{
 									"description": "`CliError` on unknown flags or a bad subcommand."
@@ -186553,7 +186893,7 @@
 							"kind": "type",
 							"docComment": "What stands between a printed plan and applying it, given the run mode.\n\nA terminal always gets a confirm prompt — the wizard's answers were just\ntyped, and one keystroke catches a typo'd name before it hits disk. The\none combination with no gate at all is `--wetrun` on a clean tree without\na terminal — there `git reset --hard && git clean -fd` restores the\npre-molt state (the tree was clean, so `git clean` removes only files\nmolt created). A dirty tree (reachable only via `--force`) never applies\nwithout the dirty-specific in-the-moment confirmation, and without a\nterminal it never applies at all: \"commit first\" is always available, so\nan override flag would just recreate the hole.",
 							"typeSignature": "ApplyGate",
-							"sourceLine": 1588,
+							"sourceLine": 1599,
 							"typeInfo": {
 								"kind": "union",
 								"alias": "ApplyGate",
@@ -186590,7 +186930,7 @@
 							"name": "apply_gate",
 							"kind": "function",
 							"typeSignature": "(wetrun: boolean, clean: boolean, is_interactive: boolean): ApplyGate",
-							"sourceLine": 1590,
+							"sourceLine": 1601,
 							"parameters": [
 								{
 									"name": "wetrun",
@@ -186643,13 +186983,13 @@
 							"kind": "variable",
 							"docComment": "The non-interactive refusal to keep docs without a repository url.",
 							"typeSignature": "\"keeping docs needs a repository url (the API docs link to source) — pass --repo <url>, or --strip docs\"",
-							"sourceLine": 1698
+							"sourceLine": 1709
 						},
 						{
 							"name": "resolve_config",
 							"kind": "function",
 							"typeSignature": "(top: TopLevel, root: string, is_interactive: boolean): Promise<MoltConfig>",
-							"sourceLine": 1701,
+							"sourceLine": 1712,
 							"parameters": [
 								{
 									"name": "top",
