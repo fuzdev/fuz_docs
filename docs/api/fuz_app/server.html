@@ -23,7 +23,7 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.CFmDeM3o.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.Dz-FJ9fh.js" rel="modulepreload">
 		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
@@ -32,7 +32,7 @@
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/2.-cFiW4n4.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/2.CuZo35s2.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/UfIDI-FR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DgOJkruE.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dg4uJei1.js" rel="modulepreload">
@@ -47,11 +47,11 @@
 		<link href="/_app/immutable/chunks/BEdVlEUe.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cr_ZtgvB.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/8Ezm2U4e.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DU3jU4Ty.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/n0gXgUp6.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DR_E66Uv.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BKsyKx00.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/By4M2RL-.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/HD5XwtoO.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/C-nSx8Gi.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/8kcgk75U.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CA_IZJYJ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/gjYyGhy3.js" rel="modulepreload">
@@ -60,9 +60,9 @@
 		<link href="/_app/immutable/chunks/CGc-JF3T.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BWLz4bGl.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/aa_gt25u.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DeUBwxuz.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BwsQS9FK.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/D7obSWfs.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/9.BKOOAGBx.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/9.BuBzp4pl.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><!--1ir2cq6--><!----><!--15lzmkk--><!----><title>server - API docs - @fuzdev stack</title>
 		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
@@ -152,16 +152,16 @@ callers are rejected at the auth phase and never reach the handler.
 status — are a future refinement; there is no such concept today, so
 the bare-hash route stays strictly admin-gated.)<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Auth shape on the cell-scoped route is <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->{account: 'none', actor: 'none'}<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->
 — the dispatcher's authorization phase is skipped for pure-public routes,
-so the handler builds the <!--]--><!--[3--><!--[0--><!--[--><!--[0--><!--[0--><a class="declaration-link chip" href="/docs/api/fuz_app/auth/request_context.ts#RequestContext"><!--[0--><!--[-1-->RequestContext<!--]--><!----><!--]--></a><!--]--><!--]--><!--]--><!--]--><!--]--><!--[2--> itself from <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->c.var.account_id<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->
-(populated by the <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->/api/*<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> session middleware) by resolving the caller's
-single actor and loading their role_grants. Unauthed callers pass through
-with <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->req_ctx: null<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> and are admitted only by a `cell.visibility ===
-'public'<!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1--> cell whose <!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->moderation` admits an audience (unmoderated or
+so the handler builds the <!--]--><!--[3--><!--[0--><!--[--><!--[0--><!--[0--><a class="declaration-link chip" href="/docs/api/fuz_app/auth/request_context.ts#RequestContext"><!--[0--><!--[-1-->RequestContext<!--]--><!----><!--]--></a><!--]--><!--]--><!--]--><!--]--><!--]--><!--[2--> itself from the resolved account
+id (<!--]--><!--[3--><!--[0--><!--[--><!--[0--><!--[0--><a class="declaration-link chip" href="/docs/api/fuz_app/auth/request_context.ts#get_public_account_id"><!--[0--><!--[-1-->get_public_account_id<!--]--><!----><!--]--></a><!--]--><!--]--><!--]--><!--]--><!--]--><!--[2-->, over what the <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->/api/*<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> auth middleware set) by
+resolving the caller's single actor and loading their role_grants.
+Unauthed callers pass through with <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->req_ctx: null<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> and are admitted only by
+a <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->cell.visibility === 'public'<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> cell whose <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->moderation<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> admits an audience (unmoderated or
 <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->'approved'<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->). Multi-actor accounts fall through with <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->req_ctx: null<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->
 — there's no <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->acting?<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> slot on a pure-public route, so multi-actor
 callers are treated as anonymous. A scope-narrowed API token is treated as
-anonymous too, not refused: a narrowed token reaches no non-RPC surface
-(<!--]--><!--[3--><!--[0--><!--[--><!--[0--><!--[0--><a class="declaration-link chip" href="/docs/api/fuz_app/auth/token_scope.ts#token_scope_admits_non_rpc"><!--[0--><!--[-1-->token_scope_admits_non_rpc<!--]--><!----><!--]--></a><!--]--><!--]--><!--]--><!--]--><!--]--><!--[2-->), but on a route that admits anonymous callers
+anonymous too, not refused (<!--]--><!--[3--><!--[0--><!--[--><!--[0--><!--[0--><a class="declaration-link chip" href="/docs/api/fuz_app/auth/request_context.ts#get_public_account_id"><!--[0--><!--[-1-->get_public_account_id<!--]--><!----><!--]--></a><!--]--><!--]--><!--]--><!--]--><!--]--><!--[2-->): a narrowed token
+reaches no non-RPC surface, but on a route that admits anonymous callers
 a 403 would enforce nothing — the holder drops the <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->Authorization<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> header and
 re-reads every public cell anyway.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->404 is the universal "not viewable" response: missing fact, missing or
 unviewable cell, or the cell doesn't reference the hash. We deliberately
@@ -258,7 +258,9 @@ directory outside every other location's root.<!--]--><!--]--><!----></li><!--]-
 the server is trusted to point into the prefix; an untrusted one needs
 <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->proxy_ignore_headers X-Accel-Redirect;<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> (or the <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->fastcgi_<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->uwsgi_<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> /
 <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->scgi_<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2--> equivalent).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[2-->Other module code can redirect internally too (njs <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->internalRedirect<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->, perl,
-echo), so run trusted modules and content only.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->The Rust twin is <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->fuz_fact_serving<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->'s <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->nginx.rs<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->, held to the same rules and
+echo), or strip the hardening headers as headers-more can (njs
+<!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->js_header_filter<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->, lua-nginx-module <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->header_filter_by_lua*<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->), and the
+check sees none of it, so run trusted modules and content only.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->The Rust twin is <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->fuz_fact_serving<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->'s <!--]--><!--[3--><!--[0--><!--[--><!--[-1--><code><!--[-1-->nginx.rs<!--]--><!----></code><!--]--><!--]--><!--]--><!--]--><!--[2-->, held to the same rules and
 the same fixture corpus.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->@example<!--]--><!--]--><!----></p><!--]--><!--[15--><!--[0--><!--[--><code data-lang="ts" class="svelte-jqsy8a"><!--[-1--><!----><span class="token_keyword">const</span> x_accel <span class="token_operator">=</span> <span class="token_function">create_x_accel_config</span><span class="token_punctuation">(</span>
 	<span class="token_string">'/_facts/'</span><span class="token_punctuation">,</span>
 	<span class="token_template_string"><span class="token_template_punctuation token_string">`</span><span class="token_string">server {
@@ -272,16 +274,16 @@ the same fixture corpus.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><
 			
 			<script>
 				{
-					__sveltekit_11gn4ax = {
+					__sveltekit_wkf68j = {
 						base: "",
-						version: "98066fa628ce4f728e18bd49f21fa66fa90be23b"
+						version: "f302e738240478dbe67cac5320c49503524bd429"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_11gn4ax);
-						const app = await import("/_app/immutable/entry/app.CFmDeM3o.js");
+						kit.init(__sveltekit_wkf68j);
+						const app = await import("/_app/immutable/entry/app.Dz-FJ9fh.js");
 						kit.start(app, element, {
 							node_ids: [0, 2, 9],
 							data: [null,null,null],
