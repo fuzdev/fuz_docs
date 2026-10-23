@@ -95,7 +95,9 @@ denying `broken_intra_doc_links` (plus `invalid_html_tags`/`bare_urls`/
 `redundant_explicit_links`) — a doc link is the only machine-checkable claim
 a doc comment makes, and re-declared crate-level blocks must re-carry it —
 and a `rust-toolchain.toml` pin, since floating stable breaks on new nursery
-lints. `private_intra_doc_links` stays at default warn where module headers
+lints. CI installs from that file (`rustup toolchain install --no-self-update`)
+rather than naming a second version — rustup silently lets the file override
+a `dtolnay/rust-toolchain` input. `private_intra_doc_links` stays at default warn where module headers
 deliberately link private members.
 
 **The doc-link gate** is
