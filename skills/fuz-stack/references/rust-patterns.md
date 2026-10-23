@@ -532,7 +532,9 @@ remediation, not to error type.**
 - **Agent tier** (automation-primary CLIs): `sysexits.h` codes **plus** a
   stable snake_case `error.kind` in `--json`. `fuzi` is the reference; `fuz`
   uses the same taxonomy for operationally-distinct artifact failures (lock
-  held `75`, disk full `73`, integrity `65`). Two dialects max.
+  held `75`, disk full `73`, `65` for bytes not to trust — a failed integrity
+  check or an `is_security_violation()` refusal, never retried). Two dialects
+  max.
 - **Extend via a structured `kind`, not new integers.** Status signals are the
   carve-out: a reserved code for a non-failure the caller branches on (fuz's
   `10` = update available) is a distinct category, minted deliberately.
