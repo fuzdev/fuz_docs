@@ -410,5 +410,6 @@ _inventory_.
 - ./references/rust-perf.md — profiling, arenas, lock hygiene, `unsafe` escape hatch
 - ./references/rust-dependencies.md — approved crates, crate-vs-feature isolation
 - ./references/twin-impl.md — TS ↔ Rust twin architecture, naming parity, wire
-  crates, serde boundary conformance, tool twins (fuz_template's molt)
+  crates, serde boundary conformance, digests (algorithm, encoding and
+  compare rule per hash and secret), tool twins (fuz_template's molt)
 - ./references/wasm-patterns.md — WASM, C-FFI, and N-API binding crates

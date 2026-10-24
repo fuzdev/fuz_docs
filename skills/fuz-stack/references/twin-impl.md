@@ -1,5 +1,5 @@
 ---
-description: TS ↔ Rust twin implementations — convergence, naming parity, wire crates
+description: TS ↔ Rust twin implementations — convergence, naming parity, wire crates, digests
 ---
 
 # Twin Implementations (TS ↔ Rust)
@@ -145,6 +145,51 @@ round-trip test skip-with-notice when their runtime or binary is absent, the
 same discipline as DB/Deno-gated tests (./testing-patterns.md §Environment
 Flags). Gotcha: an evaluator that stubs clock/RNG to throw requires
 pure-literal fixtures.
+
+## Digests
+
+Hashes and secrets are the twin surface where a lenient side drifts
+silently: both spines must refuse the same strings, not only accept the same
+ones. Rust spine names are spine crates (./rust-spine.md).
+
+| Concept | Algorithm | Encoding | TS home | Rust home | Compare rule |
+| --- | --- | --- | --- | --- | --- |
+| Fact address | BLAKE3 | `blake3:` + 64 lowercase hex | fuz_util `hash_schemas.ts` (`FACT_HASH_EXACT`, `is_fact_hash`); fuz_app `FactHashSchema` | `ContentHash::parse_fact_hash`, the `fuz_crypto::fact_hash` serde adapter, `fuz_auth::is_valid_fact_hash` | exact grammar at every ingress; an off-form value is absent, never normalized |
+| Fact disk location | BLAKE3 | `file:<2 hex>/<62 hex>`, lowercase | fuz_app `db/file_fact_url.ts` (`parse_file_fact_url`, `file_fact_url_addresses`) | `fuz_fact::parse_fact_file_url`, `ParsedFactUrl::addresses` | the URL must address the row's own hash before any read; a mismatch is refused as not found |
+| Other content digests | BLAKE3 | bare 64 lowercase hex | fuz_util `hash_blake3`; fuz_app `Blake3Hash` | the `fuz_crypto` `blake3_hex` adapters | the adapters refuse to write a non-BLAKE3 hash |
+| Session token at rest | BLAKE3, unkeyed | 64 lowercase hex | fuz_app `auth/session_queries.ts` `hash_session_token` | `fuz_auth::hash_session_token` | hash, then look up |
+| API token at rest | BLAKE3 of the whole `secret_fuz_token_…` | 64 lowercase hex | fuz_app `auth/api_token.ts` `hash_api_token` | `fuz_auth::hash_api_token` | hash, then look up |
+| Password | Argon2id, m=19456 t=2 p=1 | PHC string | fuz_app `auth/password_argon2.ts` | `fuz_auth` `password_argon2.rs` | library verify; an unknown account verifies against the same precomputed dummy hash |
+| Session cookie | HMAC-SHA256 | `<identity>:<expires_at>.<sig>`; `expires_at` ASCII digits within `u64`; `sig` standard padded base64 of the 32-byte MAC; keys of 32+ characters | fuz_app `auth/keyring.ts`, `auth/session_cookie.ts` | `fuz_auth` `keyring.rs`, `session_cookie.rs` | strict decode (one spelling per MAC), then the MAC verify |
+| Daemon token | none (raw secret) | 43 base64url characters | fuz_app `auth/daemon_token.ts` | `fuz_auth` `daemon_token.rs` | constant time |
+| Bootstrap token | none (raw secret) | the file's bytes minus one optional trailing LF | fuz_app `auth/bootstrap_account.ts` | `fuz_auth` `bootstrap.rs` | raw bytes in constant time; no other trimming |
+| Shell-checked download | SHA-512 | sidecar line `<128 lowercase hex>  <name>\n` | build scripts (`gro.config.ts`) | `fuz_release` | `sha512sum -c` |
+
+Rules:
+
+- **Wire hex is lowercase.** Check length and charset before any compare, and
+  refuse rather than fold case. Third-party input whose format allows either
+  case (a git `HEAD` file) is lowercased at that edge, once.
+- **BLAKE3 is the native content hash.** Facts spell it `blake3:<hex>`;
+  every other field is bare hex. A parser for an algorithm-tagged form
+  refuses every other algorithm and spelling (uppercase, `sha256:`, SRI).
+- **SHA-512 is the one digest a person checks in a shell.** Nothing carries a
+  second digest beside BLAKE3 for convenience. SHA-256 appears where an
+  external convention names it — CSP hashes, git object ids in a SHA-256
+  repository, npm SRI tokens, LFS oids, upstream pins — and in local cache or
+  staleness keys that nothing outside the package reads, mostly where the
+  BLAKE3 WASM isn't a guaranteed dependency (fuz_css's extraction cache).
+- **Unkeyed BLAKE3 hash-then-lookup is for random tokens of 256 bits or
+  more.** Argon2id is for passwords only. Raw secrets compare in constant
+  time. A stored verifier for a secret (fuz_forge's hook secret) is its
+  BLAKE3; the plaintext lives only where it is presented.
+- **Non-security hashes say so and state their width** — fuz_util's
+  `hash_insecure` is a 32-bit DJB2 for cache keys and change detection, never
+  a persisted id.
+- **Test the refusals across backends.** Each strict parse gets
+  cross-backend rows for its off-form inputs — uppercase, another
+  algorithm, SRI, non-canonical padding, CRLF — so both sides answer the same
+  status for the same string.
 
 ## Tool twins: molt
 

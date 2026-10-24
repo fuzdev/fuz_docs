@@ -105,7 +105,8 @@ export const skills: Array<SkillMeta> = [
 			{
 				slug: 'twin-impl',
 				title: 'Twin Implementations (TS ↔ Rust)',
-				description: 'TS ↔ Rust twin implementations — convergence, naming parity, wire crates'
+				description:
+					'TS ↔ Rust twin implementations — convergence, naming parity, wire crates, digests'
 			},
 			{
 				slug: 'wasm-patterns',

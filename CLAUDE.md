@@ -135,7 +135,7 @@ skills/
 │   │   ├── task-patterns.md           # Gro task system (.task.ts, TaskContext, error handling)
 │   │   ├── testing-patterns.md        # Testing patterns, fixtures, mocks, assertions
 │   │   ├── tsdoc-comments.md          # TSDoc style guide: tags, conventions, drift detection
-│   │   ├── twin-impl.md               # TS ↔ Rust twin implementations: convergence, naming parity, wire crates
+│   │   ├── twin-impl.md               # TS ↔ Rust twin implementations: convergence, naming parity, wire crates, digests
 │   │   ├── wasm-patterns.md           # WASM/N-API build targets, WIT, wasm-bindgen, component model (blake3, tsv)
 │   │   └── zod-schemas.md             # Zod schema conventions (strictObject, naming, branded types, introspection)
 └── grimoire/
