@@ -54,8 +54,9 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `zap`          | convergence — deploy and operate infrastructure                                 |
 
 **Dependency flow**: `fuz_schema → fuz_util → gro + fuz_css → mdz → fuz_ui → fuz_app → zzz, apps`.
-zap sits beside the chain: its site builds on fuz_ui; its Rust engine consumes
-neither fuz_app nor the spine crates.
+zap sits beside the chain: its site builds on fuz_ui; its Rust engine links
+only fuz's spine-free system leaves (`fuz_eval`, which pulls in `fuz_sys`),
+plus `fuz_audit` for its xtask — never the HTTP/DB spine.
 
 **Deps**: prefer the approved allowlists (./references/npm-dependencies.md,
 ./references/rust-dependencies.md). Adding or upgrading needs approval;
