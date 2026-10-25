@@ -127,6 +127,8 @@ few approved crates are pinned at the member-crate level rather than the root:
 | `napi` / `napi-derive` / `napi-build` | N-API bindings — the native Node.js/Bun npm path (`tsv_napi`); `napi-build` is the matching build dep                                                                                                                                                                                         |
 | `wit-bindgen`                         | Component-model bindings                                                                                                                                                                                                                                                                      |
 | `wasmtime` / `wasmtime-wasi`          | WASM host (tests, benches)                                                                                                                                                                                                                                                                    |
+| `deno_core` / `deno_web` / `deno_webidl` | V8 embedding plus the web-platform APIs for gro's `fgro` runtime (pulls `rusty_v8`) |
+| `tsv_ts` | tsv's TypeScript parser, a git-pinned crate: `fgro` strips TypeScript in process |
 
 See ./wasm-patterns.md for the binding-layer conventions these support.
 
