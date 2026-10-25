@@ -6,7 +6,7 @@
 		"svelte": "5.57.2",
 		"sveltekit": "3.0.1",
 		"typescript": "6.0.3",
-		"gro": "0.220.0",
+		"gro": "0.222.0",
 		"vitest": "5.0.3"
 	},
 	"libraries": [
@@ -40,7 +40,7 @@
 		{
 			"kind": "package",
 			"name": "@fuzdev/gro",
-			"version": "0.221.0",
+			"version": "0.222.0",
 			"path": "gro",
 			"description": "task runner and toolkit extending SvelteKit",
 			"glyph": "🌰",
@@ -54,7 +54,9 @@
 				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_util"
 			],
-			"runtime_dependencies": [],
+			"runtime_dependencies": [
+				"@fuzdev/tsv"
+			],
 			"dev_dependencies": [
 				"@fuzdev/blake3-wasm",
 				"@fuzdev/fuz_code",
@@ -62,8 +64,7 @@
 				"@fuzdev/fuz_schema",
 				"@fuzdev/fuz_ui",
 				"@fuzdev/fuz_util",
-				"@fuzdev/mdz",
-				"@fuzdev/tsv"
+				"@fuzdev/mdz"
 			]
 		},
 		{
@@ -481,7 +482,8 @@
 		"@fuzdev/gro": [
 			"@fuzdev/blake3-wasm",
 			"@fuzdev/fuz_schema",
-			"@fuzdev/fuz_util"
+			"@fuzdev/fuz_util",
+			"@fuzdev/tsv"
 		],
 		"@fuzdev/fuz_css": [
 			"@fuzdev/fuz_schema",
