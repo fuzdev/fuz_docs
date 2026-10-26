@@ -121,12 +121,20 @@ envelope is what parity tests assert byte-for-byte. Prefer typed
 `#[derive(Deserialize)]` input structs + `parse_params` over
 `params.get().and_then(Value::as_str)` chains (the chains are migration debt).
 
-`JsonrpcErrorCode` is a `#[repr(i32)]` enum with a hand-written `Serialize`
-emitting the bare `i32` — not scattered `pub const … : i32`. Because
+`JsonrpcErrorCode` is an enum with a hand-written `Serialize` emitting the
+bare `i32` (`as_i32()`) — not scattered `pub const … : i32`. Because
 `JsonrpcError.code` is the enum, `error_code_to_http_status` is exhaustive: a
-new code is a compile error, not a silent 500. TS twin: `fuz_app`'s
-`jsonrpc_errors`; consumers use `JsonrpcErrorCode::NotFound as i64`, never a
-magic number.
+new base code is a compile error, not a silent 500. TS twin: `fuz_app`'s
+`jsonrpc_errors`; consumers compare against `JsonrpcErrorCode::NotFound` (or
+its `as_i32()`), never a magic number.
+
+A consumer's own code — the twin of a TS consumer spreading
+`JSONRPC_ERROR_CODES` and registering `JSONRPC_ERROR_CODE_TO_HTTP_STATUS[code]`
+— is one `const` declaring the number and its status together,
+`ConsumerErrorCode::new(-32020, StatusCode::BAD_GATEWAY)` (zzz's
+`ai_provider_error`), emitted with `consumer_error(code, message, data)`. `new`
+refuses a base-set number, a code outside `-32099..=-32000`, and a non-error
+status; in a `const` that's a compile error.
 
 ## Env loading
 
