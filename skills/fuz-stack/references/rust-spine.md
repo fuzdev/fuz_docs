@@ -181,10 +181,12 @@ status; in a `const` that's a compile error.
   `Arc<fuz_realtime::ConnectionRegistry>::send_to`. HTTP → `None` →
   non-streaming.
 - **WS and SSE admission is two-phase, and spine-owned**: `register_action_ws`
-  gates origin → 401 → token scope → role, then `admit_upgrade` registers the
-  connection pending with the endpoint's `required_roles`, re-reads the
-  credential (`fuz_auth::revalidate_resolved_auth`) and then those roles
-  (global grants only), and admits — the per-account cap evicts only there. A
+  gates origin → 401 → token scope → acting actor (`?acting=`, on every
+  endpoint) → role (the resolved actor's global grants), then `admit_upgrade`
+  registers the connection pending with the endpoint's `required_roles`,
+  re-reads the credential (`fuz_auth::revalidate_resolved_auth`) and then that
+  actor's roles (global grants only), and admits — the per-account cap evicts
+  only there. A
   credential revoked mid-upgrade closes with 4001, a required role revoked
   mid-upgrade with 4006 (`WS_CLOSE_PERMISSION_REVOKED`), a failed re-read with
   1011, a superseded socket with 4004, and an upgrade the shutdown closed or
