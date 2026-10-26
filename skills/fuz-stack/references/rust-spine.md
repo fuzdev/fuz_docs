@@ -129,7 +129,7 @@ new base code is a compile error, not a silent 500. TS twin: `fuz_app`'s
 its `as_i32()`), never a magic number.
 
 A consumer's own code — the twin of a TS consumer spreading
-`JSONRPC_ERROR_CODES` and registering `JSONRPC_ERROR_CODE_TO_HTTP_STATUS[code]`
+`JSONRPC_ERROR_CODES` and calling `register_jsonrpc_error_code(code, status)`
 — is one `const` declaring the number and its status together,
 `ConsumerErrorCode::new(-32020, StatusCode::BAD_GATEWAY)` (zzz's
 `ai_provider_error`), emitted with `consumer_error(code, message, data)`. `new`
