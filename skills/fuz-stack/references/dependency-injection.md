@@ -187,7 +187,7 @@ interface; don't leak platform types (node's `SpawnOptions`) through an L1 shape
   WebSocket upgrade or stream is refused at once — so a transport, unlike the
   bundle, is spent with its server. A transport mounted
   by hand passes `deps.connection_closer` to its mount helper
-  (`register_ws_endpoint`, `create_audit_log_sse`), which adds it permanently —
+  (`register_action_ws`, `create_audit_log_sse`), which adds it permanently —
   or passes `null` and adds it itself to hold the remover.
 
 ## Design Principles
