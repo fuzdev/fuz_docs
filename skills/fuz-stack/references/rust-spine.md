@@ -48,17 +48,43 @@ entry point that both the production `main.rs` and the sibling
 `testing_*_server` binary (`testing_zzzd`, `testing_fuzfd`) call, differing
 only in injected options. The test binary wires `TestingArgon2idHasher` and
 registers `_testing_*` actions; it's what the TS cross-backend suite launches,
-and the `testing_` prefix + `check-release` keep it unshippable. Swap points:
+and the `testing_` prefix + `check-release` keep it unshippable.
 
-- `password_hasher: Arc<dyn PasswordHasher>`
-- `extra_action_specs_factory` — `_testing_*` actions without `fuz_testing`
-  entering the production graph
-- `pre_migration_hook` — test-only DB setup
-- `daemon_token_state` — production `None`; the producer is confined to
-  `fuz_testing` by the dep graph
+Swap points — on `SpineBackendOptions` (in `SpineRunOptions`):
+`password_hasher`, `rate_limiters`, `login_ip_rate_limit`,
+`pre_migration_hook` (test-only DB setup), `daemon_token_state` (production
+`None`; the producer is confined to `fuz_testing` by the dep graph),
+`audit_inflight_tracking`; on the consumer's `RunAppOptions`:
+`extra_action_specs_factory` (`_testing_*` actions without `fuz_testing`
+entering the production graph).
 
-The `run_app` _body_ is consumer-specific (domain App, migrations, action-spec
-composition), not a shared helper. The boxed-closure shapes —
+**`run_app` composes the shared toolkit, `fuz_actions::server`** — the Rust
+twin of fuz_app's `create_app_backend` / `create_app_server`. A consumer
+declares an `AppBackendSpec` const (session cookie name, migration namespaces,
+`expected_schema_json: Option<&'static str>` for `/ready`, whether it serves the audit
+stream), reads its env through `fuz_http::server_env::BaseServerEnv` (the bind
+pair, `DATABASE_URL`, cookie keys, `FUZ_ALLOWED_ORIGINS`,
+`FUZ_BOOTSTRAP_TOKEN_PATH`, and trusted proxies — loopback when unset, under a
+var the consumer names), and calls `create_app_backend`, which
+boots in one fixed order: READ COMMITTED guard → pre-migration hook →
+migrations → keeper → bootstrap availability → revocation listeners →
+`/ready`. The returned `AppBackend` builds every route state
+(`account_route_state`, `rpc_route_state`, `ws_route_state`, …). A bound the
+core builds is a `SpineBackendOptions` field (`login_ip_rate_limit`, set before
+boot, never patched onto the built core); a per-route-state difference is
+struct-update syntax over a builder's result
+(`AccountRouteState { login_fail_floor_ms: 0, ..backend.account_route_state(gate) }`). The consumer
+still owns its domain App, its action specs, and the final `Router`, then
+hands it to `serve_until_shutdown` with its upkeep handles. Startup failures
+are `StartupError` (`exit_code()`: configuration → 2, else 1; `hint()`),
+rendered by `fuz_sys::cli::report_failure`. A server whose command line is
+the standard `start` / `db-status` / `--help` parses it with
+`parse_server_invocation`, and one with flags of its own keeps its own parser,
+equally strict (an unknown argument exits 2 before the env is read). Don't
+re-implement the boot, the route states, serving, or the error policy per
+consumer.
+
+The boxed-closure shapes —
 `ExtraActionSpecsFactory<App>`, `PreMigrationHook<E>`, the
 `ExtraActionSpecsRuntime` POD (`password_hasher` / `keyring` /
 `daemon_token_state` / `session_cookie_name`, all `fuz_auth` types) — live in
@@ -69,13 +95,12 @@ one-line concrete alias
 (`pub type ExtraActionSpecsFactory = fuz_actions::ExtraActionSpecsFactory<handlers::App>;`)
 — its own definition, not a re-export shim.
 
-`RunAppOptions` shares a bind/drain vocabulary: `default_addr: SocketAddr` (more
-expressive than a bare port; loopback-only consumers default `127.0.0.1:<port>`
-and override only the port), `drain_timeout: Duration` passed
-`fuz_http::DEFAULT_DRAIN_TIMEOUT` (10 s), and
-`rate_limiters: fuz_auth::RateLimiterMode`. Remaining fields are per-consumer
-(zzz adds `force_test_actions`) — don't force one struct across consumers; bind
-env-var names are per-consumer too (`PORT`/`HOST` forge, `ZZZ_PORT` zzz).
+`RunAppOptions` embeds the toolkit's `SpineRunOptions` (backend options,
+`default_addr: SocketAddr`, `drain_timeout` — `fuz_http::DEFAULT_DRAIN_TIMEOUT`)
+and adds only what is the consumer's own (zzz's `force_test_actions`). Its
+`testing_*` sibling uses `fuz_testing`'s `startup_reset_hook`,
+`require_daemon_token_from_env`, and `truncate_reset_state`, and the
+`schema_ready` drift test is `assert_expected_schema_fixture`.
 
 **Every spine rate limiter is built through `RateLimiterMode`** —
 `mode.limiter(fuz_auth::DEFAULT_LOGIN_IP_RATE_LIMIT)`, never
@@ -88,25 +113,23 @@ that nulls a limiter prints a startup banner (same fail-loud shape as
 `TestingArgon2idHasher`). Consumer-owned limiters that aren't spine surfaces
 (an image-upload cap, say) stay live in both modes.
 
-**Upkeep runs beside the server, owned by `run_app`.** Every spine server
-schedules `fuz_auth::spawn_auth_cleanup(AuthCleanupOptions { pool, audit,
-socket_revoker }, DEFAULT_AUTH_CLEANUP_INTERVAL, shutdown.clone())` — expired
-sessions deleted and their connections closed, expired role-grant offers
-audited once — and a disk-CAS consumer adds
-`fuz_fact::spawn_orphan_temp_sweeper(facts_dir, shutdown.clone())`. The shape:
-`run_app` spawns the tasks after the bind (migrations have run, so each
-startup pass can read the schema), serves, and awaits every handle before
-returning — `serve_with_shutdown` returns only once the token has fired, so
-there is no post-serve `cancel()`.
-Where a consumer splits out a `build_router`, it spawns nothing and returns a
-`BuiltRouter { router, app: Option<App> }` (`None` in boot-only mode) for
-`run_app` to schedule from. `socket_revoker` is the revoker the app's
-revocation handlers already hold (`RealtimeRevoker` where an SSE stream sits
+**Upkeep runs beside the server, owned by `run_app`.** The toolkit's
+`spawn_upkeep(UpkeepOptions { auth_cleanup, extra }, &shutdown)` schedules the
+spine's auth cleanup (expired sessions deleted and their connections closed,
+expired role-grant offers audited once — `AppBackend::auth_cleanup_options`)
+plus each consumer task in `extra`: a disk-CAS consumer's
+`fuz_fact::spawn_orphan_temp_sweeper`, an invite-expiry sweep
+(`fuz_http::spawn_periodic`). `run_app` passes them as
+`ServeOptions::upkeep` (`None` in boot-only mode), and
+`serve_until_shutdown` starts them after the bind (migrations have run, so
+each startup pass can read the schema), serves, and joins them before
+returning. Where a consumer splits out a `build_router`, it spawns nothing and
+returns a `BuiltRouter { router, app: Option<App> }` (`None` in boot-only
+mode) for `run_app` to schedule from. The revoker the cleanup closes through is
+the one the app's revocation handlers already hold
+(`AppBackend::socket_revoker` — a `RealtimeRevoker` where an SSE stream sits
 beside the WebSocket): a sweep with nothing to close through strands the swept
-sessions' connections. A consumer's own sweep goes on the same loop
-(`fuz_http::spawn_periodic`, an invite-expiry sweep) — two or more tasks collect
-in a `spawn_upkeep(…) -> [JoinHandle<()>; N]`. `testing_spine_stub` schedules
-none.
+sessions' connections. `testing_spine_stub` schedules none.
 
 The daemon-token keeper wiring (`BootstrapKeeperResolved` + boot-time
 `query_keeper_account_id`) is spine-owned in `fuz_auth` — don't re-implement.
@@ -138,11 +161,13 @@ status; in a `const` that's a compile error.
 
 ## Env loading
 
-- **Injectable seam**: load through
-  `from_vars(get: impl Fn(&str) -> Option<String>)` so tests inject a map —
-  `fuz_forge_server`'s env struct is the exemplar, including a test that
-  _rejects retired var names_. Audit for stray `std::env::var` in router code
-  (consumers still have a few).
+- **Shared reader, injectable seam**: the spine's common vars come from
+  `fuz_http::server_env::BaseServerEnv::from_vars(get, ServerEnvOptions)` —
+  the Rust twin of fuz_app's `BaseServerEnv` — so tests inject a map; a
+  consumer reads only its own vars beside it, through the same `from_vars`
+  shape (fuz_forge's env struct is the exemplar, including a test that
+  _rejects retired var names_). No stray `std::env::var` in router code;
+  `$HOME` goes through `fuz_sys::home_dir` / `expand_tilde`.
 - **Fail loud, not just closed**: security-consequential misconfig refuses to
   boot — an empty `FUZ_ALLOWED_ORIGINS` (empty allowlist = allow-all;
   `fuz_http::require_non_empty_origins`), a _malformed_ trusted-proxy list
