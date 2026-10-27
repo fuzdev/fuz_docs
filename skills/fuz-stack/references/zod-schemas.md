@@ -201,7 +201,10 @@ class for the registry; both `FooJson` and `FooJsonInput` (constructors and
 other keys are domain-specific. fuz_app's `SchemaFieldMeta`
 (`@fuzdev/fuz_app/schema_meta.ts`) adds `sensitivity: 'secret'`, which masks
 values in logs and API surface snapshots
-(`DATABASE_URL: z.string().min(1).meta({description: '…', sensitivity: 'secret'})`).
+(`DATABASE_URL: z.string().min(1).meta({description: '…', sensitivity: 'secret'})`),
+and `sensitivity: 'personal'` for personal data (a search term about people),
+which isn't masked. Both keep an action input off the URL: a read whose input
+carries either goes as a `POST`, not a `GET`.
 
 ## Validation at Boundaries
 
