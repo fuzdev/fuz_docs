@@ -46,8 +46,9 @@ leaf split are enforced by layering rules (§xtask & check-release).
 Each consumer exposes `pub async fn run_app(options: RunAppOptions)` — one
 entry point that both the production `main.rs` and the sibling
 `testing_*_server` binary (`testing_zzzd`, `testing_fuzfd`) call, differing
-only in injected options. The test binary wires `TestingArgon2idHasher` and
-registers `_testing_*` actions; it's what the TS cross-backend suite launches,
+only in injected options. The test binary takes its backend options from
+`fuz_testing::testing_backend_options` (`TestingArgon2idHasher` among them)
+and registers `_testing_*` actions; it's what the TS cross-backend suite launches,
 and the `testing_` prefix + `check-release` keep it unshippable.
 
 Swap points — on `SpineBackendOptions` (in `SpineRunOptions`):
@@ -70,7 +71,13 @@ var the consumer names), and calls `create_app_backend`, which
 boots in one fixed order: READ COMMITTED guard → pre-migration hook →
 migrations → keeper → bootstrap availability → audit listeners (fan-out,
 then revocation) → `/ready`. The returned `AppBackend` builds every route
-state (`account_route_state`, `action_dispatch`, `ws_route_state`, …). A bound the
+state (`account_route_state`, `action_dispatch`, `ws_route_state`, …) and the
+pieces every server mounts: `auth_rest_routes` (an `AuthRestRoutes` of the
+account, bootstrap, and signup states, `signup: None` on a server with no
+signup, mounted by `into_router` under `/api/account`) and
+`audit_stream_router`. A server started without `DATABASE_URL` serves
+`boot_only` instead: the wildcard-origin check, the boot-only warning, and
+the probes alone. A bound the
 core builds is a `SpineBackendOptions` field (`login_ip_rate_limit`, set before
 boot, never patched onto the built core); a per-route-state difference is
 struct-update syntax over a builder's result
@@ -79,16 +86,21 @@ still owns its domain App, its action specs, and the final `Router`, then
 hands it to `serve_until_shutdown` with its upkeep handles. Startup failures
 are `StartupError` (`exit_code()`: configuration → 2, else 1; `hint()`),
 rendered by `fuz_sys::cli::report_failure`. A server whose command line is
-the standard `start` / `db-status` / `--help` parses it with
-`parse_server_invocation`, and one with flags of its own keeps its own parser,
-equally strict (an unknown argument exits 2 before the env is read). Don't
+the standard `start` / `db-status` / `--help` reads it with
+`server_invocation(binary, start) -> Result<ServerInvocation, ExitCode>`,
+which prints help to stdout (exit 0) and `error: …` plus the usage to stderr
+(`EXIT_USAGE`, 2). One with commands of its own extends the line over
+`parse_server_invocation`, equally strict (an unknown argument exits 2 before
+the env is read). Don't
 re-implement the boot, the route states, serving, or the error policy per
 consumer.
 
 The boxed-closure shapes —
-`ExtraActionSpecsFactory<App>`, `PreMigrationHook<E>`, the
-`ExtraActionSpecsRuntime` POD (`password_hasher` / `keyring` /
-`daemon_token_state` / `session_cookie_name`, all `fuz_auth` types) — live in
+`ExtraActionSpecsFactory<App>` (returning `Result<Vec<ActionSpec>,
+StartupError>`, so a test seam can refuse the boot), `PreMigrationHook<E>`,
+the `ExtraActionSpecsRuntime` POD (`password_hasher` / `keyring` /
+`daemon_token_state` / `session_cookie_name` / `audit_emitter`, all
+`fuz_auth` types) — live in
 `fuz_actions::consumer_lifecycle`, generic over `App` and `E` so `fuz_testing`
 never enters the spine. (Not in `fuz_http::lifecycle`: `fuz_http` deps no spine
 crate, so it can't name `fuz_auth` types.) Each consumer instantiates with a
@@ -99,14 +111,25 @@ one-line concrete alias
 `RunAppOptions` embeds the toolkit's `SpineRunOptions` (backend options,
 `default_addr: SocketAddr`, `drain_timeout` — `fuz_http::DEFAULT_DRAIN_TIMEOUT`)
 and adds only what is the consumer's own (zzz's `force_test_actions`). Its
-`testing_*` sibling uses `fuz_testing`'s `startup_reset_hook`,
-`require_daemon_token_from_env`, and `truncate_reset_state`, and the
+`testing_*` sibling mints the daemon token (`require_daemon_token_from_env`;
+zzz's `init_daemon_token` against its own dir), boots on
+`fuz_testing::testing_backend_options` (the test hasher, `DisabledForTesting`,
+the daemon token, `startup_reset_hook`, in-flight audit tracking; a suite
+that drives the limiters sets `rate_limiters` by struct update), and mounts
+`testing_reset_specs` (`_testing_reset` + `_testing_drain_effects`, over the
+runtime's daemon-token state). Its reset truncates with
+`truncate_reset_state` over the spine's `fuz_cell::CELL_DROP_TABLES` /
+`fuz_fact::FACT_DROP_TABLES` and its own tables. Each spine const, and
+`fuz_auth::AUTH_INTEGRATION_TRUNCATE_TABLES` (the auth tables the reset
+deletes from), is held to its migration chain's DDL by
+`fuz_testing::migration_created_tables`. The
 `schema_ready` drift test is `assert_expected_schema_fixture`.
 
 **Every spine rate limiter is built through `RateLimiterMode`** —
 `mode.limiter(fuz_auth::DEFAULT_LOGIN_IP_RATE_LIMIT)`, never
 `Some(Arc::new(RateLimiter::new(…)))` + a conditional null. Production passes
-`Enforced`; the `testing_*` binary passes `DisabledForTesting` — the twin of
+`Enforced`; the `testing_*` binary gets `DisabledForTesting` from
+`testing_backend_options` — the twin of
 `fuz_app`'s testing wiring (a cross-process suite's failed-login cases would
 otherwise exhaust the per-IP budget). Building through the mode keeps a newly
 wired surface from staying enforced while the rest is disabled, and any process
