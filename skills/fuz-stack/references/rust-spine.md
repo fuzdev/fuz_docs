@@ -315,8 +315,8 @@ status; in a `const` that's a compile error.
      refused 1001 before any database work, an SSE `admit` refuses (the route
      answers the connect comment alone), and no admission landing mid-close
      reads as revoked. The TS twin (`fuz_app`'s `AppServer.close` →
-     `close_all_connections`) carries the same closing flag on its WS transport
-     and `SubscriberRegistry`.
+     `close_all_connections`) carries the same closing flag on its `ConnectionRegistry`
+     and `SseRegistry`.
    - **One write budget per WS loop.** Once the close-all fires, a loop's
      remaining writes — one already in progress and the close frame; the
      close-all discards what was queued — share one fixed deadline
