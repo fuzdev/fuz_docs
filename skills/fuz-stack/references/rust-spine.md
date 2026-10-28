@@ -61,15 +61,16 @@ entering the production graph).
 **`run_app` composes the shared toolkit, `fuz_actions::server`** — the Rust
 twin of fuz_app's `create_app_backend` / `create_app_server`. A consumer
 declares an `AppBackendSpec` const (session cookie name, migration namespaces,
-`expected_schema_json: Option<&'static str>` for `/ready`, whether it serves the audit
-stream), reads its env through `fuz_http::server_env::BaseServerEnv` (the bind
+`expected_schema_json: Option<&'static str>` for `/ready`, and
+`audit_sse: Option<AuditSseSpec>` for the audit stream and its keep-alive
+interval), reads its env through `fuz_http::server_env::BaseServerEnv` (the bind
 pair, `DATABASE_URL`, cookie keys, `FUZ_ALLOWED_ORIGINS`,
 `FUZ_BOOTSTRAP_TOKEN_PATH`, and trusted proxies — loopback when unset, under a
 var the consumer names), and calls `create_app_backend`, which
 boots in one fixed order: READ COMMITTED guard → pre-migration hook →
-migrations → keeper → bootstrap availability → revocation listeners →
-`/ready`. The returned `AppBackend` builds every route state
-(`account_route_state`, `rpc_route_state`, `ws_route_state`, …). A bound the
+migrations → keeper → bootstrap availability → audit listeners (fan-out,
+then revocation) → `/ready`. The returned `AppBackend` builds every route
+state (`account_route_state`, `action_dispatch`, `ws_route_state`, …). A bound the
 core builds is a `SpineBackendOptions` field (`login_ip_rate_limit`, set before
 boot, never patched onto the built core); a per-route-state difference is
 struct-update syntax over a builder's result
@@ -139,9 +140,10 @@ The daemon-token keeper wiring (`BootstrapKeeperResolved` + boot-time
 `fuz_http` owns the error constructors (`invalid_params(detail, reason)`,
 `internal_error`, `internal_error_with_source`, `not_found`, `conflict`,
 `forbidden`, `validation_error`, `rate_limited`) and
-`parse_params<T: DeserializeOwned>`. Consumers import, never re-declare — the
-envelope is what parity tests assert byte-for-byte. Prefer typed
-`#[derive(Deserialize)]` input structs + `parse_params` over
+`parse_strict_params<T: DeserializeOwned>` (an explicit `null` refused, as a
+`z.strictObject` refuses it, then the serde decode). Consumers import, never
+re-declare — the envelope is what parity tests assert byte-for-byte. Prefer
+typed `#[derive(Deserialize)]` input structs + `parse_strict_params` over
 `params.get().and_then(Value::as_str)` chains (the chains are migration debt).
 
 `JsonrpcErrorCode` is an enum with a hand-written `Serialize` emitting the
@@ -209,9 +211,9 @@ status; in a `const` that's a compile error.
   gates origin → 401 → token scope → acting actor (`?acting=`, on every
   endpoint) → role (the resolved actor's global grants), then `admit_upgrade`
   registers the connection pending with the endpoint's `required_roles`,
-  re-reads the credential (`fuz_auth::revalidate_resolved_auth`) and then that
-  actor's roles (global grants only), and admits — the per-account cap evicts
-  only there. A
+  re-reads the credential, the acting actor, and its global roles
+  (`fuz_auth::recheck_admission`, which the audit SSE stream shares), and
+  admits — the per-account cap evicts only there. A
   credential revoked mid-upgrade closes with 4001, a required role revoked
   mid-upgrade with 4006 (`WS_CLOSE_PERMISSION_REVOKED`), a failed re-read with
   1011, a superseded socket with 4004, and an upgrade the shutdown closed or
