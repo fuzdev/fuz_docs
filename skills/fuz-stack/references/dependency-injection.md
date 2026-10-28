@@ -42,7 +42,7 @@ export interface CommandDeps {
 
 // Functions declare exactly what they need via intersection
 export const setup_env_file = async (
-	deps: FsReadDeps & FsWriteDeps & CommandDeps,
+	deps: FsReadDeps & FsWriteDeps,
 	env_path: string,
 	example_path: string
 ): Promise<void> => { /* ... */ };
@@ -156,7 +156,7 @@ interface; don't leak platform types (node's `SpawnOptions`) through an L1 shape
 - **Optional with default** for public API surfaces:
   `const { deps = default_cache_deps } = options;`.
 - **Narrow intersection** — exactly the capabilities used:
-  `deps: FsReadDeps & FsWriteDeps & CommandDeps & EnvDeps`.
+  `deps: CommandDeps & FsReadDeps & FsRemoveDeps`.
 - **Ad-hoc per-function deps** — a unique combination gets its own co-located
   interface; use when sharing would add coupling without reuse:
 
