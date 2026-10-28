@@ -126,9 +126,9 @@ plus each consumer task in `extra`: a disk-CAS consumer's
 each startup pass can read the schema), serves, and joins them before
 returning. Where a consumer splits out a `build_router`, it spawns nothing and
 returns a `BuiltRouter { router, app: Option<App> }` (`None` in boot-only
-mode) for `run_app` to schedule from. The revoker the cleanup closes through is
+mode) for `run_app` to schedule from. The closer the cleanup closes through is
 the one the app's revocation handlers already hold
-(`AppBackend::socket_revoker` — a `RealtimeRevoker` where an SSE stream sits
+(`AppBackend::connection_closer` — a `RealtimeCloser` where an SSE stream sits
 beside the WebSocket): a sweep with nothing to close through strands the swept
 sessions' connections. `testing_spine_stub` schedules none.
 
@@ -290,13 +290,13 @@ status; in a `const` that's a compile error.
      long-lived transport: an SSE body never ends, so the drain waits it out,
      and an upgraded WebSocket is a detached task the process exits under (the
      client reads a reset, a browser's 1006). So `closer` is required.
-     `ShutdownCloser` is `close_all_sockets() -> usize` (close every
+     `ShutdownCloser` is `close_all_connections() -> usize` (close every
      connection, pending or admitted, and refuse every later one; sync,
      idempotent) plus `wait_closed()` (resolve once the closed connections'
-     own tasks have written their close). `fuz_auth::SocketRevoker:
-     ShutdownCloser`, so a consumer passes the revoker its revocation handlers
-     already hold — `app.socket_revoker().as_ref()`, the `Arc<dyn
-     SocketRevoker>` upcast to `&dyn ShutdownCloser` (`RealtimeRevoker` fans to
+     own tasks have written their close). `fuz_auth::ConnectionCloser:
+     ShutdownCloser`, so a consumer passes the closer its revocation handlers
+     already hold — `app.connection_closer().as_ref()`, the `Arc<dyn
+     ConnectionCloser>` upcast to `&dyn ShutdownCloser` (`RealtimeCloser` fans to
      the WS and SSE registries) — and `NoopShutdownCloser` only in a mode that
      mounts nothing live (boot-only).
    - **Order on fire**: the listener closes, every connection is asked to
