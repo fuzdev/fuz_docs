@@ -43,7 +43,7 @@ Each package's `CLAUDE.md` is authoritative for what it actually uses.
 | `fuz_css`      | semantic-first CSS framework and design system                                  |
 | `mdz`          | minimal markdown dialect — parser, renderer, Svelte preprocessor                |
 | `fuz_ui`       | Svelte 5 components — themes, layouts, overlays, auto-docs                      |
-| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs, CLI/daemon                  |
+| `fuz_app`      | stack spine — auth, sessions, DB, SSE, route specs                              |
 | `fuz_docs`     | experimental AI-generated docs and skills for Fuz                               |
 | `fuz_template` | web app template — TypeScript + SvelteKit + optional Rust                       |
 | `fuz_code`     | syntax styler for TypeScript, Svelte, Markdown, and more                        |
@@ -339,7 +339,7 @@ built on it — JSON shape, TS type, defaults, metadata, and serialization;
 schema changes cascade through the stack. Everything else is
 `@fuzdev/fuz_schema`: the packages below fuz_app (fuz_util, gro, fuz_css),
 CLI and task args (./references/task-patterns.md), tooling, and
-fuz_app's own CLI config. Porting from Zod, mind that a Zod object parse
+fuz_app's testing daemon-info file. Porting from Zod, mind that a Zod object parse
 returns a new object in schema key order while fuz_schema `object` returns
 the input itself when no entry changed it (`strip_object` copies, in schema
 order, only when an unknown key is present) — output written to generated

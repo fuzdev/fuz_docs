@@ -67,10 +67,8 @@ aliases, syncs `--no-*` duals, and returns `{ok: true, value}` or
 `{ok: false, issues}`, each issue printable with fuz_schema's `format_issue`
 (`bogus: expected no unknown keys, received number`). `--help` reads the
 schema through fuz_schema's `introspect.ts` (`get_schema_fields`,
-`format_schema_type`). A CLI outside Gro takes the same schemas: fuz_util's
-`argv_parse` + `args_parse`, or `@fuzdev/fuz_app/cli/args.ts`
-(`parse_command_args`, `create_extract_global_flags`) and
-`@fuzdev/fuz_app/cli/help.ts` (`create_help`). `s.parse_or_throw(Args, value)`
+`format_schema_type`). A CLI outside Gro takes the same schemas through
+fuz_util's `args_parse(argv_parse(argv), schema)`. `s.parse_or_throw(Args, value)`
 skips alias expansion and `--no-*` sync — fine for a test that passes
 canonical keys; `args_parse` for one that exercises flags.
 

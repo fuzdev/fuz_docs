@@ -12,7 +12,7 @@ runtime-inspectable (walkable via `@fuzdev/fuz_app/zod.ts`, exportable via
 branded strings for timestamps (`Datetime`), IDs (`Uuid`), and paths avoid
 serialization friction. Everything else — the packages below fuz_app, CLI
 and task args (parsed by fuz_util's `args_parse`, ./task-patterns.md),
-tooling, fuz_app's CLI config — is `@fuzdev/fuz_schema`.
+tooling, fuz_app's testing daemon-info file — is `@fuzdev/fuz_schema`.
 
 ## Schema helpers by layer
 
