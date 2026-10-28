@@ -103,7 +103,6 @@ fuz_util — not stack utilities; don't add them to app code.)
 | -------------------------- | ------------------------ |
 | `esbuild`                  | Bundler / transform      |
 | `oxc-parser`               | Fast JS/TS parser        |
-| `ts-blank-space`           | Type-stripping transform |
 | `acorn`                    | JS parser (ESTree)       |
 | `acorn-jsx`                | JSX plugin for acorn     |
 | `chokidar`                 | File watching            |
