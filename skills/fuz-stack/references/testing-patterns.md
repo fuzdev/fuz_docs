@@ -170,7 +170,7 @@ Consumers create a `db_fixture.ts` from fuz_app's factories:
 ```typescript
 // src/test/db_fixture.ts (fuz_app's own runs four drivers: pglite, pg, pglet-server, pglet-wasm)
 const init_schema = async (db: Db): Promise<void> => {
-	await run_migrations(db, [auth_migration_ns]);
+	await run_migrations(db, [AUTH_MIGRATION_NS]);
 };
 export const default_factory = create_default_db_factory(init_schema);
 export const pg_factory = create_pg_factory(init_schema, process.env.TEST_DATABASE_URL);
