@@ -343,7 +343,8 @@ test.each(cases)('%s', async (_label, initial, key, expected) => { ... });
 **Composable suites (fuz_app)**: `describe_*` factories in `src/lib/testing/`
 (library exports) let a consumer inherit whole coverage categories — attack
 surface, integration, admin, audit completeness, rate limiting, round-trip
-validation, data exposure — plus a `describe_standard_tests` bundle. They take
+validation, data exposure — plus a cross-process bundle,
+`describe_standard_cross_process_tests`. They take
 config (`session_options`, `create_route_specs`, `rpc_endpoints`, `bootstrap`)
 and skip groups whose config is absent. The roster is fuz_app inventory
 (`src/lib/testing/CLAUDE.md`).
