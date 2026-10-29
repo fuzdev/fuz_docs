@@ -1,0 +1,1 @@
+export{t as component}from"../chunks/CAsy5zmo.js";

@@ -23,19 +23,19 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.Dz-FJ9fh.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CyemF1yG.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.DFboIeD1.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.CqA20zXr.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D7obSWfs.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D9iQMjZg.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DvyVAdoA.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/3gsecTea.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.RWEPX6B8.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/ISdsov-F.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/eWPRky8_.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B6aan0u7.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/UfIDI-FR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dg4uJei1.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BPVwp-J3.js" rel="modulepreload">
@@ -43,15 +43,15 @@
 		<link href="/_app/immutable/chunks/DCYw93gZ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DgOJkruE.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/2tlPcHOe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/gjYyGhy3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Cn2nWIoC.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/30.Dq0vuf8c.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/30.HCqvdqD5.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BhLIK611.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CLqquUQ6.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CqS31bzD.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.B7ZfHHUF.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/DialogContent.DfiimBCd.css" rel="stylesheet">
@@ -87,70 +87,127 @@ impls, e.g. <!--]--><!--[3--><!--[-1--><code>TestingArgon2idHasher</code><!--]--
 leaf split are enforced by layering rules (§xtask &amp; check-release).<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="server-lifecycle-run_app"><!--[--><!--[2-->Server lifecycle — <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Each consumer exposes <!--]--><!--[3--><!--[-1--><code>pub async fn run_app(options: RunAppOptions)</code><!--]--><!--]--><!--[2--> — one
 entry point that both the production <!--]--><!--[3--><!--[-1--><code>main.rs</code><!--]--><!--]--><!--[2--> and the sibling
 <!--]--><!--[3--><!--[-1--><code>testing_*_server</code><!--]--><!--]--><!--[2--> binary (<!--]--><!--[3--><!--[-1--><code>testing_zzzd</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>testing_fuzfd</code><!--]--><!--]--><!--[2-->) call, differing
-only in injected options. The test binary wires <!--]--><!--[3--><!--[-1--><code>TestingArgon2idHasher</code><!--]--><!--]--><!--[2--> and
-registers <!--]--><!--[3--><!--[-1--><code>_testing_*</code><!--]--><!--]--><!--[2--> actions; it's what the TS cross-backend suite launches,
-and the <!--]--><!--[3--><!--[-1--><code>testing_</code><!--]--><!--]--><!--[2--> prefix + <!--]--><!--[3--><!--[-1--><code>check-release</code><!--]--><!--]--><!--[2--> keep it unshippable. Swap points:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>password_hasher: Arc&lt;dyn PasswordHasher></code><!--]--><!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>extra_action_specs_factory</code><!--]--><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>_testing_*</code><!--]--><!--]--><!--[2--> actions without <!--]--><!--[3--><!--[-1--><code>fuz_testing</code><!--]--><!--]--><!--[2-->
-entering the production graph<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>pre_migration_hook</code><!--]--><!--]--><!--[2--> — test-only DB setup<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[3--><!--[-1--><code>daemon_token_state</code><!--]--><!--]--><!--[2--> — production <!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2-->; the producer is confined to
-<!--]--><!--[3--><!--[-1--><code>fuz_testing</code><!--]--><!--]--><!--[2--> by the dep graph<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[8--><p><!--[--><!--[2-->The <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2--> <!--]--><!--[5--><em><!--[--><!--[2-->body<!--]--><!--]--><!----></em><!--]--><!--[2--> is consumer-specific (domain App, migrations, action-spec
-composition), not a shared helper. The boxed-closure shapes —
-<!--]--><!--[3--><!--[-1--><code>ExtraActionSpecsFactory&lt;App></code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>PreMigrationHook&lt;E></code><!--]--><!--]--><!--[2-->, the
-<!--]--><!--[3--><!--[-1--><code>ExtraActionSpecsRuntime</code><!--]--><!--]--><!--[2--> POD (<!--]--><!--[3--><!--[-1--><code>password_hasher</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>keyring</code><!--]--><!--]--><!--[2--> /
-<!--]--><!--[3--><!--[-1--><code>daemon_token_state</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>session_cookie_name</code><!--]--><!--]--><!--[2-->, all <!--]--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> types) — live in
+only in injected options. The test binary takes its backend options from
+<!--]--><!--[3--><!--[-1--><code>fuz_testing::testing_backend_options</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>TestingArgon2idHasher</code><!--]--><!--]--><!--[2--> among them)
+and registers <!--]--><!--[3--><!--[-1--><code>_testing_*</code><!--]--><!--]--><!--[2--> actions; it's what the TS cross-backend suite launches,
+and the <!--]--><!--[3--><!--[-1--><code>testing_</code><!--]--><!--]--><!--[2--> prefix + <!--]--><!--[3--><!--[-1--><code>check-release</code><!--]--><!--]--><!--[2--> keep it unshippable.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->Swap points — on <!--]--><!--[3--><!--[-1--><code>SpineBackendOptions</code><!--]--><!--]--><!--[2--> (in <!--]--><!--[3--><!--[-1--><code>SpineRunOptions</code><!--]--><!--]--><!--[2-->):
+<!--]--><!--[3--><!--[-1--><code>password_hasher</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>rate_limiters</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>login_ip_rate_limit</code><!--]--><!--]--><!--[2-->,
+<!--]--><!--[3--><!--[-1--><code>pre_migration_hook</code><!--]--><!--]--><!--[2--> (test-only DB setup), <!--]--><!--[3--><!--[-1--><code>daemon_token_state</code><!--]--><!--]--><!--[2--> (production
+<!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2-->; the producer is confined to <!--]--><!--[3--><!--[-1--><code>fuz_testing</code><!--]--><!--]--><!--[2--> by the dep graph),
+<!--]--><!--[3--><!--[-1--><code>audit_inflight_tracking</code><!--]--><!--]--><!--[2-->; on the consumer's <!--]--><!--[3--><!--[-1--><code>RunAppOptions</code><!--]--><!--]--><!--[2-->:
+<!--]--><!--[3--><!--[-1--><code>extra_action_specs_factory</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>_testing_*</code><!--]--><!--]--><!--[2--> actions without <!--]--><!--[3--><!--[-1--><code>fuz_testing</code><!--]--><!--]--><!--[2-->
+entering the production graph).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2--> composes the shared toolkit, <!--]--><!--[3--><!--[-1--><code>fuz_actions::server</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> — the Rust
+twin of fuz_app's <!--]--><!--[3--><!--[-1--><code>create_app_backend</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>create_app_server</code><!--]--><!--]--><!--[2-->. A consumer
+declares an <!--]--><!--[3--><!--[-1--><code>AppBackendSpec</code><!--]--><!--]--><!--[2--> const (session cookie name, migration namespaces,
+<!--]--><!--[3--><!--[-1--><code>expected_schema_json: Option&lt;&amp;'static str></code><!--]--><!--]--><!--[2--> for <!--]--><!--[3--><!--[-1--><code>/ready</code><!--]--><!--]--><!--[2-->, and
+<!--]--><!--[3--><!--[-1--><code>audit_sse: Option&lt;AuditSseSpec></code><!--]--><!--]--><!--[2--> for the audit stream and its keep-alive
+interval), reads its env through <!--]--><!--[3--><!--[-1--><code>fuz_http::server_env::BaseServerEnv</code><!--]--><!--]--><!--[2--> (the bind
+pair, <!--]--><!--[3--><!--[-1--><code>DATABASE_URL</code><!--]--><!--]--><!--[2-->, cookie keys, <!--]--><!--[3--><!--[-1--><code>FUZ_ALLOWED_ORIGINS</code><!--]--><!--]--><!--[2-->,
+<!--]--><!--[3--><!--[-1--><code>FUZ_BOOTSTRAP_TOKEN_PATH</code><!--]--><!--]--><!--[2-->, and trusted proxies — loopback when unset, under a
+var the consumer names), and calls <!--]--><!--[3--><!--[-1--><code>create_app_backend</code><!--]--><!--]--><!--[2-->, which
+boots in one fixed order: READ COMMITTED guard → pre-migration hook →
+migrations → keeper → bootstrap availability → audit listeners (fan-out,
+then revocation) → <!--]--><!--[3--><!--[-1--><code>/ready</code><!--]--><!--]--><!--[2-->. The returned <!--]--><!--[3--><!--[-1--><code>AppBackend</code><!--]--><!--]--><!--[2--> builds every route
+state (<!--]--><!--[3--><!--[-1--><code>account_route_state</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>action_dispatch</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>ws_route_state</code><!--]--><!--]--><!--[2-->, …) and the
+pieces every server mounts: <!--]--><!--[3--><!--[-1--><code>auth_rest_routes</code><!--]--><!--]--><!--[2--> (an <!--]--><!--[3--><!--[-1--><code>AuthRestRoutes</code><!--]--><!--]--><!--[2--> of the
+account, bootstrap, and signup states, <!--]--><!--[3--><!--[-1--><code>signup: None</code><!--]--><!--]--><!--[2--> on a server with no
+signup, mounted by <!--]--><!--[3--><!--[-1--><code>into_router</code><!--]--><!--]--><!--[2--> under <!--]--><!--[3--><!--[-1--><code>/api/account</code><!--]--><!--]--><!--[2-->) and
+<!--]--><!--[3--><!--[-1--><code>audit_stream_router</code><!--]--><!--]--><!--[2-->. A server started without <!--]--><!--[3--><!--[-1--><code>DATABASE_URL</code><!--]--><!--]--><!--[2--> serves
+<!--]--><!--[3--><!--[-1--><code>boot_only</code><!--]--><!--]--><!--[2--> instead: the wildcard-origin check, the boot-only warning, and
+the probes alone. A bound the
+core builds is a <!--]--><!--[3--><!--[-1--><code>SpineBackendOptions</code><!--]--><!--]--><!--[2--> field (<!--]--><!--[3--><!--[-1--><code>login_ip_rate_limit</code><!--]--><!--]--><!--[2-->, set before
+boot, never patched onto the built core); a per-route-state difference is
+struct-update syntax over a builder's result
+(<!--]--><!--[3--><!--[-1--><code>AccountRouteState { login_fail_floor_ms: 0, ..backend.account_route_state(gate) }</code><!--]--><!--]--><!--[2-->). The consumer
+still owns its domain App, its action specs, and the final <!--]--><!--[3--><!--[-1--><code>Router</code><!--]--><!--]--><!--[2-->, then
+hands it to <!--]--><!--[3--><!--[-1--><code>serve_until_shutdown</code><!--]--><!--]--><!--[2--> with its upkeep handles. Startup failures
+are <!--]--><!--[3--><!--[-1--><code>StartupError</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>exit_code()</code><!--]--><!--]--><!--[2-->: configuration → 2, else 1; <!--]--><!--[3--><!--[-1--><code>hint()</code><!--]--><!--]--><!--[2-->),
+rendered by <!--]--><!--[3--><!--[-1--><code>fuz_sys::cli::report_failure</code><!--]--><!--]--><!--[2-->. A server whose command line is
+the standard <!--]--><!--[3--><!--[-1--><code>start</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>db-status</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>--help</code><!--]--><!--]--><!--[2--> reads it with
+<!--]--><!--[3--><!--[-1--><code>server_invocation(binary, start) -> Result&lt;ServerInvocation, ExitCode></code><!--]--><!--]--><!--[2-->,
+which prints help to stdout (exit 0) and <!--]--><!--[3--><!--[-1--><code>error: …</code><!--]--><!--]--><!--[2--> plus the usage to stderr
+(<!--]--><!--[3--><!--[-1--><code>EXIT_USAGE</code><!--]--><!--]--><!--[2-->, 2). One with commands of its own extends the line over
+<!--]--><!--[3--><!--[-1--><code>parse_server_invocation</code><!--]--><!--]--><!--[2-->, equally strict (an unknown argument exits 2 before
+the env is read). Don't
+re-implement the boot, the route states, serving, or the error policy per
+consumer.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->The boxed-closure shapes —
+<!--]--><!--[3--><!--[-1--><code>ExtraActionSpecsFactory&lt;App></code><!--]--><!--]--><!--[2--> (returning `Result&lt;Vec&lt;ActionSpec>,
+StartupError><!--]--><!--[3--><!--[-1--><code>, so a test seam can refuse the boot), </code><!--]--><!--]--><!--[2-->PreMigrationHook&lt;E>`,
+the <!--]--><!--[3--><!--[-1--><code>ExtraActionSpecsRuntime</code><!--]--><!--]--><!--[2--> POD (<!--]--><!--[3--><!--[-1--><code>password_hasher</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>keyring</code><!--]--><!--]--><!--[2--> /
+<!--]--><!--[3--><!--[-1--><code>daemon_token_state</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>session_cookie_name</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>audit_emitter</code><!--]--><!--]--><!--[2-->, all
+<!--]--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> types) — live in
 <!--]--><!--[3--><!--[-1--><code>fuz_actions::consumer_lifecycle</code><!--]--><!--]--><!--[2-->, generic over <!--]--><!--[3--><!--[-1--><code>App</code><!--]--><!--]--><!--[2--> and <!--]--><!--[3--><!--[-1--><code>E</code><!--]--><!--]--><!--[2--> so <!--]--><!--[3--><!--[-1--><code>fuz_testing</code><!--]--><!--]--><!--[2-->
 never enters the spine. (Not in <!--]--><!--[3--><!--[-1--><code>fuz_http::lifecycle</code><!--]--><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>fuz_http</code><!--]--><!--]--><!--[2--> deps no spine
 crate, so it can't name <!--]--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> types.) Each consumer instantiates with a
 one-line concrete alias
 (<!--]--><!--[3--><!--[-1--><code>pub type ExtraActionSpecsFactory = fuz_actions::ExtraActionSpecsFactory&lt;handlers::App>;</code><!--]--><!--]--><!--[2-->)
-— its own definition, not a re-export shim.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>RunAppOptions</code><!--]--><!--]--><!--[2--> shares a bind/drain vocabulary: <!--]--><!--[3--><!--[-1--><code>default_addr: SocketAddr</code><!--]--><!--]--><!--[2--> (more
-expressive than a bare port; loopback-only consumers default <!--]--><!--[3--><!--[-1--><code>127.0.0.1:&lt;port></code><!--]--><!--]--><!--[2-->
-and override only the port), <!--]--><!--[3--><!--[-1--><code>drain_timeout: Duration</code><!--]--><!--]--><!--[2--> passed
-<!--]--><!--[3--><!--[-1--><code>fuz_http::DEFAULT_DRAIN_TIMEOUT</code><!--]--><!--]--><!--[2--> (10 s), and
-<!--]--><!--[3--><!--[-1--><code>rate_limiters: fuz_auth::RateLimiterMode</code><!--]--><!--]--><!--[2-->. Remaining fields are per-consumer
-(zzz adds <!--]--><!--[3--><!--[-1--><code>force_test_actions</code><!--]--><!--]--><!--[2-->) — don't force one struct across consumers; bind
-env-var names are per-consumer too (<!--]--><!--[3--><!--[-1--><code>PORT</code><!--]--><!--]--><!--[2-->/<!--]--><!--[3--><!--[-1--><code>HOST</code><!--]--><!--]--><!--[2--> forge, <!--]--><!--[3--><!--[-1--><code>ZZZ_PORT</code><!--]--><!--]--><!--[2--> zzz).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Every spine rate limiter is built through <!--]--><!--[3--><!--[-1--><code>RateLimiterMode</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> —
+— its own definition, not a re-export shim.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>RunAppOptions</code><!--]--><!--]--><!--[2--> embeds the toolkit's <!--]--><!--[3--><!--[-1--><code>SpineRunOptions</code><!--]--><!--]--><!--[2--> (backend options,
+<!--]--><!--[3--><!--[-1--><code>default_addr: SocketAddr</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>drain_timeout</code><!--]--><!--]--><!--[2--> — <!--]--><!--[3--><!--[-1--><code>fuz_http::DEFAULT_DRAIN_TIMEOUT</code><!--]--><!--]--><!--[2-->)
+and adds only what is the consumer's own (zzz's <!--]--><!--[3--><!--[-1--><code>force_test_actions</code><!--]--><!--]--><!--[2-->). Its
+<!--]--><!--[3--><!--[-1--><code>testing_*</code><!--]--><!--]--><!--[2--> sibling mints the daemon token (<!--]--><!--[3--><!--[-1--><code>require_daemon_token_from_env</code><!--]--><!--]--><!--[2-->;
+zzz's <!--]--><!--[3--><!--[-1--><code>init_daemon_token</code><!--]--><!--]--><!--[2--> against its own dir), boots on
+<!--]--><!--[3--><!--[-1--><code>fuz_testing::testing_backend_options</code><!--]--><!--]--><!--[2--> (the test hasher, <!--]--><!--[3--><!--[-1--><code>DisabledForTesting</code><!--]--><!--]--><!--[2-->,
+the daemon token, <!--]--><!--[3--><!--[-1--><code>startup_reset_hook</code><!--]--><!--]--><!--[2-->, in-flight audit tracking; a suite
+that drives the limiters sets <!--]--><!--[3--><!--[-1--><code>rate_limiters</code><!--]--><!--]--><!--[2--> by struct update), and mounts
+<!--]--><!--[3--><!--[-1--><code>testing_reset_specs</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>_testing_reset</code><!--]--><!--]--><!--[2--> + <!--]--><!--[3--><!--[-1--><code>_testing_drain_effects</code><!--]--><!--]--><!--[2-->, over the
+runtime's daemon-token state). Its reset truncates with
+<!--]--><!--[3--><!--[-1--><code>truncate_reset_state</code><!--]--><!--]--><!--[2--> over the spine's <!--]--><!--[3--><!--[-1--><code>fuz_cell::CELL_DROP_TABLES</code><!--]--><!--]--><!--[2--> /
+<!--]--><!--[3--><!--[-1--><code>fuz_fact::FACT_DROP_TABLES</code><!--]--><!--]--><!--[2--> and its own tables. Each spine const, and
+<!--]--><!--[3--><!--[-1--><code>fuz_auth::AUTH_INTEGRATION_TRUNCATE_TABLES</code><!--]--><!--]--><!--[2--> (the auth tables the reset
+deletes from), is held to its migration chain's DDL by
+<!--]--><!--[3--><!--[-1--><code>fuz_testing::migration_created_tables</code><!--]--><!--]--><!--[2-->. The
+<!--]--><!--[3--><!--[-1--><code>schema_ready</code><!--]--><!--]--><!--[2--> drift test is <!--]--><!--[3--><!--[-1--><code>assert_expected_schema_fixture</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Every spine rate limiter is built through <!--]--><!--[3--><!--[-1--><code>RateLimiterMode</code><!--]--><!--]--><!--]--><!----></strong><!--]--><!--[2--> —
 <!--]--><!--[3--><!--[-1--><code>mode.limiter(fuz_auth::DEFAULT_LOGIN_IP_RATE_LIMIT)</code><!--]--><!--]--><!--[2-->, never
 <!--]--><!--[3--><!--[-1--><code>Some(Arc::new(RateLimiter::new(…)))</code><!--]--><!--]--><!--[2--> + a conditional null. Production passes
-<!--]--><!--[3--><!--[-1--><code>Enforced</code><!--]--><!--]--><!--[2-->; the <!--]--><!--[3--><!--[-1--><code>testing_*</code><!--]--><!--]--><!--[2--> binary passes <!--]--><!--[3--><!--[-1--><code>DisabledForTesting</code><!--]--><!--]--><!--[2--> — the twin of
+<!--]--><!--[3--><!--[-1--><code>Enforced</code><!--]--><!--]--><!--[2-->; the <!--]--><!--[3--><!--[-1--><code>testing_*</code><!--]--><!--]--><!--[2--> binary gets <!--]--><!--[3--><!--[-1--><code>DisabledForTesting</code><!--]--><!--]--><!--[2--> from
+<!--]--><!--[3--><!--[-1--><code>testing_backend_options</code><!--]--><!--]--><!--[2--> — the twin of
 <!--]--><!--[3--><!--[-1--><code>fuz_app</code><!--]--><!--]--><!--[2-->'s testing wiring (a cross-process suite's failed-login cases would
 otherwise exhaust the per-IP budget). Building through the mode keeps a newly
 wired surface from staying enforced while the rest is disabled, and any process
 that nulls a limiter prints a startup banner (same fail-loud shape as
 <!--]--><!--[3--><!--[-1--><code>TestingArgon2idHasher</code><!--]--><!--]--><!--[2-->). Consumer-owned limiters that aren't spine surfaces
-(an image-upload cap, say) stay live in both modes.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Upkeep runs beside the server, owned by <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Every spine server
-schedules `fuz_auth::spawn_auth_cleanup(AuthCleanupOptions { pool, audit,
-socket_revoker }, DEFAULT_AUTH_CLEANUP_INTERVAL, shutdown.clone())` — expired
-sessions deleted and their connections closed, expired role-grant offers
-audited once — and a disk-CAS consumer adds
-<!--]--><!--[3--><!--[-1--><code>fuz_fact::spawn_orphan_temp_sweeper(facts_dir, shutdown.clone())</code><!--]--><!--]--><!--[2-->. The shape:
-<!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2--> spawns the tasks after the bind (migrations have run, so each
-startup pass can read the schema), serves, and awaits every handle before
-returning — <!--]--><!--[3--><!--[-1--><code>serve_with_shutdown</code><!--]--><!--]--><!--[2--> returns only once the token has fired, so
-there is no post-serve <!--]--><!--[3--><!--[-1--><code>cancel()</code><!--]--><!--]--><!--[2-->.
-Where a consumer splits out a <!--]--><!--[3--><!--[-1--><code>build_router</code><!--]--><!--]--><!--[2-->, it spawns nothing and returns a
-<!--]--><!--[3--><!--[-1--><code>BuiltRouter { router, app: Option&lt;App> }</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2--> in boot-only mode) for
-<!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2--> to schedule from. <!--]--><!--[3--><!--[-1--><code>socket_revoker</code><!--]--><!--]--><!--[2--> is the revoker the app's
-revocation handlers already hold (<!--]--><!--[3--><!--[-1--><code>RealtimeRevoker</code><!--]--><!--]--><!--[2--> where an SSE stream sits
+(an image-upload cap, say) stay live in both modes.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[4--><strong><!--[--><!--[2-->Upkeep runs beside the server, owned by <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></strong><!--]--><!--[2--> The toolkit's
+<!--]--><!--[3--><!--[-1--><code>spawn_upkeep(UpkeepOptions { auth_cleanup, extra }, &amp;shutdown)</code><!--]--><!--]--><!--[2--> schedules the
+spine's auth cleanup (expired sessions deleted and their connections closed,
+expired role-grant offers audited once — <!--]--><!--[3--><!--[-1--><code>AppBackend::auth_cleanup_options</code><!--]--><!--]--><!--[2-->)
+plus each consumer task in <!--]--><!--[3--><!--[-1--><code>extra</code><!--]--><!--]--><!--[2-->: a disk-CAS consumer's
+<!--]--><!--[3--><!--[-1--><code>fuz_fact::spawn_orphan_temp_sweeper</code><!--]--><!--]--><!--[2-->, an invite-expiry sweep
+(<!--]--><!--[3--><!--[-1--><code>fuz_http::spawn_periodic</code><!--]--><!--]--><!--[2-->). <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2--> passes them as
+<!--]--><!--[3--><!--[-1--><code>ServeOptions::upkeep</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2--> in boot-only mode), and
+<!--]--><!--[3--><!--[-1--><code>serve_until_shutdown</code><!--]--><!--]--><!--[2--> starts them after the bind (migrations have run, so
+each startup pass can read the schema), serves, and joins them before
+returning. Where a consumer splits out a <!--]--><!--[3--><!--[-1--><code>build_router</code><!--]--><!--]--><!--[2-->, it spawns nothing and
+returns a <!--]--><!--[3--><!--[-1--><code>BuiltRouter { router, app: Option&lt;App> }</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2--> in boot-only
+mode) for <!--]--><!--[3--><!--[-1--><code>run_app</code><!--]--><!--]--><!--[2--> to schedule from. The closer the cleanup closes through is
+the one the app's revocation handlers already hold
+(<!--]--><!--[3--><!--[-1--><code>AppBackend::connection_closer</code><!--]--><!--]--><!--[2--> — a <!--]--><!--[3--><!--[-1--><code>RealtimeCloser</code><!--]--><!--]--><!--[2--> where an SSE stream sits
 beside the WebSocket): a sweep with nothing to close through strands the swept
-sessions' connections. A consumer's own sweep goes on the same loop
-(<!--]--><!--[3--><!--[-1--><code>fuz_http::spawn_periodic</code><!--]--><!--]--><!--[2-->, an invite-expiry sweep) — two or more tasks collect
-in a <!--]--><!--[3--><!--[-1--><code>spawn_upkeep(…) -> [JoinHandle&lt;()>; N]</code><!--]--><!--]--><!--[2-->. <!--]--><!--[3--><!--[-1--><code>testing_spine_stub</code><!--]--><!--]--><!--[2--> schedules
-none.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->The daemon-token keeper wiring (<!--]--><!--[3--><!--[-1--><code>BootstrapKeeperResolved</code><!--]--><!--]--><!--[2--> + boot-time
+sessions' connections. <!--]--><!--[3--><!--[-1--><code>testing_spine_stub</code><!--]--><!--]--><!--[2--> schedules none.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->The daemon-token keeper wiring (<!--]--><!--[3--><!--[-1--><code>BootstrapKeeperResolved</code><!--]--><!--]--><!--[2--> + boot-time
 <!--]--><!--[3--><!--[-1--><code>query_keeper_account_id</code><!--]--><!--]--><!--[2-->) is spine-owned in <!--]--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> — don't re-implement.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="json-rpc-envelope-fuz_http-owns-it"><!--[--><!--[2-->JSON-RPC envelope — <!--]--><!--[3--><!--[-1--><code>fuz_http</code><!--]--><!--]--><!--[2--> owns it<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>fuz_http</code><!--]--><!--]--><!--[2--> owns the error constructors (<!--]--><!--[3--><!--[-1--><code>invalid_params(detail, reason)</code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code>internal_error</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>internal_error_with_source</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>not_found</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>conflict</code><!--]--><!--]--><!--[2-->,
 <!--]--><!--[3--><!--[-1--><code>forbidden</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>validation_error</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>rate_limited</code><!--]--><!--]--><!--[2-->) and
-<!--]--><!--[3--><!--[-1--><code>parse_params&lt;T: DeserializeOwned></code><!--]--><!--]--><!--[2-->. Consumers import, never re-declare — the
-envelope is what parity tests assert byte-for-byte. Prefer typed
-<!--]--><!--[3--><!--[-1--><code>#[derive(Deserialize)]</code><!--]--><!--]--><!--[2--> input structs + <!--]--><!--[3--><!--[-1--><code>parse_params</code><!--]--><!--]--><!--[2--> over
-<!--]--><!--[3--><!--[-1--><code>params.get().and_then(Value::as_str)</code><!--]--><!--]--><!--[2--> chains (the chains are migration debt).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>JsonrpcErrorCode</code><!--]--><!--]--><!--[2--> is a <!--]--><!--[3--><!--[-1--><code>#[repr(i32)]</code><!--]--><!--]--><!--[2--> enum with a hand-written <!--]--><!--[3--><!--[-1--><code>Serialize</code><!--]--><!--]--><!--[2-->
-emitting the bare <!--]--><!--[3--><!--[-1--><code>i32</code><!--]--><!--]--><!--[2--> — not scattered <!--]--><!--[3--><!--[-1--><code>pub const … : i32</code><!--]--><!--]--><!--[2-->. Because
+<!--]--><!--[3--><!--[-1--><code>parse_strict_params&lt;T: DeserializeOwned></code><!--]--><!--]--><!--[2--> (an explicit <!--]--><!--[3--><!--[-1--><code>null</code><!--]--><!--]--><!--[2--> refused, as a
+<!--]--><!--[3--><!--[-1--><code>z.strictObject</code><!--]--><!--]--><!--[2--> refuses it, then the serde decode). Consumers import, never
+re-declare — the envelope is what parity tests assert byte-for-byte. Prefer
+typed <!--]--><!--[3--><!--[-1--><code>#[derive(Deserialize)]</code><!--]--><!--]--><!--[2--> input structs + <!--]--><!--[3--><!--[-1--><code>parse_strict_params</code><!--]--><!--]--><!--[2--> over
+<!--]--><!--[3--><!--[-1--><code>params.get().and_then(Value::as_str)</code><!--]--><!--]--><!--[2--> chains (the chains are migration debt).<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[3--><!--[-1--><code>JsonrpcErrorCode</code><!--]--><!--]--><!--[2--> is an enum with a hand-written <!--]--><!--[3--><!--[-1--><code>Serialize</code><!--]--><!--]--><!--[2--> emitting the
+bare <!--]--><!--[3--><!--[-1--><code>i32</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>as_i32()</code><!--]--><!--]--><!--[2-->) — not scattered <!--]--><!--[3--><!--[-1--><code>pub const … : i32</code><!--]--><!--]--><!--[2-->. Because
 <!--]--><!--[3--><!--[-1--><code>JsonrpcError.code</code><!--]--><!--]--><!--[2--> is the enum, <!--]--><!--[3--><!--[-1--><code>error_code_to_http_status</code><!--]--><!--]--><!--[2--> is exhaustive: a
-new code is a compile error, not a silent 500. TS twin: <!--]--><!--[3--><!--[-1--><code>fuz_app</code><!--]--><!--]--><!--[2-->'s
-<!--]--><!--[3--><!--[-1--><code>jsonrpc_errors</code><!--]--><!--]--><!--[2-->; consumers use <!--]--><!--[3--><!--[-1--><code>JsonrpcErrorCode::NotFound as i64</code><!--]--><!--]--><!--[2-->, never a
-magic number.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="env-loading"><!--[--><!--[2-->Env loading<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Injectable seam<!--]--><!--]--><!----></strong><!--]--><!--[2-->: load through
-<!--]--><!--[3--><!--[-1--><code>from_vars(get: impl Fn(&amp;str) -> Option&lt;String>)</code><!--]--><!--]--><!--[2--> so tests inject a map —
-<!--]--><!--[3--><!--[-1--><code>fuz_forge_server</code><!--]--><!--]--><!--[2-->'s env struct is the exemplar, including a test that
-<!--]--><!--[5--><em><!--[--><!--[2-->rejects retired var names<!--]--><!--]--><!----></em><!--]--><!--[2-->. Audit for stray <!--]--><!--[3--><!--[-1--><code>std::env::var</code><!--]--><!--]--><!--[2--> in router code
-(consumers still have a few).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Fail loud, not just closed<!--]--><!--]--><!----></strong><!--]--><!--[2-->: security-consequential misconfig refuses to
+new base code is a compile error, not a silent 500. TS twin: <!--]--><!--[3--><!--[-1--><code>fuz_app</code><!--]--><!--]--><!--[2-->'s
+<!--]--><!--[3--><!--[-1--><code>jsonrpc_errors</code><!--]--><!--]--><!--[2-->; consumers compare against <!--]--><!--[3--><!--[-1--><code>JsonrpcErrorCode::NotFound</code><!--]--><!--]--><!--[2--> (or
+its <!--]--><!--[3--><!--[-1--><code>as_i32()</code><!--]--><!--]--><!--[2-->), never a magic number.<!--]--><!--]--><!----></p><!--]--><!--[8--><p><!--[--><!--[2-->A consumer's own code — the twin of a TS consumer spreading
+<!--]--><!--[3--><!--[-1--><code>JSONRPC_ERROR_CODES</code><!--]--><!--]--><!--[2--> and calling <!--]--><!--[3--><!--[-1--><code>register_jsonrpc_error_code(code, status)</code><!--]--><!--]--><!--[2-->
+— is one <!--]--><!--[3--><!--[-1--><code>const</code><!--]--><!--]--><!--[2--> declaring the number and its status together,
+<!--]--><!--[3--><!--[-1--><code>ConsumerErrorCode::new(-32020, StatusCode::BAD_GATEWAY)</code><!--]--><!--]--><!--[2--> (zzz's
+<!--]--><!--[3--><!--[-1--><code>ai_provider_error</code><!--]--><!--]--><!--[2-->), emitted with <!--]--><!--[3--><!--[-1--><code>consumer_error(code, message, data)</code><!--]--><!--]--><!--[2-->. <!--]--><!--[3--><!--[-1--><code>new</code><!--]--><!--]--><!--[2-->
+refuses a base-set number, a code outside <!--]--><!--[3--><!--[-1--><code>-32099..=-32000</code><!--]--><!--]--><!--[2-->, and a non-error
+status; in a <!--]--><!--[3--><!--[-1--><code>const</code><!--]--><!--]--><!--[2--> that's a compile error.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="env-loading"><!--[--><!--[2-->Env loading<!--]--><!--]--><!----></h2><!----><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Shared reader, injectable seam<!--]--><!--]--><!----></strong><!--]--><!--[2-->: the spine's common vars come from
+<!--]--><!--[3--><!--[-1--><code>fuz_http::server_env::BaseServerEnv::from_vars(get, ServerEnvOptions)</code><!--]--><!--]--><!--[2--> —
+the Rust twin of fuz_app's <!--]--><!--[3--><!--[-1--><code>BaseServerEnv</code><!--]--><!--]--><!--[2--> — so tests inject a map; a
+consumer reads only its own vars beside it, through the same <!--]--><!--[3--><!--[-1--><code>from_vars</code><!--]--><!--]--><!--[2-->
+shape (fuz_forge's env struct is the exemplar, including a test that
+<!--]--><!--[5--><em><!--[--><!--[2-->rejects retired var names<!--]--><!--]--><!----></em><!--]--><!--[2-->). No stray <!--]--><!--[3--><!--[-1--><code>std::env::var</code><!--]--><!--]--><!--[2--> in router code;
+<!--]--><!--[3--><!--[-1--><code>$HOME</code><!--]--><!--]--><!--[2--> goes through <!--]--><!--[3--><!--[-1--><code>fuz_sys::home_dir</code><!--]--><!--]--><!--[2--> / <!--]--><!--[3--><!--[-1--><code>expand_tilde</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Fail loud, not just closed<!--]--><!--]--><!----></strong><!--]--><!--[2-->: security-consequential misconfig refuses to
 boot — an empty <!--]--><!--[3--><!--[-1--><code>FUZ_ALLOWED_ORIGINS</code><!--]--><!--]--><!--[2--> (empty allowlist = allow-all;
 <!--]--><!--[3--><!--[-1--><code>fuz_http::require_non_empty_origins</code><!--]--><!--]--><!--[2-->), a <!--]--><!--[5--><em><!--[--><!--[2-->malformed<!--]--><!--]--><!----></em><!--]--><!--[2--> trusted-proxy list
 (unset → loopback is fine), missing/weak cookie keys, a failed
@@ -178,10 +235,12 @@ carries a progress token <!--]--><!--[5--><em><!--[--><!--[2-->and<!--]--><!--]-
 <!--]--><!--[3--><!--[-1--><code>fuz_http::notification(…)</code><!--]--><!--]--><!--[2--> and routing through
 <!--]--><!--[3--><!--[-1--><code>Arc&lt;fuz_realtime::ConnectionRegistry>::send_to</code><!--]--><!--]--><!--[2-->. HTTP → <!--]--><!--[3--><!--[-1--><code>None</code><!--]--><!--]--><!--[2--> →
 non-streaming.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->WS and SSE admission is two-phase, and spine-owned<!--]--><!--]--><!----></strong><!--]--><!--[2-->: <!--]--><!--[3--><!--[-1--><code>register_action_ws</code><!--]--><!--]--><!--[2-->
-gates origin → 401 → token scope → role, then <!--]--><!--[3--><!--[-1--><code>admit_upgrade</code><!--]--><!--]--><!--[2--> registers the
-connection pending with the endpoint's <!--]--><!--[3--><!--[-1--><code>required_roles</code><!--]--><!--]--><!--[2-->, re-reads the
-credential (<!--]--><!--[3--><!--[-1--><code>fuz_auth::revalidate_resolved_auth</code><!--]--><!--]--><!--[2-->) and then those roles
-(global grants only), and admits — the per-account cap evicts only there. A
+gates origin → 401 → token scope → acting actor (<!--]--><!--[3--><!--[-1--><code>?acting=</code><!--]--><!--]--><!--[2-->, on every
+endpoint) → role (the resolved actor's global grants), then <!--]--><!--[3--><!--[-1--><code>admit_upgrade</code><!--]--><!--]--><!--[2-->
+registers the connection pending with the endpoint's <!--]--><!--[3--><!--[-1--><code>required_roles</code><!--]--><!--]--><!--[2-->,
+re-reads the credential, the acting actor, and its global roles
+(<!--]--><!--[3--><!--[-1--><code>fuz_auth::recheck_admission</code><!--]--><!--]--><!--[2-->, which the audit SSE stream shares), and
+admits — the per-account cap evicts only there. A
 credential revoked mid-upgrade closes with 4001, a required role revoked
 mid-upgrade with 4006 (<!--]--><!--[3--><!--[-1--><code>WS_CLOSE_PERMISSION_REVOKED</code><!--]--><!--]--><!--[2-->), a failed re-read with
 1011, a superseded socket with 4004, and an upgrade the shutdown closed or
@@ -241,13 +300,13 @@ every connection with no way to let one go.<!--]--><!--[9--><!--[-1--><ul><!--[-
 long-lived transport: an SSE body never ends, so the drain waits it out,
 and an upgraded WebSocket is a detached task the process exits under (the
 client reads a reset, a browser's 1006). So <!--]--><!--[3--><!--[-1--><code>closer</code><!--]--><!--]--><!--[2--> is required.
-<!--]--><!--[3--><!--[-1--><code>ShutdownCloser</code><!--]--><!--]--><!--[2--> is <!--]--><!--[3--><!--[-1--><code>close_all_sockets() -> usize</code><!--]--><!--]--><!--[2--> (close every
+<!--]--><!--[3--><!--[-1--><code>ShutdownCloser</code><!--]--><!--]--><!--[2--> is <!--]--><!--[3--><!--[-1--><code>close_all_connections() -> usize</code><!--]--><!--]--><!--[2--> (close every
 connection, pending or admitted, and refuse every later one; sync,
 idempotent) plus <!--]--><!--[3--><!--[-1--><code>wait_closed()</code><!--]--><!--]--><!--[2--> (resolve once the closed connections'
-own tasks have written their close). `fuz_auth::SocketRevoker:
-ShutdownCloser`, so a consumer passes the revoker its revocation handlers
-already hold — <!--]--><!--[3--><!--[-1--><code>app.socket_revoker().as_ref()</code><!--]--><!--]--><!--[2-->, the `Arc&lt;dyn
-SocketRevoker><!--]--><!--[3--><!--[-1--><code> upcast to </code><!--]--><!--]--><!--[2-->&amp;dyn ShutdownCloser<!--]--><!--[3--><!--[-1--><code> (</code><!--]--><!--]--><!--[2-->RealtimeRevoker` fans to
+own tasks have written their close). `fuz_auth::ConnectionCloser:
+ShutdownCloser`, so a consumer passes the closer its revocation handlers
+already hold — <!--]--><!--[3--><!--[-1--><code>app.connection_closer().as_ref()</code><!--]--><!--]--><!--[2-->, the `Arc&lt;dyn
+ConnectionCloser><!--]--><!--[3--><!--[-1--><code> upcast to </code><!--]--><!--]--><!--[2-->&amp;dyn ShutdownCloser<!--]--><!--[3--><!--[-1--><code> (</code><!--]--><!--]--><!--[2-->RealtimeCloser` fans to
 the WS and SSE registries) — and <!--]--><!--[3--><!--[-1--><code>NoopShutdownCloser</code><!--]--><!--]--><!--[2--> only in a mode that
 mounts nothing live (boot-only).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Order on fire<!--]--><!--]--><!----></strong><!--]--><!--[2-->: the listener closes, every connection is asked to
 finish (the request in flight completes, keep-alive ends), and the
@@ -264,8 +323,8 @@ it drains with, so a later registration is born closed: an upgrade is
 refused 1001 before any database work, an SSE <!--]--><!--[3--><!--[-1--><code>admit</code><!--]--><!--]--><!--[2--> refuses (the route
 answers the connect comment alone), and no admission landing mid-close
 reads as revoked. The TS twin (<!--]--><!--[3--><!--[-1--><code>fuz_app</code><!--]--><!--]--><!--[2-->'s <!--]--><!--[3--><!--[-1--><code>AppServer.close</code><!--]--><!--]--><!--[2--> →
-<!--]--><!--[3--><!--[-1--><code>close_all_sockets</code><!--]--><!--]--><!--[2-->) carries the same closing flag on its WS transport
-and <!--]--><!--[3--><!--[-1--><code>SubscriberRegistry</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->One write budget per WS loop.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Once the close-all fires, a loop's
+<!--]--><!--[3--><!--[-1--><code>close_all_connections</code><!--]--><!--]--><!--[2-->) carries the same closing flag on its <!--]--><!--[3--><!--[-1--><code>ConnectionRegistry</code><!--]--><!--]--><!--[2-->
+and <!--]--><!--[3--><!--[-1--><code>SseRegistry</code><!--]--><!--]--><!--[2-->.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->One write budget per WS loop.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Once the close-all fires, a loop's
 remaining writes — one already in progress and the close frame; the
 close-all discards what was queued — share one fixed deadline
 (<!--]--><!--[3--><!--[-1--><code>fuz_http::SHUTDOWN_CLOSE_TIMEOUT</code><!--]--><!--]--><!--[2-->), so a client that stopped reading
@@ -311,16 +370,16 @@ are crates, not features: <!--]--><!--[7--><!--[1--><a href="/skills/fuz-stack/r
 			
 			<script>
 				{
-					__sveltekit_wkf68j = {
+					__sveltekit_on81kf = {
 						base: "",
-						version: "f302e738240478dbe67cac5320c49503524bd429"
+						version: "9b4b377f5849b057ed3f819cb0859b76d3bd89c3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_wkf68j);
-						const app = await import("/_app/immutable/entry/app.Dz-FJ9fh.js");
+						kit.init(__sveltekit_on81kf);
+						const app = await import("/_app/immutable/entry/app.CyemF1yG.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 30],
 							data: [null,null,null],

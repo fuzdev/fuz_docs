@@ -23,19 +23,19 @@
 		<link href="/_app/immutable/chunks/Bqh8G2yR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Cyt8LZpN.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/ClJVXk_e.js" rel="modulepreload">
-		<link href="/_app/immutable/entry/app.Dz-FJ9fh.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/0.aaUfAjpH.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.CyemF1yG.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.DFboIeD1.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BsX-5h2w.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DdEUGy_v.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yQC99TMY.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/yWx_1vUe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/BZSq0Ojb.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DmGOANP_.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/3.CqA20zXr.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/DDXYJPsD.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D7obSWfs.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/D9iQMjZg.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DvyVAdoA.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/3gsecTea.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/3.RWEPX6B8.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/ISdsov-F.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/eWPRky8_.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/B6aan0u7.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/UfIDI-FR.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/Dg4uJei1.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/BPVwp-J3.js" rel="modulepreload">
@@ -43,15 +43,15 @@
 		<link href="/_app/immutable/chunks/DCYw93gZ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/DgOJkruE.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/2tlPcHOe.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/gjYyGhy3.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Cn2nWIoC.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/RLPrK7lm.js" rel="modulepreload">
-		<link href="/_app/immutable/nodes/35.DiEHMfq6.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/59EUrilh.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/35.DNbzLZoT.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BhLIK611.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/CS-piQRQ.js" rel="modulepreload">
 		<link href="/_app/immutable/chunks/pGYaDZDM.js" rel="modulepreload">
-		<link href="/_app/immutable/chunks/CLqquUQ6.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CqS31bzD.js" rel="modulepreload">
 		<!--12qhfyh--><!----><!--4fa0a9--><!--[-1--><!--]--><!----><title>@fuzdev/fuz_docs</title>
-		<link href="/_app/immutable/assets/0.DkBs-xNi.css" rel="stylesheet">
+		<link href="/_app/immutable/assets/0.B7ZfHHUF.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Svg.DfrCKcO9.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/Breadcrumb.C59yMZ2n.css" rel="stylesheet">
 		<link href="/_app/immutable/assets/DialogContent.DfiimBCd.css" rel="stylesheet">
@@ -148,7 +148,26 @@ fixture fails instead of passing.<!--]--><!--]--><!----></li><!--]--><!--]--><!-
 round-trip test skip-with-notice when their runtime or binary is absent, the
 same discipline as DB/Deno-gated tests (./testing-patterns §Environment
 Flags). Gotcha: an evaluator that stubs clock/RNG to throw requires
-pure-literal fixtures.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="tool-twins-molt"><!--[--><!--[2-->Tool twins: molt<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->fuz_template's ejector ships as symmetric twins — <!--]--><!--[3--><!--[-1--><code>src/lib/molt.ts</code><!--]--><!--]--><!--[2-->
+pure-literal fixtures.<!--]--><!--]--><!----></p><!--]--><!--[14--><!----><h2 id="digests"><!--[--><!--[2-->Digests<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->Hashes and secrets are the twin surface where a lenient side drifts
+silently: both spines must refuse the same strings, not only accept the same
+ones. Rust spine names are spine crates (./rust-spine).<!--]--><!--]--><!----></p><!--]--><!--[12--><table><!--[0--><thead><tr><!--[--><!----><th><!--[0--><!--[--><!--[2-->Concept<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Algorithm<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Encoding<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->TS home<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Rust home<!--]--><!--]--><!--]--><!----></th><!----><!----><th><!--[0--><!--[--><!--[2-->Compare rule<!--]--><!--]--><!--]--><!----></th><!----><!--]--><!----></tr></thead><!--]--><!--[0--><tbody><!--[--><!--[-1--><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Fact address<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->BLAKE3<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>blake3:</code><!--]--><!--]--><!--[2--> + 64 lowercase hex<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_util <!--]--><!--[3--><!--[-1--><code>hash_schemas.ts</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>FACT_HASH_EXACT</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>is_fact_hash</code><!--]--><!--]--><!--[2-->); fuz_app <!--]--><!--[3--><!--[-1--><code>FactHashSchema</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>ContentHash::parse_fact_hash</code><!--]--><!--]--><!--[2-->, the <!--]--><!--[3--><!--[-1--><code>fuz_crypto::fact_hash</code><!--]--><!--]--><!--[2--> serde adapter, <!--]--><!--[3--><!--[-1--><code>fuz_auth::is_valid_fact_hash</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->exact grammar at every ingress; an off-form value is absent, never normalized<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Fact disk location<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->BLAKE3<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>file:&lt;2 hex>/&lt;62 hex></code><!--]--><!--]--><!--[2-->, lowercase<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>db/file_fact_url.ts</code><!--]--><!--]--><!--[2--> (<!--]--><!--[3--><!--[-1--><code>parse_file_fact_url</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>file_fact_url_addresses</code><!--]--><!--]--><!--[2-->)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_fact::parse_fact_file_url</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>ParsedFactUrl::addresses</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->the URL must address the row's own hash before any read; a mismatch is refused as not found<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Other content digests<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->BLAKE3<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->bare 64 lowercase hex<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_util <!--]--><!--[3--><!--[-1--><code>hash_blake3</code><!--]--><!--]--><!--[2-->; fuz_app <!--]--><!--[3--><!--[-1--><code>Blake3Hash</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->the <!--]--><!--[3--><!--[-1--><code>fuz_crypto</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>blake3_hex</code><!--]--><!--]--><!--[2--> adapters<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->the adapters refuse to write a non-BLAKE3 hash<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Session token at rest<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->BLAKE3, unkeyed<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->64 lowercase hex<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>auth/session_queries.ts</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>hash_session_token</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_auth::hash_session_token</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->hash, then look up<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->API token at rest<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->BLAKE3 of the whole <!--]--><!--[3--><!--[-1--><code>secret_fuz_token_…</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->64 lowercase hex<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>auth/api_token.ts</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>hash_api_token</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_auth::hash_api_token</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->hash, then look up<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Password<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->Argon2id, m=19456 t=2 p=1<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->PHC string<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>auth/password_argon2.ts</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>password_argon2.rs</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->library verify; an unknown account verifies against the same precomputed dummy hash<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Session cookie<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->HMAC-SHA256<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>&lt;identity>:&lt;expires_at>.&lt;sig></code><!--]--><!--]--><!--[2-->; <!--]--><!--[3--><!--[-1--><code>expires_at</code><!--]--><!--]--><!--[2--> ASCII digits within <!--]--><!--[3--><!--[-1--><code>u64</code><!--]--><!--]--><!--[2-->; <!--]--><!--[3--><!--[-1--><code>sig</code><!--]--><!--]--><!--[2--> standard padded base64 of the 32-byte MAC; keys of 32+ characters<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>auth/keyring.ts</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>auth/session_cookie.ts</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>keyring.rs</code><!--]--><!--]--><!--[2-->, <!--]--><!--[3--><!--[-1--><code>session_cookie.rs</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->strict decode (one spelling per MAC), then the MAC verify<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Daemon token<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->none (raw secret)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->43 base64url characters<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>auth/daemon_token.ts</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>daemon_token.rs</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->constant time<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Bootstrap token<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->none (raw secret)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->the file's bytes minus one optional trailing LF<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->fuz_app <!--]--><!--[3--><!--[-1--><code>auth/bootstrap_account.ts</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_auth</code><!--]--><!--]--><!--[2--> <!--]--><!--[3--><!--[-1--><code>bootstrap.rs</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->raw bytes in constant time; no other trimming<!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--[0--><tr><!--[--><!----><td><!--[0--><!--[--><!--[2-->Shell-checked download<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->SHA-512<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->sidecar line <!--]--><!--[3--><!--[-1--><code>&lt;128 lowercase hex>  &lt;name>\n</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[2-->build scripts (<!--]--><!--[3--><!--[-1--><code>gro.config.ts</code><!--]--><!--]--><!--[2-->)<!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>fuz_release</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!----><td><!--[0--><!--[--><!--[3--><!--[-1--><code>sha512sum -c</code><!--]--><!--]--><!--]--><!--]--><!----></td><!----><!--]--><!----></tr><!--]--><!--]--></tbody><!--]--></table><!--]--><!--[8--><p><!--[--><!--[2-->Rules:<!--]--><!--]--><!----></p><!--]--><!--[9--><!--[-1--><ul><!--[--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Wire hex is lowercase.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Check length and charset before any compare, and
+refuse rather than fold case. Third-party input whose format allows either
+case (a git <!--]--><!--[3--><!--[-1--><code>HEAD</code><!--]--><!--]--><!--[2--> file) is lowercased at that edge, once.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->BLAKE3 is the native content hash.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Facts spell it <!--]--><!--[3--><!--[-1--><code>blake3:&lt;hex></code><!--]--><!--]--><!--[2-->;
+every other field is bare hex. A parser for an algorithm-tagged form
+refuses every other algorithm and spelling (uppercase, <!--]--><!--[3--><!--[-1--><code>sha256:</code><!--]--><!--]--><!--[2-->, SRI).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->SHA-512 is the one digest a person checks in a shell.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Nothing carries a
+second digest beside BLAKE3 for convenience. SHA-256 appears where an
+external convention names it — CSP hashes, git object ids in a SHA-256
+repository, npm SRI tokens, LFS oids, upstream pins — and in local cache or
+staleness keys that nothing outside the package reads, mostly where the
+BLAKE3 WASM isn't a guaranteed dependency (fuz_css's extraction cache).<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Unkeyed BLAKE3 hash-then-lookup is for random tokens of 256 bits or
+more.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Argon2id is for passwords only. Raw secrets compare in constant
+time. A stored verifier for a secret (fuz_forge's hook secret) is its
+BLAKE3; the plaintext lives only where it is presented.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Non-security hashes say so and state their width<!--]--><!--]--><!----></strong><!--]--><!--[2--> — fuz_util's
+<!--]--><!--[3--><!--[-1--><code>hash_insecure</code><!--]--><!--]--><!--[2--> is a 32-bit DJB2 for cache keys and change detection, never
+a persisted id.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4--><strong><!--[--><!--[2-->Test the refusals across backends.<!--]--><!--]--><!----></strong><!--]--><!--[2--> Each strict parse gets
+cross-backend rows for its off-form inputs — uppercase, another
+algorithm, SRI, non-canonical padding, CRLF — so both sides answer the same
+status for the same string.<!--]--><!--]--><!----></li><!--]--><!--]--><!----></ul><!--]--><!--]--><!--[14--><!----><h2 id="tool-twins-molt"><!--[--><!--[2-->Tool twins: molt<!--]--><!--]--><!----></h2><!----><!--]--><!--[8--><p><!--[--><!--[2-->fuz_template's ejector ships as symmetric twins — <!--]--><!--[3--><!--[-1--><code>src/lib/molt.ts</code><!--]--><!--]--><!--[2-->
 (<!--]--><!--[3--><!--[-1--><code>npm run molt</code><!--]--><!--]--><!--[2-->) and the <!--]--><!--[3--><!--[-1--><code>molt</code><!--]--><!--]--><!--[2--> crate (<!--]--><!--[3--><!--[-1--><code>cargo molt</code><!--]--><!--]--><!--[2-->) — at full behavior parity:
 same flags, wizard, plan, byte-identical output trees. No reference/production
 asymmetry: both ship, chosen by which toolchain the user has (TS so ejecting
@@ -165,16 +184,16 @@ parity surface.<!--]--><!--]--><!----></li><!--]--><!--[10--><li><!--[--><!--[4-
 			
 			<script>
 				{
-					__sveltekit_wkf68j = {
+					__sveltekit_on81kf = {
 						base: "",
-						version: "f302e738240478dbe67cac5320c49503524bd429"
+						version: "9b4b377f5849b057ed3f819cb0859b76d3bd89c3"
 					};
 
 					const element = document.currentScript.parentElement;
 
 					import("/_app/immutable/entry/start.CrLbZUT-.js").then(async (kit) => {
-						kit.init(__sveltekit_wkf68j);
-						const app = await import("/_app/immutable/entry/app.Dz-FJ9fh.js");
+						kit.init(__sveltekit_on81kf);
+						const app = await import("/_app/immutable/entry/app.CyemF1yG.js");
 						kit.start(app, element, {
 							node_ids: [0, 3, 35],
 							data: [null,null,null],
