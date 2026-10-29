@@ -1,6 +1,7 @@
 {
 	"name": "@fuzdev/fuz_docs",
 	"version": "0.0.1",
+	"private": true,
 	"description": "experimental AI-generated docs and skills for Fuz, a zippy stack for human agency",
 	"glyph": "📜",
 	"logo": "logo.svg",
