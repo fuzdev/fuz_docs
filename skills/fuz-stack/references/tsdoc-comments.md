@@ -66,7 +66,7 @@ consumed downstream, counter or rate-limiter state.
 // Useful — names columns / cascades / side channels
 /** @mutates `app_settings` row - sets `open_signup`, `updated_at`, `updated_by` */
 /** @mutates `permit_offer` siblings - stamps `superseded_at` on every other pending offer for the tuple */
-/** @mutates Hono context - sets REQUEST_CONTEXT_KEY, CREDENTIAL_TYPE_KEY, AUTH_API_TOKEN_ID_KEY */
+/** @mutates Hono context - sets `SESSION_COOKIE_EXPIRES_AT_KEY`, and may clear the session cookie */
 ```
 
 **3. Duplicate sentence** — a `@returns` and a prose sentence saying the same
