@@ -141,7 +141,6 @@ maps).
   `z.void()` / `z.void().optional()` for action specs with no input or output
 - `z.custom<T>(check?)` embeds complex types without full validation — sparingly
   (`z.custom<z.ZodType>(...)` in fuz_app action specs)
-- `z.instanceof(MyClass)` — zzz action specs reference Cell instances this way
 
 ## Schema Introspection
 
