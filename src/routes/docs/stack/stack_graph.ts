@@ -151,7 +151,7 @@ export const stack_nodes: Array<StackNode> = [
 		language: 'ts',
 		description: 'static analysis for TypeScript and Svelte',
 		layer: 0,
-		fan_in: 12,
+		fan_in: 13,
 		x: 75,
 		y: 960
 	},
@@ -548,6 +548,11 @@ export const stack_edges: Array<StackEdge> = [
 		from: 'fuz.dev',
 		to: 'mdz',
 		kind: 'dev'
+	},
+	{
+		from: 'fuz.dev',
+		to: 'svelte-docinfo',
+		kind: 'prod'
 	},
 	{
 		from: 'gro',
