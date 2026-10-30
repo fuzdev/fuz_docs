@@ -172,8 +172,9 @@ typed `#[derive(Deserialize)]` input structs + `parse_strict_params` over
 `internal_error_with_source` / `db_unavailable_with_source` and their flat-REST
 twins `internal_error_response_with_source` /
 `db_unavailable_response_with_source` take `&dyn Error` and log its cause chain
-(a `tokio_postgres::Error`'s `Display` is only its kind); a direct log of a DB
-error uses `error = ?e`.
+(a `tokio_postgres::Error`'s `Display` is only its kind), plus a `sqlstate`
+field (`fuz_db::sqlstate_in_chain`) when a driver error in the chain carries
+one; a direct log of a DB error uses `error = ?e`.
 
 `JsonrpcErrorCode` is an enum with a hand-written `Serialize` emitting the
 bare `i32` (`as_i32()`) — not scattered `pub const … : i32`. Because
