@@ -169,6 +169,12 @@ re-declare — the envelope is what parity tests assert byte-for-byte. Prefer
 typed `#[derive(Deserialize)]` input structs + `parse_strict_params` over
 `params.get().and_then(Value::as_str)` chains (the chains are migration debt).
 
+`internal_error_with_source` / `db_unavailable_with_source` and their flat-REST
+twins `internal_error_response_with_source` /
+`db_unavailable_response_with_source` take `&dyn Error` and log its cause chain
+(a `tokio_postgres::Error`'s `Display` is only its kind); a direct log of a DB
+error uses `error = ?e`.
+
 `JsonrpcErrorCode` is an enum with a hand-written `Serialize` emitting the
 bare `i32` (`as_i32()`) — not scattered `pub const … : i32`. Because
 `JsonrpcError.code` is the enum, `error_code_to_http_status` is exhaustive: a
